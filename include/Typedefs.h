@@ -1,6 +1,5 @@
-
-#ifndef __MSYS_TYPEDEFS_H_D64BE9B4_A8DA_11D3_AFE7_005004464B79
-#define __MSYS_TYPEDEFS_H_D64BE9B4_A8DA_11D3_AFE7_005004464B79
+#ifndef _TYPEDEFS_H_
+#define _TYPEDEFS_H_
 
 #include <limits.h>
 
@@ -240,10 +239,10 @@
 
 
 #if !(defined MSYS_TYPE_ERRVAL)
-  #define MSYS_TYPE_ERRVAL int
+    #define MSYS_TYPE_ERRVAL int
 #endif
 #if !(defined MSYS_NO_TYPE_ERRVAL )
-  typedef MSYS_TYPE_ERRVAL ErrVal;
+    typedef MSYS_TYPE_ERRVAL ErrVal;
 #endif
 
 
@@ -254,11 +253,11 @@
 #define INST_STATE_UNINITIALIZING (3)
 
 #if !(defined MSYS_TYPE_INSTSTATE)
-  #define MSYS_TYPE_INSTSTATE unsigned int
+    #define MSYS_TYPE_INSTSTATE unsigned int
 #endif
 #if !(defined MSYS_NO_TYPE_INSTSTATE )
-  typedef MSYS_TYPE_INSTSTATE InstState;
+    typedef MSYS_TYPE_INSTSTATE InstState;
 #endif
 
 
-#endif //__TYPEDEFS_H_D64BE9B4_A8DA_11D3_AFE7_005004464B79
+#endif //_TYPEDEFS_H_

@@ -21,60 +21,60 @@
 #if DOLBY_ENCMUX_ENABLE
 
 static const int sbs_filter_taps[17][14] = {
-  {  1}, //{  16,  16},                   //Bilinear
-  {  1,    6,    1},              // horizontal
-  { -1,    2,    6,    2,   -1},  // horizontal_lp
-  { -1,    2,   -1},              //hp;
-  { -1,    4,   26,    4,   -1},  //mp;
-  {  1,   -2,    5,   56,    5,   -2,    1},  //gp;
-  {-10,  -18,   45,  -12, -118,  286,  678,  286,  -118,   -12,    45,   -18,   -10},  //HF1;
-  { -5,   19,   29,  -68,  -47,  305,  558,  305,   -47,   -68,    29,    19,    -5},  //HF0;
-  {  2,    0,   -4,   -3,    5,   19,   26,   19,     5,    -3,    -4,     0,     2},  //SVC;
-  { 27,  -17,  -80,  273,  618,  273,  -80,  -17,    27},    //CDF9;
-  { 93,  -59, -605, 1142, -605,  -59, 93},  //CDF7;
-  {-8,   -14,   34,   -9,  -89,  215,  765,  215,   -89,    -9,    34,    -14,   -8}, // /1024
-  {  5,    8,   13,   38,   38,   13,    8,    5},                                         //bilinear;
-  {  1,   -6,   -5,    7,   26,   41,   41,   26,     7,    -5,    -6,     1},             //JVT-R006;
-  {  1,    1,   -2,   -4,    1,   12,   23,   23,    12,     1,    -4,    -2,     1,    1}, //JVT-R070;
-  { -8,    0,   24,   48,   48,   24,    0,   -8}, // SVC-fractional
-  {  7,   24,  -19,  -57,  128,  429,  429,  128,   -57,   -19,    24,     7} // HF0-fractional
+    {  1}, //{  16,  16},                   //Bilinear
+    {  1,    6,    1},              // horizontal
+    { -1,    2,    6,    2,   -1},  // horizontal_lp
+    { -1,    2,   -1},              //hp;
+    { -1,    4,   26,    4,   -1},  //mp;
+    {  1,   -2,    5,   56,    5,   -2,    1},  //gp;
+    {-10,  -18,   45,  -12, -118,  286,  678,  286,  -118,   -12,    45,   -18,   -10},  //HF1;
+    { -5,   19,   29,  -68,  -47,  305,  558,  305,   -47,   -68,    29,    19,    -5},  //HF0;
+    {  2,    0,   -4,   -3,    5,   19,   26,   19,     5,    -3,    -4,     0,     2},  //SVC;
+    { 27,  -17,  -80,  273,  618,  273,  -80,  -17,    27},    //CDF9;
+    { 93,  -59, -605, 1142, -605,  -59, 93},  //CDF7;
+    {-8,   -14,   34,   -9,  -89,  215,  765,  215,   -89,    -9,    34,    -14,   -8}, // /1024
+    {  5,    8,   13,   38,   38,   13,    8,    5},                                         //bilinear;
+    {  1,   -6,   -5,    7,   26,   41,   41,   26,     7,    -5,    -6,     1},             //JVT-R006;
+    {  1,    1,   -2,   -4,    1,   12,   23,   23,    12,     1,    -4,    -2,     1,    1}, //JVT-R070;
+    { -8,    0,   24,   48,   48,   24,    0,   -8}, // SVC-fractional
+    {  7,   24,  -19,  -57,  128,  429,  429,  128,   -57,   -19,    24,     7} // HF0-fractional
 };
 
 static const int sbs_filter_length[17] = { 
-  1/*2*/, 3, 5, 3, 5, 7, 13, 13, 13, 9, 7, 13, 8, 12, 14, 8, 12
+    1/*2*/, 3, 5, 3, 5, 7, 13, 13, 13, 9, 7, 13, 8, 12, 14, 8, 12
 };
 
 static const int sbs_filter_normal[17] = { 
-  0/*5*/,  3,  3,  2, 5, 6,  10,  10,  6,  10, 10/*6*/, 10, 7,  7,  6,  7, 10
+    0/*5*/,  3,  3,  2, 5, 6,  10,  10,  6,  10, 10/*6*/, 10, 7,  7,  6,  7, 10
 };
 
 
 static const int sbs_filter_offset[17] = { 
-  0/*16*/,  4,  4,  (512+2), 16, 32,  512, 512, 32, 512, (128*1024+512)/*512*/, 512, 64, 64, 32, 64, 512
+    0/*16*/,  4,  4,  (512+2), 16, 32,  512, 512, 32, 512, (128*1024+512)/*512*/, 512, 64, 64, 32, 64, 512
 };
 
 
 //-----------------------------------------------------------------------------
 // Private methods
 //-----------------------------------------------------------------------------
-ImgProcessFilter1D * create_img_process_filter_1D( int filter_type)
+ImgProcessFilter1D * create_img_process_filter_1D(int filter_type)
 {
     int idx;
     ImgProcessFilter1D * ptr;
 
-    ptr = (ImgProcessFilter1D *)malloc( sizeof( ImgProcessFilter1D ) );
+    ptr = (ImgProcessFilter1D *)malloc(sizeof( ImgProcessFilter1D));
     if(ptr == NULL)
     {
-        fprintf(stderr, "Cannot allocate memory for RPUFilter1D structure.\n" );
+        fprintf(stderr, "Cannot allocate memory for RPUFilter1D structure.\n");
         exit(100);
     }
 
-    ptr->c_tap       = sbs_filter_length[filter_type];
+    ptr->c_tap = sbs_filter_length[filter_type];
     ptr->c_taps_div2 = ptr->c_tap >> 1;
 
-    for (idx = 0; idx < ptr->c_tap; idx++)
+    for(idx = 0; idx < ptr->c_tap; idx++)
     {
-      ptr->coef1[idx] = sbs_filter_taps[filter_type][idx];
+        ptr->coef1[idx] = sbs_filter_taps[filter_type][idx];
     }
     ptr->c_coef1 = &ptr->coef1[ptr->c_taps_div2 - 1];
 
@@ -85,7 +85,7 @@ ImgProcessFilter1D * create_img_process_filter_1D( int filter_type)
     return ptr;
 }
 
-void destroy_img_process_filter_1D( ImgProcessFilter1D * ptr )
+void destroy_img_process_filter_1D(ImgProcessFilter1D * ptr)
 {
     if (ptr != NULL)
     {
@@ -93,7 +93,7 @@ void destroy_img_process_filter_1D( ImgProcessFilter1D * ptr )
     }
 }
 
-static inline imgpel filter_safe_positions( const ImgProcessFilter1D *flt, const imgpel *p_in )
+static inline imgpel filter_safe_positions(const ImgProcessFilter1D *flt, const imgpel *p_in)
 {
     const short *c_coef = flt->coef1;
     int htap = flt->c_tap;
@@ -101,14 +101,14 @@ static inline imgpel filter_safe_positions( const ImgProcessFilter1D *flt, const
 
     int val = 0, k;
 
-    for (k = 0; k < htap ; k++)
+    for(k = 0; k < htap ; k++)
     {
         val += *(p1++) * *(c_coef++);
     }
-    return (imgpel)iClip1( flt->max_pel_value, shift_off_sf( val, flt->c_offset, flt->c_normal1 ) );
+    return (imgpel)iClip1(flt->max_pel_value, shift_off_sf(val, flt->c_offset, flt->c_normal1));
 }
 
-static inline imgpel filter_unsafe_left_positions( const ImgProcessFilter1D *flt, const imgpel *p_in, int left_samples  )
+static inline imgpel filter_unsafe_left_positions(const ImgProcessFilter1D *flt, const imgpel *p_in, int left_samples)
 {
     const short *c_coef = flt->coef1;
     int hmin = -flt->c_taps_div2; // + 1;
@@ -117,38 +117,38 @@ static inline imgpel filter_unsafe_left_positions( const ImgProcessFilter1D *flt
 
     int val = 0, k;
 
-    for (k = hmin; k < -left_samples ; k++)
+    for(k = hmin; k <-left_samples; k++)
     {
         val +=  *p1 * *(c_coef++);
     }
-    for (k = -left_samples; k < hmax ; k++)
+    for (k =-left_samples; k < hmax; k++)
     {
         val += *(p1++) * *(c_coef++);
+    }
+    return (imgpel)iClip1(flt->max_pel_value, shift_off_sf(val, flt->c_offset, flt->c_normal1));
+}
+
+static inline imgpel filter_unsafe_right_positions(const ImgProcessFilter1D *flt, const imgpel *p_in, int right_samples)
+{
+    const short *c_coef = flt->coef1;
+    int hmin = -flt->c_taps_div2;// + 1;
+    int hmax = flt->c_tap + hmin;
+    const imgpel *p1 = p_in - flt->c_taps_div2 -1;
+
+    int val = 0, k;
+
+    for(k = hmin; k <= right_samples ; k++)
+    {
+        val +=  *(++p1) * *(c_coef++);
+    }
+    for(k = right_samples + 1; k < hmax ; k++)
+    {
+        val += *p1 * *(c_coef++);
     }
     return (imgpel)iClip1( flt->max_pel_value, shift_off_sf( val, flt->c_offset, flt->c_normal1 ) );
 }
 
-static inline imgpel filter_unsafe_right_positions( const ImgProcessFilter1D *flt, const imgpel *p_in, int right_samples  )
-{
-  const short *c_coef = flt->coef1;
-  int hmin = -flt->c_taps_div2;// + 1;
-  int hmax = flt->c_tap + hmin;
-  const imgpel *p1 = p_in - flt->c_taps_div2 -1;
-
-  int val = 0, k;
-
-  for (k = hmin; k <= right_samples ; k++)
-  { 
-      val +=  *(++p1) * *(c_coef++);
-  }
-  for (k = right_samples + 1; k < hmax ; k++)
-  { 
-      val += *p1 * *(c_coef++);
-  }
-  return (imgpel)iClip1( flt->max_pel_value, shift_off_sf( val, flt->c_offset, flt->c_normal1 ) );
-}
-
-static inline imgpel filter_even_unsafe_right_positions( const ImgProcessFilter1D *flt, const imgpel *p_in, int right_samples  )
+static inline imgpel filter_even_unsafe_right_positions(const ImgProcessFilter1D *flt, const imgpel *p_in, int right_samples)
 {
     const short *c_coef = flt->coef1;
     int hmin = -flt->c_taps_div2;
@@ -165,67 +165,87 @@ static inline imgpel filter_even_unsafe_right_positions( const ImgProcessFilter1
     {
         val += *p1 * *(c_coef++);
     }
-    return (imgpel)iClip1( flt->max_pel_value, shift_off_sf( val, flt->c_offset, flt->c_normal1 ) );
+    return (imgpel)iClip1( flt->max_pel_value, shift_off_sf(val, flt->c_offset, flt->c_normal1));
 }
 
-static void img_process_filter_even_hor_line(const ImgProcessFilter1D *flt, const imgpel *p_in, imgpel *p_out, int origin_x, int end_x, int center_start_x, 
-                                 int center_end_x, int step)
+static void img_process_filter_even_hor_line(const ImgProcessFilter1D *flt,
+                                             const imgpel *p_in,
+                                             imgpel *p_out,
+                                             int origin_x,
+                                             int end_x,
+                                             int center_start_x,
+                                             int center_end_x,
+                                             int step)
 {
     int i;
 
     //left columns
-    for( i = origin_x; i < center_start_x; i += step)
+    for(i = origin_x; i < center_start_x; i += step)
     {
-        *(p_out++) = filter_unsafe_left_positions( flt, p_in, i );
+        *(p_out++) = filter_unsafe_left_positions(flt, p_in, i);
         p_in += step;
     }
     //center columns
-    for( /*i = center_start_x*/; i < center_end_x; i += step)
+    for(/*i = center_start_x*/; i < center_end_x; i += step)
     {
-        *(p_out++) = filter_safe_positions( flt, p_in );
+        *(p_out++) = filter_safe_positions( flt, p_in);
         p_in += step;
     }
     //right columns
-    for( /*i = center_end_x*/; i < end_x; i += step )
+    for(/*i = center_end_x*/; i < end_x; i += step)
     {
-        *(p_out++) = filter_even_unsafe_right_positions( flt, p_in, end_x - i - 1 );
+        *(p_out++) = filter_even_unsafe_right_positions(flt, p_in, end_x - i - 1);
         p_in += step;
     }
 }
 
-void img_process_filter_hor_line(const ImgProcessFilter1D *flt, const imgpel *p_in, imgpel *p_out, int origin_x, int end_x, int center_start_x, 
-                                 int center_end_x, int step)
+void img_process_filter_hor_line(const ImgProcessFilter1D *flt,
+                                 const imgpel *p_in,
+                                 imgpel *p_out,
+                                 int origin_x,
+                                 int end_x,
+                                 int center_start_x,
+                                 int center_end_x,
+                                 int step)
 {
     int i;
 
     //left columns
-    for ( i = origin_x; i < center_start_x; i += step)
+    for(i = origin_x; i < center_start_x; i += step)
     {
-        *(p_out++) = filter_unsafe_left_positions( flt, p_in, i );
+        *(p_out++) = filter_unsafe_left_positions(flt, p_in, i);
         p_in += step;
     }
     //center columns
-    for ( /*i = center_start_x*/; i < center_end_x; i += step)
+    for(/*i = center_start_x*/; i < center_end_x; i += step)
     {
-        *(p_out++) = filter_safe_positions( flt, p_in );
+        *(p_out++) = filter_safe_positions(flt, p_in);
         p_in += step;
     }
     //right columns
-    for ( /*i = center_end_x*/; i < end_x; i += step )
+    for(/*i = center_end_x*/; i < end_x; i += step)
     {
-        *(p_out++) = filter_unsafe_right_positions( flt, p_in, end_x-i-1 );
+        *(p_out++) = filter_unsafe_right_positions(flt, p_in, end_x-i-1);
         p_in += step;
     }
 }
 
-static void SbSBasic(imgpel *output, int iStrideOut, imgpel *input0, imgpel *input1, int iStrideIn, int width, int height, int offset0, int offset1)
+static void SbSBasic(imgpel *output,
+                     int iStrideOut,
+                     imgpel *input0,
+                     imgpel *input1,
+                     int iStrideIn,
+                     int width,
+                     int height,
+                     int offset0,
+                     int offset1)
 {
     int i, j;
     int hwidth = (width >> 1);
     imgpel *p_out;
     imgpel *p_in0, *p_in1;
 
-    for (j = 0; j < height; j++)
+    for(j = 0; j < height; j++)
     {
         p_out = output + j*iStrideOut;
         p_in0 = input0 + j*iStrideIn + offset0;
@@ -243,21 +263,30 @@ static void SbSBasic(imgpel *output, int iStrideOut, imgpel *input0, imgpel *inp
     }
 }
 
-void H264AVCEncoderTest::sbsMux(UChar *output, Int iStrideOut, UChar *input0, UChar *input1, Int iStrideIn, Int width, Int height, Int offset0, Int offset1, Int iFilterIdx)
+void H264AVCEncoderTest::sbsMux(UChar *output,
+                                Int iStrideOut,
+                                UChar *input0,
+                                UChar *input1,
+                                Int iStrideIn,
+                                Int width,
+                                Int height,
+                                Int offset0,
+                                Int offset1,
+                                Int iFilterIdx)
 {
     int j;
     int hwidth = (width >> 1);
-    if ( iFilterIdx > 11 )
+    if (iFilterIdx > 11)
     {
         ImgProcessFilter1D *flt = create_img_process_filter_1D(iFilterIdx);
-        for (j = 0; j < height; j++)
+        for(j = 0; j < height; j++)
         {
             img_process_filter_even_hor_line( flt, input0+j*iStrideIn +offset0, output+j*iStrideOut,        offset0, width + offset0, flt->c_taps_div2, width - flt->c_taps_div2 + offset0, 2 );
             img_process_filter_even_hor_line( flt, input1+j*iStrideIn +offset1, output+j*iStrideOut+hwidth, offset1, width + offset1, flt->c_taps_div2, width - flt->c_taps_div2 + offset1, 2 );
         }
         destroy_img_process_filter_1D(flt);
     }
-    else if ( iFilterIdx > 0 )
+    else if(iFilterIdx > 0)
     {
         ImgProcessFilter1D *flt = create_img_process_filter_1D(iFilterIdx);
         for (j = 0; j < height; j++)
@@ -273,9 +302,15 @@ void H264AVCEncoderTest::sbsMux(UChar *output, Int iStrideOut, UChar *input0, UC
     }
 }
 
-void H264AVCEncoderTest::sbsMuxFR(UChar *output, Int iStrideOut, UChar *input0, UChar *input1, Int iStrideIn, Int width, Int height)
+void H264AVCEncoderTest::sbsMuxFR(UChar *output,
+                                  Int iStrideOut,
+                                  UChar *input0,
+                                  UChar *input1,
+                                  Int iStrideIn,
+                                  Int width,
+                                  Int height)
 {
-    for (int j = 0; j < height; j++)
+    for(int j = 0; j < height; j++)
     {
         memcpy(output +j*iStrideOut, input0 +j*iStrideIn, width*sizeof(UChar));
         memcpy(output +j*iStrideOut +width, input1 +j*iStrideIn, width*sizeof(UChar));

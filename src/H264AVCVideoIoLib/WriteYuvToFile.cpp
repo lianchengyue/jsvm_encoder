@@ -12,30 +12,30 @@ WriteYuvToFile::~WriteYuvToFile()
 }
 
 ErrVal
-WriteYuvToFile::create( WriteYuvToFile*& rpcWriteYuv )
+WriteYuvToFile::create(WriteYuvToFile*& rpcWriteYuv )
 {
   rpcWriteYuv = new WriteYuvToFile;
-  ROF( rpcWriteYuv )
+  ROF(rpcWriteYuv )
   return Err::m_nOK;
 }
 
 ErrVal
 WriteYuvToFile::destroy()
 {
-  ROT( m_cFile.is_open() );
+  ROT(m_cFile.is_open() );
   delete this;
   return Err::m_nOK;
 }
 
 ErrVal
-WriteYuvToFile::init( const std::string& rcFileName )
+WriteYuvToFile::init(const std::string& rcFileName )
 {
-  ROF( rcFileName.size() );
+  ROF(rcFileName.size() );
 #if 1  // DOLBY_ENCMUX_ENABLE
-  if( rcFileName.compare("none") && rcFileName.compare("\"\"") )
+  if(rcFileName.compare("none") && rcFileName.compare("\"\"") )
 #endif // DOLBY_ENCMUX_ENABLE
   {
-    if( Err::m_nOK != m_cFile.open( rcFileName, LargeFile::OM_WRITEONLY ) )
+    if(Err::m_nOK != m_cFile.open(rcFileName, LargeFile::OM_WRITEONLY ) )
     {
       std::cerr << "failed to open YUV output file " << rcFileName.data() << std::endl;
       return Err::m_nERR;
@@ -47,15 +47,15 @@ WriteYuvToFile::init( const std::string& rcFileName )
 ErrVal
 WriteYuvToFile::uninit()
 {
-  if( m_cFile.is_open() )
+  if(m_cFile.is_open() )
   {
-    RNOK( m_cFile.close() );
+    RNOK(m_cFile.close() );
   }
   return Err::m_nOK;
 }
 
 ErrVal
-WriteYuvToFile::writeFrame( const UChar* pLum,
+WriteYuvToFile::writeFrame(const UChar* pLum,
                             const UChar* pCb,
                             const UChar* pCr,
                             UInt         uiHeight,
@@ -63,7 +63,7 @@ WriteYuvToFile::writeFrame( const UChar* pLum,
                             UInt         uiStride,
                             const UInt   rauiCropping[] )
 {
-  ROFRS( m_cFile.is_open(), Err::m_nOK );
+  ROFRS(m_cFile.is_open(), Err::m_nOK );
 
   UInt          y;
   const UChar*  pucSrc;
@@ -71,10 +71,10 @@ WriteYuvToFile::writeFrame( const UChar* pLum,
   uiWidth   -= rauiCropping[0] + rauiCropping[1];
   uiHeight  -= rauiCropping[2] + rauiCropping[3];
 
-  pucSrc = pLum + ( rauiCropping[0] + rauiCropping[2] * uiStride );
-  for( y = 0; y < uiHeight; y++ )
+  pucSrc = pLum + (rauiCropping[0] + rauiCropping[2] * uiStride );
+  for(y = 0; y < uiHeight; y++ )
   {
-    RNOK( m_cFile.write( pucSrc, uiWidth ) );
+    RNOK(m_cFile.write(pucSrc, uiWidth ) );
     pucSrc += uiStride;
   }
 
@@ -82,17 +82,17 @@ WriteYuvToFile::writeFrame( const UChar* pLum,
   uiHeight >>= 1;
   uiWidth  >>= 1;
 
-  pucSrc = pCb + ( ( rauiCropping[0] + rauiCropping[2] * uiStride ) >> 1 );
-  for( y = 0; y < uiHeight; y++ )
+  pucSrc = pCb + ((rauiCropping[0] + rauiCropping[2] * uiStride ) >> 1 );
+  for(y = 0; y < uiHeight; y++ )
   {
-    RNOK( m_cFile.write( pucSrc, uiWidth ) );
+    RNOK(m_cFile.write(pucSrc, uiWidth ) );
     pucSrc += uiStride;
   }
 
-  pucSrc = pCr + ( ( rauiCropping[0] + rauiCropping[2] * uiStride ) >> 1 );
-  for( y = 0; y < uiHeight; y++ )
+  pucSrc = pCr + ((rauiCropping[0] + rauiCropping[2] * uiStride ) >> 1 );
+  for(y = 0; y < uiHeight; y++ )
   {
-    RNOK( m_cFile.write( pucSrc, uiWidth ) );
+    RNOK(m_cFile.write(pucSrc, uiWidth ) );
     pucSrc += uiStride;
   }
 

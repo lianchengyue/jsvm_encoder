@@ -1,4 +1,3 @@
-
 #include "H264AVCEncoderLib.h"
 #include "UvlcWriter.h"
 #include "H264AVCCommonLib/Tables.h"
@@ -9,47 +8,46 @@
 #define RUNBEFORE_NUM  7
 
 // h264 namepace begin
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 const UInt g_auiIncVlc[] = {0,3,6,12,24,48,32768};	// maximum vlc = 6
 
 const UChar g_aucLenTableTZ16[TOTRUN_NUM][16] =
 {
-
-  { 1,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9},
-  { 3,3,3,3,3,4,4,4,4,5,5,6,6,6,6},
-  { 4,3,3,3,4,4,3,3,4,5,5,6,5,6},
-  { 5,3,4,4,3,3,3,4,3,4,5,5,5},
-  { 4,4,4,3,3,3,3,3,4,5,4,5},
-  { 6,5,3,3,3,3,3,3,4,3,6},
-  { 6,5,3,3,3,2,3,4,3,6},
-  { 6,4,5,3,2,2,3,3,6},
-  { 6,6,4,2,2,3,2,5},
-  { 5,5,3,2,2,2,4},
-  { 4,4,3,3,1,3},
-  { 4,4,2,1,3},
-  { 3,3,1,2},
-  { 2,2,1},
-  { 1,1},
+    { 1,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9},
+    { 3,3,3,3,3,4,4,4,4,5,5,6,6,6,6},
+    { 4,3,3,3,4,4,3,3,4,5,5,6,5,6},
+    { 5,3,4,4,3,3,3,4,3,4,5,5,5},
+    { 4,4,4,3,3,3,3,3,4,5,4,5},
+    { 6,5,3,3,3,3,3,3,4,3,6},
+    { 6,5,3,3,3,2,3,4,3,6},
+    { 6,4,5,3,2,2,3,3,6},
+    { 6,6,4,2,2,3,2,5},
+    { 5,5,3,2,2,2,4},
+    { 4,4,3,3,1,3},
+    { 4,4,2,1,3},
+    { 3,3,1,2},
+    { 2,2,1},
+    { 1,1},
 };
 
 const UChar g_aucCodeTableTZ16[TOTRUN_NUM][16] =
 {
-  {1,3,2,3,2,3,2,3,2,3,2,3,2,3,2,1},
-  {7,6,5,4,3,5,4,3,2,3,2,3,2,1,0},
-  {5,7,6,5,4,3,4,3,2,3,2,1,1,0},
-  {3,7,5,4,6,5,4,3,3,2,2,1,0},
-  {5,4,3,7,6,5,4,3,2,1,1,0},
-  {1,1,7,6,5,4,3,2,1,1,0},
-  {1,1,5,4,3,3,2,1,1,0},
-  {1,1,1,3,3,2,2,1,0},
-  {1,0,1,3,2,1,1,1,},
-  {1,0,1,3,2,1,1,},
-  {0,1,1,2,1,3},
-  {0,1,1,1,1},
-  {0,1,1,1},
-  {0,1,1},
-  {0,1},
+    {1,3,2,3,2,3,2,3,2,3,2,3,2,3,2,1},
+    {7,6,5,4,3,5,4,3,2,3,2,3,2,1,0},
+    {5,7,6,5,4,3,4,3,2,3,2,1,1,0},
+    {3,7,5,4,6,5,4,3,3,2,2,1,0},
+    {5,4,3,7,6,5,4,3,2,1,1,0},
+    {1,1,7,6,5,4,3,2,1,1,0},
+    {1,1,5,4,3,3,2,1,1,0},
+    {1,1,1,3,3,2,2,1,0},
+    {1,0,1,3,2,1,1,1,},
+    {1,0,1,3,2,1,1,},
+    {0,1,1,2,1,3},
+    {0,1,1,1,1},
+    {0,1,1,1},
+    {0,1,1},
+    {0,1},
 };
 
 
@@ -295,15 +293,15 @@ const UInt g_auiRefSymLen[2][27] =
   }
 };
 
-UvlcWriter::UvlcWriter( Bool bTraceEnable ) :
-  m_pcBitWriteBufferIf( NULL ),
-  m_uiBitCounter( 0 ),
-  m_uiPosCounter( 0 ),
-  m_uiCoeffCost( 0 ),
-  m_bTraceEnable( bTraceEnable ),
-  m_bRunLengthCoding( false ),
-  m_uiRun( 0 ),
-  m_pcNextUvlcWriter( NULL )
+UvlcWriter::UvlcWriter(Bool bTraceEnable) :
+  m_pcBitWriteBufferIf(NULL),
+  m_uiBitCounter(0),
+  m_uiPosCounter(0),
+  m_uiCoeffCost(0),
+  m_bTraceEnable(bTraceEnable),
+  m_bRunLengthCoding(false),
+  m_uiRun(0),
+  m_pcNextUvlcWriter(NULL)
 {
 }
 
@@ -313,11 +311,11 @@ UvlcWriter::~UvlcWriter()
 }
 
 
-ErrVal UvlcWriter::create( UvlcWriter*& rpcUvlcWriter, Bool bTraceEnable )
+ErrVal UvlcWriter::create(UvlcWriter*& rpcUvlcWriter, Bool bTraceEnable)
 {
-    rpcUvlcWriter = new UvlcWriter( bTraceEnable );
+    rpcUvlcWriter = new UvlcWriter(bTraceEnable);
 
-    ROT( NULL == rpcUvlcWriter );
+    ROT(NULL == rpcUvlcWriter);
 
     return Err::m_nOK;
 }
@@ -325,7 +323,7 @@ ErrVal UvlcWriter::create( UvlcWriter*& rpcUvlcWriter, Bool bTraceEnable )
 
 ErrVal UvlcWriter::destroy()
 {
-    if( m_pcNextUvlcWriter )
+    if(m_pcNextUvlcWriter)
     {
         m_pcNextUvlcWriter->destroy();
     }
@@ -333,22 +331,22 @@ ErrVal UvlcWriter::destroy()
     return Err::m_nOK;
 }
 
-__inline ErrVal UvlcWriter::xWriteCode( UInt uiCode, UInt uiLength )
+__inline ErrVal UvlcWriter::xWriteCode(UInt uiCode, UInt uiLength)
 {
     AOT_DBG(uiLength<1);
 
-    ErrVal retVal = m_pcBitWriteBufferIf->write( uiCode, uiLength );
+    ErrVal retVal = m_pcBitWriteBufferIf->write(uiCode, uiLength);
 
-    ETRACE_TY( " u(v)" );
-    ETRACE_BITS( uiCode, uiLength );
+    ETRACE_TY(" u(v)");
+    ETRACE_BITS(uiCode, uiLength);
     ETRACE_POS;
 
-    ETRACE_CODE( uiCode );
+    ETRACE_CODE(uiCode);
     ETRACE_COUNT (uiLength);
     return retVal;
 }
 
-__inline ErrVal UvlcWriter::xWriteCodeNT( UInt uiCode, UInt uiLength )
+__inline ErrVal UvlcWriter::xWriteCodeNT(UInt uiCode, UInt uiLength)
 {
     AOT_DBG(uiLength<1);
     ErrVal retVal = m_pcBitWriteBufferIf->write(uiCode, uiLength);
@@ -356,22 +354,22 @@ __inline ErrVal UvlcWriter::xWriteCodeNT( UInt uiCode, UInt uiLength )
 }
 
 
-__inline ErrVal UvlcWriter::xWriteFlag( UInt uiCode )
+__inline ErrVal UvlcWriter::xWriteFlag(UInt uiCode)
 {
-    ErrVal retVal = m_pcBitWriteBufferIf->write( uiCode, 1 );
+    ErrVal retVal = m_pcBitWriteBufferIf->write(uiCode, 1);
 
-    ETRACE_TY( " u(1)" );
-    ETRACE_BITS( uiCode, 1 );
+    ETRACE_TY(" u(1)");
+    ETRACE_BITS(uiCode, 1);
     ETRACE_POS;
 
-    ETRACE_CODE( uiCode );
+    ETRACE_CODE(uiCode);
     ETRACE_COUNT (1);
     return retVal;
 }
 
-ErrVal UvlcWriter::init(  BitWriteBufferIf* pcBitWriteBufferIf )
+ErrVal UvlcWriter::init( BitWriteBufferIf* pcBitWriteBufferIf)
 {
-    ROT( NULL == pcBitWriteBufferIf );
+    ROT(NULL == pcBitWriteBufferIf);
 
     m_pcBitWriteBufferIf= pcBitWriteBufferIf;
     m_bRunLengthCoding  = false;
@@ -382,7 +380,7 @@ ErrVal UvlcWriter::init(  BitWriteBufferIf* pcBitWriteBufferIf )
 
 ErrVal UvlcWriter::uninit()
 {
-    if( m_pcNextUvlcWriter )
+    if(m_pcNextUvlcWriter)
     {
         m_pcNextUvlcWriter->uninit();
     }
@@ -396,14 +394,14 @@ UInt UvlcWriter::getNumberOfWrittenBits()
 }
 
 
-ErrVal UvlcWriter::startSlice( const SliceHeader& rcSliceHeader )
+ErrVal UvlcWriter::startSlice(const SliceHeader& rcSliceHeader)
 {
     m_bRunLengthCoding  = ! rcSliceHeader.isIntraSlice();
     m_uiRun             = 0;
 
-    if( m_pcNextUvlcWriter )
+    if(m_pcNextUvlcWriter)
     {
-        m_pcNextUvlcWriter->startSlice( rcSliceHeader );
+        m_pcNextUvlcWriter->startSlice(rcSliceHeader);
     }
     return Err::m_nOK;
 }
@@ -420,14 +418,14 @@ ErrVal UvlcWriter::setFirstBits(UChar ucByte,UInt uiLastBitPos)
     return Err::m_nOK;
 }
 //~FIX_FRAG_CAVLC
-ErrVal UvlcWriter::xWriteUvlcCode( UInt uiVal)
+ErrVal UvlcWriter::xWriteUvlcCode(UInt uiVal)
 {
     UInt uiLength = 1;
     UInt uiTemp = ++uiVal;
 
-    AOF_DBG( uiTemp );
+    AOF_DBG(uiTemp);
 
-    while( 1 != uiTemp )
+    while(1 != uiTemp)
     {
         uiTemp >>= 1;
         uiLength += 2;
@@ -435,28 +433,28 @@ ErrVal UvlcWriter::xWriteUvlcCode( UInt uiVal)
 
     m_pcBitWriteBufferIf->write(uiVal, uiLength);
 
-    ETRACE_TY( "ue(v)" );
-    ETRACE_BITS( uiVal, uiLength );
+    ETRACE_TY("ue(v)");
+    ETRACE_BITS(uiVal, uiLength);
     ETRACE_POS;
 
-    ETRACE_DO( uiVal-- );
+    ETRACE_DO(uiVal--);
 
-    ETRACE_CODE( uiVal );
+    ETRACE_CODE(uiVal);
     ETRACE_COUNT (uiLength);
 
     return Err::m_nOK;
 }
 
 
-ErrVal UvlcWriter::xWriteSvlcCode( Int iVal)
+ErrVal UvlcWriter::xWriteSvlcCode(Int iVal)
 {
-    UInt uiVal = xConvertToUInt( iVal );
+    UInt uiVal = xConvertToUInt(iVal);
     UInt uiLength = 1;
     UInt uiTemp = ++uiVal;
 
-    AOF_DBG( uiTemp );
+    AOF_DBG(uiTemp);
 
-    while( 1 != uiTemp )
+    while(1 != uiTemp)
     {
         uiTemp >>= 1;
         uiLength += 2;
@@ -464,19 +462,19 @@ ErrVal UvlcWriter::xWriteSvlcCode( Int iVal)
 
     m_pcBitWriteBufferIf->write(uiVal, uiLength);
 
-    ETRACE_TY( "ue(v)" );
-    ETRACE_BITS( uiVal, uiLength );
+    ETRACE_TY("ue(v)");
+    ETRACE_BITS(uiVal, uiLength);
     ETRACE_POS;
 
-    ETRACE_CODE( iVal );
+    ETRACE_CODE(iVal);
     ETRACE_COUNT (uiLength);
 
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::writeUvlc( UInt uiCode, const Char* pcTraceString )
+ErrVal UvlcWriter::writeUvlc(UInt uiCode, const Char* pcTraceString)
 {
-    ETRACE_TH( pcTraceString );
+    ETRACE_TH(pcTraceString);
 
     xWriteUvlcCode(uiCode);
 
@@ -489,35 +487,35 @@ ErrVal UvlcWriter::writeSvlc(Int iCode, const Char* pcTraceString)
 {
     UInt uiCode;
 
-    ETRACE_TH( pcTraceString );
+    ETRACE_TH(pcTraceString);
 
     uiCode = xConvertToUInt(iCode);
     xWriteUvlcCode(uiCode);
 
-    ETRACE_TY( "se(v)" );
-    ETRACE_CODE( iCode );
+    ETRACE_TY("se(v)");
+    ETRACE_CODE(iCode);
 
     ETRACE_N;
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::writeFlag( Bool bFlag, const Char* pcTraceString )
+ErrVal UvlcWriter::writeFlag(Bool bFlag, const Char* pcTraceString)
 {
-    ETRACE_TH( pcTraceString );
-    ETRACE_TY( " u(1)" );
+    ETRACE_TH(pcTraceString);
+    ETRACE_TY(" u(1)");
 
-    xWriteFlag( bFlag ? 1:0);
+    xWriteFlag(bFlag ? 1:0);
 
     ETRACE_N;
     return Err::m_nOK;
 }
 
 
-ErrVal UvlcWriter::writeSCode( Int iCode, UInt uiLength, const Char* pcTraceString )
+ErrVal UvlcWriter::writeSCode(Int iCode, UInt uiLength, const Char* pcTraceString)
 {
     AOT_DBG(uiLength<1);
-    ETRACE_TH( pcTraceString );
-    ETRACE_TY( " i(v)" );
+    ETRACE_TH(pcTraceString);
+    ETRACE_TY(" i(v)");
 
     UInt uiShift = 32 - uiLength;
     UInt uiCode = ((UInt)(iCode << uiShift)) >> uiShift;
@@ -525,36 +523,36 @@ ErrVal UvlcWriter::writeSCode( Int iCode, UInt uiLength, const Char* pcTraceStri
 
     ETRACE_POS;
     ETRACE_CODE (iCode);
-    ETRACE_BITS (uiCode, uiLength );
+    ETRACE_BITS (uiCode, uiLength);
     ETRACE_COUNT(uiLength);
     ETRACE_N;
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::writeCode( UInt uiCode, UInt uiLength, const Char* pcTraceString )
+ErrVal UvlcWriter::writeCode(UInt uiCode, UInt uiLength, const Char* pcTraceString)
 {
     AOT_DBG(uiLength<1);
-    ETRACE_TH( pcTraceString );
+    ETRACE_TH(pcTraceString);
 
-    if( uiLength > 9 )
+    if(uiLength > 9)
     {
       Char acType[] = "u(00)";
       acType[2] += uiLength/10;
       acType[3] += uiLength%10;
-      ETRACE_TY( acType );
+      ETRACE_TY(acType);
     }
     else
     {
         Char acType[] = " u(0)";
         acType[3] += uiLength;
-        ETRACE_TY( acType );
+        ETRACE_TY(acType);
     }
 
     m_pcBitWriteBufferIf->write(uiCode, uiLength);
 
     ETRACE_POS;
     ETRACE_CODE (uiCode);
-    ETRACE_BITS (uiCode, uiLength );
+    ETRACE_BITS (uiCode, uiLength);
     ETRACE_COUNT(uiLength);
     ETRACE_N;
     return Err::m_nOK;
@@ -562,66 +560,66 @@ ErrVal UvlcWriter::writeCode( UInt uiCode, UInt uiLength, const Char* pcTraceStr
 
 
 
-ErrVal UvlcWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx )
+ErrVal UvlcWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx)
 {
-    UInt uiRefFrame = rcMbDataAccess.getMbMotionData( eLstIdx ).getRefIdx();
-    xWriteRefFrame(2 == rcMbDataAccess.getNumActiveRef( eLstIdx ), --uiRefFrame);
+    UInt uiRefFrame = rcMbDataAccess.getMbMotionData(eLstIdx).getRefIdx();
+    xWriteRefFrame(2 == rcMbDataAccess.getNumActiveRef(eLstIdx), --uiRefFrame);
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx16x8 eParIdx  )
+ErrVal UvlcWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx16x8 eParIdx )
 {
-    UInt uiRefFrame = rcMbDataAccess.getMbMotionData( eLstIdx ).getRefIdx(eParIdx);
-    xWriteRefFrame(2 == rcMbDataAccess.getNumActiveRef( eLstIdx ), --uiRefFrame);
+    UInt uiRefFrame = rcMbDataAccess.getMbMotionData(eLstIdx).getRefIdx(eParIdx);
+    xWriteRefFrame(2 == rcMbDataAccess.getNumActiveRef(eLstIdx), --uiRefFrame);
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x16 eParIdx  )
+ErrVal UvlcWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x16 eParIdx )
 {
-    UInt uiRefFrame = rcMbDataAccess.getMbMotionData( eLstIdx ).getRefIdx( eParIdx );
-    xWriteRefFrame(2 == rcMbDataAccess.getNumActiveRef( eLstIdx ), --uiRefFrame);
+    UInt uiRefFrame = rcMbDataAccess.getMbMotionData(eLstIdx).getRefIdx(eParIdx);
+    xWriteRefFrame(2 == rcMbDataAccess.getNumActiveRef(eLstIdx), --uiRefFrame);
     return Err::m_nOK;
 }
 
 ErrVal UvlcWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8 eParIdx)
 {
-    UInt uiRefFrame = rcMbDataAccess.getMbMotionData( eLstIdx ).getRefIdx(eParIdx);
-    xWriteRefFrame(2 == rcMbDataAccess.getNumActiveRef( eLstIdx ), --uiRefFrame);
+    UInt uiRefFrame = rcMbDataAccess.getMbMotionData(eLstIdx).getRefIdx(eParIdx);
+    xWriteRefFrame(2 == rcMbDataAccess.getNumActiveRef(eLstIdx), --uiRefFrame);
     return Err::m_nOK;
 }
 
 
 ErrVal UvlcWriter::motionPredFlag(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx)
 {
-    return xWriteMotionPredFlag(rcMbDataAccess.getMbMotionData( eLstIdx ).getMotPredFlag());
+    return xWriteMotionPredFlag(rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag());
 }
 
-ErrVal UvlcWriter::motionPredFlag( MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx16x8 eParIdx)
-{
-    return xWriteMotionPredFlag(rcMbDataAccess.getMbMotionData( eLstIdx ).getMotPredFlag(eParIdx));
-}
-
-ErrVal UvlcWriter::motionPredFlag( MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x16 eParIdx)
+ErrVal UvlcWriter::motionPredFlag(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx16x8 eParIdx)
 {
     return xWriteMotionPredFlag(rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(eParIdx));
 }
 
-ErrVal UvlcWriter::motionPredFlag( MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8 eParIdx)
+ErrVal UvlcWriter::motionPredFlag(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x16 eParIdx)
+{
+    return xWriteMotionPredFlag(rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(eParIdx));
+}
+
+ErrVal UvlcWriter::motionPredFlag(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8 eParIdx)
 {
     return xWriteMotionPredFlag(rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(eParIdx));
 }
 
 
 
-ErrVal UvlcWriter::blockModes( MbDataAccess& rcMbDataAccess )
+ErrVal UvlcWriter::blockModes(MbDataAccess& rcMbDataAccess)
 {
     for(B8x8Idx c8x8Idx; c8x8Idx.isLegal(); c8x8Idx++)
     {
-        ETRACE_TH( "BlockMode" );
+        ETRACE_TH("BlockMode");
 
-        UInt uiBlockMode = rcMbDataAccess.getConvertBlkMode( c8x8Idx.b8x8Index() );
+        UInt uiBlockMode = rcMbDataAccess.getConvertBlkMode(c8x8Idx.b8x8Index());
 
-        AOT_DBG( uiBlockMode > 12);
+        AOT_DBG(uiBlockMode > 12);
 
         xWriteUvlcCode(uiBlockMode);
 
@@ -630,9 +628,9 @@ ErrVal UvlcWriter::blockModes( MbDataAccess& rcMbDataAccess )
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::fieldFlag( MbDataAccess& rcMbDataAccess )
+ErrVal UvlcWriter::fieldFlag(MbDataAccess& rcMbDataAccess)
 {
-    ETRACE_TH( "MbFieldFlag" );
+    ETRACE_TH("MbFieldFlag");
 
     UInt uiBit = rcMbDataAccess.getMbData().getFieldFlag() ? 1 : 0;
 
@@ -642,19 +640,19 @@ ErrVal UvlcWriter::fieldFlag( MbDataAccess& rcMbDataAccess )
 
     return Err::m_nOK;
 }
-ErrVal UvlcWriter::skipFlag( MbDataAccess& rcMbDataAccess )
+ErrVal UvlcWriter::skipFlag(MbDataAccess& rcMbDataAccess)
 {
-    rcMbDataAccess.getMbTCoeffs().setAllCoeffCount( 0 );
+    rcMbDataAccess.getMbTCoeffs().setAllCoeffCount(0);
 
-    ROFRS( m_bRunLengthCoding, Err::m_nOK );
+    ROFRS(m_bRunLengthCoding, Err::m_nOK);
 
-    if( rcMbDataAccess.isSkippedMb() )
+    if(rcMbDataAccess.isSkippedMb())
     {
       m_uiRun++;
     }
     else
     {
-        ETRACE_TH( "Run" );
+        ETRACE_TH("Run");
         xWriteUvlcCode(m_uiRun);
         ETRACE_N;
 
@@ -669,13 +667,13 @@ ErrVal UvlcWriter::skipFlag( MbDataAccess& rcMbDataAccess )
 
 ErrVal UvlcWriter::BLSkipFlag(MbDataAccess& rcMbDataAccess)
 {
-    UInt  uiCode = ( rcMbDataAccess.getMbData().getBLSkipFlag() ? 1 : 0 );
+    UInt  uiCode = (rcMbDataAccess.getMbData().getBLSkipFlag() ? 1 : 0);
 
-    ETRACE_TH( "BLSkipFlag" );
+    ETRACE_TH("BLSkipFlag");
     xWriteFlag(uiCode);
     ETRACE_N;
 
-    rcMbDataAccess.getMbTCoeffs().setAllCoeffCount( 0 );
+    rcMbDataAccess.getMbTCoeffs().setAllCoeffCount(0);
 
     return Err::m_nOK;
 }
@@ -683,15 +681,15 @@ ErrVal UvlcWriter::BLSkipFlag(MbDataAccess& rcMbDataAccess)
 
 ErrVal UvlcWriter::mbMode(MbDataAccess& rcMbDataAccess)
 {
-    UInt uiMbMode = rcMbDataAccess.getConvertMbType( );
+    UInt uiMbMode = rcMbDataAccess.getConvertMbType();
 
     if(m_bRunLengthCoding)
     {
         uiMbMode--;
     }
-    rcMbDataAccess.getMbTCoeffs().setAllCoeffCount( 0 );
+    rcMbDataAccess.getMbTCoeffs().setAllCoeffCount(0);
 
-    ETRACE_TH( "MbMode" );
+    ETRACE_TH("MbMode");
     xWriteUvlcCode(uiMbMode);
     ETRACE_N;
 
@@ -699,11 +697,11 @@ ErrVal UvlcWriter::mbMode(MbDataAccess& rcMbDataAccess)
 }
 
 
-ErrVal UvlcWriter::resPredFlag( MbDataAccess& rcMbDataAccess )
+ErrVal UvlcWriter::resPredFlag(MbDataAccess& rcMbDataAccess)
 {
     UInt uiCode = (rcMbDataAccess.getMbData().getResidualPredFlag() ? 1 : 0);
 
-    ETRACE_TH( "ResidualPredFlag" );
+    ETRACE_TH("ResidualPredFlag");
     xWriteFlag(uiCode);
     ETRACE_N;
 
@@ -733,28 +731,28 @@ ErrVal UvlcWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x16
 
 ErrVal UvlcWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8 eParIdx)
 {
-    Mv cMv = rcMbDataAccess.getMbMvdData( eLstIdx).getMv(eParIdx);
+    Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx);
     xWriteMvd(cMv);
     return Err::m_nOK;
 }
 
 ErrVal UvlcWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8 eParIdx, SParIdx8x4 eSParIdx)
 {
-    Mv cMv = rcMbDataAccess.getMbMvdData( eLstIdx ).getMv(eParIdx, eSParIdx);
+    Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx, eSParIdx);
     xWriteMvd(cMv);
     return Err::m_nOK;
 }
 
 ErrVal UvlcWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8 eParIdx, SParIdx4x8 eSParIdx)
 {
-    Mv cMv = rcMbDataAccess.getMbMvdData( eLstIdx ).getMv( eParIdx, eSParIdx );
+    Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx, eSParIdx);
     xWriteMvd(cMv);
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::mvd( MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8 eParIdx, SParIdx4x4 eSParIdx )
+ErrVal UvlcWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8 eParIdx, SParIdx4x4 eSParIdx)
 {
-    Mv cMv = rcMbDataAccess.getMbMvdData( eLstIdx ).getMv( eParIdx, eSParIdx );
+    Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx, eSParIdx);
     xWriteMvd(cMv);
     return Err::m_nOK;
 }
@@ -762,61 +760,61 @@ ErrVal UvlcWriter::mvd( MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8
 
 ErrVal UvlcWriter::xWriteMvd(Mv cMv)
 {
-    ETRACE_TH( "Mvd: x" );
+    ETRACE_TH("Mvd: x");
 
     UInt  uiTemp;
     Short sHor   = cMv.getHor();
     Short sVer   = cMv.getVer();
 
-    uiTemp = xConvertToUInt( sHor );
+    uiTemp = xConvertToUInt(sHor);
     xWriteUvlcCode(uiTemp);
 
-    ETRACE_CODE( sHor );
+    ETRACE_CODE(sHor);
     ETRACE_TY("se(v)");
     ETRACE_N;
 
-    ETRACE_TH( "Mvd: y" );
+    ETRACE_TH("Mvd: y");
 
-    uiTemp = xConvertToUInt( sVer );
+    uiTemp = xConvertToUInt(sVer);
     xWriteUvlcCode(uiTemp);
 
-    ETRACE_CODE( sVer );
+    ETRACE_CODE(sVer);
     ETRACE_TY("se(v)");
     ETRACE_N;
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::intraPredModeChroma( MbDataAccess& rcMbDataAccess )
+ErrVal UvlcWriter::intraPredModeChroma(MbDataAccess& rcMbDataAccess)
 {
-    ETRACE_TH( "IntraPredModeChroma" );
+    ETRACE_TH("IntraPredModeChroma");
 
-    AOT_DBG( 4 < rcMbDataAccess.getMbData().getChromaPredMode() );
-    xWriteUvlcCode( rcMbDataAccess.getMbData().getChromaPredMode());
+    AOT_DBG(4 < rcMbDataAccess.getMbData().getChromaPredMode());
+    xWriteUvlcCode(rcMbDataAccess.getMbData().getChromaPredMode());
 
     ETRACE_N;
 
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::intraPredModeLuma( MbDataAccess& rcMbDataAccess, LumaIdx cIdx )
+ErrVal UvlcWriter::intraPredModeLuma(MbDataAccess& rcMbDataAccess, LumaIdx cIdx)
 {
-    ETRACE_TH( "IntraPredModeLuma" );
+    ETRACE_TH("IntraPredModeLuma");
     ETRACE_POS;
 
     Int iIntraPredModeLuma = rcMbDataAccess.encodeIntraPredMode(cIdx);
-    ROT( iIntraPredModeLuma > 7);
+    ROT(iIntraPredModeLuma > 7);
 
     UInt uiBits = (iIntraPredModeLuma < 0) ? 1 : 0;
 
     m_pcBitWriteBufferIf->write(uiBits, 1);
-    ETRACE_BITS( uiBits,1 );
-    ETRACE_DO( m_uiBitCounter = 1 );
+    ETRACE_BITS(uiBits,1);
+    ETRACE_DO(m_uiBitCounter = 1);
 
-    if( ! uiBits )
+    if(! uiBits)
     {
         m_pcBitWriteBufferIf->write(iIntraPredModeLuma, 3);
-        ETRACE_BITS( iIntraPredModeLuma, 3 );
-        ETRACE_DO( m_uiBitCounter = 4 );
+        ETRACE_BITS(iIntraPredModeLuma, 3);
+        ETRACE_DO(m_uiBitCounter = 4);
     }
 
     ETRACE_COUNT(m_uiBitCounter);
@@ -826,40 +824,40 @@ ErrVal UvlcWriter::intraPredModeLuma( MbDataAccess& rcMbDataAccess, LumaIdx cIdx
     return Err::m_nOK;
 }
 
-UvlcWriter* UvlcWriter::xGetUvlcWriterNextSlice( Bool bStartNewBitstream )
+UvlcWriter* UvlcWriter::xGetUvlcWriterNextSlice(Bool bStartNewBitstream)
 {
-    if( !m_pcNextUvlcWriter || bStartNewBitstream )
+    if(!m_pcNextUvlcWriter || bStartNewBitstream)
     {
-        if( !m_pcNextUvlcWriter )
+        if(!m_pcNextUvlcWriter)
         {
-            UvlcWriter::create( m_pcNextUvlcWriter );
+            UvlcWriter::create(m_pcNextUvlcWriter);
         }
-        m_pcNextUvlcWriter->init( m_pcBitWriteBufferIf->getNextBitWriteBuffer( true ) );
+        m_pcNextUvlcWriter->init(m_pcBitWriteBufferIf->getNextBitWriteBuffer(true));
     }
     return m_pcNextUvlcWriter;
 }
 
 
-ErrVal UvlcWriter::cbp( MbDataAccess& rcMbDataAccess, UInt uiStart, UInt uiStop )
+ErrVal UvlcWriter::cbp(MbDataAccess& rcMbDataAccess, UInt uiStart, UInt uiStop)
 {
-    UInt uiCbp = rcMbDataAccess.getMbData().calcMbCbp( uiStart, uiStop ) ;
-    ETRACE_TH( "Cbp: " );
-    ETRACE_X ( uiCbp );
+    UInt uiCbp = rcMbDataAccess.getMbData().calcMbCbp(uiStart, uiStop) ;
+    ETRACE_TH("Cbp: ");
+    ETRACE_X (uiCbp);
 
-    AOT_DBG( 48 < uiCbp );
+    AOT_DBG(48 < uiCbp);
 
-    Bool bIntra = ( !rcMbDataAccess.getMbData().getBLSkipFlag() && rcMbDataAccess.getMbData().isIntra() );
-    if( rcMbDataAccess.getMbData().isIntra() )
+    Bool bIntra = (!rcMbDataAccess.getMbData().getBLSkipFlag() && rcMbDataAccess.getMbData().isIntra());
+    if(rcMbDataAccess.getMbData().isIntra())
     {
-      ROF( rcMbDataAccess.getMbData().isIntraBL() == rcMbDataAccess.getMbData().getBLSkipFlag() );
+      ROF(rcMbDataAccess.getMbData().isIntraBL() == rcMbDataAccess.getMbData().getBLSkipFlag());
     }
-    if( uiStart != 0 || uiStop != 16 )
+    if(uiStart != 0 || uiStop != 16)
     {
-      ROT( bIntra );
+      ROT(bIntra);
     }
-    UInt uiTemp = ( bIntra ? g_aucCbpIntra[uiCbp]: g_aucCbpInter[uiCbp] );
+    UInt uiTemp = (bIntra ? g_aucCbpIntra[uiCbp]: g_aucCbpInter[uiCbp]);
 
-    if(!rcMbDataAccess.getSH().getNoInterLayerPredFlag() && ( uiStart != 0 || uiStop != 16 ) )
+    if(!rcMbDataAccess.getSH().getNoInterLayerPredFlag() && (uiStart != 0 || uiStop != 16))
     {
         UInt uiPrevCbp = 0;
         if(rcMbDataAccess.isAvailableLeft())
@@ -870,7 +868,7 @@ ErrVal UvlcWriter::cbp( MbDataAccess& rcMbDataAccess, UInt uiStart, UInt uiStop 
         {
             uiPrevCbp = rcMbDataAccess.getMbDataAbove().calcMbCbp(uiStart, uiStop);
         }
-        UInt uiPrevTemp = ( bIntra ? g_aucCbpIntra[uiPrevCbp]: g_aucCbpInter[uiPrevCbp] );
+        UInt uiPrevTemp = (bIntra ? g_aucCbpIntra[uiPrevCbp]: g_aucCbpInter[uiPrevCbp]);
         xWriteUvlcCode((uiTemp == uiPrevTemp) ? 0:(uiTemp+1));
     }
     else
@@ -929,39 +927,39 @@ const UChar g_aucTcoeffDScan[9][5] =
 };
 
 
-ErrVal UvlcWriter::residualBlock( MbDataAccess& rcMbDataAccess,
+ErrVal UvlcWriter::residualBlock(MbDataAccess& rcMbDataAccess,
                                   LumaIdx       cIdx,
                                   ResidualMode  eResidualMode,
                                   UInt          uiStart,
-                                  UInt          uiStop )
+                                  UInt          uiStop)
 {
    const UChar*  pucScan;
-   TCoeff*       piCoeff = rcMbDataAccess.getMbTCoeffs().get( cIdx );
-   const Bool    bFrame  = ( FRAME == rcMbDataAccess.getMbPicType());
+   TCoeff*       piCoeff = rcMbDataAccess.getMbTCoeffs().get(cIdx);
+   const Bool    bFrame  = (FRAME == rcMbDataAccess.getMbPicType());
 
    Int   iLevel;
    Int   iRun     = 0;
    UInt  uiPos    = uiStart;
    UInt  uiMaxPos = uiStop;
 
-   switch( eResidualMode )
+   switch(eResidualMode)
    {
        case LUMA_I16_DC:
          {
-           ROF( uiStart == 0 );
-           pucScan = ( bFrame ? g_aucLumaFrameDCScan : g_aucLumaFieldDCScan );
+           ROF(uiStart == 0);
+           pucScan = (bFrame ? g_aucLumaFrameDCScan : g_aucLumaFieldDCScan);
            break;
          }
        case LUMA_I16_AC:
          {
-           ROF( uiStop > 1 );
-           pucScan = ( bFrame ? g_aucFrameScan : g_aucFieldScan );
-           uiPos   = gMax( 1, uiStart );
+           ROF(uiStop > 1);
+           pucScan = (bFrame ? g_aucFrameScan : g_aucFieldScan);
+           uiPos   = gMax(1, uiStart);
            break;
          }
        case LUMA_SCAN:
          {
-           pucScan = ( bFrame ? g_aucFrameScan : g_aucFieldScan );
+           pucScan = (bFrame ? g_aucFrameScan : g_aucFieldScan);
            break;
          }
        default:
@@ -977,7 +975,7 @@ ErrVal UvlcWriter::residualBlock( MbDataAccess& rcMbDataAccess,
    {
        if((iLevel = piCoeff[pucScan[uiPos++]]))
        {
-           if( abs(iLevel) == 1 )
+           if(abs(iLevel) == 1)
            {
                m_uiCoeffCost += COEFF_COST[iRun];
                uiTrailingOnes++;
@@ -1000,42 +998,42 @@ ErrVal UvlcWriter::residualBlock( MbDataAccess& rcMbDataAccess,
        }
    }
 
-   if( uiTrailingOnes > 3 )
+   if(uiTrailingOnes > 3)
    {
        uiTrailingOnes = 3;
    }
 
-   Bool bDefaultScanIdx = ( uiStart == 0 && uiStop == 16 );
+   Bool bDefaultScanIdx = (uiStart == 0 && uiStop == 16);
 
-   switch( eResidualMode )
+   switch(eResidualMode)
    {
      case LUMA_I16_DC:
        {
-         ETRACE_TH( "Luma:" );
-         ETRACE_V( cIdx );
+         ETRACE_TH("Luma:");
+         ETRACE_V(cIdx);
          ETRACE_N;
-         xPredictNonZeroCnt( rcMbDataAccess, cIdx, uiCoeffCnt, uiTrailingOnes, uiStart, uiStop, true );
-         xWriteRunLevel( aiLevelRun, uiCoeffCnt, uiTrailingOnes, 16, uiTotalRun, rcMbDataAccess, true);
+         xPredictNonZeroCnt(rcMbDataAccess, cIdx, uiCoeffCnt, uiTrailingOnes, uiStart, uiStop, true);
+         xWriteRunLevel(aiLevelRun, uiCoeffCnt, uiTrailingOnes, 16, uiTotalRun, rcMbDataAccess, true);
          break;
        }
      case LUMA_I16_AC:
        {
-         ETRACE_TH( "Luma:" );
-         ETRACE_V( cIdx );
+         ETRACE_TH("Luma:");
+         ETRACE_V(cIdx);
          ETRACE_N;
-         xPredictNonZeroCnt( rcMbDataAccess, cIdx, uiCoeffCnt, uiTrailingOnes, uiStart, uiStop, false);
-         xWriteRunLevel( aiLevelRun, uiCoeffCnt, uiTrailingOnes, uiStop-gMax(1,uiStart), uiTotalRun, rcMbDataAccess, bDefaultScanIdx);
+         xPredictNonZeroCnt(rcMbDataAccess, cIdx, uiCoeffCnt, uiTrailingOnes, uiStart, uiStop, false);
+         xWriteRunLevel(aiLevelRun, uiCoeffCnt, uiTrailingOnes, uiStop-gMax(1,uiStart), uiTotalRun, rcMbDataAccess, bDefaultScanIdx);
          break;
        }
      case LUMA_SCAN:
        {
-         ETRACE_TH( "Luma:" );
-         ETRACE_V( cIdx );
+         ETRACE_TH("Luma:");
+         ETRACE_V(cIdx);
          ETRACE_N;
-         xPredictNonZeroCnt( rcMbDataAccess, cIdx, uiCoeffCnt, uiTrailingOnes, uiStart, uiStop, false);
-         xWriteRunLevel( aiLevelRun, uiCoeffCnt, uiTrailingOnes, uiStop-uiStart, uiTotalRun, rcMbDataAccess, bDefaultScanIdx);
+         xPredictNonZeroCnt(rcMbDataAccess, cIdx, uiCoeffCnt, uiTrailingOnes, uiStart, uiStop, false);
+         xWriteRunLevel(aiLevelRun, uiCoeffCnt, uiTrailingOnes, uiStop-uiStart, uiTotalRun, rcMbDataAccess, bDefaultScanIdx);
          // this is useful only in AR_FGS
-         rcMbDataAccess.getMbData().setBCBP( cIdx, uiCoeffCnt != 0, true);
+         rcMbDataAccess.getMbData().setBCBP(cIdx, uiCoeffCnt != 0, true);
          break;
        }
      default:
@@ -1048,24 +1046,24 @@ ErrVal UvlcWriter::residualBlock( MbDataAccess& rcMbDataAccess,
 }
 
 
-ErrVal UvlcWriter::residualBlock( MbDataAccess& rcMbDataAccess,
+ErrVal UvlcWriter::residualBlock(MbDataAccess& rcMbDataAccess,
                                   ChromaIdx     cIdx,
                                   ResidualMode  eResidualMode,
                                   UInt          uiStart,
-                                  UInt          uiStop )
+                                  UInt          uiStop)
 {
 
-  TCoeff*       piCoeff = rcMbDataAccess.getMbTCoeffs().get( cIdx );
-  const Bool    bFrame  = ( FRAME == rcMbDataAccess.getMbPicType());
+  TCoeff*       piCoeff = rcMbDataAccess.getMbTCoeffs().get(cIdx);
+  const Bool    bFrame  = (FRAME == rcMbDataAccess.getMbPicType());
   const UChar*  pucScan;
   Int           iRun = 0, iLevel;
   UInt          uiPos, uiMaxPos;
 
-  switch( eResidualMode )
+  switch(eResidualMode)
   {
       case CHROMA_DC:
         {
-          ROF( uiStart == 0 );
+          ROF(uiStart == 0);
           pucScan  = g_aucIndexChromaDCScan;
           uiPos    = 0;
           uiMaxPos = 4;
@@ -1073,9 +1071,9 @@ ErrVal UvlcWriter::residualBlock( MbDataAccess& rcMbDataAccess,
         }
       case CHROMA_AC:
         {
-          ROF( uiStop > 1 );
-          pucScan  = ( bFrame ? g_aucFrameScan : g_aucFieldScan );
-          uiPos    = gMax( 1, uiStart);
+          ROF(uiStop > 1);
+          pucScan  = (bFrame ? g_aucFrameScan : g_aucFieldScan);
+          uiPos    = gMax(1, uiStart);
           uiMaxPos = uiStop;
           break;
         }
@@ -1089,11 +1087,11 @@ ErrVal UvlcWriter::residualBlock( MbDataAccess& rcMbDataAccess,
   UInt uiTotalRun     = 0;
   UInt uiCoeffCnt     = 0;
 
-  while( uiPos < uiMaxPos )
+  while(uiPos < uiMaxPos)
   {
       if((iLevel = piCoeff[pucScan[uiPos++]]))
       {
-          if( abs(iLevel) == 1 )
+          if(abs(iLevel) == 1)
           {
               m_uiCoeffCost += COEFF_COST[iRun];
               uiTrailingOnes++;
@@ -1116,35 +1114,35 @@ ErrVal UvlcWriter::residualBlock( MbDataAccess& rcMbDataAccess,
       }
   }
 
-  if( uiTrailingOnes > 3 )
+  if(uiTrailingOnes > 3)
   {
       uiTrailingOnes = 3;
   }
 
-  Bool bDefaultScanIdx = ( uiStart == 0 && uiStop == 16 );
+  Bool bDefaultScanIdx = (uiStart == 0 && uiStop == 16);
 
-  switch( eResidualMode )
+  switch(eResidualMode)
   {
       case CHROMA_AC:
         {
-          ETRACE_TH( "CHROMA_AC:" );
-          ETRACE_V( cIdx );
+          ETRACE_TH("CHROMA_AC:");
+          ETRACE_V(cIdx);
           ETRACE_N;
           xPredictNonZeroCnt(rcMbDataAccess, cIdx, uiCoeffCnt, uiTrailingOnes, uiStart, uiStop);
-          xWriteRunLevel(aiLevelRun, uiCoeffCnt, uiTrailingOnes, uiStop - gMax( 1, uiStart), uiTotalRun, rcMbDataAccess, bDefaultScanIdx);
+          xWriteRunLevel(aiLevelRun, uiCoeffCnt, uiTrailingOnes, uiStop - gMax(1, uiStart), uiTotalRun, rcMbDataAccess, bDefaultScanIdx);
           // this is useful only in AR_FGS
-          rcMbDataAccess.getMbData().setBCBP( 16 + cIdx, uiCoeffCnt != 0, true);
+          rcMbDataAccess.getMbData().setBCBP(16 + cIdx, uiCoeffCnt != 0, true);
           break;
         }
       case CHROMA_DC:
         {
-          ETRACE_TH( "CHROMA_DC:" );
-          ETRACE_V( cIdx );
+          ETRACE_TH("CHROMA_DC:");
+          ETRACE_V(cIdx);
           ETRACE_N;
           xWriteTrailingOnes4(uiCoeffCnt, uiTrailingOnes);
-          xWriteRunLevel( aiLevelRun, uiCoeffCnt, uiTrailingOnes, 4, uiTotalRun, rcMbDataAccess, true);
+          xWriteRunLevel(aiLevelRun, uiCoeffCnt, uiTrailingOnes, 4, uiTotalRun, rcMbDataAccess, true);
           // this is useful only in AR_FGS
-          rcMbDataAccess.getMbData().setBCBP( 24 + cIdx.plane(), uiCoeffCnt != 0, true);
+          rcMbDataAccess.getMbData().setBCBP(24 + cIdx.plane(), uiCoeffCnt != 0, true);
           break;
         }
       default:
@@ -1157,7 +1155,7 @@ ErrVal UvlcWriter::residualBlock( MbDataAccess& rcMbDataAccess,
 }
 
 
-ErrVal UvlcWriter::deltaQp( MbDataAccess& rcMbDataAccess )
+ErrVal UvlcWriter::deltaQp(MbDataAccess& rcMbDataAccess)
 {
     ETRACE_TH ("DQp");
 
@@ -1171,9 +1169,9 @@ ErrVal UvlcWriter::deltaQp( MbDataAccess& rcMbDataAccess )
 
 ErrVal UvlcWriter::finishSlice()
 {
-    if( m_bRunLengthCoding && m_uiRun )
+    if(m_bRunLengthCoding && m_uiRun)
     {
-        ETRACE_TH( "Run" );
+        ETRACE_TH("Run");
         xWriteUvlcCode(m_uiRun);
         ETRACE_N;
     }
@@ -1182,11 +1180,11 @@ ErrVal UvlcWriter::finishSlice()
 }
 
 
-ErrVal UvlcWriter::xPredictNonZeroCnt( MbDataAccess& rcMbDataAccess, ChromaIdx cIdx, UInt uiCoeffCount, UInt uiTrailingOnes, UInt uiStart, UInt uiStop )
+ErrVal UvlcWriter::xPredictNonZeroCnt(MbDataAccess& rcMbDataAccess, ChromaIdx cIdx, UInt uiCoeffCount, UInt uiTrailingOnes, UInt uiStart, UInt uiStop)
 {
-    UInt uiCoeffCountCtx = rcMbDataAccess.getCtxCoeffCount( cIdx, uiStart, uiStop );
+    UInt uiCoeffCountCtx = rcMbDataAccess.getCtxCoeffCount(cIdx, uiStart, uiStop);
 
-    if( uiStart != 0 || uiStop != 16 )
+    if(uiStart != 0 || uiStop != 16)
     {
         // Re-pack VLC matrix
         // NB: This only needs to be done once at the start of the slice.
@@ -1204,11 +1202,11 @@ ErrVal UvlcWriter::xPredictNonZeroCnt( MbDataAccess& rcMbDataAccess, ChromaIdx c
         for(uiMapIdx=1; uiMapIdx<=uiMaxVal; uiMapIdx++)
         {
             Bool bFound = false;
-            for( ui=0; ui<uiYdim; ui++ )
+            for(ui=0; ui<uiYdim; ui++)
             {
                 for(uj=1; uj<uiXdim; uj++)
                 {
-                    if( aucCwMapTO16[ui][uj] == uiMapIdx )
+                    if(aucCwMapTO16[ui][uj] == uiMapIdx)
                     {
                         bFound = true;
                         break;
@@ -1243,7 +1241,7 @@ ErrVal UvlcWriter::xPredictNonZeroCnt( MbDataAccess& rcMbDataAccess, ChromaIdx c
 }
 
 
-ErrVal UvlcWriter::xPredictNonZeroCnt( MbDataAccess& rcMbDataAccess, LumaIdx cIdx, UInt uiCoeffCount, UInt uiTrailingOnes, UInt uiStart, UInt uiStop, Bool bDC )
+ErrVal UvlcWriter::xPredictNonZeroCnt(MbDataAccess& rcMbDataAccess, LumaIdx cIdx, UInt uiCoeffCount, UInt uiTrailingOnes, UInt uiStart, UInt uiStop, Bool bDC)
 {
     UInt uiCoeffCountCtx = rcMbDataAccess.getCtxCoeffCount(cIdx, uiStart, uiStop);
 
@@ -1296,25 +1294,25 @@ ErrVal UvlcWriter::xPredictNonZeroCnt( MbDataAccess& rcMbDataAccess, LumaIdx cId
     }
     else
     {
-        xWriteTrailingOnes16( uiCoeffCountCtx, uiCoeffCount, uiTrailingOnes );
+        xWriteTrailingOnes16(uiCoeffCountCtx, uiCoeffCount, uiTrailingOnes);
     }
 
-    rcMbDataAccess.getMbTCoeffs().setCoeffCount( cIdx, uiCoeffCount );
+    rcMbDataAccess.getMbTCoeffs().setCoeffCount(cIdx, uiCoeffCount);
 
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::xWriteRunLevel( Int* aiLevelRun, UInt uiCoeffCnt, UInt uiTrailingOnes, UInt uiMaxCoeffs, UInt uiTotalRun, MbDataAccess &rcMbDataAccess, Bool bDefaultScanIdx )
+ErrVal UvlcWriter::xWriteRunLevel(Int* aiLevelRun, UInt uiCoeffCnt, UInt uiTrailingOnes, UInt uiMaxCoeffs, UInt uiTotalRun, MbDataAccess &rcMbDataAccess, Bool bDefaultScanIdx)
 {
-    ROTRS( 0 == uiCoeffCnt, Err::m_nOK );
+    ROTRS(0 == uiCoeffCnt, Err::m_nOK);
 
     if(uiTrailingOnes)
     {
         UInt uiBits = 0;
         Int n = uiTrailingOnes-1;
-        for( UInt k = uiCoeffCnt; k > uiCoeffCnt-uiTrailingOnes; k--, n--)
+        for(UInt k = uiCoeffCnt; k > uiCoeffCnt-uiTrailingOnes; k--, n--)
         {
-            if( aiLevelRun[k-1] < 0)
+            if(aiLevelRun[k-1] < 0)
             {
                 uiBits |= 1<<n;
             }
@@ -1322,52 +1320,52 @@ ErrVal UvlcWriter::xWriteRunLevel( Int* aiLevelRun, UInt uiCoeffCnt, UInt uiTrai
 
         m_pcBitWriteBufferIf->write(uiBits, uiTrailingOnes);
         ETRACE_POS;
-        ETRACE_TH( "  TrailingOnesSigns: " );
-        ETRACE_V( uiBits );
+        ETRACE_TH("  TrailingOnesSigns: ");
+        ETRACE_V(uiBits);
         ETRACE_N;
         ETRACE_COUNT(uiTrailingOnes);
     }
 
 
-    Int iHighLevel = ( uiCoeffCnt > 3 && uiTrailingOnes == 3) ? 0 : 1;
-    Int iVlcTable  = ( uiCoeffCnt > 10 && uiTrailingOnes < 3) ? 1 : 0;
+    Int iHighLevel = (uiCoeffCnt > 3 && uiTrailingOnes == 3) ? 0 : 1;
+    Int iVlcTable  = (uiCoeffCnt > 10 && uiTrailingOnes < 3) ? 1 : 0;
 
-    for( Int k = uiCoeffCnt - 1 - uiTrailingOnes; k >= 0; k--)
+    for(Int k = uiCoeffCnt - 1 - uiTrailingOnes; k >= 0; k--)
     {
       Int iLevel;
       iLevel = aiLevelRun[k];
 
       UInt uiAbsLevel = (UInt)abs(iLevel);
 
-      if( iHighLevel )
+      if(iHighLevel)
       {
-          iLevel -= ( iLevel > 0 ) ? 1 : -1;
+          iLevel -= (iLevel > 0) ? 1 : -1;
               iHighLevel = 0;
       }
 
-      if( iVlcTable == 0 )
+      if(iVlcTable == 0)
       {
-          xWriteLevelVLC0( iLevel );
+          xWriteLevelVLC0(iLevel);
       }
       else
       {
-          xWriteLevelVLCN( iLevel, iVlcTable );
+          xWriteLevelVLCN(iLevel, iVlcTable);
       }
 
       // update VLC table
-      if( uiAbsLevel > g_auiIncVlc[ iVlcTable ] )
+      if(uiAbsLevel > g_auiIncVlc[ iVlcTable ])
       {
           iVlcTable++;
       }
 
-      if( k == Int(uiCoeffCnt - 1 - uiTrailingOnes) && uiAbsLevel > 3)
+      if(k == Int(uiCoeffCnt - 1 - uiTrailingOnes) && uiAbsLevel > 3)
       {
           iVlcTable = 2;
       }
 
     }
 
-    ROFRS( uiCoeffCnt < uiMaxCoeffs, Err::m_nOK );
+    ROFRS(uiCoeffCnt < uiMaxCoeffs, Err::m_nOK);
 
 
     iVlcTable = uiCoeffCnt-1;
@@ -1376,54 +1374,54 @@ ErrVal UvlcWriter::xWriteRunLevel( Int* aiLevelRun, UInt uiCoeffCnt, UInt uiTrai
         if(uiMaxCoeffs <= 4)
         {
             UInt uiTempVlcTable = gMin(iVlcTable + 4-uiMaxCoeffs, 2);
-            xWriteTotalRun4( uiTempVlcTable, uiTotalRun );
+            xWriteTotalRun4(uiTempVlcTable, uiTotalRun);
         }
         else if(uiMaxCoeffs <= 8)
         {
             UInt uiTempVlcTable = gMin(iVlcTable + 8-uiMaxCoeffs, 6);
-            xWriteTotalRun8( uiTempVlcTable, uiTotalRun );
+            xWriteTotalRun8(uiTempVlcTable, uiTotalRun);
         }
         else
         {
             UInt uiTempVlcTable = iVlcTable;
             if(uiMaxCoeffs < 15)
                 uiTempVlcTable = gMin(iVlcTable + 16-uiMaxCoeffs, 14);
-            xWriteTotalRun16( uiTempVlcTable, uiTotalRun );
+            xWriteTotalRun16(uiTempVlcTable, uiTotalRun);
         }
     }
     else
     {
         if(uiMaxCoeffs <= 4)
         {
-            xWriteTotalRun4( iVlcTable, uiTotalRun );
+            xWriteTotalRun4(iVlcTable, uiTotalRun);
         }
         else
         {
-            xWriteTotalRun16( iVlcTable, uiTotalRun );
+            xWriteTotalRun16(iVlcTable, uiTotalRun);
         }
     }
 
     // decode run before each coefficient
     uiCoeffCnt--;
-    if( uiTotalRun > 0 && uiCoeffCnt > 0)
+    if(uiTotalRun > 0 && uiCoeffCnt > 0)
     {
         do
         {
             iVlcTable = ((uiTotalRun > RUNBEFORE_NUM) ? RUNBEFORE_NUM : uiTotalRun) - 1;
             UInt uiRun = aiLevelRun[uiCoeffCnt+0x10];
 
-            xWriteRun( iVlcTable, uiRun );
+            xWriteRun(iVlcTable, uiRun);
 
             uiTotalRun -= uiRun;
             uiCoeffCnt--;
-        } while( uiTotalRun != 0 && uiCoeffCnt != 0);
+        } while(uiTotalRun != 0 && uiCoeffCnt != 0);
     }
 
     return Err::m_nOK;
 }
 
 
-ErrVal UvlcWriter::xWriteTrailingOnes16( UInt uiLastCoeffCount, UInt uiCoeffCount, UInt uiTrailingOnes )
+ErrVal UvlcWriter::xWriteTrailingOnes16(UInt uiLastCoeffCount, UInt uiCoeffCount, UInt uiTrailingOnes)
 {
     UInt uiVal;
     UInt uiSize;
@@ -1437,7 +1435,7 @@ ErrVal UvlcWriter::xWriteTrailingOnes16( UInt uiLastCoeffCount, UInt uiCoeffCoun
           uiBits = (uiCoeffCount-1)<<2 | uiTrailingOnes;
       }
       m_pcBitWriteBufferIf->write(uiBits, 6);
-      ETRACE_DO( m_uiBitCounter = 6 );
+      ETRACE_DO(m_uiBitCounter = 6);
 
       uiVal = uiBits;
       uiSize = 6;
@@ -1446,18 +1444,18 @@ ErrVal UvlcWriter::xWriteTrailingOnes16( UInt uiLastCoeffCount, UInt uiCoeffCoun
     {
         m_pcBitWriteBufferIf->write(g_aucCodeTableTO16[uiLastCoeffCount][uiTrailingOnes][uiCoeffCount],
                                     g_aucLenTableTO16[uiLastCoeffCount][uiTrailingOnes][uiCoeffCount]);
-        ETRACE_DO( m_uiBitCounter = g_aucLenTableTO16[uiLastCoeffCount][uiTrailingOnes][uiCoeffCount]);
+        ETRACE_DO(m_uiBitCounter = g_aucLenTableTO16[uiLastCoeffCount][uiTrailingOnes][uiCoeffCount]);
 
         uiVal = g_aucCodeTableTO16[uiLastCoeffCount][uiTrailingOnes][uiCoeffCount];
         uiSize = g_aucLenTableTO16[uiLastCoeffCount][uiTrailingOnes][uiCoeffCount];
     }
 
-    ETRACE_TH( "  TrailingOnes16: Vlc: " );
-    ETRACE_V( uiLastCoeffCount );
-    ETRACE_TH( " CoeffCnt: " );
-    ETRACE_V( uiCoeffCount );
-    ETRACE_TH( " TraiOnes: " );
-    ETRACE_V( uiTrailingOnes );
+    ETRACE_TH("  TrailingOnes16: Vlc: ");
+    ETRACE_V(uiLastCoeffCount);
+    ETRACE_TH(" CoeffCnt: ");
+    ETRACE_V(uiCoeffCount);
+    ETRACE_TH(" TraiOnes: ");
+    ETRACE_V(uiTrailingOnes);
     ETRACE_N;
     ETRACE_COUNT(m_uiBitCounter);
 
@@ -1466,16 +1464,16 @@ ErrVal UvlcWriter::xWriteTrailingOnes16( UInt uiLastCoeffCount, UInt uiCoeffCoun
 
 
 
-ErrVal UvlcWriter::xWriteTrailingOnes4(UInt uiCoeffCount, UInt uiTrailingOnes)
+ErrVal UvlcWriter::xWriteTrailingOnes4 (UInt uiCoeffCount, UInt uiTrailingOnes)
 {
   m_pcBitWriteBufferIf->write(g_aucCodeTableTO4[uiTrailingOnes][uiCoeffCount],
                               g_aucLenTableTO4[uiTrailingOnes][uiCoeffCount]);
 
   ETRACE_POS;
-  ETRACE_TH( "  TrailingOnes4: CoeffCnt: " );
-  ETRACE_V( uiCoeffCount );
-  ETRACE_TH( " TraiOnes: " );
-  ETRACE_V( uiTrailingOnes );
+  ETRACE_TH("  TrailingOnes4: CoeffCnt: ");
+  ETRACE_V(uiCoeffCount);
+  ETRACE_TH(" TraiOnes: ");
+  ETRACE_V(uiTrailingOnes);
   ETRACE_N;
   ETRACE_COUNT(g_aucLenTableTO4[uiTrailingOnes][uiCoeffCount]);
 
@@ -1483,16 +1481,16 @@ ErrVal UvlcWriter::xWriteTrailingOnes4(UInt uiCoeffCount, UInt uiTrailingOnes)
 }
 
 
-ErrVal UvlcWriter::xWriteTotalRun4( UInt uiVlcPos, UInt uiTotalRun )
+ErrVal UvlcWriter::xWriteTotalRun4 (UInt uiVlcPos, UInt uiTotalRun)
 {
     m_pcBitWriteBufferIf->write(g_aucCodeTableTZ4[uiVlcPos][uiTotalRun],
                                 g_aucLenTableTZ4[uiVlcPos][uiTotalRun]);
 
     ETRACE_POS;
-    ETRACE_TH( "  TotalZeros4 vlc: " );
-    ETRACE_V( uiVlcPos );
-    ETRACE_TH( " TotalRun: " );
-    ETRACE_V( uiTotalRun );
+    ETRACE_TH("  TotalZeros4 vlc: ");
+    ETRACE_V(uiVlcPos);
+    ETRACE_TH(" TotalRun: ");
+    ETRACE_V(uiTotalRun);
     ETRACE_N;
     ETRACE_COUNT(g_aucLenTableTZ4[uiVlcPos][uiTotalRun]);
 
@@ -1500,16 +1498,16 @@ ErrVal UvlcWriter::xWriteTotalRun4( UInt uiVlcPos, UInt uiTotalRun )
 }
 
 
-ErrVal UvlcWriter::xWriteTotalRun8( UInt uiVlcPos, UInt uiTotalRun)
+ErrVal UvlcWriter::xWriteTotalRun8(UInt uiVlcPos, UInt uiTotalRun)
 {
     m_pcBitWriteBufferIf->write(g_aucCodeTableTZ8[uiVlcPos][uiTotalRun],
                                 g_aucLenTableTZ8[uiVlcPos][uiTotalRun]);
 
     ETRACE_POS;
-    ETRACE_TH( "  TotalZeros8 vlc: " );
-    ETRACE_V( uiVlcPos );
-    ETRACE_TH( " TotalRun: " );
-    ETRACE_V( uiTotalRun );
+    ETRACE_TH("  TotalZeros8 vlc: ");
+    ETRACE_V(uiVlcPos);
+    ETRACE_TH(" TotalRun: ");
+    ETRACE_V(uiTotalRun);
     ETRACE_N;
     ETRACE_COUNT(g_aucLenTableTZ8[uiVlcPos][uiTotalRun]);
 
@@ -1517,16 +1515,16 @@ ErrVal UvlcWriter::xWriteTotalRun8( UInt uiVlcPos, UInt uiTotalRun)
 }
 
 
-ErrVal UvlcWriter::xWriteTotalRun16( UInt uiVlcPos, UInt uiTotalRun )
+ErrVal UvlcWriter::xWriteTotalRun16(UInt uiVlcPos, UInt uiTotalRun)
 {
-    m_pcBitWriteBufferIf->write(g_aucCodeTableTZ16[uiVlcPos][uiTotalRun],
-                                g_aucLenTableTZ16[uiVlcPos][uiTotalRun]);
+    m_pcBitWriteBufferIf->write (g_aucCodeTableTZ16[uiVlcPos][uiTotalRun],
+                                 g_aucLenTableTZ16[uiVlcPos][uiTotalRun]);
 
     ETRACE_POS;
-    ETRACE_TH( "  TotalRun16 vlc: " );
-    ETRACE_V( uiVlcPos );
-    ETRACE_TH( " TotalRun: " );
-    ETRACE_V( uiTotalRun );
+    ETRACE_TH("  TotalRun16 vlc: ");
+    ETRACE_V(uiVlcPos);
+    ETRACE_TH(" TotalRun: ");
+    ETRACE_V(uiTotalRun);
     ETRACE_N;
     ETRACE_COUNT(g_aucLenTableTZ16[uiVlcPos][uiTotalRun]);
 
@@ -1536,12 +1534,12 @@ ErrVal UvlcWriter::xWriteTotalRun16( UInt uiVlcPos, UInt uiTotalRun )
 
 ErrVal UvlcWriter::xWriteRun(UInt uiVlcPos, UInt uiRun)
 {
-    m_pcBitWriteBufferIf->write(g_aucCodeTable3[uiVlcPos][uiRun],
-                                g_aucLenTable3[uiVlcPos][uiRun]);
+    m_pcBitWriteBufferIf->write (g_aucCodeTable3[uiVlcPos][uiRun],
+                                 g_aucLenTable3[uiVlcPos][uiRun]);
 
     ETRACE_POS;
-    ETRACE_TH( "  Run" );
-    ETRACE_CODE( uiRun );
+    ETRACE_TH("  Run");
+    ETRACE_CODE(uiRun);
     ETRACE_COUNT (g_aucLenTable3[uiVlcPos][uiRun]);
     ETRACE_N;
 
@@ -1551,10 +1549,10 @@ ErrVal UvlcWriter::xWriteRun(UInt uiVlcPos, UInt uiRun)
 
 
 
-ErrVal UvlcWriter::xWriteLevelVLC0(Int iLevel)
+ErrVal UvlcWriter::xWriteLevelVLC0 (Int iLevel)
 {
     UInt uiLength;
-    UInt uiLevel = abs( iLevel );
+    UInt uiLevel = abs(iLevel);
     UInt uiSign = ((UInt)iLevel)>>31;
 
     UInt uiBits;
@@ -1579,26 +1577,26 @@ ErrVal UvlcWriter::xWriteLevelVLC0(Int iLevel)
     m_pcBitWriteBufferIf->write(uiBits, uiLength);
 
     ETRACE_POS;
-    ETRACE_TH( "  VLC0 lev " );
-    ETRACE_CODE( iLevel );
+    ETRACE_TH("  VLC0 lev ");
+    ETRACE_CODE(iLevel);
     ETRACE_N;
-    ETRACE_COUNT( uiLength );
+    ETRACE_COUNT(uiLength);
 
     return Err::m_nOK;
 
 }
 
-ErrVal UvlcWriter::xWriteLevelVLCN(Int iLevel, UInt uiVlcLength)
+ErrVal UvlcWriter::xWriteLevelVLCN (Int iLevel, UInt uiVlcLength)
 {
     UInt uiLength;
-    UInt uiLevel = abs( iLevel );
+    UInt uiLevel = abs(iLevel);
     UInt uiSign = ((UInt)iLevel)>>31;
     UInt uiBits;
 
     UInt uiShift = uiVlcLength-1;
     UInt uiEscapeCode = (0xf<<uiShift)+1;
 
-    if( uiLevel < uiEscapeCode )
+    if(uiLevel < uiEscapeCode)
     {
         uiLevel--;
         uiLength = (uiLevel>>uiShift) + uiVlcLength + 1;
@@ -1611,29 +1609,29 @@ ErrVal UvlcWriter::xWriteLevelVLCN(Int iLevel, UInt uiVlcLength)
         uiBits   = 0x1000 + 2*(uiLevel-uiEscapeCode) + uiSign;
     }
 
-    m_pcBitWriteBufferIf->write(uiBits, uiLength);
+    m_pcBitWriteBufferIf->write (uiBits, uiLength);
 
     ETRACE_POS;
-    ETRACE_TH( "  VLCN lev: " );
-    ETRACE_CODE( iLevel );
+    ETRACE_TH("  VLCN lev: ");
+    ETRACE_CODE(iLevel);
     ETRACE_N;
-    ETRACE_COUNT( uiLength );
+    ETRACE_COUNT(uiLength);
 
     return Err::m_nOK;
 }
 
 
 
-ErrVal UvlcWriter::samplesPCM( MbDataAccess& rcMbDataAccess )
+ErrVal UvlcWriter::samplesPCM (MbDataAccess& rcMbDataAccess)
 {
     ETRACE_POS;
-    ETRACE_TH( "  PCM SAMPLES: " );
+    ETRACE_TH("  PCM SAMPLES: ");
 
     m_pcBitWriteBufferIf->writeAlignZero();
 
-    AOF_DBG( rcMbDataAccess.getMbData().isPCM() );
+    AOF_DBG(rcMbDataAccess.getMbData().isPCM());
 
-    rcMbDataAccess.getMbTCoeffs().setAllCoeffCount( 16 );
+    rcMbDataAccess.getMbTCoeffs().setAllCoeffCount(16);
     TCoeff* pCoeff = rcMbDataAccess.getMbTCoeffs().getTCoeffBuffer();
 
     const UInt uiFactor = 8*8;
@@ -1641,18 +1639,18 @@ ErrVal UvlcWriter::samplesPCM( MbDataAccess& rcMbDataAccess )
     m_pcBitWriteBufferIf->pcmSamples(pCoeff, uiSize);
 
     ETRACE_N;
-    ETRACE_COUNT( uiFactor*6 );
+    ETRACE_COUNT(uiFactor*6);
 
     return Err::m_nOK;
 }
 
 
 
-ErrVal UvlcWriter::xWriteRefFrame( Bool bWriteBit, UInt uiRefFrame )
+ErrVal UvlcWriter::xWriteRefFrame(Bool bWriteBit, UInt uiRefFrame)
 {
-    ETRACE_TH( "RefFrame" );
+    ETRACE_TH("RefFrame");
 
-    if( bWriteBit )
+    if(bWriteBit)
     {
         xWriteFlag(1-uiRefFrame);
     }
@@ -1661,48 +1659,48 @@ ErrVal UvlcWriter::xWriteRefFrame( Bool bWriteBit, UInt uiRefFrame )
         xWriteUvlcCode(uiRefFrame);
     }
 
-    ETRACE_V( uiRefFrame+1 );
+    ETRACE_V(uiRefFrame+1);
     ETRACE_N;
     return Err::m_nOK;
 }
 
 
-ErrVal UvlcWriter::xWriteMotionPredFlag( Bool bFlag )
+ErrVal UvlcWriter::xWriteMotionPredFlag(Bool bFlag)
 {
-    ETRACE_TH( "MotionPredFlag" );
+    ETRACE_TH("MotionPredFlag");
 
     UInt uiCode = (bFlag ? 1 : 0);
     xWriteFlag(uiCode);
 
-    ETRACE_V( uiCode );
+    ETRACE_V(uiCode);
     ETRACE_N;
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::transformSize8x8Flag( MbDataAccess& rcMbDataAccess, UInt uiStart, UInt uiStop )
+ErrVal UvlcWriter::transformSize8x8Flag (MbDataAccess& rcMbDataAccess, UInt uiStart, UInt uiStop)
 {
-    ETRACE_TH( "transformSize8x8Flag:" );
+    ETRACE_TH("transformSize8x8Flag:");
 
     UInt  uiCode = rcMbDataAccess.getMbData().isTransformSize8x8() ? 1 : 0;
     xWriteFlag(uiCode);
 
-    ETRACE_V( uiCode );
+    ETRACE_V(uiCode);
     ETRACE_N;
     return Err::m_nOK;
 }
 
 
-ErrVal UvlcWriter::residualBlock8x8( MbDataAccess&  rcMbDataAccess,
+ErrVal UvlcWriter::residualBlock8x8 (MbDataAccess&  rcMbDataAccess,
                                      B8x8Idx        c8x8Idx,
                                      ResidualMode   eResidualMode,
                                      UInt           uiStart,
-                                     UInt           uiStop )
+                                     UInt           uiStop)
 {
-    ROF( eResidualMode == LUMA_SCAN );
+    ROF(eResidualMode == LUMA_SCAN);
 
-    const Bool    bFrame  = ( FRAME == rcMbDataAccess.getMbPicType());
+    const Bool    bFrame  = (FRAME == rcMbDataAccess.getMbPicType());
     const UChar*  pucScan = (bFrame) ? g_aucFrameScan64 : g_aucFieldScan64;
-    TCoeff* piCoeff = rcMbDataAccess.getMbTCoeffs().get8x8( c8x8Idx );
+    TCoeff* piCoeff = rcMbDataAccess.getMbTCoeffs().get8x8(c8x8Idx);
 
     UInt  uiBlk;
     Int   iLevel;
@@ -1716,7 +1714,7 @@ ErrVal UvlcWriter::residualBlock8x8( MbDataAccess&  rcMbDataAccess,
     UInt  auiTotalRun     [4]     = { 0, 0, 0, 0 };
     UInt  auiCoeffCnt     [4]     = { 0, 0, 0, 0 };
 
-    while( uiPos < uiMaxPos )
+    while(uiPos < uiMaxPos)
     {
         uiBlk = (uiPos % 4);
 
@@ -1733,12 +1731,12 @@ ErrVal UvlcWriter::residualBlock8x8( MbDataAccess&  rcMbDataAccess,
                 auiTrailingOnes[uiBlk] = 0;
             }
 
-            aaiLevelRun[uiBlk][auiCoeffCnt[uiBlk]]      = iLevel;
+            aaiLevelRun[uiBlk][auiCoeffCnt[uiBlk]] = iLevel;
             aaiLevelRun[uiBlk][auiCoeffCnt[uiBlk]+0x10] = aiRun[uiBlk];
-            auiTotalRun[uiBlk]  += aiRun[uiBlk];
-            auiCoeffCnt[uiBlk]  ++;
-            aiRun      [uiBlk]  = 0;
-            iOverallRun         = 0;
+            auiTotalRun[uiBlk] += aiRun[uiBlk];
+            auiCoeffCnt[uiBlk]++;
+            aiRun[uiBlk] = 0;
+            iOverallRun = 0;
         }
         else
         {
@@ -1749,21 +1747,21 @@ ErrVal UvlcWriter::residualBlock8x8( MbDataAccess&  rcMbDataAccess,
 
 
     //===== loop over 4x4 blocks =====
-    Bool bDefaultScanIdx = ( uiStart == 0 && uiStop == 16 );
-    for( uiBlk = 0; uiBlk < 4; uiBlk++ )
+    Bool bDefaultScanIdx = (uiStart == 0 && uiStop == 16);
+    for(uiBlk = 0; uiBlk < 4; uiBlk++)
     {
-        if( auiTrailingOnes[uiBlk] > 3 )
+        if(auiTrailingOnes[uiBlk] > 3)
         {
             auiTrailingOnes[uiBlk] = 3;
         }
-        B4x4Idx cIdx( c8x8Idx.b4x4() + 4*(uiBlk/2) + (uiBlk%2) );
+        B4x4Idx cIdx(c8x8Idx.b4x4() + 4*(uiBlk/2) + (uiBlk%2));
         xPredictNonZeroCnt(rcMbDataAccess, cIdx, auiCoeffCnt[uiBlk], auiTrailingOnes[uiBlk], uiStart, uiStop, false);
-        xWriteRunLevel(aaiLevelRun[uiBlk],
-                       auiCoeffCnt[uiBlk],
-                       auiTrailingOnes[uiBlk],
-                       uiStop-uiStart,
-                       auiTotalRun[uiBlk],
-                       rcMbDataAccess, bDefaultScanIdx);
+        xWriteRunLevel (aaiLevelRun[uiBlk],
+                        auiCoeffCnt[uiBlk],
+                        auiTrailingOnes[uiBlk],
+                        uiStop-uiStart,
+                        auiTotalRun[uiBlk],
+                        rcMbDataAccess, bDefaultScanIdx);
     }
 
     return Err::m_nOK;
@@ -1796,7 +1794,8 @@ ErrVal UvlcWriter::xWriteGolomb(UInt uiSymbol, UInt uiK)
     {
         xWriteCode(uiR, uiC);
     }
-    else if ( uiC > 0 ) {
+    else if(uiC > 0)
+    {
         xWriteFlag(1);
         xWriteCode(uiR - uiC, uiC);
     }
@@ -1809,13 +1808,13 @@ UInt g_auiSigRunTabCode[] = {0x01, 0x01, 0x01, 0x01, 0x00};
 UInt g_auiSigRunTabCodeLen[] = {1, 2, 3, 4, 4};
 
 
-ErrVal UvlcWriter::xEncodeMonSeq ( UInt* auiSeq, UInt uiStartVal, UInt uiLen )
+ErrVal UvlcWriter::xEncodeMonSeq(UInt* auiSeq, UInt uiStartVal, UInt uiLen)
 {
     UInt uiRun   = 0;
     UInt uiLevel = uiStartVal;
     for (UInt uiPos=0; uiPos<uiLen && uiLevel > 0; uiPos++)
     {
-        if (auiSeq[uiPos] == uiLevel)
+        if(auiSeq[uiPos] == uiLevel)
         {
             uiRun++;
         }
@@ -1825,7 +1824,7 @@ ErrVal UvlcWriter::xEncodeMonSeq ( UInt* auiSeq, UInt uiStartVal, UInt uiLen )
             xWriteGolomb(uiRun, 1);
             uiRun = 1;
             uiLevel--;
-            while(uiLevel > auiSeq[uiPos] )
+            while(uiLevel > auiSeq[uiPos])
             {
                 ETRACE_TH("eob_run");
                 xWriteGolomb(0, 1);
@@ -1843,7 +1842,7 @@ ErrVal UvlcWriter::xEncodeMonSeq ( UInt* auiSeq, UInt uiStartVal, UInt uiLen )
 
 ErrVal UvlcWriter::xWriteSigRunCode (UInt uiSymbol, UInt uiTableIdx)
 {
-    assert( uiTableIdx >= 0 && uiTableIdx <= 4 );
+    assert(uiTableIdx >= 0 && uiTableIdx <= 4);
 
     if(uiTableIdx == 0)
     {
@@ -1905,7 +1904,7 @@ ErrVal UvlcWriter::xWriteUnaryCode (UInt uiSymbol)
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::xWriteCodeCB1 ( UInt uiSymbol )
+ErrVal UvlcWriter::xWriteCodeCB1(UInt uiSymbol)
 {
     // this function writes codeword for the input symbol according to the {2, 2, 3, 3, 4, 4...} codebook
     for(UInt ui = 0; ui < uiSymbol/2; ui ++)
@@ -1918,7 +1917,7 @@ ErrVal UvlcWriter::xWriteCodeCB1 ( UInt uiSymbol )
     return Err::m_nOK;
 }
 
-ErrVal UvlcWriter::xWriteCodeCB2 ( UInt uiSymbol )
+ErrVal UvlcWriter::xWriteCodeCB2 (UInt uiSymbol)
 {
      // this function writes codeword for the input symbol according to the {2, 2, 2, 4, 4, 4...} codebook
      for(UInt ui = 0; ui < uiSymbol/3; ui ++)
@@ -1945,8 +1944,8 @@ void UvlcWriter::loadUvlcWrite(MbSymbolWriteIf *pcMbSymbolWriteIf)
 	m_bRunLengthCoding = pcUvlcWriter->getRunLengthCoding();
 	m_uiRun = pcUvlcWriter->getRun();
 
-    AOF( m_pcBitWriteBufferIf );
+    AOF(m_pcBitWriteBufferIf);
 	m_pcBitWriteBufferIf->loadBitWriteBuffer(pcUvlcWriter->getBitWriteBufferIf());
 }
 //JVT-X046 }
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

@@ -1,4 +1,3 @@
-
 #include "H264AVCEncoderLib.h"
 #include "H264AVCCommonLib/CabacTables.h"
 #include "H264AVCCommonLib/CabacContextModel.h"
@@ -7,16 +6,16 @@
 
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 CabaEncoder::CabaEncoder() :
-  m_pcBitWriteBufferIf( NULL ),
-  m_uiRange( 0 ),
-  m_uiLow( 0 ),
-  m_uiByte( 0 ),
-  m_uiBitsLeft( 0 ),
-  m_uiBitsToFollow( 0 ),
+  m_pcBitWriteBufferIf(NULL),
+  m_uiRange(0),
+  m_uiLow(0),
+  m_uiByte(0),
+  m_uiBitsLeft(0),
+  m_uiBitsToFollow(0),
   m_bTraceEnable(true)
 {
 }
@@ -26,27 +25,27 @@ CabaEncoder::~CabaEncoder()
 }
 
 
-__inline ErrVal CabaEncoder::xWriteBit( UInt uiBit)
+__inline ErrVal CabaEncoder::xWriteBit(UInt uiBit)
 {
     m_uiByte += m_uiByte + uiBit;
-    if( ! --m_uiBitsLeft )
+    if(! --m_uiBitsLeft)
     {
         const UInt uiByte = m_uiByte;
         m_uiBitsLeft = 8;
         m_uiByte     = 0;
-        return m_pcBitWriteBufferIf->write( uiByte, 8);
+        return m_pcBitWriteBufferIf->write(uiByte, 8);
     }
     return Err::m_nOK;
 }
 
 
-__inline ErrVal CabaEncoder::xWriteBitAndBitsToFollow( UInt uiBit)
+__inline ErrVal CabaEncoder::xWriteBitAndBitsToFollow(UInt uiBit)
 {
     xWriteBit(uiBit);
     // invert bit
     uiBit = 1-uiBit;
 
-    while( m_uiBitsToFollow > 0)
+    while(m_uiBitsToFollow > 0)
     {
         m_uiBitsToFollow--;
         xWriteBit(uiBit);
@@ -55,9 +54,9 @@ __inline ErrVal CabaEncoder::xWriteBitAndBitsToFollow( UInt uiBit)
 }
 
 
-ErrVal CabaEncoder::init( BitWriteBufferIf* pcBitWriteBufferIf )
+ErrVal CabaEncoder::init(BitWriteBufferIf* pcBitWriteBufferIf)
 {
-    ROT( NULL == pcBitWriteBufferIf )
+    ROT(NULL == pcBitWriteBufferIf)
 
     m_pcBitWriteBufferIf = pcBitWriteBufferIf;
 
@@ -97,21 +96,21 @@ ErrVal CabaEncoder::uninit()
 }
 
 
-ErrVal CabaEncoder::writeUnaryMaxSymbol( UInt uiSymbol, CabacContextModel* pcCCModel, Int iOffset, UInt uiMaxSymbol )
+ErrVal CabaEncoder::writeUnaryMaxSymbol(UInt uiSymbol, CabacContextModel* pcCCModel, Int iOffset, UInt uiMaxSymbol)
 {
     writeSymbol(uiSymbol ? 1 : 0, pcCCModel[0]);
 
-    ROTRS( 0 == uiSymbol, Err::m_nOK );
+    ROTRS(0 == uiSymbol, Err::m_nOK);
 
-    Bool bCodeLast = ( uiMaxSymbol > uiSymbol );
+    Bool bCodeLast = (uiMaxSymbol > uiSymbol);
 
     while(--uiSymbol)
     {
-        writeSymbol( 1, pcCCModel[iOffset]);
+        writeSymbol(1, pcCCModel[iOffset]);
     }
-    if( bCodeLast )
+    if(bCodeLast)
     {
-        writeSymbol( 0, pcCCModel[iOffset]);
+        writeSymbol(0, pcCCModel[iOffset]);
     }
 
     return Err::m_nOK;
@@ -126,11 +125,11 @@ ErrVal CabaEncoder::writeExGolombLevel(UInt uiSymbol, CabacContextModel& rcCCMod
         UInt uiCount = 0;
         Bool bNoExGo = (uiSymbol < 13);
 
-        while( --uiSymbol && ++uiCount < 13 )
+        while(--uiSymbol && ++uiCount < 13)
         {
             writeSymbol(1, rcCCModel);
         }
-        if( bNoExGo )
+        if(bNoExGo)
         {
             writeSymbol(0, rcCCModel);
         }
@@ -148,27 +147,27 @@ ErrVal CabaEncoder::writeExGolombLevel(UInt uiSymbol, CabacContextModel& rcCCMod
 }
 
 
-ErrVal CabaEncoder::writeEpExGolomb( UInt uiSymbol, UInt uiCount )
+ErrVal CabaEncoder::writeEpExGolomb(UInt uiSymbol, UInt uiCount)
 {
-    while( uiSymbol >= (UInt)(1<<uiCount) )
+    while(uiSymbol >= (UInt)(1<<uiCount))
     {
-        writeEPSymbol( 1 );
+        writeEPSymbol(1);
         uiSymbol -= 1<<uiCount;
         uiCount  ++;
     }
-    writeEPSymbol( 0 );
-    while( uiCount-- )
+    writeEPSymbol(0);
+    while(uiCount--)
     {
-        writeEPSymbol( (uiSymbol>>uiCount) & 1 );
+        writeEPSymbol((uiSymbol>>uiCount) & 1);
     }
 
     return Err::m_nOK;
 }
 
 
-ErrVal CabaEncoder::writeExGolombMvd( UInt uiSymbol, CabacContextModel* pcCCModel, UInt uiMaxBin )
+ErrVal CabaEncoder::writeExGolombMvd(UInt uiSymbol, CabacContextModel* pcCCModel, UInt uiMaxBin)
 {
-    if( ! uiSymbol )
+    if(! uiSymbol)
     {
         writeSymbol(0, *pcCCModel);
         return Err::m_nOK;
@@ -176,24 +175,24 @@ ErrVal CabaEncoder::writeExGolombMvd( UInt uiSymbol, CabacContextModel* pcCCMode
 
     writeSymbol(1, *pcCCModel);
 
-    Bool  bNoExGo = ( uiSymbol < 8 );
+    Bool  bNoExGo = (uiSymbol < 8);
     UInt  uiCount = 1;
     pcCCModel++;
 
-    while( --uiSymbol && ++uiCount <= 8 )
+    while(--uiSymbol && ++uiCount <= 8)
     {
         writeSymbol(1, *pcCCModel);
-        if( uiCount == 2 )
+        if(uiCount == 2)
         {
             pcCCModel++;
         }
-        if( uiCount == uiMaxBin )
+        if(uiCount == uiMaxBin)
         {
             pcCCModel++;
         }
     }
 
-    if( bNoExGo )
+    if(bNoExGo)
     {
         writeSymbol(0, *pcCCModel);
     }
@@ -207,13 +206,13 @@ ErrVal CabaEncoder::writeExGolombMvd( UInt uiSymbol, CabacContextModel* pcCCMode
 
 
 
-ErrVal CabaEncoder::writeUnarySymbol( UInt uiSymbol, CabacContextModel* pcCCModel, Int iOffset )
+ErrVal CabaEncoder::writeUnarySymbol(UInt uiSymbol, CabacContextModel* pcCCModel, Int iOffset)
 {
     writeSymbol(uiSymbol ? 1 : 0, pcCCModel[0]);
 
-    ROTRS( 0 == uiSymbol, Err::m_nOK );
+    ROTRS(0 == uiSymbol, Err::m_nOK);
 
-    while( uiSymbol-- )
+    while(uiSymbol--)
     {
         writeSymbol(uiSymbol ? 1 : 0, pcCCModel[iOffset]);
     }
@@ -227,13 +226,13 @@ ErrVal CabaEncoder::finish()
     xWriteBitAndBitsToFollow((m_uiLow >> (B_BITS-1)) & 1);
     xWriteBit((m_uiLow >> (B_BITS-2)) & 1);
 
-    m_pcBitWriteBufferIf->write( m_uiByte, 8 - m_uiBitsLeft);
+    m_pcBitWriteBufferIf->write(m_uiByte, 8 - m_uiBitsLeft);
 
     return Err::m_nOK;
 }
 
 
-ErrVal CabaEncoder::writeSymbol( UInt uiSymbol, CabacContextModel& rcCCModel )
+ErrVal CabaEncoder::writeSymbol(UInt uiSymbol, CabacContextModel& rcCCModel)
 {
     ETRACE_SC;
     ETRACE_TH ("  ");
@@ -250,12 +249,12 @@ ErrVal CabaEncoder::writeSymbol( UInt uiSymbol, CabacContextModel& rcCCModel )
     UInt uiRange  = m_uiRange;
     UInt uiLPS = g_aucLPSTable64x4[rcCCModel.getState()][(uiRange>>6) & 3];
 
-    AOT_DBG( 1 < uiSymbol );
+    AOT_DBG(1 < uiSymbol);
 
     rcCCModel.incrementCount();
 
     uiRange -= uiLPS;
-    if( uiSymbol != rcCCModel.getMps() )
+    if(uiSymbol != rcCCModel.getMps())
     {
         uiLow += uiRange;
         uiRange = uiLPS;
@@ -264,16 +263,16 @@ ErrVal CabaEncoder::writeSymbol( UInt uiSymbol, CabacContextModel& rcCCModel )
         {
             rcCCModel.toggleMps();
         }
-        rcCCModel.setState( g_aucACNextStateLPS64[rcCCModel.getState()] );
+        rcCCModel.setState(g_aucACNextStateLPS64[rcCCModel.getState()]);
     }
     else
     {
-        rcCCModel.setState( g_aucACNextStateMPS64[rcCCModel.getState()] );
+        rcCCModel.setState(g_aucACNextStateMPS64[rcCCModel.getState()]);
     }
 
-    while( uiRange < QUARTER )
+    while(uiRange < QUARTER)
     {
-        if( uiLow >= HALF )
+        if(uiLow >= HALF)
         {
             xWriteBitAndBitsToFollow(1);
             uiLow -= HALF;
@@ -298,7 +297,7 @@ ErrVal CabaEncoder::writeSymbol( UInt uiSymbol, CabacContextModel& rcCCModel )
 }
 
 
-ErrVal CabaEncoder::writeEPSymbol( UInt uiSymbol )
+ErrVal CabaEncoder::writeEPSymbol(UInt uiSymbol)
 {
     ETRACE_SC;
     ETRACE_TH ("  ");
@@ -309,7 +308,7 @@ ErrVal CabaEncoder::writeEPSymbol( UInt uiSymbol )
 
     UInt uiLow = m_uiLow<<1;
 
-    if( uiSymbol != 0 )
+    if(uiSymbol != 0)
     {
         uiLow += m_uiRange;
     }
@@ -335,7 +334,7 @@ ErrVal CabaEncoder::writeEPSymbol( UInt uiSymbol )
 }
 
 
-ErrVal CabaEncoder::writeTerminatingBit( UInt uiBit )
+ErrVal CabaEncoder::writeTerminatingBit(UInt uiBit)
 {
     ETRACE_SC;
     ETRACE_TH ("  ");
@@ -347,20 +346,20 @@ ErrVal CabaEncoder::writeTerminatingBit( UInt uiBit )
     UInt uiRange = m_uiRange - 2;
     UInt uiLow = m_uiLow;
 
-    if( uiBit )
+    if(uiBit)
     {
         uiLow += uiRange;
         uiRange = 2;
     }
 
-    while( uiRange < QUARTER )
+    while(uiRange < QUARTER)
     {
-        if( uiLow >= HALF )
+        if(uiLow >= HALF)
         {
             xWriteBitAndBitsToFollow(1);
             uiLow -= HALF;
         }
-        else if( uiLow < QUARTER )
+        else if(uiLow < QUARTER)
         {
             xWriteBitAndBitsToFollow(0);
         }
@@ -380,4 +379,4 @@ ErrVal CabaEncoder::writeTerminatingBit( UInt uiBit )
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

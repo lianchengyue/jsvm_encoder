@@ -1,19 +1,18 @@
-
 #include "H264AVCEncoderLib.h"
 #include "BitWriteBuffer.h"
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 BitWriteBuffer::BitWriteBuffer():
-  m_uiDWordsLeft    ( 0 ),
-  m_uiBitsWritten   ( 0 ),
-  m_iValidBits      ( 0 ),
-  m_ulCurrentBits   ( 0 ),
-  m_pulStreamPacket ( NULL )
-, m_uiInitPacketLength( 0 )
-, m_pcNextBitWriteBuffer( NULL )
-, m_pucNextStreamPacket( NULL )
+  m_uiDWordsLeft    (0),
+  m_uiBitsWritten   (0),
+  m_iValidBits      (0),
+  m_ulCurrentBits   (0),
+  m_pulStreamPacket (NULL)
+, m_uiInitPacketLength(0)
+, m_pcNextBitWriteBuffer(NULL)
+, m_pucNextStreamPacket(NULL)
 {
 }
 
@@ -29,12 +28,12 @@ ErrVal BitWriteBuffer::init()
     m_iValidBits      = 0;
     m_ulCurrentBits   = 0;
     m_pulStreamPacket = NULL;
-    if( m_pucNextStreamPacket )
+    if(m_pucNextStreamPacket)
     {
         delete[] m_pucNextStreamPacket;
         m_pucNextStreamPacket = NULL;
     }
-    if( m_pcNextBitWriteBuffer )
+    if(m_pcNextBitWriteBuffer)
     {
         m_pcNextBitWriteBuffer->uninit();
     }
@@ -43,41 +42,41 @@ ErrVal BitWriteBuffer::init()
 }
 
 
-BitWriteBufferIf* BitWriteBuffer::getNextBitWriteBuffer( Bool bStartNewBitstream  )
+BitWriteBufferIf* BitWriteBuffer::getNextBitWriteBuffer(Bool bStartNewBitstream)
 {
-    if( bStartNewBitstream )
+    if(bStartNewBitstream)
     {
-        if( !m_pcNextBitWriteBuffer )
+        if(!m_pcNextBitWriteBuffer)
         {
-            BitWriteBuffer::create( m_pcNextBitWriteBuffer );
+            BitWriteBuffer::create(m_pcNextBitWriteBuffer);
             m_pcNextBitWriteBuffer->init();
         }
 
-        AOT( m_pucNextStreamPacket );
+        AOT(m_pucNextStreamPacket);
         m_pucNextStreamPacket = new UChar [m_uiInitPacketLength + 1];
-        m_pcNextBitWriteBuffer->initPacket( (UInt*)m_pucNextStreamPacket, m_uiInitPacketLength );
+        m_pcNextBitWriteBuffer->initPacket((UInt*)m_pucNextStreamPacket, m_uiInitPacketLength);
     }
     else
     {
-        AOF( m_pcNextBitWriteBuffer );
-        AOF( m_pucNextStreamPacket );
+        AOF(m_pcNextBitWriteBuffer);
+        AOF(m_pucNextStreamPacket);
     }
     return m_pcNextBitWriteBuffer;
 }
 
 
-ErrVal BitWriteBuffer::create( BitWriteBuffer*& rpcBitWriteBuffer )
+ErrVal BitWriteBuffer::create(BitWriteBuffer*& rpcBitWriteBuffer)
 {
     rpcBitWriteBuffer = new BitWriteBuffer;
 
-    ROT( NULL == rpcBitWriteBuffer );
+    ROT(NULL == rpcBitWriteBuffer);
 
     return Err::m_nOK;
 }
 
 ErrVal BitWriteBuffer::destroy()
 {
-    if( m_pcNextBitWriteBuffer )
+    if(m_pcNextBitWriteBuffer)
     {
         m_pcNextBitWriteBuffer->destroy();
         m_pcNextBitWriteBuffer = NULL;
@@ -88,7 +87,7 @@ ErrVal BitWriteBuffer::destroy()
 }
 
 
-ErrVal BitWriteBuffer::initPacket( UInt* pulBits, UInt uiPacketLength )
+ErrVal BitWriteBuffer::initPacket(UInt* pulBits, UInt uiPacketLength)
 {
     // invalidate all members if something is wrong
     uninit();
@@ -96,8 +95,8 @@ ErrVal BitWriteBuffer::initPacket( UInt* pulBits, UInt uiPacketLength )
     m_uiInitPacketLength = uiPacketLength;
 
     // check the parameter
-    ROT( uiPacketLength < 4);
-    ROT( NULL == pulBits );
+    ROT(uiPacketLength < 4);
+    ROT(NULL == pulBits);
 
     // now init the Bitstream object
     m_pulStreamPacket = pulBits;
@@ -125,7 +124,7 @@ ErrVal BitWriteBuffer::getLastByte(UChar &uiLastByte, UInt &uiLastBitPos)
     return Err::m_nOK;
 }
 //~FIX_FRAG_CAVLC
-ErrVal BitWriteBuffer::write( UInt uiBits, UInt uiNumberOfBits )
+ErrVal BitWriteBuffer::write(UInt uiBits, UInt uiNumberOfBits)
 {
     if(uiNumberOfBits > 32)
     {
@@ -137,7 +136,7 @@ ErrVal BitWriteBuffer::write( UInt uiBits, UInt uiNumberOfBits )
 
     m_uiBitsWritten += uiNumberOfBits;
 
-    if( (Int)uiNumberOfBits < m_iValidBits)  // one word
+    if((Int)uiNumberOfBits < m_iValidBits)  // one word
     {
         m_iValidBits -= uiNumberOfBits;
 
@@ -147,7 +146,7 @@ ErrVal BitWriteBuffer::write( UInt uiBits, UInt uiNumberOfBits )
     }
 
 
-    ROT( 0 == m_uiDWordsLeft );
+    ROT(0 == m_uiDWordsLeft);
     m_uiDWordsLeft--;
 
     UInt uiShift = uiNumberOfBits - m_iValidBits;
@@ -155,7 +154,7 @@ ErrVal BitWriteBuffer::write( UInt uiBits, UInt uiNumberOfBits )
     // add the last bits
     m_ulCurrentBits |= uiBits >> uiShift;
 
-    *m_pulStreamPacket++ = xSwap( m_ulCurrentBits );
+    *m_pulStreamPacket++ = xSwap(m_ulCurrentBits);
 
 
     // note: there is a problem with left shift with 32
@@ -163,7 +162,7 @@ ErrVal BitWriteBuffer::write( UInt uiBits, UInt uiNumberOfBits )
 
     m_ulCurrentBits = uiBits << m_iValidBits;
 
-    if( 0 == uiShift )
+    if(0 == uiShift)
     {
         m_ulCurrentBits = 0;
     }
@@ -175,42 +174,43 @@ ErrVal BitWriteBuffer::write( UInt uiBits, UInt uiNumberOfBits )
 
 ErrVal BitWriteBuffer::writeAlignZero()
 {
-    return write( 0, m_iValidBits & 0x7 );
+    return write(0, m_iValidBits & 0x7);
 }
 
 ErrVal BitWriteBuffer::writeAlignOne()
 {
-    return write( ( 1 << (m_iValidBits & 0x7) ) - 1, m_iValidBits & 0x7 );
+    return write((1 << (m_iValidBits & 0x7)) - 1, m_iValidBits & 0x7);
 }
 
 
 ErrVal BitWriteBuffer::flushBuffer()
 {
-    ROT( 0 == m_uiDWordsLeft );
+    ROT(0 == m_uiDWordsLeft);
 
-    *m_pulStreamPacket = xSwap( m_ulCurrentBits );
+    *m_pulStreamPacket = xSwap(m_ulCurrentBits);
 
     m_uiBitsWritten = (m_uiBitsWritten+7)/8;
 
     m_uiBitsWritten *= 8;
-    if( nextBitWriteBufferActive() )
+    if(nextBitWriteBufferActive())
     {
-        getNextBitWriteBuffer( false )->flushBuffer();
+        getNextBitWriteBuffer(false)->flushBuffer();
     }
     return Err::m_nOK;
 }
 
 
 
-ErrVal BitWriteBuffer::pcmSamples( const TCoeff* pCoeff, UInt uiNumberOfSamples )
+ErrVal BitWriteBuffer::pcmSamples(const TCoeff* pCoeff, UInt uiNumberOfSamples)
 {
-    for( UInt n = 0; n < uiNumberOfSamples; n++)
+    for(UInt n = 0; n < uiNumberOfSamples; n++)
     {
-        RNOK( write( pCoeff[n].getLevel(), 8) );
+        write(pCoeff[n].getLevel(), 8);
     }
     return Err::m_nOK;
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
+
 

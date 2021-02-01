@@ -4,13 +4,13 @@
 #include "RateCtlBase.h"
 #include "RateCtlQuadratic.h"
 
-using namespace h264;
+using namespace JSVM;
 
 jsvm_parameters *pcJSVMParams;
 rc_generic      *pcGenericRC;
 rc_quadratic    *pcQuadraticRC;
 
-rc_quadratic::rc_quadratic( rc_generic *pcGenRC, jsvm_parameters *jsvm_params )
+rc_quadratic::rc_quadratic(rc_generic *pcGenRC, jsvm_parameters *jsvm_params)
 {
     m_pcGenericRC = pcGenRC;
     m_pcJSVMParams = jsvm_params;
@@ -19,7 +19,7 @@ rc_quadratic::rc_quadratic( rc_generic *pcGenRC, jsvm_parameters *jsvm_params )
     m_fMINVALUE = 4.0F;
 }
 
-rc_quadratic::~rc_quadratic( void )
+rc_quadratic::~rc_quadratic(void)
 {
     rc_free();
 }
@@ -31,7 +31,7 @@ rc_quadratic::~rc_quadratic( void )
  *
  *************************************************************************************
  */
-void rc_quadratic::rc_alloc( void )
+void rc_quadratic::rc_alloc(void)
 {
     int iRcBufSize = m_pcJSVMParams->FrameSizeInMbs / m_pcJSVMParams->basicunit;
 
@@ -96,7 +96,7 @@ void rc_quadratic::rc_alloc( void )
  *
  *************************************************************************************
 */
-void rc_quadratic::rc_free( void )
+void rc_quadratic::rc_free(void)
 {
     if (NULL != m_pdBUPFMAD)
     {
@@ -128,7 +128,7 @@ void rc_quadratic::rc_free( void )
  *
  *************************************************************************************
 */
-void rc_quadratic::rc_init_seq( void )
+void rc_quadratic::rc_init_seq(void)
 {
     int i;
 
@@ -205,7 +205,7 @@ void rc_quadratic::rc_init_seq( void )
  *
  *************************************************************************************
 */
-void rc_quadratic::rc_init_GOP( int iNp, int iNb )
+void rc_quadratic::rc_init_GOP(int iNp, int iNb)
 {
     int iOverBits, iOverDuantQp;
     int iAllocatedBits, iGOPDquant;
@@ -251,7 +251,7 @@ void rc_quadratic::rc_init_GOP( int iNp, int iNb )
     else
     {
         // adaptive field/frame coding
-        if( m_pcJSVMParams->PicInterlace == ADAPTIVE_CODING || m_pcJSVMParams->MbInterlace )
+        if(m_pcJSVMParams->PicInterlace == ADAPTIVE_CODING || m_pcJSVMParams->MbInterlace)
         {
           if (m_pcGenericRC->m_iFieldFrame == 1)
           {
@@ -302,7 +302,7 @@ void rc_quadratic::rc_init_GOP( int iNp, int iNb )
  *
  *************************************************************************************
 */
-void rc_quadratic::rc_init_pict( int iFieldPic, int iTopField, int iTargetComputation, float fMult )
+void rc_quadratic::rc_init_pict(int iFieldPic, int iTopField, int iTargetComputation, float fMult)
 {
     int iTmpT;
 
@@ -330,7 +330,7 @@ void rc_quadratic::rc_init_pict( int iFieldPic, int iTopField, int iTargetComput
     // predefine a target buffer level for each frame
     if((iFieldPic||iTopField) && iTargetComputation)
     {
-        if ( m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number !=0)) )
+        if (m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number !=0)))
         {
             // Since the available bandwidth may vary at any time, the total number of
             // bits is updated picture by picture
@@ -402,7 +402,7 @@ void rc_quadratic::rc_init_pict( int iFieldPic, int iTopField, int iTargetComput
                 /(m_fFrameRate*(m_dAveWp+m_dAveWb*m_pcJSVMParams->successive_Bframe))-m_fBitRate/m_fFrameRate);
             }
         }
-        else if ( m_pcJSVMParams->type == B_SLICE )
+        else if (m_pcJSVMParams->type == B_SLICE)
         {
             // update the total number of bits if the bandwidth is changed
             if(m_fPrevBitRate != m_fBitRate)
@@ -422,14 +422,14 @@ void rc_quadratic::rc_init_pict( int iFieldPic, int iTopField, int iTargetComput
             }
         }
         // Compute the target bit for each frame
-        if( m_pcJSVMParams->type == P_SLICE || ( m_pcJSVMParams->number != 0 && m_pcJSVMParams->RCUpdateMode == RC_MODE_1 ) )
+        if(m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->number != 0 && m_pcJSVMParams->RCUpdateMode == RC_MODE_1))
         {
             // frame layer rate control
             if(m_pcJSVMParams->BasicUnit == m_pcJSVMParams->FrameSizeInMbs)
             {
                 if(m_iNumberofCodedPFrame>0)
                 {
-                    m_iTarget = (int) floor( m_dWp * m_pcGenericRC->m_iRemainingBits / (m_iNp * m_dWp + m_iNb * m_dWb) + 0.5);
+                    m_iTarget = (int) floor(m_dWp * m_pcGenericRC->m_iRemainingBits / (m_iNp * m_dWp + m_iNb * m_dWb) + 0.5);
                     iTmpT  = imax(0, (int) floor(m_fBitRate / m_fFrameRate - m_dGAMMAP * (m_pcGenericRC->m_i64CurrentBufferFullness-m_dTargetBufferLevel) + 0.5));
                     m_iTarget = (int) floor(m_dBETAP * (m_iTarget - iTmpT) + iTmpT + 0.5);
                 }
@@ -440,7 +440,7 @@ void rc_quadratic::rc_init_pict( int iFieldPic, int iTopField, int iTargetComput
                 if(((m_pcGenericRC->m_iNumberofGOP == 1)&&(m_iNumberofCodedPFrame>0))
                   || (m_pcGenericRC->m_iNumberofGOP > 1))
                 {
-                    m_iTarget = (int) (floor( m_dWp * m_pcGenericRC->m_iRemainingBits / (m_iNp * m_dWp + m_iNb * m_dWb) + 0.5));
+                    m_iTarget = (int) (floor(m_dWp * m_pcGenericRC->m_iRemainingBits / (m_iNp * m_dWp + m_iNb * m_dWb) + 0.5));
                     iTmpT  = imax(0, (int) (floor(m_fBitRate / m_fFrameRate - m_dGAMMAP * (m_pcGenericRC->m_i64CurrentBufferFullness-m_dTargetBufferLevel) + 0.5)));
                     m_iTarget = (int) (floor(m_dBETAP * (m_iTarget - iTmpT) + iTmpT + 0.5));
                 }
@@ -478,7 +478,7 @@ void rc_quadratic::rc_init_pict( int iFieldPic, int iTopField, int iTargetComput
         }
     }
 
-    if( ( m_pcJSVMParams->type==P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0)) ) && m_pcJSVMParams->BasicUnit < m_pcJSVMParams->FrameSizeInMbs && m_pcGenericRC->m_iFieldControl == 1 )
+    if((m_pcJSVMParams->type==P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0))) && m_pcJSVMParams->BasicUnit < m_pcJSVMParams->FrameSizeInMbs && m_pcGenericRC->m_iFieldControl == 1)
     {
         //top field at basic unit layer rate control
         if(iTopField)
@@ -508,9 +508,9 @@ void rc_quadratic::rc_init_pict( int iFieldPic, int iTopField, int iTargetComput
  *
  *************************************************************************************
 */
-void rc_quadratic::rc_update_pict( int iNbits )
+void rc_quadratic::rc_update_pict(int iNbits)
 {
-    int iDeltaBits = (iNbits - (int)floor(m_fBitRate / m_fFrameRate + 0.5F) );
+    int iDeltaBits = (iNbits - (int)floor(m_fBitRate / m_fFrameRate + 0.5F));
     m_pcGenericRC->m_iRemainingBits -= iNbits; // remaining # of bits in GOP
     m_pcGenericRC->m_i64CurrentBufferFullness += iDeltaBits;
 
@@ -532,21 +532,21 @@ int rc_quadratic::updateComplexity(bool bIsUpdated, int iNbits)
     //basic unit layer rate control
     else
     {
-        if( bIsUpdated )
+        if(bIsUpdated)
         {
-            if( m_pcGenericRC->m_iNoGranularFieldRC == 0 || m_pcGenericRC->m_iFieldControl == 0 )
+            if(m_pcGenericRC->m_iNoGranularFieldRC == 0 || m_pcGenericRC->m_iFieldControl == 0)
             {
                 dAvemQc = (double)m_iTotalFrameQP / (double)m_iTotalNumberofBasicUnit;
                 return ((int)floor(iNbits * dAvemQc + 0.5));
             }
         }
-        else if( m_pcJSVMParams->type == B_SLICE )
+        else if(m_pcJSVMParams->type == B_SLICE)
             return ((int) floor(iNbits * m_iQc + 0.5));
     }
     return 0;
 }
 
-void rc_quadratic::updatePparams( int iComplexity )
+void rc_quadratic::updatePparams(int iComplexity)
 {
     m_iXp = iComplexity;
     m_iNp--;
@@ -555,7 +555,7 @@ void rc_quadratic::updatePparams( int iComplexity )
     m_iNumberofPPicture++;
 }
 
-void rc_quadratic::updateBparams( int iComplexity )
+void rc_quadratic::updateBparams(int iComplexity)
 {
     m_iXb = iComplexity;
     m_iNb--;
@@ -579,27 +579,27 @@ void rc_quadratic::rc_update_pict_frame(int iNbits)
     // update the iComplexity weight of I, P, B frame
     int iComplexity = 0;
 
-    switch( m_pcJSVMParams->RCUpdateMode )
+    switch(m_pcJSVMParams->RCUpdateMode)
     {
       case RC_MODE_2:
       default:
-        iComplexity = updateComplexity( (bool) (m_pcJSVMParams->type == P_SLICE), iNbits );
-        if ( m_pcJSVMParams->type == P_SLICE )
+        iComplexity = updateComplexity((bool) (m_pcJSVMParams->type == P_SLICE), iNbits);
+        if (m_pcJSVMParams->type == P_SLICE)
         {
-            if( m_pcGenericRC->m_iNoGranularFieldRC == 0 || m_pcGenericRC->m_iFieldControl == 0 )
-                updatePparams( iComplexity );
+            if(m_pcGenericRC->m_iNoGranularFieldRC == 0 || m_pcGenericRC->m_iFieldControl == 0)
+                updatePparams(iComplexity);
             else
                 m_pcGenericRC->m_iNoGranularFieldRC = 0;
         }
-        else if ( m_pcJSVMParams->type == B_SLICE )
-          updateBparams( iComplexity );
+        else if (m_pcJSVMParams->type == B_SLICE)
+          updateBparams(iComplexity);
         break;
       case RC_MODE_1:
-          iComplexity = updateComplexity( (bool) (m_pcJSVMParams->number != 0), iNbits );
-          if ( m_pcJSVMParams->number != 0 )
+          iComplexity = updateComplexity((bool) (m_pcJSVMParams->number != 0), iNbits);
+          if (m_pcJSVMParams->number != 0)
           {
-              if( m_pcGenericRC->m_iNoGranularFieldRC == 0 || m_pcGenericRC->m_iFieldControl == 0 )
-                  updatePparams( iComplexity );
+              if(m_pcGenericRC->m_iNoGranularFieldRC == 0 || m_pcGenericRC->m_iFieldControl == 0)
+                  updatePparams(iComplexity);
               else
                   m_pcGenericRC->m_iNoGranularFieldRC = 0;
           }
@@ -692,7 +692,7 @@ void rc_quadratic::updateRCModel(void)
 
         // compute the size of window
         iWindowSize = (m_dCurrentFrameMAD>m_dPreviousFrameMAD)
-          ? (int)(m_dPreviousFrameMAD/m_dCurrentFrameMAD * (RC_MODEL_HISTORY-1) )
+          ? (int)(m_dPreviousFrameMAD/m_dCurrentFrameMAD * (RC_MODEL_HISTORY-1))
           : (int)(m_dCurrentFrameMAD/m_dPreviousFrameMAD *(RC_MODEL_HISTORY-1));
         iWindowSize=iClip3(1, iNc, iWindowSize);
         iWindowSize=imin(iWindowSize,m_iWindowSize+1);
@@ -729,9 +729,9 @@ void rc_quadratic::updateRCModel(void)
         //second RD model estimator
         RCModelEstimator (iWindowSize, pbRgRejected);
 
-        if( bMADModelFlag )
+        if(bMADModelFlag)
             updateMADModel();
-        else if( m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0)) )
+        else if(m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0)))
             m_dPPictureMAD[0] = m_dCurrentFrameMAD;
     }
 }
@@ -743,7 +743,7 @@ void rc_quadratic::updateRCModel(void)
  *
  *************************************************************************************
 */
-void rc_quadratic::RCModelEstimator( int iWindowSize, bool *pbRgRejected )
+void rc_quadratic::RCModelEstimator(int iWindowSize, bool *pbRgRejected)
 {
     int iRealSize = iWindowSize;
     int i;
@@ -804,7 +804,7 @@ void rc_quadratic::RCModelEstimator( int iWindowSize, bool *pbRgRejected )
         }
     }
 
-    if( m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0)) )
+    if(m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0)))
     {
         m_dPX1 = m_dX1;
         m_dPX2 = m_dX2;
@@ -818,7 +818,7 @@ void rc_quadratic::RCModelEstimator( int iWindowSize, bool *pbRgRejected )
  *
  *************************************************************************************
 */
-void rc_quadratic::updateMADModel( void )
+void rc_quadratic::updateMADModel(void)
 {
     int    iWindowSize;
     int    i;
@@ -873,7 +873,7 @@ void rc_quadratic::updateMADModel( void )
         }
 
         //update the MAD for the previous frame
-        if( m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0)) )
+        if(m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0)))
             m_dPreviousFrameMAD=m_dCurrentFrameMAD;
 
         // initial MAD model estimator
@@ -907,7 +907,7 @@ void rc_quadratic::updateMADModel( void )
  *
  *************************************************************************************
 */
-void rc_quadratic::MADModelEstimator( int iWindowSize, bool *pbPictureRejected )
+void rc_quadratic::MADModelEstimator(int iWindowSize, bool *pbPictureRejected)
 {
     int    iRealSize = iWindowSize;
     int    i;
@@ -969,7 +969,7 @@ void rc_quadratic::MADModelEstimator( int iWindowSize, bool *pbPictureRejected )
           m_dMADPictureC2 = 0.0;
         }
     }
-    if( m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0)) )
+    if(m_pcJSVMParams->type == P_SLICE || (m_pcJSVMParams->RCUpdateMode == RC_MODE_1 && (m_pcJSVMParams->number != 0)))
     {
         m_dPMADPictureC1 = m_dMADPictureC1;
         m_dPMADPictureC2 = m_dMADPictureC2;
@@ -983,14 +983,14 @@ void rc_quadratic::MADModelEstimator( int iWindowSize, bool *pbPictureRejected )
  *
  *************************************************************************************
 */
-int rc_quadratic::updateQPRC1( int iTopField )
+int rc_quadratic::updateQPRC1(int iTopField)
 {
     int iBits;
     int iSumofBasicUnit;
     int iMaxQpChange, iQp, iHp;
 
     // frame layer rate control
-    if( m_pcJSVMParams->BasicUnit == m_pcJSVMParams->FrameSizeInMbs )
+    if(m_pcJSVMParams->BasicUnit == m_pcJSVMParams->FrameSizeInMbs)
     {
         // fixed quantization parameter is used to coded I frame, the first P frame and the first B frame
         // the quantization parameter is adjusted according the available channel bandwidth and
@@ -1003,7 +1003,7 @@ int rc_quadratic::updateQPRC1( int iTopField )
                 m_iQc = m_iMyInitialQp;
                 return m_iQc;
             }
-            else if( m_iNumberofPPicture == 0 && (m_pcJSVMParams->number != 0))
+            else if(m_iNumberofPPicture == 0 && (m_pcJSVMParams->number != 0))
             {
                 m_iQc=m_iMyInitialQp;
 
@@ -1014,7 +1014,7 @@ int rc_quadratic::updateQPRC1( int iTopField )
             else
             {
                 // adaptive field/frame coding
-                if((m_pcJSVMParams->PicInterlace == ADAPTIVE_CODING || m_pcJSVMParams->MbInterlace ) && m_pcGenericRC->m_iFieldControl == 0)
+                if((m_pcJSVMParams->PicInterlace == ADAPTIVE_CODING || m_pcJSVMParams->MbInterlace) && m_pcGenericRC->m_iFieldControl == 0)
                     updateQPInterlaceBU();
 
                 m_dX1 = m_dPX1;
@@ -1041,13 +1041,13 @@ int rc_quadratic::updateQPRC1( int iTopField )
                     iBits = m_iTarget-iHp;
                     iBits = imax(iBits, (int)(m_fBitRate/(m_fMINVALUE*m_fFrameRate)));
 
-                    updateModelQPFrame( iBits );
+                    updateModelQPFrame(iBits);
 
                     m_iQc = iClip3(m_iRCMinQuant, m_iRCMaxQuant, m_iQc); // clipping
                     m_iQc = iClip3(iQp-iMaxQpChange, iQp+iMaxQpChange, m_iQc); // control variation
                 }
 
-                if( m_pcGenericRC->m_iFieldControl == 0 )
+                if(m_pcGenericRC->m_iFieldControl == 0)
                     updateQPNonPicAFF();
 
                 return m_iQc;
@@ -1056,7 +1056,7 @@ int rc_quadratic::updateQPRC1( int iTopField )
         // bottom field
         else
         {
-            if( m_pcGenericRC->m_iNoGranularFieldRC == 0 )
+            if(m_pcGenericRC->m_iNoGranularFieldRC == 0)
                 updateBottomField();
             return m_iQc;
         }
@@ -1076,7 +1076,7 @@ int rc_quadratic::updateQPRC1( int iTopField )
             {
                 if((m_pcGenericRC->m_iFieldControl==0)||((m_pcGenericRC->m_iFieldControl==1) && (m_pcGenericRC->m_iNoGranularFieldRC==0)))
                 {
-                    return updateFirstP( iTopField );
+                    return updateFirstP(iTopField);
                 }
             }
             else
@@ -1105,20 +1105,20 @@ int rc_quadratic::updateQPRC1( int iTopField )
                     m_pcGenericRC->m_iNumberofBasicUnitHeaderBits  = 0;
                     m_pcGenericRC->m_iNumberofBasicUnitTextureBits = 0;
                     if(m_iTarget<0)
-                      return updateNegativeTarget( iTopField, iQp );
+                      return updateNegativeTarget(iTopField, iQp);
                     else
                     {
                         // predict the MAD of current picture
                         predictCurrPicMAD();
 
                         // compute the total number of bits for the current basic unit
-                        updateModelQPBU( iTopField, iQp );
+                        updateModelQPBU(iTopField, iQp);
 
                         m_iTotalFrameQP +=m_iQc;
                         m_iPQp=m_iQc;
                         m_iNumberofBasicUnit--;
                         if((m_iNumberofBasicUnit==0) && (m_pcJSVMParams->number != 0))
-                            updateLastBU( iTopField );
+                            updateLastBU(iTopField);
 
                         return m_iQc;
                     }
@@ -1138,14 +1138,14 @@ int rc_quadratic::updateQPRC1( int iTopField )
  *
  *************************************************************************************
 */
-int rc_quadratic::updateQPRC2( int iTopField )
+int rc_quadratic::updateQPRC2(int iTopField)
 {
     int iBits;
     int iSumofBasicUnit;
     int iMaxQpChange, iQp, iHp;
 
     // frame layer rate control
-    if( m_pcJSVMParams->BasicUnit == m_pcJSVMParams->FrameSizeInMbs )
+    if(m_pcJSVMParams->BasicUnit == m_pcJSVMParams->FrameSizeInMbs)
     {
         // fixed quantization parameter is used to coded I frame, the first P frame and the first B frame
         // the quantization parameter is adjusted according the available channel bandwidth and
@@ -1184,7 +1184,7 @@ int rc_quadratic::updateQPRC2( int iTopField )
 
                 return m_iQc;
             }
-            else if( m_pcJSVMParams->type == P_SLICE && m_iNumberofPPicture == 0 )
+            else if(m_pcJSVMParams->type == P_SLICE && m_iNumberofPPicture == 0)
             {
                 m_iQc=m_iMyInitialQp;
 
@@ -1195,7 +1195,7 @@ int rc_quadratic::updateQPRC2( int iTopField )
             else
             {
                 // adaptive field/frame coding
-                if((m_pcJSVMParams->PicInterlace == ADAPTIVE_CODING || m_pcJSVMParams->MbInterlace ) && m_pcGenericRC->m_iFieldControl == 0)
+                if((m_pcJSVMParams->PicInterlace == ADAPTIVE_CODING || m_pcJSVMParams->MbInterlace) && m_pcGenericRC->m_iFieldControl == 0)
                     updateQPInterlaceBU();
 
                 m_dX1 = m_dPX1;
@@ -1222,7 +1222,7 @@ int rc_quadratic::updateQPRC2( int iTopField )
                     iBits = m_iTarget-iHp;
                     iBits = imax(iBits, (int)(m_fBitRate/(m_fMINVALUE*m_fFrameRate)));
 
-                    updateModelQPFrame( iBits );
+                    updateModelQPFrame(iBits);
 
                     m_iQc = iClip3(m_iRCMinQuant, m_iRCMaxQuant, m_iQc); // clipping
                     m_iQc = iClip3(iQp-iMaxQpChange, iQp+iMaxQpChange, m_iQc); // control variation
@@ -1237,7 +1237,7 @@ int rc_quadratic::updateQPRC2( int iTopField )
         // bottom field
         else
         {
-            if( m_pcJSVMParams->type==P_SLICE && m_pcGenericRC->m_iNoGranularFieldRC == 0 )
+            if(m_pcJSVMParams->type==P_SLICE && m_pcGenericRC->m_iNoGranularFieldRC == 0)
                 updateBottomField();
             return m_iQc;
         }
@@ -1283,12 +1283,12 @@ int rc_quadratic::updateQPRC2( int iTopField )
             return m_iQc;
 
         }
-        else if( m_pcJSVMParams->type == P_SLICE )
+        else if(m_pcJSVMParams->type == P_SLICE)
         {
             if((m_pcGenericRC->m_iNumberofGOP==1)&&(m_iNumberofPPicture==0))
             {
                 if((m_pcGenericRC->m_iFieldControl==0)||((m_pcGenericRC->m_iFieldControl==1) && (m_pcGenericRC->m_iNoGranularFieldRC==0)))
-                    return updateFirstP( iTopField );
+                    return updateFirstP(iTopField);
             }
             else
             {
@@ -1316,20 +1316,20 @@ int rc_quadratic::updateQPRC2( int iTopField )
                     m_pcGenericRC->m_iNumberofBasicUnitHeaderBits = 0;
                     m_pcGenericRC->m_iNumberofBasicUnitTextureBits = 0;
                     if(m_iTarget<0)
-                        return updateNegativeTarget( iTopField, iQp );
+                        return updateNegativeTarget(iTopField, iQp);
                     else
                     {
                         // predict the MAD of current picture
                         predictCurrPicMAD();
 
                         // compute the total number of bits for the current basic unit
-                        updateModelQPBU( iTopField, iQp );
+                        updateModelQPBU(iTopField, iQp);
 
                         m_iTotalFrameQP +=m_iQc;
                         m_iPQp=m_iQc;
                         m_iNumberofBasicUnit--;
-                        if((m_iNumberofBasicUnit==0) && m_pcJSVMParams->type == P_SLICE )
-                            updateLastBU( iTopField );
+                        if((m_iNumberofBasicUnit==0) && m_pcJSVMParams->type == P_SLICE)
+                            updateLastBU(iTopField);
 
                         return m_iQc;
                     }
@@ -1340,7 +1340,7 @@ int rc_quadratic::updateQPRC2( int iTopField )
     return m_iQc;
 }
 
-void rc_quadratic::updateQPInterlace( void )
+void rc_quadratic::updateQPInterlace(void)
 {
     if(m_pcGenericRC->m_iFieldControl==0)
     {
@@ -1359,7 +1359,7 @@ void rc_quadratic::updateQPInterlace( void )
     }
 }
 
-void rc_quadratic::updateQPNonPicAFF( void )
+void rc_quadratic::updateQPNonPicAFF(void)
 {
     if(m_pcJSVMParams->frame_mbs_only_flag)
     {
@@ -1375,7 +1375,7 @@ void rc_quadratic::updateQPNonPicAFF( void )
     }
 }
 
-void rc_quadratic::updateBottomField( void )
+void rc_quadratic::updateBottomField(void)
 {
     //field coding
     if(m_pcJSVMParams->PicInterlace==FIELD_CODING)
@@ -1392,7 +1392,7 @@ void rc_quadratic::updateBottomField( void )
     }
 }
 
-int rc_quadratic::updateFirstP( int iTopField )
+int rc_quadratic::updateFirstP(int iTopField)
 {
     // top field of the first P frame
     m_iQc=m_iMyInitialQp;
@@ -1431,7 +1431,7 @@ int rc_quadratic::updateFirstP( int iTopField )
     return m_iQc;
 }
 
-int rc_quadratic::updateNegativeTarget( int iTopField, int iQp )
+int rc_quadratic::updateNegativeTarget(int iTopField, int iQp)
 {
     int iPAverageQP;
 
@@ -1441,7 +1441,7 @@ int rc_quadratic::updateNegativeTarget( int iTopField, int iQp )
         m_iQc=iQp+m_iDDquant;//2
 
     m_iQc = imin(m_iQc, m_iRCMaxQuant);  // clipping
-    if( (unsigned int)(m_pcJSVMParams->basicunit) >= m_uiMBPerRow)
+    if((unsigned int)(m_pcJSVMParams->basicunit) >= m_uiMBPerRow)
         m_iQc = imin(m_iQc, m_iPAveFrameQP + 6);
     else
         m_iQc = imin(m_iQc, m_iPAveFrameQP + 3);
@@ -1507,7 +1507,7 @@ int rc_quadratic::updateNegativeTarget( int iTopField, int iQp )
     return m_iQc;
 }
 
-int rc_quadratic::updateFirstBU( int iTopField )
+int rc_quadratic::updateFirstBU(int iTopField)
 {
     // adaptive field/frame coding
     if(((m_pcJSVMParams->PicInterlace==ADAPTIVE_CODING)||(m_pcJSVMParams->MbInterlace))&&(m_pcGenericRC->m_iFieldControl==0))
@@ -1554,7 +1554,7 @@ int rc_quadratic::updateFirstBU( int iTopField )
     return m_iQc;
 }
 
-void rc_quadratic::updateLastBU( int iTopField )
+void rc_quadratic::updateLastBU(int iTopField)
 {
     int iPAverageQP;
 
@@ -1616,7 +1616,7 @@ void rc_quadratic::predictCurrPicMAD(void)
     }
 }
 
-void rc_quadratic::updateModelQPBU( int iTopField, int iQp )
+void rc_quadratic::updateModelQPBU(int iTopField, int iQp)
 {
     double dTmp, dQstep;
     int iBits;
@@ -1637,13 +1637,13 @@ void rc_quadratic::updateModelQPBU( int iTopField, int iQp )
     m_iQc = m_pcGenericRC->Qstep2QP(dQstep);
     m_iQc = imin(iQp+m_iDDquant,  m_iQc); // control variation
 
-    if( (unsigned int)(m_pcJSVMParams->basicunit) >= m_uiMBPerRow)
+    if((unsigned int)(m_pcJSVMParams->basicunit) >= m_uiMBPerRow)
         m_iQc = imin(m_iPAveFrameQP+6, m_iQc);
     else
         m_iQc = imin(m_iPAveFrameQP+3, m_iQc);
 
     m_iQc = iClip3(iQp-m_iDDquant, m_iRCMaxQuant, m_iQc); // clipping
-    if( (unsigned int)(m_pcJSVMParams->basicunit) >= m_uiMBPerRow)
+    if((unsigned int)(m_pcJSVMParams->basicunit) >= m_uiMBPerRow)
         m_iQc = imax(m_iPAveFrameQP-6, m_iQc);
     else
         m_iQc = imax(m_iPAveFrameQP-3, m_iQc);
@@ -1651,7 +1651,7 @@ void rc_quadratic::updateModelQPBU( int iTopField, int iQp )
     m_iQc = imax(m_iRCMinQuant, m_iQc);
 }
 
-void rc_quadratic::updateQPInterlaceBU( void )
+void rc_quadratic::updateQPInterlaceBU(void)
 {
     // previous choice is frame coding
     if(m_pcGenericRC->m_iFieldFrame==1)
@@ -1667,7 +1667,7 @@ void rc_quadratic::updateQPInterlaceBU( void )
     }
 }
 
-void rc_quadratic::updateModelQPFrame( int iBits )
+void rc_quadratic::updateModelQPFrame(int iBits)
 {
     double dTmp, dQstep;
 
@@ -1681,7 +1681,7 @@ void rc_quadratic::updateModelQPFrame( int iBits )
     m_iQc = m_pcGenericRC->Qstep2QP(dQstep);
 }
 
-void rc_quadratic::init( void )
+void rc_quadratic::init(void)
 {
     m_fTHETA = 1.3636F;
     m_fOMEGA = 0.9F;
@@ -1689,7 +1689,7 @@ void rc_quadratic::init( void )
     m_i64IPrevBits = 0;
     m_i64PPrevBits = 0;
 
-    m_pcJSVMParams->FrameSizeInMbs = (m_pcJSVMParams->height / MB_BLOCK_SIZE) * (m_pcJSVMParams->width / MB_BLOCK_SIZE );
+    m_pcJSVMParams->FrameSizeInMbs = (m_pcJSVMParams->height / MB_BLOCK_SIZE) * (m_pcJSVMParams->width / MB_BLOCK_SIZE);
     if(m_pcJSVMParams->FrameSizeInMbs % m_pcJSVMParams->BasicUnit != 0)
     {
         fprintf(stderr, "\nBasicUnit is required to be fraction of the total number of 16x16 MBs\n");
@@ -1715,7 +1715,7 @@ void rc_quadratic::init( void )
         m_pcGenericRC->m_iTopFieldFlag = 0;
 
     m_pcJSVMParams->qp = 30;
-    if ( m_pcJSVMParams->m_uiIntraPeriod != 1 )
+    if (m_pcJSVMParams->m_uiIntraPeriod != 1)
         m_pcJSVMParams->RCUpdateMode = RC_MODE_2;
     else
         m_pcJSVMParams->RCUpdateMode = RC_MODE_1;
@@ -1723,7 +1723,7 @@ void rc_quadratic::init( void )
     m_pcJSVMParams->PicWidthInMbs = m_pcJSVMParams->width / MB_BLOCK_SIZE;
     m_pcJSVMParams->size = m_pcJSVMParams->width * m_pcJSVMParams->height;
 
-    if ( m_pcJSVMParams->successive_Bframe > 1 )
+    if (m_pcJSVMParams->successive_Bframe > 1)
         m_pcJSVMParams->HierarchicalCoding = 2;
     else
         m_pcJSVMParams->HierarchicalCoding = 0;

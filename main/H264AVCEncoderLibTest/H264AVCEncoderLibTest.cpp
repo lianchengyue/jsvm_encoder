@@ -17,14 +17,14 @@
 // ./H264AVCEncoderLibTestStaticd -pf MVC.cfg
 int main( int argc, char** argv)
 {
-  printf("JSVM %s Encoder\n\n",_JSVM_VERSION_);
+    printf("JSVM %s Encoder\n\n",_JSVM_VERSION_);
 
-  H264AVCEncoderTest* pcH264AVCEncoderTest = NULL;
-  H264AVCEncoderTest::create(pcH264AVCEncoderTest);
+    H264AVCEncoderTest* pcH264AVCEncoderTest = NULL;
+    H264AVCEncoderTest::create(pcH264AVCEncoderTest);
 
-  RNOKS(pcH264AVCEncoderTest->init(argc, argv));
-  pcH264AVCEncoderTest->go();
-  pcH264AVCEncoderTest->destroy();
+    pcH264AVCEncoderTest->init (argc, argv);
+    pcH264AVCEncoderTest->go ();
+    pcH264AVCEncoderTest->destroy ();
 
   return 0;
 }

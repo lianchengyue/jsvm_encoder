@@ -1,4 +1,3 @@
-
 #include "H264AVCCommonLib.h"
 #include "H264AVCCommonLib/ReconstructionBypass.h"
 
@@ -8,7 +7,7 @@
 #include "H264AVCCommonLib/MbDataCtrl.h"
 #include "H264AVCCommonLib/YuvBufferCtrl.h"
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 //                       0   1   2   3  [4]  5   6   7   8
@@ -582,7 +581,7 @@ ErrVal ReconstructionBypass::xOutshiftMask( Bool bMbAff, UInt uiDir, UInt uiOrgM
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 
 
 

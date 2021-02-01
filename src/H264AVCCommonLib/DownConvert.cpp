@@ -1,4 +1,3 @@
-
 #ifdef DOWN_CONVERT_STATIC
 #else
 #include "H264AVCCommonLib.h"
@@ -28,7 +27,7 @@
 
 #ifdef DOWN_CONVERT_STATIC
 #else
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 #endif
 
 
@@ -2946,7 +2945,7 @@ DownConvert::xBasicResidualUpsampling( int iBaseW,   int iBaseH,   int iCurrW,  
 
 #ifdef DOWN_CONVERT_STATIC
 #else
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 #endif
 
 

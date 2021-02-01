@@ -5,21 +5,21 @@
 
 #include "CodingParameter.h"
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 NalUnitEncoder::NalUnitEncoder()
-: m_bIsUnitActive         ( false )
-, m_pcBitWriteBuffer      ( 0 )
-, m_pcHeaderSymbolWriteIf ( 0 )
-, m_pcHeaderSymbolTestIf  ( 0 )
-, m_pcBinDataAccessor     ( 0 )
-, m_pucBuffer             ( 0 )
-, m_pucTempBuffer         ( 0 )
-, m_pucTempBufferBackup   ( 0 )
-, m_uiPacketLength        ( MSYS_UINT_MAX )
-, m_eNalUnitType          ( NAL_UNIT_UNSPECIFIED_0 )
-, m_eNalRefIdc            ( NAL_REF_IDC_PRIORITY_LOWEST )
+: m_bIsUnitActive         (false)
+, m_pcBitWriteBuffer      (0)
+, m_pcHeaderSymbolWriteIf (0)
+, m_pcHeaderSymbolTestIf  (0)
+, m_pcBinDataAccessor     (0)
+, m_pucBuffer             (0)
+, m_pucTempBuffer         (0)
+, m_pucTempBufferBackup   (0)
+, m_uiPacketLength        (MSYS_UINT_MAX)
+, m_eNalUnitType          (NAL_UNIT_UNSPECIFIED_0)
+, m_eNalRefIdc            (NAL_REF_IDC_PRIORITY_LOWEST)
 {
 }
 
@@ -29,21 +29,21 @@ NalUnitEncoder::~NalUnitEncoder()
 }
 
 
-ErrVal NalUnitEncoder::create( NalUnitEncoder*& rpcNalUnitEncoder )
+ErrVal NalUnitEncoder::create(NalUnitEncoder*& rpcNalUnitEncoder)
 {
     rpcNalUnitEncoder = new NalUnitEncoder;
-    ROT( NULL == rpcNalUnitEncoder );
+    ROT(NULL == rpcNalUnitEncoder);
     return Err::m_nOK;
 }
 
 
-ErrVal NalUnitEncoder::init( BitWriteBuffer*       pcBitWriteBuffer,
+ErrVal NalUnitEncoder::init(BitWriteBuffer*       pcBitWriteBuffer,
                       HeaderSymbolWriteIf*  pcHeaderSymbolWriteIf,
-                      HeaderSymbolWriteIf*  pcHeaderSymbolTestIf )
+                      HeaderSymbolWriteIf*  pcHeaderSymbolTestIf)
 {
-    ROT( NULL == pcBitWriteBuffer );
-    ROT( NULL == pcHeaderSymbolWriteIf );
-    ROT( NULL == pcHeaderSymbolTestIf );
+    ROT(NULL == pcBitWriteBuffer);
+    ROT(NULL == pcHeaderSymbolWriteIf);
+    ROT(NULL == pcHeaderSymbolTestIf);
 
     m_pcBitWriteBuffer      = pcBitWriteBuffer;
     m_pcHeaderSymbolTestIf  = pcHeaderSymbolTestIf;
@@ -88,23 +88,23 @@ ErrVal NalUnitEncoder::destroy()
 }
 
 
-ErrVal NalUnitEncoder::initNalUnit( BinDataAccessor* pcBinDataAccessor )
+ErrVal NalUnitEncoder::initNalUnit(BinDataAccessor* pcBinDataAccessor)
 {
-    ROT( m_bIsUnitActive );
-    ROF( pcBinDataAccessor );
-    ROT( pcBinDataAccessor->size() < 1 );
+    ROT(m_bIsUnitActive);
+    ROF(pcBinDataAccessor);
+    ROT(pcBinDataAccessor->size() < 1);
 
     m_bIsUnitActive     = true;
     m_pcBinDataAccessor = pcBinDataAccessor;
     m_pucBuffer         = pcBinDataAccessor->data();
 
-    if( m_uiPacketLength != m_pcBinDataAccessor->size() )
+    if(m_uiPacketLength != m_pcBinDataAccessor->size())
     {
         delete[] m_pucTempBuffer;
 
         m_uiPacketLength = m_pcBinDataAccessor->size();
         m_pucTempBuffer  = new UChar[ m_uiPacketLength ];
-        ROF( m_pucTempBuffer );
+        ROF(m_pucTempBuffer);
     }
 
     m_pcBitWriteBuffer->initPacket((UInt*)(m_pucTempBuffer), m_uiPacketLength-1);
@@ -114,24 +114,24 @@ ErrVal NalUnitEncoder::initNalUnit( BinDataAccessor* pcBinDataAccessor )
 
 
 
-ErrVal NalUnitEncoder::closeAndAppendNalUnits( UInt                    *pauiBits,
+ErrVal NalUnitEncoder::closeAndAppendNalUnits(UInt                    *pauiBits,
                                                ExtBinDataAccessorList  &rcExtBinDataAccessorList,
                                                ExtBinDataAccessor      *pcExtBinDataAccessor,
                                                BinData                 &rcBinData,
                                                H264AVCEncoder          *pcH264AVCEncoder,
                                                UInt                    uiQualityLevelCGSSNR,
-                                               UInt                    uiLayerCGSSNR )
+                                               UInt                    uiLayerCGSSNR)
 {
-    ROF( m_bIsUnitActive );
-    ROF( pcExtBinDataAccessor );
-    ROF( pcExtBinDataAccessor->data() );
+    ROF(m_bIsUnitActive);
+    ROF(pcExtBinDataAccessor);
+    ROF(pcExtBinDataAccessor->data());
 
-    ROF( m_pcBinDataAccessor == pcExtBinDataAccessor );
+    ROF(m_pcBinDataAccessor == pcExtBinDataAccessor);
 
     //===== write trailing bits =====
-    if( NAL_UNIT_END_OF_SEQUENCE != m_eNalUnitType &&
+    if(NAL_UNIT_END_OF_SEQUENCE != m_eNalUnitType &&
         NAL_UNIT_END_OF_STREAM   != m_eNalUnitType &&
-       (NAL_UNIT_PREFIX          != m_eNalUnitType || m_eNalRefIdc != NAL_REF_IDC_PRIORITY_LOWEST) )
+       (NAL_UNIT_PREFIX          != m_eNalUnitType || m_eNalRefIdc != NAL_REF_IDC_PRIORITY_LOWEST))
     {
         //写TrailingBits
         xWriteTrailingBits();
@@ -140,7 +140,7 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits( UInt                    *pauiBits
 
     //===== convert to payload and add header =====
     UInt  uiHeaderBytes = 1;
-    if( m_eNalUnitType == NAL_UNIT_CODED_SLICE_SCALABLE || m_eNalUnitType == NAL_UNIT_PREFIX )
+    if(m_eNalUnitType == NAL_UNIT_CODED_SLICE_SCALABLE || m_eNalUnitType == NAL_UNIT_PREFIX)
     {
         uiHeaderBytes += NAL_UNIT_HEADER_SVC_EXTENSION_BYTES;
     }
@@ -150,11 +150,11 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits( UInt                    *pauiBits
     const UChar      *pucRBSP              = m_pucTempBuffer;
     UInt              uiPayloadBufferSize  = m_uiPacketLength;
 
-    ROF( pcExtBinDataAccessor->data() == pucPayload          );
-    ROF( pcExtBinDataAccessor->size() == uiPayloadBufferSize );
+    ROF(pcExtBinDataAccessor->data() == pucPayload         );
+    ROF(pcExtBinDataAccessor->size() == uiPayloadBufferSize);
 
     UInt uiFragment = 0;
-    while( true )
+    while(true)
     {
         UInt uiBits  = pcCurrentWriteBuffer->getNumberOfWrittenBits();
         UInt uiBytes = (uiBits + 7) >> 3;
@@ -162,46 +162,46 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits( UInt                    *pauiBits
         pauiBits[uiFragment] = 8 * uiBytes;
 
         UChar* pucNewBuffer = new UChar [ uiBytes ];
-        ROF( pucNewBuffer );
-        memcpy( pucNewBuffer, pucPayload, uiBytes * sizeof( UChar ) );
+        ROF(pucNewBuffer);
+        memcpy(pucNewBuffer, pucPayload, uiBytes * sizeof(UChar));
 
-        if( pcH264AVCEncoder )
+        if(pcH264AVCEncoder)
         {
             //JVT-W052
-            if(pcH264AVCEncoder->getCodingParameter()->getIntegrityCheckSEIEnable() && pcH264AVCEncoder->getCodingParameter()->getCGSSNRRefinement() )
+            if(pcH264AVCEncoder->getCodingParameter()->getIntegrityCheckSEIEnable() && pcH264AVCEncoder->getCodingParameter()->getCGSSNRRefinement())
             {
-                if( uiQualityLevelCGSSNR + uiFragment > 0 )
+                if(uiQualityLevelCGSSNR + uiFragment > 0)
                 {
                     UInt uicrcMsb,uicrcVal;
                     uicrcVal = pcH264AVCEncoder->m_uicrcVal[uiLayerCGSSNR];
                     uicrcMsb = 0;
                     Bool BitVal = false;
-                    for ( UInt uiBitIdx = 0; uiBitIdx< uiBytes*8; uiBitIdx++ )
+                    for (UInt uiBitIdx = 0; uiBitIdx< uiBytes*8; uiBitIdx++)
                     {
-                      uicrcMsb = ( uicrcVal >> 15 ) & 1;
-                      BitVal = ( pucNewBuffer[uiBitIdx>>3] >> (7-(uiBitIdx&7)) )&1;
-                      uicrcVal = (((uicrcVal<<1) + BitVal ) & 0xffff)^(uicrcMsb*0x1021);
+                      uicrcMsb = (uicrcVal >> 15) & 1;
+                      BitVal = (pucNewBuffer[uiBitIdx>>3] >> (7-(uiBitIdx&7)))&1;
+                      uicrcVal = (((uicrcVal<<1) + BitVal) & 0xffff)^(uicrcMsb*0x1021);
                     }
                     pcH264AVCEncoder->m_uicrcVal[uiLayerCGSSNR] = uicrcVal;
-                    if( pcH264AVCEncoder->m_uiNumofCGS[uiLayerCGSSNR] == uiQualityLevelCGSSNR + uiFragment )
+                    if(pcH264AVCEncoder->m_uiNumofCGS[uiLayerCGSSNR] == uiQualityLevelCGSSNR + uiFragment)
                     {
-                        ROT( pcCurrentWriteBuffer->nextBitWriteBufferActive() );
+                        ROT(pcCurrentWriteBuffer->nextBitWriteBufferActive());
                         for(UInt uiBitIdx = 0; uiBitIdx< 16; uiBitIdx++)
                         {
-                            uicrcMsb = ( uicrcVal >> 15 ) & 1;
+                            uicrcMsb = (uicrcVal >> 15) & 1;
                             BitVal = 0;
-                            uicrcVal = (((uicrcVal<<1) + BitVal ) & 0xffff)^(uicrcMsb*0x1021);
+                            uicrcVal = (((uicrcVal<<1) + BitVal) & 0xffff)^(uicrcMsb*0x1021);
                         }
                         pcH264AVCEncoder->m_uicrcVal[uiLayerCGSSNR] = uicrcVal;
                         UInt uiInfoEntry = pcH264AVCEncoder->m_pcIntegrityCheckSEI->getNumInfoEntriesMinus1();
-                        if( uiInfoEntry == MSYS_UINT_MAX )
+                        if(uiInfoEntry == MSYS_UINT_MAX)
                         {
                             uiInfoEntry = 0;
                         }
                         else
                         {
                             UInt uiLastLayer = pcH264AVCEncoder->m_pcIntegrityCheckSEI->getEntryDependencyId(uiInfoEntry);
-                            if( uiLastLayer < uiLayerCGSSNR )
+                            if(uiLastLayer < uiLayerCGSSNR)
                             {
                                 uiInfoEntry++;
                             }
@@ -216,17 +216,17 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits( UInt                    *pauiBits
         }
 
         ExtBinDataAccessor* pcNewExtBinDataAccessor = new ExtBinDataAccessor;
-        ROF( pcNewExtBinDataAccessor );
+        ROF(pcNewExtBinDataAccessor);
 
         rcBinData               .reset          ();
-        rcBinData               .set            (  pucNewBuffer, uiBytes );
-        rcBinData               .setMemAccessor ( *pcNewExtBinDataAccessor );
-        rcExtBinDataAccessorList.push_back      (  pcNewExtBinDataAccessor );
+        rcBinData               .set            ( pucNewBuffer, uiBytes);
+        rcBinData               .setMemAccessor (*pcNewExtBinDataAccessor);
+        rcExtBinDataAccessorList.push_back      ( pcNewExtBinDataAccessor);
 
         rcBinData               .reset          ();
-        rcBinData               .setMemAccessor ( *pcExtBinDataAccessor );
+        rcBinData               .setMemAccessor (*pcExtBinDataAccessor);
 
-        if( !pcCurrentWriteBuffer->nextBitWriteBufferActive() )
+        if(!pcCurrentWriteBuffer->nextBitWriteBufferActive())
         {
           break;
         }
@@ -250,12 +250,12 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits( UInt                    *pauiBits
 
 ErrVal NalUnitEncoder::closeNalUnit(UInt& ruiBits)
 {
-    ROF( m_bIsUnitActive );
+    ROF(m_bIsUnitActive);
 
     //===== write trailing bits =====
-    if( NAL_UNIT_END_OF_SEQUENCE != m_eNalUnitType &&
+    if(NAL_UNIT_END_OF_SEQUENCE != m_eNalUnitType &&
         NAL_UNIT_END_OF_STREAM   != m_eNalUnitType &&
-       (NAL_UNIT_PREFIX          != m_eNalUnitType || m_eNalRefIdc != NAL_REF_IDC_PRIORITY_LOWEST) )
+       (NAL_UNIT_PREFIX          != m_eNalUnitType || m_eNalRefIdc != NAL_REF_IDC_PRIORITY_LOWEST))
     {
         xWriteTrailingBits();
     }
@@ -263,12 +263,12 @@ ErrVal NalUnitEncoder::closeNalUnit(UInt& ruiBits)
 
     //===== convert to payload and add header =====
     UInt  uiHeaderBytes = 1;
-    if( m_eNalUnitType == NAL_UNIT_CODED_SLICE_SCALABLE || m_eNalUnitType == NAL_UNIT_PREFIX )
+    if(m_eNalUnitType == NAL_UNIT_CODED_SLICE_SCALABLE || m_eNalUnitType == NAL_UNIT_PREFIX)
     {
         uiHeaderBytes += NAL_UNIT_HEADER_SVC_EXTENSION_BYTES;
     }
 
-    UInt  uiBits = ( m_pcBitWriteBuffer->getNumberOfWrittenBits() + 7 ) >> 3;
+    UInt  uiBits = (m_pcBitWriteBuffer->getNumberOfWrittenBits() + 7) >> 3;
 
     convertRBSPToPayload(uiBits, uiHeaderBytes, m_pucBuffer, m_pucTempBuffer, m_uiPacketLength);
     m_pcBinDataAccessor->decreaseEndPos(m_pcBinDataAccessor->size() - uiBits);
@@ -283,28 +283,28 @@ ErrVal NalUnitEncoder::closeNalUnit(UInt& ruiBits)
     return Err::m_nOK;
 }
 
-ErrVal NalUnitEncoder::convertRBSPToPayload( UInt         &ruiBytesWritten,
+ErrVal NalUnitEncoder::convertRBSPToPayload(UInt         &ruiBytesWritten,
                                              UInt          uiHeaderBytes,
                                              UChar        *pcPayload,
                                              const UChar  *pcRBSP,
-                                             UInt          uiPayloadBufferSize )
+                                             UInt          uiPayloadBufferSize)
 {
     UInt uiZeroCount    = 0;
     UInt uiReadOffset   = uiHeaderBytes;
     UInt uiWriteOffset  = uiHeaderBytes;
 
     //===== NAL unit header =====
-    for( UInt uiIndex = 0; uiIndex < uiHeaderBytes; uiIndex++ )
+    for(UInt uiIndex = 0; uiIndex < uiHeaderBytes; uiIndex++)
     {
         pcPayload[uiIndex] = pcRBSP[uiIndex];
     }
 
     //===== NAL unit payload =====
-    for( ; uiReadOffset < ruiBytesWritten ; uiReadOffset++, uiWriteOffset++ )
+    for(; uiReadOffset < ruiBytesWritten ; uiReadOffset++, uiWriteOffset++)
     {
-        ROT( uiWriteOffset >= uiPayloadBufferSize );
+        ROT(uiWriteOffset >= uiPayloadBufferSize);
 
-        if( 2 == uiZeroCount && 0 == ( pcRBSP[uiReadOffset] & 0xfc ) )
+        if(2 == uiZeroCount && 0 == (pcRBSP[uiReadOffset] & 0xfc))
         {
             uiZeroCount                   = 0;
             pcPayload[uiWriteOffset++]  = 0x03;
@@ -312,7 +312,7 @@ ErrVal NalUnitEncoder::convertRBSPToPayload( UInt         &ruiBytesWritten,
 
         pcPayload[uiWriteOffset] = pcRBSP[uiReadOffset];
 
-        if( 0 == pcRBSP[uiReadOffset] )
+        if(0 == pcRBSP[uiReadOffset])
         {
             uiZeroCount++;
         }
@@ -323,7 +323,7 @@ ErrVal NalUnitEncoder::convertRBSPToPayload( UInt         &ruiBytesWritten,
     }
     if((0x00 == pcPayload[uiWriteOffset-1]) && (0x00 == pcPayload[uiWriteOffset-2]))
     {
-        ROT( uiWriteOffset >= uiPayloadBufferSize );
+        ROT(uiWriteOffset >= uiPayloadBufferSize);
         pcPayload[uiWriteOffset++] = 0x03;
     }
     ruiBytesWritten = uiWriteOffset;
@@ -331,13 +331,13 @@ ErrVal NalUnitEncoder::convertRBSPToPayload( UInt         &ruiBytesWritten,
     return Err::m_nOK;
 }
 
-ErrVal NalUnitEncoder::xWriteTrailingBits( )
+ErrVal NalUnitEncoder::xWriteTrailingBits()
 {
     m_pcBitWriteBuffer->write(1);
     m_pcBitWriteBuffer->writeAlignZero();
 
     BitWriteBufferIf* pcCurrentBitWriter = m_pcBitWriteBuffer;
-    while( pcCurrentBitWriter->nextBitWriteBufferActive() )
+    while(pcCurrentBitWriter->nextBitWriteBufferActive())
     {
         pcCurrentBitWriter = pcCurrentBitWriter->getNextBitWriteBuffer();
         pcCurrentBitWriter->write(1);
@@ -347,7 +347,7 @@ ErrVal NalUnitEncoder::xWriteTrailingBits( )
 }
 
 
-ErrVal NalUnitEncoder::write( const SequenceParameterSet& rcSPS )
+ErrVal NalUnitEncoder::write(const SequenceParameterSet& rcSPS)
 {
     rcSPS.write(m_pcHeaderSymbolWriteIf);
     m_eNalUnitType  = rcSPS.getNalUnitType();
@@ -356,7 +356,7 @@ ErrVal NalUnitEncoder::write( const SequenceParameterSet& rcSPS )
 }
 
 
-ErrVal NalUnitEncoder::write( const PictureParameterSet& rcPPS )
+ErrVal NalUnitEncoder::write(const PictureParameterSet& rcPPS)
 {
     rcPPS.write(m_pcHeaderSymbolWriteIf);
 
@@ -366,7 +366,7 @@ ErrVal NalUnitEncoder::write( const PictureParameterSet& rcPPS )
 }
 
 
-ErrVal NalUnitEncoder::writePrefix( const SliceHeader& rcSH )
+ErrVal NalUnitEncoder::writePrefix(const SliceHeader& rcSH)
 {
     rcSH.writePrefix(*m_pcHeaderSymbolWriteIf);
     m_eNalUnitType = NAL_UNIT_PREFIX;
@@ -375,27 +375,27 @@ ErrVal NalUnitEncoder::writePrefix( const SliceHeader& rcSH )
 }
 
 
-ErrVal NalUnitEncoder::write( const SliceHeader& rcSH )
+ErrVal NalUnitEncoder::write(const SliceHeader& rcSH)
 {
     SliceHeader cSH = rcSH;
     HeaderSymbolWriteIf*  pcCurrWriteIf = m_pcHeaderSymbolWriteIf;
 
-    for( UInt uiMGSFragment = 0; true; uiMGSFragment++ )
+    for(UInt uiMGSFragment = 0; true; uiMGSFragment++)
     {
         //----- modify copy of slice header -----
-        cSH.setDependencyId                   ( rcSH.getLayerCGSSNR         () );
-        cSH.setQualityId                      ( rcSH.getQualityLevelCGSSNR  () + uiMGSFragment );
-        cSH.setDiscardableFlag                ( rcSH.getDiscardableFlag     () );
-        cSH.setNoInterLayerPredFlag           ( rcSH.getNoInterLayerPredFlag() && cSH.getQualityId() == 0 );
-        cSH.setScanIdxStart                   ( rcSH.getSPS().getMGSCoeffStart( uiMGSFragment ) );
-        cSH.setScanIdxStop                    ( rcSH.getSPS().getMGSCoeffStop ( uiMGSFragment ) );
-        cSH.setRefLayerDQId                   ( uiMGSFragment == 0 ? rcSH.getRefLayerDQId                   () : ( rcSH.getLayerCGSSNR() << 4 ) + rcSH.getQualityLevelCGSSNR() + uiMGSFragment - 1 );
-        cSH.setAdaptiveBaseModeFlag           ( uiMGSFragment == 0 ? rcSH.getAdaptiveBaseModeFlag           () : false  );
-        cSH.setAdaptiveMotionPredictionFlag   ( uiMGSFragment == 0 ? rcSH.getAdaptiveMotionPredictionFlag   () : false  );
-        cSH.setAdaptiveResidualPredictionFlag ( uiMGSFragment == 0 ? rcSH.getAdaptiveResidualPredictionFlag () : false  );
-        cSH.setDefaultBaseModeFlag            ( uiMGSFragment == 0 ? rcSH.getDefaultBaseModeFlag            () : true   );
-        cSH.setDefaultMotionPredictionFlag    ( uiMGSFragment == 0 ? rcSH.getDefaultMotionPredictionFlag    () : true   );
-        cSH.setDefaultResidualPredictionFlag  ( uiMGSFragment == 0 ? rcSH.getDefaultResidualPredictionFlag  () : true   );
+        cSH.setDependencyId                   (rcSH.getLayerCGSSNR         ());
+        cSH.setQualityId                      (rcSH.getQualityLevelCGSSNR  () + uiMGSFragment);
+        cSH.setDiscardableFlag                (rcSH.getDiscardableFlag     ());
+        cSH.setNoInterLayerPredFlag           (rcSH.getNoInterLayerPredFlag() && cSH.getQualityId() == 0);
+        cSH.setScanIdxStart                   (rcSH.getSPS().getMGSCoeffStart(uiMGSFragment));
+        cSH.setScanIdxStop                    (rcSH.getSPS().getMGSCoeffStop (uiMGSFragment));
+        cSH.setRefLayerDQId                   (uiMGSFragment == 0 ? rcSH.getRefLayerDQId                   () : (rcSH.getLayerCGSSNR() << 4) + rcSH.getQualityLevelCGSSNR() + uiMGSFragment - 1);
+        cSH.setAdaptiveBaseModeFlag           (uiMGSFragment == 0 ? rcSH.getAdaptiveBaseModeFlag           () : false );
+        cSH.setAdaptiveMotionPredictionFlag   (uiMGSFragment == 0 ? rcSH.getAdaptiveMotionPredictionFlag   () : false );
+        cSH.setAdaptiveResidualPredictionFlag (uiMGSFragment == 0 ? rcSH.getAdaptiveResidualPredictionFlag () : false );
+        cSH.setDefaultBaseModeFlag            (uiMGSFragment == 0 ? rcSH.getDefaultBaseModeFlag            () : true  );
+        cSH.setDefaultMotionPredictionFlag    (uiMGSFragment == 0 ? rcSH.getDefaultMotionPredictionFlag    () : true  );
+        cSH.setDefaultResidualPredictionFlag  (uiMGSFragment == 0 ? rcSH.getDefaultResidualPredictionFlag  () : true  );
 
         //----- write copy of slice header -----
         cSH.write(*pcCurrWriteIf);
@@ -405,7 +405,7 @@ ErrVal NalUnitEncoder::write( const SliceHeader& rcSH )
         }
 
         //----- update -----
-        pcCurrWriteIf = pcCurrWriteIf->getHeaderSymbolWriteIfNextSlice( true );
+        pcCurrWriteIf = pcCurrWriteIf->getHeaderSymbolWriteIfNextSlice(true);
     }
 
     m_eNalUnitType  = rcSH.getNalUnitType ();
@@ -425,7 +425,7 @@ ErrVal NalUnitEncoder::write(SEI::MessageList& rcSEIMessageList)
 
 
 // JVT-V068 {
-ErrVal NalUnitEncoder::writeScalableNestingSei( SEI::MessageList& rcSEIMessageList )
+ErrVal NalUnitEncoder::writeScalableNestingSei(SEI::MessageList& rcSEIMessageList)
 {
     SEI::writeScalableNestingSei(m_pcHeaderSymbolWriteIf, m_pcHeaderSymbolTestIf, &rcSEIMessageList);
     m_eNalUnitType  = NAL_UNIT_SEI;
@@ -434,4 +434,4 @@ ErrVal NalUnitEncoder::writeScalableNestingSei( SEI::MessageList& rcSEIMessageLi
 }
 // JVT-V068 }
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

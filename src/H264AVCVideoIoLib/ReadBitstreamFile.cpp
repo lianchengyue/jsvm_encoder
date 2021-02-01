@@ -11,15 +11,15 @@ ReadBitstreamFile::~ReadBitstreamFile()
 {
 }
 
-ErrVal ReadBitstreamFile::releasePacket( BinData* pcBinData )
+ErrVal ReadBitstreamFile::releasePacket(BinData* pcBinData )
 {
-    ROFRS( pcBinData, Err::m_nOK );
+    ROFRS(pcBinData, Err::m_nOK );
     pcBinData->deleteData();
     delete pcBinData;
     return Err::m_nOK;
 }
 
-ErrVal ReadBitstreamFile::extractPacket( BinData*& rpcBinData, Bool& rbEOS )
+ErrVal ReadBitstreamFile::extractPacket(BinData*& rpcBinData, Bool& rbEOS )
 {
     UInt   dwBytesRead;
     UInt   dwLength = 0;
@@ -30,21 +30,21 @@ ErrVal ReadBitstreamFile::extractPacket( BinData*& rpcBinData, Bool& rbEOS )
     UInt   uiCond;
     UInt  uiZeros;
 
-    ROT( NULL == ( rpcBinData = new BinData ) );
+    ROT(NULL == (rpcBinData = new BinData ) );
 
     rbEOS     = false;
     // exit if there's no bitstream
-    ROFS( m_cFile.is_open());
+    ROFS(m_cFile.is_open());
 
     // we max read any number of zeros
     uiZeros = 0;
     do
     {
-        m_cFile.read( Buffer, 1, dwBytesRead );
+        m_cFile.read(Buffer, 1, dwBytesRead );
         uiZeros++;
     } while ((dwBytesRead==1)&&(Buffer[0]==0));
 
-    if( 0 == dwBytesRead )
+    if(0 == dwBytesRead )
     {
         rbEOS = true;
         return Err::m_nOK;
@@ -60,13 +60,13 @@ ErrVal ReadBitstreamFile::extractPacket( BinData*& rpcBinData, Bool& rbEOS )
     iPos = m_cFile.tell();
 
      // read at first 0x400 bytes
-    m_cFile.read( Buffer, 0x400, dwBytesRead );
+    m_cFile.read(Buffer, 0x400, dwBytesRead );
 
-    ROFS( dwBytesRead );
+    ROFS(dwBytesRead );
 
     do
     {
-        if( dwBytesRead == 1 )
+        if(dwBytesRead == 1 )
         {
             n = 1;
             break;
@@ -75,16 +75,16 @@ ErrVal ReadBitstreamFile::extractPacket( BinData*& rpcBinData, Bool& rbEOS )
         puc = Buffer;
         uiCond = 0;
 
-        for( n = 0; n < dwBytesRead-2; n++, puc++)
+        for(n = 0; n < dwBytesRead-2; n++, puc++)
         {
             uiCond = (puc[0] == 0 && puc[1] == 0 && puc[2] == 1 );
-            if( uiCond )
+            if(uiCond )
             {
                  break;
             }
         }
 
-        if( uiCond )
+        if(uiCond )
         {
             break;
         }
@@ -95,28 +95,28 @@ ErrVal ReadBitstreamFile::extractPacket( BinData*& rpcBinData, Bool& rbEOS )
         m_cFile.seek(-2, SEEK_CUR);
 
         // read the next chunk or return out of bytes
-        m_cFile.read( Buffer, 0x400, dwBytesRead );
+        m_cFile.read(Buffer, 0x400, dwBytesRead );
 
-        if( 2 == dwBytesRead )
+        if(2 == dwBytesRead )
         {
             n = 2;
             // end of stream cause we former stepped 4 bytes back
             break;      // this is the last pack
         }
     }
-    while( true );
+    while(true );
 
     // calc the complete length
     dwLength += n;
 
-    if( 0 == dwLength )
+    if(0 == dwLength )
     {
         rbEOS = true;
         return Err::m_nOK;
     }
 
-    rpcBinData->set( new UChar[dwLength], dwLength );
-    ROT( NULL == rpcBinData->data() );
+    rpcBinData->set(new UChar[dwLength], dwLength );
+    ROT(NULL == rpcBinData->data() );
 
     // seek the bitstream to the prev start position
     m_cFile.seek(iPos, SEEK_SET);
@@ -128,10 +128,10 @@ ErrVal ReadBitstreamFile::extractPacket( BinData*& rpcBinData, Bool& rbEOS )
 }
 
 
-ErrVal ReadBitstreamFile::init( const std::string& rcFileName )
+ErrVal ReadBitstreamFile::init(const std::string& rcFileName )
 {
     //try to open the bitstream binary
-    if(Err::m_nOK != m_cFile.open( rcFileName, LargeFile::OM_READONLY ) )
+    if(Err::m_nOK != m_cFile.open(rcFileName, LargeFile::OM_READONLY ) )
     {
         std::cerr << "failed to open input bitstream file " << rcFileName.data() << std::endl;
         return Err::m_nERR;
@@ -139,7 +139,7 @@ ErrVal ReadBitstreamFile::init( const std::string& rcFileName )
 
     UChar  aucBuffer[0x4];
     UInt uiBytesRead;
-    m_cFile.read( aucBuffer, 4, uiBytesRead);
+    m_cFile.read(aucBuffer, 4, uiBytesRead);
 
     UInt uiStartPos = (aucBuffer[0] == 0 && aucBuffer[1] == 0 && aucBuffer[2] == 1) ? 1 : 0;
 
@@ -148,17 +148,17 @@ ErrVal ReadBitstreamFile::init( const std::string& rcFileName )
     return Err::m_nOK;
 }
 
-ErrVal ReadBitstreamFile::create( ReadBitstreamFile*& rpcReadBitstreamFile )
+ErrVal ReadBitstreamFile::create(ReadBitstreamFile*& rpcReadBitstreamFile )
 {
   rpcReadBitstreamFile = new ReadBitstreamFile;
-  ROT( NULL == rpcReadBitstreamFile );
+  ROT(NULL == rpcReadBitstreamFile );
   return Err::m_nOK;
 }
 
 
-ErrVal ReadBitstreamFile::getPosition( Int& iPos )
+ErrVal ReadBitstreamFile::getPosition(Int& iPos )
 {
-    ROFS( m_cFile.is_open());
+    ROFS(m_cFile.is_open());
 
     iPos = (Int)m_cFile.tell();
 
@@ -166,9 +166,9 @@ ErrVal ReadBitstreamFile::getPosition( Int& iPos )
 }
 
 
-ErrVal ReadBitstreamFile::setPosition( Int  iPos )
+ErrVal ReadBitstreamFile::setPosition(Int  iPos )
 {
-    ROFS( m_cFile.is_open());
+    ROFS(m_cFile.is_open());
 
     // seek the bitstream to the prev start position
     m_cFile.seek(iPos, SEEK_SET);
@@ -188,7 +188,7 @@ ErrVal ReadBitstreamFile::uninit()
 
 ErrVal ReadBitstreamFile::destroy()
 {
-    AOT_DBG( m_cFile.is_open() );
+    AOT_DBG(m_cFile.is_open() );
 
     uninit();
 

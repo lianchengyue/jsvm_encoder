@@ -1,13 +1,5 @@
-
-#if !defined(AFX_H264AVCENCODER_H__FBF0345F_A5E5_4D18_8BEC_4A68790901F7__INCLUDED_)
-#define AFX_H264AVCENCODER_H__FBF0345F_A5E5_4D18_8BEC_4A68790901F7__INCLUDED_
-
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-
+#ifndef _H264AVCENCODER_H_
+#define _H264AVCENCODER_H_
 
 #include "H264AVCEncoderLib.h"
 #include "H264AVCCommonLib/TraceFile.h"
@@ -18,8 +10,7 @@
 #include "CreaterH264AVCEncoder.h"
 #endif
 
-H264AVC_NAMESPACE_BEGIN
-
+namespace JSVM {
 
 
 class PocCalculator;
@@ -38,7 +29,7 @@ class MotionVectorCalculation;
 
 
 
-class H264AVCENCODERLIB_API H264AVCEncoder
+class H264AVCEncoder
 {
 protected:
 	H264AVCEncoder();
@@ -275,12 +266,7 @@ private:
 #endif
 
 
-#if defined( WIN32 )
-# pragma warning( default: 4251 )
-#endif
+}  //namespace JSVM {
 
 
-H264AVC_NAMESPACE_END
-
-
-#endif // !defined(AFX_H264AVCENCODER_H__FBF0345F_A5E5_4D18_8BEC_4A68790901F7__INCLUDED_)
+#endif //_H264AVCENCODER_H_

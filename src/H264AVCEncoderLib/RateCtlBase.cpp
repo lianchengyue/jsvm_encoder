@@ -5,12 +5,12 @@
 
 bool bRateControlEnable;
 
-rc_generic::rc_generic( jsvm_parameters *jsvm_params )
+rc_generic::rc_generic(jsvm_parameters *jsvm_params)
 {
     m_pcJSVMParams = jsvm_params;
 }
 
-rc_generic::~rc_generic( void )
+rc_generic::~rc_generic(void)
 {
     generic_free();
 }
@@ -38,14 +38,14 @@ void rc_generic::update_rc(unsigned int currentMAD)
  *
  *************************************************************************************
 */
-double rc_generic::QP2Qstep( int iQP )
+double rc_generic::QP2Qstep(int iQP)
 {
     int i;
     double dQstep;
     static const double dQP2QSTEP[6] = { 0.625, 0.6875, 0.8125, 0.875, 1.0, 1.125 };
 
     dQstep = dQP2QSTEP[iQP % 6];
-    for( i=0; i<(iQP/6); i++)
+    for(i=0; i<(iQP/6); i++)
         dQstep *= 2;
 
     return dQstep;
@@ -59,17 +59,17 @@ double rc_generic::QP2Qstep( int iQP )
  *
  *************************************************************************************
 */
-int rc_generic::Qstep2QP( double dQstep )
+int rc_generic::Qstep2QP(double dQstep)
 {
     int q_per = 0, q_rem = 0;
 
-    //  assert( dQstep >= QP2Qstep(0) && dQstep <= QP2Qstep(51) );
-    if( dQstep < QP2Qstep(0))
+    //  assert(dQstep >= QP2Qstep(0) && dQstep <= QP2Qstep(51));
+    if(dQstep < QP2Qstep(0))
         return 0;
-    else if (dQstep > QP2Qstep(51) )
+    else if (dQstep > QP2Qstep(51))
         return 51;
 
-    while( dQstep > QP2Qstep(5) )
+    while(dQstep > QP2Qstep(5))
     {
         dQstep /= 2.0;
         q_per += 1;
@@ -132,7 +132,7 @@ double rc_generic::ComputeFrameMAD()
  *
  *************************************************************************************
  */
-void rc_generic::generic_alloc( void )
+void rc_generic::generic_alloc(void)
 {
     m_piMADofMB = (int *)calloc(m_pcJSVMParams->FrameSizeInMbs, sizeof (int));
     if(NULL == m_piMADofMB)
@@ -152,7 +152,7 @@ void rc_generic::generic_alloc( void )
  *
  *************************************************************************************
  */
-void rc_generic::generic_free( void )
+void rc_generic::generic_free(void)
 {
     if (NULL != m_piMADofMB)
     {
@@ -168,15 +168,15 @@ void rc_generic::generic_free( void )
  *
  *************************************************************************************
  */
-int rc_generic::getCurrGopLevel( int frame_no )
+int rc_generic::getCurrGopLevel(int frame_no)
 {
   int hlevel;
   for(hlevel = m_pcJSVMParams->HierarchicalLevels; hlevel >= 1; hlevel--) {
-      if(frame_no % (int)pow(2.00, hlevel ) == 0) {
+      if(frame_no % (int)pow(2.00, hlevel) == 0) {
           break;
       }
   }
-  assert ( hlevel >= 0 );
+  assert (hlevel >= 0);
   return hlevel;
 }
 
@@ -187,10 +187,10 @@ int rc_generic::getCurrGopLevel( int frame_no )
  *
  *************************************************************************************
  */
-void rc_generic::adaptInitialQP( void )
+void rc_generic::adaptInitialQP(void)
 {
     int iQp;
-    double dL1, dL2, dL3, dBpp = (1.0 * m_pcJSVMParams->bit_rate) / (double)(m_pcJSVMParams->FrameRate * m_pcJSVMParams->width * m_pcJSVMParams->height );
+    double dL1, dL2, dL3, dBpp = (1.0 * m_pcJSVMParams->bit_rate) / (double)(m_pcJSVMParams->FrameRate * m_pcJSVMParams->width * m_pcJSVMParams->height);
     if((m_pcJSVMParams->width * m_pcJSVMParams->height) <= 35200) // ~ QCIF
     {
         dL1 = 0.1;

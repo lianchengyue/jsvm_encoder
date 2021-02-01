@@ -1,32 +1,31 @@
-
 #include "H264AVCEncoderLib.h"
 #include "H264AVCCommonLib.h"
 #include "RecPicBuffer.h"
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 RecPicBufUnit::RecPicBufUnit()
-: m_iPoc                  ( MSYS_INT_MIN )
-, m_uiFrameNum            ( MSYS_UINT_MAX )
-, m_bExisting             ( false )
-, m_bNeededForReference   ( false )
-, m_bOutputted            ( false )
-, m_pcReconstructedFrame  ( NULL )
-, m_pcMbDataCtrl          ( NULL )
-, m_pcPicBuffer           ( NULL )
+: m_iPoc                  (MSYS_INT_MIN)
+, m_uiFrameNum            (MSYS_UINT_MAX)
+, m_bExisting             (false)
+, m_bNeededForReference   (false)
+, m_bOutputted            (false)
+, m_pcReconstructedFrame  (NULL)
+, m_pcMbDataCtrl          (NULL)
+, m_pcPicBuffer           (NULL)
 {
 }
 
 
 RecPicBufUnit::~RecPicBufUnit()
 {
-  if( m_pcMbDataCtrl )
+  if(m_pcMbDataCtrl)
   {
     m_pcMbDataCtrl->uninit();
   }
-  if( m_pcReconstructedFrame )
+  if(m_pcReconstructedFrame)
   {
     m_pcReconstructedFrame->uninit();
   }
@@ -38,20 +37,20 @@ RecPicBufUnit::~RecPicBufUnit()
 ErrVal RecPicBufUnit::create(RecPicBufUnit*&              rpcRecPicBufUnit,
                              YuvBufferCtrl&               rcYuvBufferCtrlFullPel,
                              YuvBufferCtrl&               rcYuvBufferCtrlHalfPel,
-                             const SequenceParameterSet&  rcSPS )
+                             const SequenceParameterSet&  rcSPS)
 {
     rpcRecPicBufUnit = new RecPicBufUnit();
-    ROF( rpcRecPicBufUnit );
+    ROF(rpcRecPicBufUnit);
 
-    rpcRecPicBufUnit->m_pcReconstructedFrame  = new Frame  ( rcYuvBufferCtrlFullPel, rcYuvBufferCtrlHalfPel, FRAME, 0 );
+    rpcRecPicBufUnit->m_pcReconstructedFrame  = new Frame  (rcYuvBufferCtrlFullPel, rcYuvBufferCtrlHalfPel, FRAME, 0);
     rpcRecPicBufUnit->m_pcMbDataCtrl          = new MbDataCtrl();
-    ROF( rpcRecPicBufUnit->m_pcReconstructedFrame );
-    ROF( rpcRecPicBufUnit->m_pcMbDataCtrl );
+    ROF(rpcRecPicBufUnit->m_pcReconstructedFrame);
+    ROF(rpcRecPicBufUnit->m_pcMbDataCtrl);
 
     rpcRecPicBufUnit->m_pcReconstructedFrame->init();
     rpcRecPicBufUnit->m_pcMbDataCtrl->init(rcSPS);
 
-    rpcRecPicBufUnit->m_pcReconstructedFrame->setRecPicBufUnit( rpcRecPicBufUnit );
+    rpcRecPicBufUnit->m_pcReconstructedFrame->setRecPicBufUnit(rpcRecPicBufUnit);
 
     return Err::m_nOK;
 }
@@ -65,7 +64,7 @@ ErrVal RecPicBufUnit::destroy()
 
 
 ErrVal RecPicBufUnit::init(SliceHeader* pcSliceHeader,
-                           PicBuffer* pcPicBuffer )
+                           PicBuffer* pcPicBuffer)
 {
     m_iPoc                  = pcSliceHeader->getPoc();
     m_uiFrameNum            = pcSliceHeader->getFrameNum();
@@ -80,7 +79,7 @@ ErrVal RecPicBufUnit::init(SliceHeader* pcSliceHeader,
 }
 
 
-ErrVal RecPicBufUnit::initNonEx(Int iPoc, UInt uiFrameNum )
+ErrVal RecPicBufUnit::initNonEx(Int iPoc, UInt uiFrameNum)
 {
     m_iPoc                  = iPoc;
     m_uiFrameNum            = uiFrameNum;
@@ -89,7 +88,7 @@ ErrVal RecPicBufUnit::initNonEx(Int iPoc, UInt uiFrameNum )
     m_bOutputted            = false;
     m_pcPicBuffer           = NULL;
 
-    m_pcReconstructedFrame->setPoc( m_iPoc );
+    m_pcReconstructedFrame->setPoc(m_iPoc);
 
     return Err::m_nOK;
 }
@@ -110,7 +109,7 @@ ErrVal RecPicBufUnit::uninit()
 
 ErrVal RecPicBufUnit::markNonRef()
 {
-    ROF( m_bNeededForReference );
+    ROF(m_bNeededForReference);
     m_bNeededForReference = false;
     return Err::m_nOK;
 }
@@ -118,7 +117,7 @@ ErrVal RecPicBufUnit::markNonRef()
 
 ErrVal RecPicBufUnit::markOutputted()
 {
-    ROT( m_bOutputted );
+    ROT(m_bOutputted);
     m_bOutputted  = true;
     m_pcPicBuffer = NULL;
     return Err::m_nOK;
@@ -138,13 +137,13 @@ ErrVal RecPicBufUnit::markOutputted()
 
 
 RecPicBuffer::RecPicBuffer()
-: m_bInitDone               ( false )
-, m_pcYuvBufferCtrlFullPel  ( NULL )
-, m_pcYuvBufferCtrlHalfPel  ( NULL )
-, m_uiNumRefFrames          ( 0 )
-, m_uiMaxFrameNum           ( 0 )
-, m_uiLastRefFrameNum       ( MSYS_UINT_MAX )
-, m_pcCurrRecPicBufUnit     ( NULL )
+: m_bInitDone               (false)
+, m_pcYuvBufferCtrlFullPel  (NULL)
+, m_pcYuvBufferCtrlHalfPel  (NULL)
+, m_uiNumRefFrames          (0)
+, m_uiMaxFrameNum           (0)
+, m_uiLastRefFrameNum       (MSYS_UINT_MAX)
+, m_pcCurrRecPicBufUnit     (NULL)
 {
 }
 
@@ -155,24 +154,24 @@ RecPicBuffer::~RecPicBuffer()
 ErrVal RecPicBuffer::create(RecPicBuffer*& rpcRecPicBuffer)
 {
     rpcRecPicBuffer = new RecPicBuffer();
-    ROF( rpcRecPicBuffer );
+    ROF(rpcRecPicBuffer);
     return Err::m_nOK;
 }
 
 ErrVal RecPicBuffer::destroy()
 {
-    ROT( m_bInitDone );
+    ROT(m_bInitDone);
     delete this;
     return Err::m_nOK;
 }
 
 
-ErrVal RecPicBuffer::init( YuvBufferCtrl*  pcYuvBufferCtrlFullPel,
-                    YuvBufferCtrl*  pcYuvBufferCtrlHalfPel )
+ErrVal RecPicBuffer::init(YuvBufferCtrl*  pcYuvBufferCtrlFullPel,
+                    YuvBufferCtrl*  pcYuvBufferCtrlHalfPel)
 {
-    ROT( m_bInitDone );
-    ROF( pcYuvBufferCtrlFullPel );
-    ROF( pcYuvBufferCtrlHalfPel );
+    ROT(m_bInitDone);
+    ROF(pcYuvBufferCtrlFullPel);
+    ROF(pcYuvBufferCtrlHalfPel);
 
     m_pcYuvBufferCtrlFullPel  = pcYuvBufferCtrlFullPel;
     m_pcYuvBufferCtrlHalfPel  = pcYuvBufferCtrlHalfPel;
@@ -186,12 +185,12 @@ ErrVal RecPicBuffer::init( YuvBufferCtrl*  pcYuvBufferCtrlFullPel,
 }
 
 
-ErrVal RecPicBuffer::initSPS( const SequenceParameterSet& rcSPS )
+ErrVal RecPicBuffer::initSPS(const SequenceParameterSet& rcSPS)
 {
-    ROF( m_bInitDone );
+    ROF(m_bInitDone);
 
     UInt uiMaxFramesInDPB = rcSPS.getMaxDPBSize();
-    xCreateData( uiMaxFramesInDPB, rcSPS);
+    xCreateData(uiMaxFramesInDPB, rcSPS);
     m_uiNumRefFrames = rcSPS.getNumRefFrames();
     m_uiMaxFrameNum = (1 << (rcSPS.getLog2MaxFrameNum()));
 
@@ -201,7 +200,7 @@ ErrVal RecPicBuffer::initSPS( const SequenceParameterSet& rcSPS )
 
 ErrVal RecPicBuffer::uninit()
 {
-    ROF( m_bInitDone );
+    ROF(m_bInitDone);
 
     xDeleteData();
 
@@ -216,8 +215,8 @@ ErrVal RecPicBuffer::uninit()
 }
 
 
-ErrVal RecPicBuffer::clear( PicBufferList& rcOutputList,
-                     PicBufferList& rcUnusedList )
+ErrVal RecPicBuffer::clear(PicBufferList& rcOutputList,
+                     PicBufferList& rcUnusedList)
 {
     xClearOutputAll(rcOutputList, rcUnusedList);
     return Err::m_nOK;
@@ -229,7 +228,7 @@ RecPicBufUnit* RecPicBuffer::getRecPicBufUnit(Int iPoc)
     RecPicBufUnit*            pcRecPicBufUnit = 0;
     RecPicBufUnitList::iterator iter  = m_cUsedRecPicBufUnitList.begin();
     RecPicBufUnitList::iterator end   = m_cUsedRecPicBufUnitList.end  ();
-    for( ; iter != end; iter++)
+    for(; iter != end; iter++)
     {
         if((*iter)->getPoc() == iPoc)
         {
@@ -245,14 +244,14 @@ ErrVal RecPicBuffer::initCurrRecPicBufUnit(RecPicBufUnit*&  rpcCurrRecPicBufUnit
                                            PicBuffer*       pcPicBuffer,
                                            SliceHeader*     pcSliceHeader,
                                            PicBufferList&   rcOutputList,
-                                           PicBufferList&   rcUnusedList )
+                                           PicBufferList&   rcUnusedList)
 {
-    ROF( m_bInitDone );
-    ROF( pcPicBuffer );
-    ROF( pcSliceHeader );
+    ROF(m_bInitDone);
+    ROF(pcPicBuffer);
+    ROF(pcSliceHeader);
 
     //===== check for missing pictures =====
-    xCheckMissingPics( pcSliceHeader, rcOutputList, rcUnusedList);
+    xCheckMissingPics(pcSliceHeader, rcOutputList, rcUnusedList);
 
     //===== initialize current DPB unit =====
     m_pcCurrRecPicBufUnit->init(pcSliceHeader, pcPicBuffer);
@@ -270,11 +269,11 @@ ErrVal RecPicBuffer::initCurrRecPicBufUnit(RecPicBufUnit*&  rpcCurrRecPicBufUnit
 ErrVal RecPicBuffer::store(RecPicBufUnit*   pcRecPicBufUnit,
                            SliceHeader*     pcSliceHeader,
                            PicBufferList&   rcOutputList,
-                           PicBufferList&   rcUnusedList )
+                           PicBufferList&   rcUnusedList)
 {
     xStorePicture(pcRecPicBufUnit, rcOutputList, rcUnusedList, pcSliceHeader, pcSliceHeader->getIdrFlag());
 
-    if( pcRecPicBufUnit->isNeededForRef() )
+    if(pcRecPicBufUnit->isNeededForRef())
     {
         m_uiLastRefFrameNum = pcRecPicBufUnit->getFrameNum();
     }
@@ -285,14 +284,14 @@ ErrVal RecPicBuffer::store(RecPicBufUnit*   pcRecPicBufUnit,
 
 ErrVal RecPicBuffer::getRefLists(RefFrameList&  rcList0,
                                  RefFrameList&  rcList1,
-                                 SliceHeader&   rcSliceHeader )
+                                 SliceHeader&   rcSliceHeader)
 {
     //===== clear lists =====
     rcList0.reset();
     rcList1.reset();
-    ROTRS( rcSliceHeader.isIntraSlice(), Err::m_nOK );
+    ROTRS(rcSliceHeader.isIntraSlice(), Err::m_nOK);
 
-    if( rcSliceHeader.isPSlice() )
+    if(rcSliceHeader.isPSlice())
     {
         xInitRefListPSlice(rcList0);
         xRefListRemapping (rcList0, LIST_0, &rcSliceHeader);
@@ -321,14 +320,14 @@ ErrVal RecPicBuffer::xAdaptListSize(RefFrameList& rcList,
 {
     UInt uiDefaultListSize = rcSliceHeader.getNumRefIdxActive(eListIdx);
     UInt uiMaximumListSize = rcList.getActive();
-    UInt uiCurrentListSize = gMin( uiDefaultListSize, uiMaximumListSize);
+    UInt uiCurrentListSize = gMin(uiDefaultListSize, uiMaximumListSize);
 
     //===== update slice header =====
     rcList.setActive(uiCurrentListSize);
     rcSliceHeader.setNumRefIdxActive(eListIdx, uiCurrentListSize);
-    if( uiCurrentListSize != rcSliceHeader.getPPS().getNumRefIdxActive(eListIdx))
+    if(uiCurrentListSize != rcSliceHeader.getPPS().getNumRefIdxActive(eListIdx))
     {
-        rcSliceHeader.setNumRefIdxActiveOverrideFlag( true );
+        rcSliceHeader.setNumRefIdxActiveOverrideFlag(true);
     }
 
     return Err::m_nOK;
@@ -337,14 +336,14 @@ ErrVal RecPicBuffer::xAdaptListSize(RefFrameList& rcList,
 
 ErrVal RecPicBuffer::xCreateData(UInt uiMaxFramesInDPB, const SequenceParameterSet&  rcSPS)
 {
-    ROF( m_bInitDone );
+    ROF(m_bInitDone);
     xDeleteData();
 
-    while( uiMaxFramesInDPB-- )
+    while(uiMaxFramesInDPB--)
     {
         RecPicBufUnit* pcRecPicBufUnit = 0;
         RecPicBufUnit::create(pcRecPicBufUnit, *m_pcYuvBufferCtrlFullPel, *m_pcYuvBufferCtrlHalfPel, rcSPS);
-        m_cFreeRecPicBufUnitList.push_back( pcRecPicBufUnit );
+        m_cFreeRecPicBufUnitList.push_back(pcRecPicBufUnit);
     }
     RecPicBufUnit::create(m_pcCurrRecPicBufUnit, *m_pcYuvBufferCtrlFullPel, *m_pcYuvBufferCtrlHalfPel, rcSPS);
     m_pcCurrRecPicBufUnit->uninit();
@@ -355,17 +354,17 @@ ErrVal RecPicBuffer::xCreateData(UInt uiMaxFramesInDPB, const SequenceParameterS
 
 ErrVal RecPicBuffer::xDeleteData()
 {
-    ROF( m_bInitDone );
+    ROF(m_bInitDone);
 
     m_cFreeRecPicBufUnitList += m_cUsedRecPicBufUnitList;
     m_cUsedRecPicBufUnitList.clear();
 
-    while( m_cFreeRecPicBufUnitList.size() )
+    while(m_cFreeRecPicBufUnitList.size())
     {
         RecPicBufUnit* pcRecPicBufUnit = m_cFreeRecPicBufUnitList.popFront();
         pcRecPicBufUnit->destroy();
     }
-    if( m_pcCurrRecPicBufUnit )
+    if(m_pcCurrRecPicBufUnit)
     {
         m_pcCurrRecPicBufUnit->destroy();
         m_pcCurrRecPicBufUnit = NULL;
@@ -376,29 +375,29 @@ ErrVal RecPicBuffer::xDeleteData()
 
 ErrVal RecPicBuffer::xCheckMissingPics(SliceHeader*   pcSliceHeader,
                                        PicBufferList& rcOutputList,
-                                       PicBufferList& rcUnusedList )
+                                       PicBufferList& rcUnusedList)
 {
-    ROTRS( pcSliceHeader->getIdrFlag(), Err::m_nOK );
-    ROTRS( ( ( m_uiLastRefFrameNum + 1 ) % m_uiMaxFrameNum ) == pcSliceHeader->getFrameNum(), Err::m_nOK );
+    ROTRS(pcSliceHeader->getIdrFlag(), Err::m_nOK);
+    ROTRS(((m_uiLastRefFrameNum + 1) % m_uiMaxFrameNum) == pcSliceHeader->getFrameNum(), Err::m_nOK);
 
     UInt  uiMissingFrames = pcSliceHeader->getFrameNum() - m_uiLastRefFrameNum - 1;
-    if( pcSliceHeader->getFrameNum() <= m_uiLastRefFrameNum )
+    if(pcSliceHeader->getFrameNum() <= m_uiLastRefFrameNum)
     {
       uiMissingFrames += m_uiMaxFrameNum;
     }
-    ROF( pcSliceHeader->getSPS().getGapsInFrameNumValueAllowedFlag());
+    ROF(pcSliceHeader->getSPS().getGapsInFrameNumValueAllowedFlag());
 
-    for( UInt uiIndex = 1; uiIndex <= uiMissingFrames; uiIndex++ )
+    for(UInt uiIndex = 1; uiIndex <= uiMissingFrames; uiIndex++)
     {
         Bool bTreatAsIdr = (m_cUsedRecPicBufUnitList.empty());
         Int  iPoc        = (bTreatAsIdr ? 0 : m_cUsedRecPicBufUnitList.back()->getPoc());
-        UInt uiFrameNum  = (m_uiLastRefFrameNum + uiIndex ) % m_uiMaxFrameNum;
+        UInt uiFrameNum  = (m_uiLastRefFrameNum + uiIndex) % m_uiMaxFrameNum;
 
         m_pcCurrRecPicBufUnit->initNonEx(iPoc, uiFrameNum);
-        xStorePicture( m_pcCurrRecPicBufUnit, rcOutputList, rcUnusedList, pcSliceHeader, bTreatAsIdr);
+        xStorePicture(m_pcCurrRecPicBufUnit, rcOutputList, rcUnusedList, pcSliceHeader, bTreatAsIdr);
     }
 
-    m_uiLastRefFrameNum = ( m_uiLastRefFrameNum + uiMissingFrames ) % m_uiMaxFrameNum;
+    m_uiLastRefFrameNum = (m_uiLastRefFrameNum + uiMissingFrames) % m_uiMaxFrameNum;
     return Err::m_nOK;
 }
 
@@ -407,14 +406,14 @@ ErrVal RecPicBuffer::xStorePicture(RecPicBufUnit* pcRecPicBufUnit,
                                    PicBufferList& rcOutputList,
                                    PicBufferList& rcUnusedList,
                                    SliceHeader*   pcSliceHeader,
-                                   Bool           bTreatAsIdr )
+                                   Bool           bTreatAsIdr)
 {
-    ROF( pcRecPicBufUnit == m_pcCurrRecPicBufUnit );
+    ROF(pcRecPicBufUnit == m_pcCurrRecPicBufUnit);
 
-    if( bTreatAsIdr )
+    if(bTreatAsIdr)
     {
         xClearOutputAll(rcOutputList, rcUnusedList);
-        m_cUsedRecPicBufUnitList.push_back( pcRecPicBufUnit);
+        m_cUsedRecPicBufUnitList.push_back(pcRecPicBufUnit);
     }
     else
     {
@@ -432,38 +431,38 @@ ErrVal RecPicBuffer::xStorePicture(RecPicBufUnit* pcRecPicBufUnit,
 
 ErrVal RecPicBuffer::xOutput(PicBufferList& rcOutputList, PicBufferList& rcUnusedList)
 {
-    ROTRS( m_cFreeRecPicBufUnitList.size(), Err::m_nOK );
+    ROTRS(m_cFreeRecPicBufUnitList.size(), Err::m_nOK);
 
     //===== smallest non-ref/output poc value =====
     Int                         iMinOutputPoc   = MSYS_INT_MAX;
     RecPicBufUnit*              pcElemToRemove  = 0;
     RecPicBufUnitList::iterator iter            = m_cUsedRecPicBufUnitList.begin();
     RecPicBufUnitList::iterator end             = m_cUsedRecPicBufUnitList.end  ();
-    for( ; iter != end; iter++)
+    for(; iter != end; iter++)
     {
-        Bool bOutput = ( ! (*iter)->isOutputted() && (*iter)->isExisting() && ! (*iter)->isNeededForRef() );
-        if( bOutput && (*iter)->getPoc() < iMinOutputPoc )
+        Bool bOutput = (! (*iter)->isOutputted() && (*iter)->isExisting() && ! (*iter)->isNeededForRef());
+        if(bOutput && (*iter)->getPoc() < iMinOutputPoc)
         {
             iMinOutputPoc  = (*iter)->getPoc();
             pcElemToRemove = (*iter);
         }
     }
-    ROF( pcElemToRemove ); // error, nothing can be removed
+    ROF(pcElemToRemove); // error, nothing can be removed
 
     //===== copy all output elements to temporary list =====
     RecPicBufUnitList cOutputList;
     Int               iMaxPoc = iMinOutputPoc;
     Int               iMinPoc = MSYS_INT_MAX;
     iter                      = m_cUsedRecPicBufUnitList.begin();
-    for( ; iter != end; iter++ )
+    for(; iter != end; iter++)
     {
-        Bool bOutput = ( (*iter)->getPoc() <= iMinOutputPoc && ! (*iter)->isOutputted() );
-        if( bOutput )
+        Bool bOutput = ((*iter)->getPoc() <= iMinOutputPoc && ! (*iter)->isOutputted());
+        if(bOutput)
         {
-            if( (*iter)->isExisting() )
+            if((*iter)->isExisting())
             {
-                cOutputList.push_back( *iter );
-                if( (*iter)->getPoc() < iMinPoc )
+                cOutputList.push_back(*iter);
+                if((*iter)->getPoc() < iMinPoc)
                 {
                     iMinPoc = (*iter)->getPoc();
                 }
@@ -476,19 +475,19 @@ ErrVal RecPicBuffer::xOutput(PicBufferList& rcOutputList, PicBufferList& rcUnuse
     }
 
     //===== real output =====
-    for( Int iPoc = iMinPoc; iPoc <= iMaxPoc; iPoc++ )
+    for(Int iPoc = iMinPoc; iPoc <= iMaxPoc; iPoc++)
     {
         iter = cOutputList.begin();
         end  = cOutputList.end  ();
-        for( ; iter != end; iter++ )
+        for(; iter != end; iter++)
         {
-            if( (*iter)->getPoc() == iPoc )
+            if((*iter)->getPoc() == iPoc)
             {
                 RecPicBufUnit* pcRecPicBufUnit = *iter;
                 cOutputList.remove(pcRecPicBufUnit);
 
                 PicBuffer* pcPicBuffer = pcRecPicBufUnit->getPicBuffer();
-                ROF( pcPicBuffer );
+                ROF(pcPicBuffer);
                 pcRecPicBufUnit->getRecFrame()->store(pcPicBuffer);
                 rcOutputList.push_back(pcPicBuffer);
                 rcUnusedList.push_back(pcPicBuffer);
@@ -498,20 +497,20 @@ ErrVal RecPicBuffer::xOutput(PicBufferList& rcOutputList, PicBufferList& rcUnuse
             }
         }
     }
-    ROT( cOutputList.size() );
+    ROT(cOutputList.size());
 
     //===== clear buffer ====
     xClearBuffer();
 
     //===== check =====
-    ROT( m_cFreeRecPicBufUnitList.empty() ); // this should never happen
+    ROT(m_cFreeRecPicBufUnitList.empty()); // this should never happen
 
     return Err::m_nOK;
 }
 
 
-ErrVal RecPicBuffer::xClearOutputAll( PicBufferList& rcOutputList,
-                               PicBufferList& rcUnusedList )
+ErrVal RecPicBuffer::xClearOutputAll(PicBufferList& rcOutputList,
+                               PicBufferList& rcUnusedList)
 {
     //===== create output list =====
     RecPicBufUnitList           cOutputList;
@@ -519,14 +518,14 @@ ErrVal RecPicBuffer::xClearOutputAll( PicBufferList& rcOutputList,
     Int                         iMaxPoc = MSYS_INT_MIN;
     RecPicBufUnitList::iterator iter    = m_cUsedRecPicBufUnitList.begin();
     RecPicBufUnitList::iterator end     = m_cUsedRecPicBufUnitList.end  ();
-    for( ; iter != end; iter++)
+    for(; iter != end; iter++)
     {
-        Bool bOutput = ( ! (*iter)->isOutputted() && (*iter)->isExisting() );
-        if( bOutput )
+        Bool bOutput = (! (*iter)->isOutputted() && (*iter)->isExisting());
+        if(bOutput)
         {
-            cOutputList.push_back( *iter );
-            if( (*iter)->getPoc() < iMinPoc )   iMinPoc = (*iter)->getPoc();
-            if( (*iter)->getPoc() > iMaxPoc )   iMaxPoc = (*iter)->getPoc();
+            cOutputList.push_back(*iter);
+            if((*iter)->getPoc() < iMinPoc)   iMinPoc = (*iter)->getPoc();
+            if((*iter)->getPoc() > iMaxPoc)   iMaxPoc = (*iter)->getPoc();
         }
     }
 
@@ -535,27 +534,27 @@ ErrVal RecPicBuffer::xClearOutputAll( PicBufferList& rcOutputList,
     {
         iter = cOutputList.begin();
         end  = cOutputList.end  ();
-        for( ; iter != end; iter++)
+        for(; iter != end; iter++)
         {
             if((*iter)->getPoc() == iPoc)
             {
                 RecPicBufUnit* pcRecPicBufUnit = *iter;
-                cOutputList.remove( pcRecPicBufUnit );
+                cOutputList.remove(pcRecPicBufUnit);
 
                 //--- output ---
                 PicBuffer* pcPicBuffer = pcRecPicBufUnit->getPicBuffer();
-                ROF( pcPicBuffer );
-                pcRecPicBufUnit->getRecFrame()->store( pcPicBuffer );
-                rcOutputList.push_back( pcPicBuffer );
-                rcUnusedList.push_back( pcPicBuffer );
+                ROF(pcPicBuffer);
+                pcRecPicBufUnit->getRecFrame()->store(pcPicBuffer);
+                rcOutputList.push_back(pcPicBuffer);
+                rcUnusedList.push_back(pcPicBuffer);
                 break; // only one picture per poc
             }
         }
     }
-    ROT( cOutputList.size() );
+    ROT(cOutputList.size());
 
     //===== uninit all elements and move to free list =====
-    while( m_cUsedRecPicBufUnitList.size() )
+    while(m_cUsedRecPicBufUnitList.size())
     {
         RecPicBufUnit* pcRecPicBufUnit = m_cUsedRecPicBufUnitList.popFront();
         pcRecPicBufUnit->uninit();
@@ -567,9 +566,9 @@ ErrVal RecPicBuffer::xClearOutputAll( PicBufferList& rcOutputList,
 
 ErrVal RecPicBuffer::xUpdateMemory(SliceHeader* pcSliceHeader)
 {
-    ROTRS( pcSliceHeader && pcSliceHeader->getNalRefIdc() == NAL_REF_IDC_PRIORITY_LOWEST, Err::m_nOK );
+    ROTRS(pcSliceHeader && pcSliceHeader->getNalRefIdc() == NAL_REF_IDC_PRIORITY_LOWEST, Err::m_nOK);
 
-    if( pcSliceHeader && pcSliceHeader->getDecRefPicMarking().getAdaptiveRefPicMarkingModeFlag() )
+    if(pcSliceHeader && pcSliceHeader->getDecRefPicMarking().getAdaptiveRefPicMarkingModeFlag())
     {
         xMMCO(pcSliceHeader);
     }
@@ -592,18 +591,18 @@ ErrVal RecPicBuffer::xClearBuffer()
     RecPicBufUnitList           cTempList;
     RecPicBufUnitList::iterator iter  = m_cUsedRecPicBufUnitList.begin();
     RecPicBufUnitList::iterator end   = m_cUsedRecPicBufUnitList.end  ();
-    for( ; iter != end; iter++ )
+    for(; iter != end; iter++)
     {
         Bool bNoOutput = (!(*iter)->isExisting() || (*iter)->isOutputted());
-        Bool bNonRef   = (!(*iter)->isNeededForRef() );
+        Bool bNonRef   = (!(*iter)->isNeededForRef());
 
-        if( bNonRef && bNoOutput )
+        if(bNonRef && bNoOutput)
         {
-            cTempList.push_back( *iter );
+            cTempList.push_back(*iter);
         }
     }
     //--- uninit and move to free list ---
-    while( cTempList.size() )
+    while(cTempList.size())
     {
         RecPicBufUnit*  pcRecPicBufUnit = cTempList.popFront();
         pcRecPicBufUnit->uninit();
@@ -614,18 +613,18 @@ ErrVal RecPicBuffer::xClearBuffer()
 }
 
 
-ErrVal RecPicBuffer::xMMCO( SliceHeader* pcSliceHeader )
+ErrVal RecPicBuffer::xMMCO(SliceHeader* pcSliceHeader)
 {
-    ROF( pcSliceHeader );
+    ROF(pcSliceHeader);
 
     Mmco            eMmcoOp;
     const DecRefPicMarking& rcMmcoBuffer  = pcSliceHeader->getDecRefPicMarking();
     Int               iIndex        = 0;
     UInt              uiVal1, uiVal2;
 
-    while( MMCO_END != ( eMmcoOp = rcMmcoBuffer.get( iIndex++ ).getCommand( uiVal1, uiVal2 ) ) )
+    while(MMCO_END != (eMmcoOp = rcMmcoBuffer.get(iIndex++).getCommand(uiVal1, uiVal2)))
     {
-        switch( eMmcoOp )
+        switch(eMmcoOp)
         {
           case MMCO_SHORT_TERM_UNUSED:
             xMarkShortTermUnused(m_pcCurrRecPicBufUnit, uiVal1);
@@ -643,19 +642,19 @@ ErrVal RecPicBuffer::xMMCO( SliceHeader* pcSliceHeader )
 }
 
 
-ErrVal RecPicBuffer::xMarkShortTermUnused( RecPicBufUnit*  pcCurrentRecPicBufUnit,
-                                    UInt            uiDiffOfPicNums )
+ErrVal RecPicBuffer::xMarkShortTermUnused(RecPicBufUnit*  pcCurrentRecPicBufUnit,
+                                    UInt            uiDiffOfPicNums)
 {
-    ROF( pcCurrentRecPicBufUnit );
+    ROF(pcCurrentRecPicBufUnit);
 
     UInt uiCurrPicNum  = pcCurrentRecPicBufUnit->getFrameNum();
     Int iPicNumN = (Int)uiCurrPicNum - (Int)uiDiffOfPicNums - 1;
 
     RecPicBufUnitList::iterator iter = m_cUsedRecPicBufUnitList.begin();
     RecPicBufUnitList::iterator end = m_cUsedRecPicBufUnitList.end();
-    for( ; iter != end; iter++ )
+    for(; iter != end; iter++)
     {
-        if( (*iter)->isNeededForRef() && (*iter)->getPicNum( uiCurrPicNum, m_uiMaxFrameNum ) == iPicNumN )
+        if((*iter)->isNeededForRef() && (*iter)->getPicNum(uiCurrPicNum, m_uiMaxFrameNum) == iPicNumN)
         {
             (*iter)->markNonRef();
             return Err::m_nOK;
@@ -671,37 +670,37 @@ ErrVal RecPicBuffer::xSlidingWindow()
     UInt                        uiCurrNumRefFrames  = 0;
     RecPicBufUnitList::iterator iter                = m_cUsedRecPicBufUnitList.begin();
     RecPicBufUnitList::iterator end                 = m_cUsedRecPicBufUnitList.end  ();
-    for( ; iter != end; iter++ )
+    for(; iter != end; iter++)
     {
-        if( (*iter)->isNeededForRef() )
+        if((*iter)->isNeededForRef())
         {
             uiCurrNumRefFrames++;
         }
     }
-    ROTRS( uiCurrNumRefFrames <= m_uiNumRefFrames, Err::m_nOK );
+    ROTRS(uiCurrNumRefFrames <= m_uiNumRefFrames, Err::m_nOK);
 
     //===== sliding window reference picture update =====
     //--- look for last ref frame that shall be removed ---
     UInt uiRefFramesToRemove = uiCurrNumRefFrames - m_uiNumRefFrames;
     iter                     = m_cUsedRecPicBufUnitList.begin();
-    for( ; iter != end; iter++ )
+    for(; iter != end; iter++)
     {
-        if( (*iter)->isNeededForRef() )
+        if((*iter)->isNeededForRef())
         {
             uiRefFramesToRemove--;
-            if( uiRefFramesToRemove == 0 )
+            if(uiRefFramesToRemove == 0)
             {
                 break;
             }
         }
     }
-    ROT( uiRefFramesToRemove );
+    ROT(uiRefFramesToRemove);
     //--- delete reference label ---
     end  = ++iter;
     iter = m_cUsedRecPicBufUnitList.begin();
-    for( ; iter != end; iter++ )
+    for(; iter != end; iter++)
     {
-        if( (*iter)->isNeededForRef() )
+        if((*iter)->isNeededForRef())
         {
             (*iter)->markNonRef();
         }
@@ -717,15 +716,15 @@ ErrVal RecPicBuffer::xDumpRecPicBuffer()
     return Err::m_nOK;
 #endif
 
-    printf( "\nRECONSTRUCTED PICTURE BUFFER:\n" );
+    printf("\nRECONSTRUCTED PICTURE BUFFER:\n");
     RecPicBufUnitList::iterator iter  = m_cUsedRecPicBufUnitList.begin();
     RecPicBufUnitList::iterator end   = m_cUsedRecPicBufUnitList.end  ();
-    for( Int iIndex = 0; iter != end; iter++ )
+    for(Int iIndex = 0; iter != end; iter++)
     {
         RecPicBufUnit* p = (*iter);
-        printf( "\tPOS=%d:\tFN=%d\tPoc=%d\t%s\t", iIndex, p->getFrameNum(), p->getPoc(), (p->isNeededForRef()?"REF":"   ") );
-        if(  p->isOutputted() )   printf("Outputted  ");
-        if( !p->isExisting () )   printf("NotExisting  ");
+        printf("\tPOS=%d:\tFN=%d\tPoc=%d\t%s\t", iIndex, p->getFrameNum(), p->getPoc(), (p->isNeededForRef()?"REF":"   "));
+        if( p->isOutputted())   printf("Outputted  ");
+        if(!p->isExisting ())   printf("NotExisting  ");
         printf("\n");
     }
     printf("\n");
@@ -734,23 +733,23 @@ ErrVal RecPicBuffer::xDumpRecPicBuffer()
 
 
 
-ErrVal RecPicBuffer::xInitRefListPSlice( RefFrameList& rcList )
+ErrVal RecPicBuffer::xInitRefListPSlice(RefFrameList& rcList)
 {
     //----- get current frame num -----
     UInt uiCurrFrameNum = m_pcCurrRecPicBufUnit->getFrameNum();
 
     //----- generate decreasing POC list -----
-    for( Int iMaxPicNum = (Int)uiCurrFrameNum; true; )
+    for(Int iMaxPicNum = (Int)uiCurrFrameNum; true;)
     {
         RecPicBufUnit*              pNext = 0;
         RecPicBufUnitList::iterator iter  = m_cUsedRecPicBufUnitList.begin();
         RecPicBufUnitList::iterator end   = m_cUsedRecPicBufUnitList.end  ();
-        for( ; iter != end; iter++ )
+        for(; iter != end; iter++)
         {
           if((*iter)->isNeededForRef() &&
-             (*iter)->getPicNum( uiCurrFrameNum, m_uiMaxFrameNum ) < iMaxPicNum &&
+             (*iter)->getPicNum(uiCurrFrameNum, m_uiMaxFrameNum) < iMaxPicNum &&
              (!pNext ||
-             (*iter)->getPicNum( uiCurrFrameNum, m_uiMaxFrameNum ) > pNext->getPicNum(uiCurrFrameNum, m_uiMaxFrameNum)))
+             (*iter)->getPicNum(uiCurrFrameNum, m_uiMaxFrameNum) > pNext->getPicNum(uiCurrFrameNum, m_uiMaxFrameNum)))
           {
               pNext = (*iter);
           }
@@ -759,8 +758,8 @@ ErrVal RecPicBuffer::xInitRefListPSlice( RefFrameList& rcList )
         {
             break;
         }
-        iMaxPicNum = pNext->getPicNum( uiCurrFrameNum, m_uiMaxFrameNum );
-        rcList.add( pNext->getRecFrame() );
+        iMaxPicNum = pNext->getPicNum(uiCurrFrameNum, m_uiMaxFrameNum);
+        rcList.add(pNext->getRecFrame());
     }
 
     return Err::m_nOK;
@@ -779,7 +778,7 @@ ErrVal RecPicBuffer::xInitRefListsBSlice(RefFrameList& rcList0, RefFrameList&  r
         RecPicBufUnit*              pNext = 0;
         RecPicBufUnitList::iterator iter  = m_cUsedRecPicBufUnitList.begin();
         RecPicBufUnitList::iterator end   = m_cUsedRecPicBufUnitList.end  ();
-        for( ; iter != end; iter++ )
+        for(; iter != end; iter++)
         {
             if((*iter)->isNeededForRef() &&
               (*iter)->getPoc() < iMaxPoc &&
@@ -794,51 +793,51 @@ ErrVal RecPicBuffer::xInitRefListsBSlice(RefFrameList& rcList0, RefFrameList&  r
             break;
         }
         iMaxPoc = pNext->getPoc();
-        cDecreasingPocList.add( pNext->getRecFrame() );
+        cDecreasingPocList.add(pNext->getRecFrame());
     }
 
     //----- generate increasing Poc list -----
-    for( Int iMinPoc = iCurrPoc; true; )
+    for(Int iMinPoc = iCurrPoc; true;)
     {
       RecPicBufUnit*              pNext = 0;
       RecPicBufUnitList::iterator iter  = m_cUsedRecPicBufUnitList.begin();
       RecPicBufUnitList::iterator end   = m_cUsedRecPicBufUnitList.end  ();
-      for( ; iter != end; iter++ )
+      for(; iter != end; iter++)
       {
-        if( (*iter)->isNeededForRef() &&
+        if((*iter)->isNeededForRef() &&
           (*iter)->getPoc() > iMinPoc &&
-          ( ! pNext ||
-          (*iter)->getPoc() < pNext->getPoc() ) )
+          (! pNext ||
+          (*iter)->getPoc() < pNext->getPoc()))
         {
           pNext = (*iter);
         }
       }
-      if( ! pNext )
+      if(! pNext)
       {
         break;
       }
       iMinPoc = pNext->getPoc();
-      cIncreasingPocList.add( pNext->getRecFrame() );
+      cIncreasingPocList.add(pNext->getRecFrame());
     }
 
     //----- list 0 and list 1 -----
     UInt uiPos;
-    for( uiPos = 0; uiPos < cDecreasingPocList.getSize(); uiPos++ )
+    for(uiPos = 0; uiPos < cDecreasingPocList.getSize(); uiPos++)
     {
-        rcList0.add( cDecreasingPocList.getEntry(uiPos));
+        rcList0.add(cDecreasingPocList.getEntry(uiPos));
     }
-    for( uiPos = 0; uiPos < cIncreasingPocList.getSize(); uiPos++ )
+    for(uiPos = 0; uiPos < cIncreasingPocList.getSize(); uiPos++)
     {
         rcList0.add(cIncreasingPocList.getEntry(uiPos));
         rcList1.add(cIncreasingPocList.getEntry(uiPos));
     }
-    for( uiPos = 0; uiPos < cDecreasingPocList.getSize(); uiPos++ )
+    for(uiPos = 0; uiPos < cDecreasingPocList.getSize(); uiPos++)
     {
-        rcList1.add( cDecreasingPocList.getEntry(uiPos));
+        rcList1.add(cDecreasingPocList.getEntry(uiPos));
     }
 
     //----- check for element switching -----
-    if( rcList1.getActive() >= 2 && rcList0.getActive() == rcList1.getActive() )
+    if(rcList1.getActive() >= 2 && rcList0.getActive() == rcList1.getActive())
     {
         Bool bSwitch = true;
         for(uiPos = 0; uiPos < rcList1.getActive(); uiPos++)
@@ -849,7 +848,7 @@ ErrVal RecPicBuffer::xInitRefListsBSlice(RefFrameList& rcList0, RefFrameList&  r
                 break;
             }
         }
-        if( bSwitch )
+        if(bSwitch)
         {
             rcList1.switchFirst();
         }
@@ -861,10 +860,10 @@ ErrVal RecPicBuffer::xInitRefListsBSlice(RefFrameList& rcList0, RefFrameList&  r
 
 ErrVal RecPicBuffer::xRefListRemapping(RefFrameList&  rcList,
                                        ListIdx        eListIdx,
-                                       SliceHeader*   pcSliceHeader )
+                                       SliceHeader*   pcSliceHeader)
 {
-    ROF( pcSliceHeader );
-    const RefPicListReOrdering& rcRplrBuffer = pcSliceHeader->getRefPicListReordering( eListIdx );
+    ROF(pcSliceHeader);
+    const RefPicListReOrdering& rcRplrBuffer = pcSliceHeader->getRefPicListReordering(eListIdx);
 
     //===== re-ordering ======
     if(rcRplrBuffer.getRefPicListReorderingFlag())
@@ -874,11 +873,11 @@ ErrVal RecPicBuffer::xRefListRemapping(RefFrameList&  rcList,
         UInt uiCommand    = 0;
         UInt uiIdentifier = 0;
 
-        while(RPLR_END != ( uiCommand = rcRplrBuffer.get( uiIndex ).getCommand(uiIdentifier)))
+        while(RPLR_END != (uiCommand = rcRplrBuffer.get(uiIndex).getCommand(uiIdentifier)))
         {
             Frame* pcFrame = 0;
 
-            if( uiCommand == RPLR_LONG )
+            if(uiCommand == RPLR_LONG)
             {
                 //===== long-term index =====
                 RERR(); // long-term not supported
@@ -891,9 +890,9 @@ ErrVal RecPicBuffer::xRefListRemapping(RefFrameList&  rcList,
                 //----- set short-term index (pic num) -----
                 if(uiCommand == RPLR_NEG)
                 {
-                    if( uiPicNumPred < uiAbsDiff )
+                    if(uiPicNumPred < uiAbsDiff)
                     {
-                        uiPicNumPred -= ( uiAbsDiff - m_uiMaxFrameNum );
+                        uiPicNumPred -= (uiAbsDiff - m_uiMaxFrameNum);
                     }
                     else
                     {
@@ -902,9 +901,9 @@ ErrVal RecPicBuffer::xRefListRemapping(RefFrameList&  rcList,
                 }
                 else // uiCommand == RPLR_POS
                 {
-                    if( uiPicNumPred + uiAbsDiff > m_uiMaxFrameNum - 1 )
+                    if(uiPicNumPred + uiAbsDiff > m_uiMaxFrameNum - 1)
                     {
-                        uiPicNumPred += ( uiAbsDiff - m_uiMaxFrameNum );
+                        uiPicNumPred += (uiAbsDiff - m_uiMaxFrameNum);
                     }
                     else
                     {
@@ -916,10 +915,10 @@ ErrVal RecPicBuffer::xRefListRemapping(RefFrameList&  rcList,
                 //----- get frame -----
                 RecPicBufUnitList::iterator iter = m_cUsedRecPicBufUnitList.begin();
                 RecPicBufUnitList::iterator end  = m_cUsedRecPicBufUnitList.end  ();
-                for( ; iter != end; iter++ )
+                for(; iter != end; iter++)
                 {
-                    if( (*iter)->isNeededForRef() &&
-                        (*iter)->getFrameNum() == uiIdentifier )
+                    if((*iter)->isNeededForRef() &&
+                        (*iter)->getFrameNum() == uiIdentifier)
                     {
                         pcFrame = (*iter)->getRecFrame();
                         break;
@@ -927,12 +926,12 @@ ErrVal RecPicBuffer::xRefListRemapping(RefFrameList&  rcList,
                 }
                 if(!pcFrame)
                 {
-                    fprintf( stderr, "\nERROR: MISSING PICTURE for RPLR\n\n" );
+                    fprintf(stderr, "\nERROR: MISSING PICTURE for RPLR\n\n");
                     RERR();
                 }
                 //----- find picture in reference list -----
                 UInt uiRemoveIndex = MSYS_UINT_MAX;
-                for( UInt uiPos = uiIndex; uiPos < rcList.getActive(); uiPos++ ) // active is equal to size
+                for(UInt uiPos = uiIndex; uiPos < rcList.getActive(); uiPos++) // active is equal to size
                 {
                     if(rcList.getEntry(uiPos) == pcFrame)
                     {
@@ -952,21 +951,21 @@ ErrVal RecPicBuffer::xRefListRemapping(RefFrameList&  rcList,
 }
 
 //FLQ
-ErrVal RecPicBuffer::xDumpRefList( RefFrameList& rcList,
-                            ListIdx       eListIdx  )
+ErrVal RecPicBuffer::xDumpRefList(RefFrameList& rcList,
+                            ListIdx       eListIdx )
 {
 #if 1 // NO_DEBUG
-  return Err::m_nOK;
+    return Err::m_nOK;
 #endif
 
-  printf( "List %d =", eListIdx );
-  for( UInt uiIndex = 1; uiIndex <= rcList.getActive(); uiIndex++ )
-  {
-      printf( " %d", rcList[uiIndex]->getPoc() );
-  }
-  printf( "\n" );
-  return Err::m_nOK;
+    printf("List %d =", eListIdx);
+    for(UInt uiIndex = 1; uiIndex <= rcList.getActive(); uiIndex++)
+    {
+        printf(" %d", rcList[uiIndex]->getPoc());
+    }
+    printf("\n");
+    return Err::m_nOK;
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

@@ -1,63 +1,70 @@
-
-#if !defined(AFX_BITCOUNTER_H__5062A2A9_6E04_4211_A337_9BDED6D88A82__INCLUDED_)
-#define AFX_BITCOUNTER_H__5062A2A9_6E04_4211_A337_9BDED6D88A82__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef _BITCOUNTER_H_
+#define _BITCOUNTER_H_
 
 #include "BitWriteBufferIf.h"
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
-class BitCounter :
-public BitWriteBufferIf
+class BitCounter : public BitWriteBufferIf
 {
 public:
 
-  BitWriteBufferIf* getNextBitWriteBuffer( Bool bStartNewBitstream ) { return NULL; }
-  Bool              nextBitWriteBufferActive() { return false; }
-  UChar*            getNextBuffersPacket()  { return NULL; }
+    BitWriteBufferIf* getNextBitWriteBuffer(Bool bStartNewBitstream)
+    {
+        return NULL;
+    }
 
-  static ErrVal create( BitCounter*& rpcBitCounter );
-  ErrVal destroy();
+    Bool nextBitWriteBufferActive()
+    {
+        return false;
+    }
+    UChar* getNextBuffersPacket()
+    {
+        return NULL;
+    }
 
-  ErrVal init()                                           { m_uiBitCounter = 0; return Err::m_nOK; }
-  ErrVal uninit()                                         { m_uiBitCounter = 0; return Err::m_nOK; }
+    static ErrVal create(BitCounter*& rpcBitCounter);
+    ErrVal destroy();
 
-  BitCounter();
-  virtual ~BitCounter();
-  ErrVal write( UInt uiBits, UInt uiNumberOfBits = 1)     { m_uiBitCounter += uiNumberOfBits; return Err::m_nOK; }
+    ErrVal init()   { m_uiBitCounter = 0; return Err::m_nOK; }
+    ErrVal uninit() { m_uiBitCounter = 0; return Err::m_nOK; }
 
-  ErrVal pcmSamples( const TCoeff* pCoeff, UInt uiNumberOfSamples ) { m_uiBitCounter+=8*uiNumberOfSamples; return Err::m_nERR; }
+    BitCounter();
+    virtual ~BitCounter();
+    ErrVal write(UInt uiBits, UInt uiNumberOfBits = 1)     { m_uiBitCounter += uiNumberOfBits; return Err::m_nOK; }
 
-  UInt getNumberOfWrittenBits()                           { return m_uiBitCounter; }
+    ErrVal pcmSamples(const TCoeff* pCoeff, UInt uiNumberOfSamples) { m_uiBitCounter+=8*uiNumberOfSamples; return Err::m_nERR; }
 
-  Bool isByteAligned()                                    { return (0 == (m_uiBitCounter & 0x03)); }
-  Bool isWordAligned()                                    { return (0 == (m_uiBitCounter & 0x1f)); }
+    UInt getNumberOfWrittenBits()   { return m_uiBitCounter; }
 
-  ErrVal writeAlignZero()                                 { return Err::m_nERR; }
-  ErrVal writeAlignOne()                                  { return Err::m_nERR; }
-  ErrVal flushBuffer()                                    { m_uiBitCounter = 0; return Err::m_nOK; }
+    Bool isByteAligned()            { return (0 == (m_uiBitCounter & 0x03)); }
+    Bool isWordAligned()            { return (0 == (m_uiBitCounter & 0x1f)); }
 
-  ErrVal   getLastByte(UChar &uiLastByte, UInt &uiLastBitPos) { return Err::m_nERR;} //FIX_FRAG_CAVLC
+    ErrVal writeAlignZero()         { return Err::m_nERR; }
+    ErrVal writeAlignOne()          { return Err::m_nERR; }
+    ErrVal flushBuffer()            { m_uiBitCounter = 0; return Err::m_nOK; }
 
-	//JVT-X046 {
-	void loadBitWriteBuffer(BitWriteBufferIf* pcBitWriteBufferIf)	{}
-	void loadBitCounter(BitWriteBufferIf* pcBitWriteBufferIf)
-	{
-		BitCounter* pcBitCounter = (BitCounter*)(pcBitWriteBufferIf);
-		m_uiBitCounter = pcBitCounter->getNumberOfWrittenBits();
-	}
-	UInt getBitsWritten(void) { return 0; }
-	//JVT-X046 }
+    ErrVal   getLastByte(UChar &uiLastByte, UInt &uiLastBitPos) { return Err::m_nERR;} //FIX_FRAG_CAVLC
+
+    //JVT-X046 {
+    void loadBitWriteBuffer(BitWriteBufferIf* pcBitWriteBufferIf)
+    {
+    }
+    void loadBitCounter(BitWriteBufferIf* pcBitWriteBufferIf)
+    {
+        BitCounter* pcBitCounter = (BitCounter*)(pcBitWriteBufferIf);
+        m_uiBitCounter = pcBitCounter->getNumberOfWrittenBits();
+    }
+    UInt getBitsWritten(void) { return 0; }
+    //JVT-X046 }
 
 private:
-  UInt m_uiBitCounter;
+    UInt m_uiBitCounter;
 };
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 
-#endif // !defined(AFX_BITCOUNTER_H__5062A2A9_6E04_4211_A337_9BDED6D88A82__INCLUDED_)
+
+#endif //_BITCOUNTER_H_

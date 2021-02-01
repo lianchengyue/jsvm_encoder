@@ -1,8 +1,7 @@
-
 #include "H264AVCCommonLib.h"
 #include "H264AVCCommonLib/QuarterPelFilter.h"
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 QuarterPelFilter::QuarterPelFilter()
@@ -14,7 +13,7 @@ QuarterPelFilter::~QuarterPelFilter()
 {
 }
 
-ErrVal QuarterPelFilter::create( QuarterPelFilter*& rpcQuarterPelFilter )
+ErrVal QuarterPelFilter::create(QuarterPelFilter*& rpcQuarterPelFilter)
 {
     QuarterPelFilter* pcQuarterPelFilter;
 
@@ -58,7 +57,7 @@ ErrVal QuarterPelFilter::uninit()
 const Int g_aiTapCoeff[6] = { 1, -5,20,20,-5, 1};
 
 
-ErrVal QuarterPelFilter::filterFrame( YuvPicBuffer *pcPelBuffer, YuvPicBuffer *pcHalfPelBuffer )
+ErrVal QuarterPelFilter::filterFrame(YuvPicBuffer *pcPelBuffer, YuvPicBuffer *pcHalfPelBuffer)
 {
     ROT( NULL == pcPelBuffer );
     ROT( NULL == pcHalfPelBuffer );
@@ -80,7 +79,7 @@ ErrVal QuarterPelFilter::filterFrame( YuvPicBuffer *pcPelBuffer, YuvPicBuffer *p
 
     XXPel* ps = &psTemp[ iMargin * iTmpXSize + 2*iMargin]; // fix provided by Shijun Sun
 
-    for( y = 0; y < iHeight; y++ )
+    for(y = 0; y < iHeight; y++)
     {
         for( x = -iMarginNew; x < iWidth+iMarginNew; x++ )
         {
@@ -103,7 +102,7 @@ ErrVal QuarterPelFilter::filterFrame( YuvPicBuffer *pcPelBuffer, YuvPicBuffer *p
 
     // bot
     ps -= iMargin*2;               // fix provided by Shijun Sun
-    for( y = 0; y < iMargin; y++ ) // fix provided by Shijun Sun
+    for(y = 0; y < iMargin; y++) // fix provided by Shijun Sun
     {
         ::memcpy( &ps[y*iTmpXSize], &ps[(y-1)*iTmpXSize], iTmpXSize*sizeof(XXPel) );
     }
@@ -122,9 +121,9 @@ ErrVal QuarterPelFilter::filterFrame( YuvPicBuffer *pcPelBuffer, YuvPicBuffer *p
     XPel* pucDesHP      = pcHalfPelBuffer->getMbLumAddr();
     pucDesHP -= (iMarginNew*iDesStrideHP)<<1;
 
-    for( y = -iMarginNew; y < iHeight+iMarginNew; y++ )
+    for(y = -iMarginNew; y < iHeight+iMarginNew; y++)
     {
-        for( x = -2*iMarginNew; x < 2*(iWidth+iMarginNew); x++ )
+        for(x = -2*iMarginNew; x < 2*(iWidth+iMarginNew); x++)
         {
             Int iTemp;
             iTemp  = ps[x - 0*iStride];
@@ -149,12 +148,12 @@ ErrVal QuarterPelFilter::filterFrame( YuvPicBuffer *pcPelBuffer, YuvPicBuffer *p
 }
 
 
-Void QuarterPelFilter::xXFilter1( XPel* pDes, XPel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize )
+Void QuarterPelFilter::xXFilter1(XPel* pDes, XPel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize)
 {
     UInt y, x;
-    for( y = 0; y < uiYSize; y++ )
+    for(y = 0; y < uiYSize; y++)
     {
-        for( x = 0; x < uiXSize; x++ )
+        for(x = 0; x < uiXSize; x++)
         {
             Int a = pSrc[-1];
             Int b = pSrc[-iSrcStride];
@@ -179,13 +178,13 @@ Void QuarterPelFilter::xXFilter1( XPel* pDes, XPel* pSrc, Int iSrcStride, UInt u
 }
 
 
-Void QuarterPelFilter::xXFilter2( XPel* pDes, XPel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize )
+Void QuarterPelFilter::xXFilter2(XPel* pDes, XPel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize)
 {
     UInt y, x;
 
-    for( y = 0; y < uiYSize; y++ )
+    for(y = 0; y < uiYSize; y++)
     {
-        for( x = 0; x < uiXSize; x++ )
+        for(x = 0; x < uiXSize; x++)
         {
             Int o = pSrc[0];
 
@@ -205,7 +204,7 @@ Void QuarterPelFilter::xXFilter2( XPel* pDes, XPel* pSrc, Int iSrcStride, UInt u
     }
 }
 
-Void QuarterPelFilter::xXFilter3( XPel* pDes, XPel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize )
+Void QuarterPelFilter::xXFilter3(XPel* pDes, XPel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize)
 {
     UInt y, x;
 
@@ -769,4 +768,4 @@ Void QuarterPelFilter::weightOnEnergy(UShort *usWeight, XPel* pucSrc, Int iSrcSt
     *usWeight = (UShort) gMax( 0, gMin( 16, 20 - iSSD ) );
 }
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

@@ -1,9 +1,8 @@
-
 #include "H264AVCEncoderLib.h"
 #include "BitCounter.h"
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 BitCounter::BitCounter():
@@ -15,11 +14,11 @@ BitCounter::~BitCounter()
 {
 }
 
-ErrVal BitCounter::create( BitCounter*& rpcBitCounter )
+ErrVal BitCounter::create(BitCounter*& rpcBitCounter)
 {
     rpcBitCounter = new BitCounter;
 
-    ROT( NULL == rpcBitCounter );
+    ROT( NULL == rpcBitCounter);
 
     return Err::m_nOK;
 }
@@ -33,4 +32,4 @@ ErrVal BitCounter::destroy()
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

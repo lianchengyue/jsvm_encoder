@@ -5,22 +5,22 @@
 #include "H264AVCCommonLib/MbDataAccess.h"
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 
-Void MbData::copy( const MbData& rcMbData )
+Void MbData::copy(const MbData& rcMbData)
 {
-  MbDataStruct::          copy    ( rcMbData );
-  m_pcMbTCoeffs         ->copyFrom( *rcMbData.m_pcMbTCoeffs );
-  m_apcMbMotionData [0] ->copyFrom( *rcMbData.m_apcMbMotionData [0] );
-  m_apcMbMvdData    [0] ->copyFrom( *rcMbData.m_apcMbMvdData    [0] );
-  m_apcMbMotionData [1] ->copyFrom( *rcMbData.m_apcMbMotionData [1] );
-  m_apcMbMvdData    [1] ->copyFrom( *rcMbData.m_apcMbMvdData    [1] );
+    MbDataStruct::copy(rcMbData);
+    m_pcMbTCoeffs->copyFrom( *rcMbData.m_pcMbTCoeffs );
+    m_apcMbMotionData[0]->copyFrom(*rcMbData.m_apcMbMotionData[0]);
+    m_apcMbMvdData[0]->copyFrom(*rcMbData.m_apcMbMvdData[0]);
+    m_apcMbMotionData[1]->copyFrom(*rcMbData.m_apcMbMotionData[1]);
+    m_apcMbMvdData[1]->copyFrom(*rcMbData.m_apcMbMvdData[1]);
 }
 
 
-ErrVal MbData::saveAll( FILE* pFile )
+ErrVal MbData::saveAll(FILE* pFile)
 {
     MbDataStruct::save(pFile);
     m_pcMbTCoeffs->save(pFile);
@@ -35,28 +35,28 @@ ErrVal MbData::saveAll( FILE* pFile )
 
 ErrVal MbData::loadAll( FILE* pFile )
 {
-    MbDataStruct::          load(pFile);
-    m_pcMbTCoeffs         ->load(pFile);
-    m_apcMbMotionData [0] ->load(pFile);
-    m_apcMbMvdData    [0] ->load(pFile);
-    m_apcMbMotionData [1] ->load(pFile);
-    m_apcMbMvdData    [1] ->load(pFile);
+    MbDataStruct::load(pFile);
+    m_pcMbTCoeffs->load(pFile);
+    m_apcMbMotionData[0]->load(pFile);
+    m_apcMbMvdData[0]->load(pFile);
+    m_apcMbMotionData[1]->load(pFile);
+    m_apcMbMvdData[1]->load(pFile);
 
     return Err::m_nOK;
 }
 
-Bool MbData::calcBCBP( UInt uiStart, UInt uiStop, UInt uiPos ) const
+Bool MbData::calcBCBP(UInt uiStart, UInt uiStop, UInt uiPos) const
 {
     AOF( uiStart != uiStop );
-    if( uiPos < 16 )
+    if(uiPos < 16)
     {
-        if( isTransformSize8x8() )
+        if(isTransformSize8x8())
         {
             UInt uiTab[] = { 0, 1, 0, 1, 2, 3, 2, 3 };
-            return ( ( calcMbCbp( uiStart, uiStop ) >> uiTab[uiPos>>1] ) & 1 ) != 0;
+            return ((calcMbCbp(uiStart, uiStop) >> uiTab[uiPos>>1] ) & 1 ) != 0;
         }
         // Luma 4x4 block
-        if( uiStart == 0 && isIntra16x16() )
+        if(uiStart == 0 && isIntra16x16())
             uiStart = 1;
 
         const UChar  *pucScan = getFieldFlag() ? g_aucFieldScan : g_aucFrameScan;
@@ -69,14 +69,14 @@ Bool MbData::calcBCBP( UInt uiStart, UInt uiStop, UInt uiPos ) const
             }
         }
     }
-    else if( uiPos < 24 )
+    else if(uiPos < 24)
     {
-        // Chroma AC 4x4 block
+        //Chroma AC 4x4 block
         AOF( uiStop > 1 );
         uiStart = gMax( 1, uiStart );
         const UChar  *pucScan = getFieldFlag() ? g_aucFieldScan : g_aucFrameScan;
-        const TCoeff *piCoeff = getMbTCoeffs().get( CIdx(uiPos - 16) );
-        for( UInt ui = uiStart; ui < uiStop; ui++ )
+        const TCoeff *piCoeff = getMbTCoeffs().get(CIdx(uiPos - 16));
+        for(UInt ui = uiStart; ui < uiStop; ui++)
         {
             if( piCoeff[pucScan[ui]] )
             {
@@ -332,4 +332,4 @@ ErrVal MbStatus::update( MbDataAccess& rcMbDataAccess )
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

@@ -1,11 +1,10 @@
-
 #include "H264AVCEncoderLib.h"
 
 #include "MotionEstimationQuarterPel.h"
 #include "H264AVCCommonLib/QuarterPelFilter.h"
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 const UChar  g_aucFilter[9] =
@@ -14,35 +13,35 @@ const UChar  g_aucFilter[9] =
 const Mv g_acHPSearchMv[9] =
 {
     //hor,ver
-    Mv(  0,  0 ), // 0
-    Mv(  0, -2 ), // 1
-    Mv(  0,  2 ), // 2
-    Mv( -2,  0 ), // 3
-    Mv(  2,  0 ), // 4
-    Mv( -2, -2 ), // 5
-    Mv(  2, -2 ), // 6
-    Mv( -2,  2 ), // 7
-    Mv(  2,  2 )  // 8
+    Mv(0,  0), // 0
+    Mv(0, -2), // 1
+    Mv(0,  2), // 2
+    Mv(-2,  0), // 3
+    Mv(2,  0), // 4
+    Mv(-2, -2), // 5
+    Mv(2, -2), // 6
+    Mv(-2,  2), // 7
+    Mv(2,  2)  // 8
 };
 
 
 const Mv g_acQPSearchMv[9] =
 {
     //hor,ver
-    Mv(  0,  0 ), // 0
-    Mv(  0, -1 ), // 1
-    Mv(  0,  1 ), // 2
-    Mv( -1, -1 ), // 5
-    Mv(  1, -1 ), // 6
-    Mv( -1,  0 ), // 3
-    Mv(  1,  0 ), // 4
-    Mv( -1,  1 ), // 7
-    Mv(  1,  1 )  // 8
+    Mv(0,  0), // 0
+    Mv(0, -1), // 1
+    Mv(0,  1), // 2
+    Mv(-1, -1), // 5
+    Mv(1, -1), // 6
+    Mv(-1,  0), // 3
+    Mv(1,  0), // 4
+    Mv(-1,  1), // 7
+    Mv(1,  1)  // 8
 };
 
 //
 MotionEstimationQuarterPel::MotionEstimationQuarterPel() :
-  m_uiBestMode( 0 )
+  m_uiBestMode(0)
 {
 }
 
@@ -51,7 +50,7 @@ MotionEstimationQuarterPel::~MotionEstimationQuarterPel()
 }
 
 
-ErrVal MotionEstimationQuarterPel::create( MotionEstimation*& rpcMotionEstimation )
+ErrVal MotionEstimationQuarterPel::create(MotionEstimation*& rpcMotionEstimation)
 {
     MotionEstimationQuarterPel* pcMotionEstimationQuarterPel;
 
@@ -59,7 +58,7 @@ ErrVal MotionEstimationQuarterPel::create( MotionEstimation*& rpcMotionEstimatio
 
     rpcMotionEstimation = pcMotionEstimationQuarterPel;
 
-    ROT( NULL == rpcMotionEstimation );
+    ROT(NULL == rpcMotionEstimation);
 
     pcMotionEstimationQuarterPel->xInitBuffer();
     return Err::m_nOK;
@@ -95,7 +94,7 @@ Void MotionEstimationQuarterPel::xSubPelSearch(YuvPicBuffer*  pcPelData,
                                                Mv&            rcMv,
                                                UInt&          ruiSAD,
                                                UInt           uiBlk,
-                                               UInt           uiMode )
+                                               UInt           uiMode)
 {
     Mv cMvBestMatch  = rcMv;
     UInt  uiBestSad    = MSYS_UINT_MAX;
@@ -107,7 +106,7 @@ Void MotionEstimationQuarterPel::xSubPelSearch(YuvPicBuffer*  pcPelData,
     UInt uiXSize = 0;
 
     xGetSizeFromMode(uiXSize, uiYSize, uiMode);
-    xCompensateBlocksHalf(m_aXHPelSearch, pcPelData, cMvBestMatch, uiMode, uiYSize, uiXSize ) ;
+    xCompensateBlocksHalf(m_aXHPelSearch, pcPelData, cMvBestMatch, uiMode, uiYSize, uiXSize) ;
     m_cXDSS.iYStride = X1;
 
     //compute SAD for 1/2 pel MV
@@ -115,12 +114,12 @@ Void MotionEstimationQuarterPel::xSubPelSearch(YuvPicBuffer*  pcPelData,
     {
         Mv cMvTest = g_acHPSearchMv[n];
         m_cXDSS.pYSearch = m_apXHPelSearch[n];
-        UInt uiSad = m_cXDSS.Func( &m_cXDSS );
+        UInt uiSad = m_cXDSS.Func(&m_cXDSS);
 
         cMvTest += rcMv;
         uiSad += xGetCost(cMvTest);
 
-        if( uiSad < uiBestSad )
+        if(uiSad < uiBestSad)
         {
             m_uiBestMode = n;
             uiBestSad = uiSad;
@@ -134,7 +133,7 @@ Void MotionEstimationQuarterPel::xSubPelSearch(YuvPicBuffer*  pcPelData,
     Int iStride = pcPelData->getLStride();
     pPel += (cMvBestMatch.getHor()>>1) + (cMvBestMatch.getVer()>>1) * iStride;
 
-    m_pcQuarterPelFilter->filterBlock( m_aXQPelSearch, pPel, iStride, uiXSize, uiYSize, g_aucFilter[m_uiBestMode]);
+    m_pcQuarterPelFilter->filterBlock(m_aXQPelSearch, pPel, iStride, uiXSize, uiYSize, g_aucFilter[m_uiBestMode]);
     m_cXDSS.iYStride = 16;
 
     //1/4 pel refinement around initial 1/2 pel MV
@@ -142,12 +141,12 @@ Void MotionEstimationQuarterPel::xSubPelSearch(YuvPicBuffer*  pcPelData,
     {
         Mv cMvTest = g_acQPSearchMv[n];
         m_cXDSS.pYSearch = m_apXQPelSearch[n];
-        UInt uiSad = m_cXDSS.Func( &m_cXDSS );
+        UInt uiSad = m_cXDSS.Func(&m_cXDSS);
 
         cMvTest += rcMv;
-        uiSad += xGetCost( cMvTest );
+        uiSad += xGetCost(cMvTest);
 
-        if( uiSad < uiBestSad )
+        if(uiSad < uiBestSad)
         {
             m_uiBestMode = n<<4;
             uiBestSad = uiSad;
@@ -162,9 +161,9 @@ Void MotionEstimationQuarterPel::xSubPelSearch(YuvPicBuffer*  pcPelData,
 
 
 
-Void MotionEstimationQuarterPel::xGetSizeFromMode( UInt& ruiXSize, UInt& ruiYSize, UInt uiMode )
+Void MotionEstimationQuarterPel::xGetSizeFromMode(UInt& ruiXSize, UInt& ruiYSize, UInt uiMode)
 {
-    switch( uiMode )
+    switch(uiMode)
     {
         case MODE_16x16:
           {
@@ -212,12 +211,12 @@ Void MotionEstimationQuarterPel::xGetSizeFromMode( UInt& ruiXSize, UInt& ruiYSiz
             break;
           }
         default:
-          assert( 0 );
+          assert(0);
           return;
     }
 }
 
-Void MotionEstimationQuarterPel::xCompensateBlocksHalf( XPel *pPelDes, YuvPicBuffer *pcRefPelData, Mv cMv, UInt uiMode, UInt uiYSize, UInt uiXSize )
+Void MotionEstimationQuarterPel::xCompensateBlocksHalf(XPel *pPelDes, YuvPicBuffer *pcRefPelData, Mv cMv, UInt uiMode, UInt uiYSize, UInt uiXSize)
 {
     XPel* pPelSrc = pcRefPelData->getLumBlk();
     Int iSrcStride = pcRefPelData->getLStride();
@@ -225,9 +224,9 @@ Void MotionEstimationQuarterPel::xCompensateBlocksHalf( XPel *pPelDes, YuvPicBuf
 
     uiXSize++;
     UInt x, y;
-    for( y = 0; y < uiYSize; y++)
+    for(y = 0; y < uiYSize; y++)
     {
-        for( x = 0; x < uiXSize; x++)
+        for(x = 0; x < uiXSize; x++)
         {
             Int x4 = x<<1;
             pPelDes[3*X1*17] = pPelSrc[x4-iSrcStride-1],
@@ -235,7 +234,7 @@ Void MotionEstimationQuarterPel::xCompensateBlocksHalf( XPel *pPelDes, YuvPicBuf
             pPelDes++;
         }
         pPelDes -= uiXSize;
-        for( x = 0; x < uiXSize; x++)
+        for(x = 0; x < uiXSize; x++)
         {
             Int x4 = x<<1;
             pPelDes[2*X1*17] = pPelSrc[x4-1];
@@ -246,7 +245,7 @@ Void MotionEstimationQuarterPel::xCompensateBlocksHalf( XPel *pPelDes, YuvPicBuf
         pPelSrc += 2*iSrcStride;
     }
 
-    for( x = 0; x < uiXSize; x++)
+    for(x = 0; x < uiXSize; x++)
     {
         Int x4 = x<<1;
         pPelDes[3*X1*17] = pPelSrc[x4-iSrcStride-1],
@@ -260,15 +259,15 @@ Void MotionEstimationQuarterPel::xCompensateBlocksHalf( XPel *pPelDes, YuvPicBuf
 ErrVal MotionEstimationQuarterPel::compensateBlock(YuvMbBuffer* pcRecPelData,
                                                    UInt            uiBlk,
                                                    UInt            uiMode,
-                                                   YuvMbBuffer* pcRefPelData2 )
+                                                   YuvMbBuffer* pcRefPelData2)
 {
-    pcRecPelData->set4x4Block( B4x4Idx(uiBlk) );
+    pcRecPelData->set4x4Block(B4x4Idx(uiBlk));
     XPel iStride = pcRecPelData->getLStride();
     XPel* pDes = pcRecPelData->getLumBlk();
     XPel* pSrc;
     Int iAdd;
 
-    if( 0x10 > m_uiBestMode )
+    if(0x10 > m_uiBestMode)
     {
         pSrc = m_apXHPelSearch[m_uiBestMode];
         iAdd = X1;
@@ -281,13 +280,13 @@ ErrVal MotionEstimationQuarterPel::compensateBlock(YuvMbBuffer* pcRecPelData,
 
     UInt uiXSize = 0;
     UInt uiYSize = 0;
-    xGetSizeFromMode( uiXSize, uiYSize, uiMode);
+    xGetSizeFromMode(uiXSize, uiYSize, uiMode);
 
-    if( pcRefPelData2 == NULL )
+    if(pcRefPelData2 == NULL)
     {
-        for( UInt y = 0; y < uiYSize; y++)
+        for(UInt y = 0; y < uiYSize; y++)
         {
-            for( UInt x = 0; x < uiXSize; x+=4 )
+            for(UInt x = 0; x < uiXSize; x+=4)
             {
                 pDes[x+0] = pSrc[x+0];
                 pDes[x+1] = pSrc[x+1];
@@ -300,12 +299,12 @@ ErrVal MotionEstimationQuarterPel::compensateBlock(YuvMbBuffer* pcRecPelData,
     }
     else
     {
-        pcRefPelData2->set4x4Block( B4x4Idx(uiBlk) );
+        pcRefPelData2->set4x4Block(B4x4Idx(uiBlk));
         XPel iStride2 = pcRefPelData2->getLStride();
         XPel* pSrc2 = pcRefPelData2->getLumBlk();
-        for( UInt y = 0; y < uiYSize; y++)
+        for(UInt y = 0; y < uiYSize; y++)
         {
-            for( UInt x = 0; x < uiXSize; x+=4 )
+            for(UInt x = 0; x < uiXSize; x+=4)
             {
                 pDes[x+0] = (pSrc[x+0] + pSrc2[x+0] + 1)>>1;
                 pDes[x+1] = (pSrc[x+1] + pSrc2[x+1] + 1)>>1;
@@ -322,4 +321,4 @@ ErrVal MotionEstimationQuarterPel::compensateBlock(YuvMbBuffer* pcRecPelData,
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

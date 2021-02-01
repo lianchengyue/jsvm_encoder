@@ -1,10 +1,9 @@
-
 #include "H264AVCCommonLib.h"
 #include "H264AVCCommonLib/ScalingMatrix.h"
 
 
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 
@@ -88,7 +87,7 @@ Bool ScalingMatrix::isSame( const ScalingMatrix&  rcSM )  const
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 
 
 

@@ -1,33 +1,29 @@
+#ifndef _RATEDISTORTIONIF_H_
+#define _RATEDISTORTIONIF_H_
 
-#if !defined(AFX_RATEDISTORTIONIF_H__A4FCCF6E_E3BC_46A7_ACB8_7AE8CFE756E1__INCLUDED_)
-#define AFX_RATEDISTORTIONIF_H__A4FCCF6E_E3BC_46A7_ACB8_7AE8CFE756E1__INCLUDED_
+#include "Typedefs.h"
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 class RateDistortionIf
 {
 protected:
-  RateDistortionIf() {}
-  virtual ~RateDistortionIf() {}
+    RateDistortionIf() {}
+    virtual ~RateDistortionIf() {}
 
 public:
-  virtual ErrVal  setMbQpLambda( MbDataAccess& rcMbDataAccess, UInt uiQp, Double dLambda ) = 0;
+    virtual ErrVal setMbQpLambda (MbDataAccess& rcMbDataAccess, UInt uiQp, Double dLambda) = 0;
 
-  virtual Double  getCost( UInt uiBits, UInt uiDistortion ) = 0;
-  virtual Double  getFCost( UInt uiBits, UInt uiDistortion ) = 0;
-  virtual UInt    getMotionCostShift( Bool bSad ) = 0;
+    virtual Double getCost (UInt uiBits, UInt uiDistortion) = 0;
+    virtual Double getFCost (UInt uiBits, UInt uiDistortion) = 0;
+    virtual UInt   getMotionCostShift (Bool bSad ) = 0;
 
-  virtual ErrVal  fixMacroblockQP( MbDataAccess& rcMbDataAccess ) = 0;
+    virtual ErrVal fixMacroblockQP (MbDataAccess& rcMbDataAccess) = 0;
 };
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 
 
-#endif // !defined(AFX_RATEDISTORTIONIF_H__A4FCCF6E_E3BC_46A7_ACB8_7AE8CFE756E1__INCLUDED_)
+#endif //_RATEDISTORTIONIF_H_

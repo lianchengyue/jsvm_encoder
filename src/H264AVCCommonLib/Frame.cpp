@@ -1,11 +1,10 @@
-
 #include "H264AVCCommonLib.h"
 #include "H264AVCCommonLib/Frame.h"
 #include "H264AVCCommonLib/MbDataCtrl.h"
 #include "H264AVCCommonLib/QuarterPelFilter.h"
 #include "DownConvert.h"
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 Frame::Frame( YuvBufferCtrl& rcYuvFullPelBufferCtrl, YuvBufferCtrl& rcYuvHalfPelBufferCtrl, PicType ePicType, Frame* pcFrame )
 : m_cFullPelYuvBuffer     ( rcYuvFullPelBufferCtrl, ePicType ),
@@ -549,4 +548,4 @@ ErrVal Frame::xUpdatePicParameters()
 }
 
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {

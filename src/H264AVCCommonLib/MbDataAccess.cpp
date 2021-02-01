@@ -3,7 +3,7 @@
 #include "H264AVCCommonLib/MbDataAccess.h"
 #include "H264AVCCommonLib/Frame.h"
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 const BlkMode MbDataAccess::m_aucBMTabB0[13] =
 {
@@ -1007,5 +1007,5 @@ Bool MbDataAccess::xTemporalDirectMode( ParIdx8x8 eParIdx, Bool b8x8, Bool bFaul
     return bModeAllowed;
 }
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 

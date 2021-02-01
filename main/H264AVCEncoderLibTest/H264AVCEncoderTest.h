@@ -1,6 +1,5 @@
-
-#ifndef __H264AVCENCODERTEST_H_D65BE9B4_A8DA_11D3_AFE7_005004464B79
-#define __H264AVCENCODERTEST_H_D65BE9B4_A8DA_11D3_AFE7_005004464B79
+#ifndef _H264AVCENCODERTEST_H_
+#define _H264AVCENCODERTEST_H_
 
 #include <algorithm>
 #include <list>
@@ -8,7 +7,7 @@
 #include "WriteBitstreamToFile.h"
 #include "ReadYuvFile.h"
 #include "WriteYuvToFile.h"
-
+#include "Typedefs.h"
 
 
 class EncoderCodingParameter;
@@ -17,10 +16,10 @@ class EncoderCodingParameter;
 
 typedef struct
 {
-  UInt    uiNumberOfLayers;
-  std::string cBitstreamFilename;
-  Int     nResult;
-  UInt    nFrames;
+    UInt    uiNumberOfLayers;
+    std::string cBitstreamFilename;
+    Int     nResult;
+    UInt    nFrames;
 } EncoderIoParameter;
 
 
@@ -29,33 +28,32 @@ typedef struct
 class H264AVCEncoderTest
 {
 private:
-  H264AVCEncoderTest();
-  virtual ~H264AVCEncoderTest();
+    H264AVCEncoderTest();
+    virtual ~H264AVCEncoderTest();
 
 public:
-  static ErrVal create( H264AVCEncoderTest*& rpcH264AVCEncoderTest );
+    static ErrVal create (H264AVCEncoderTest*& rpcH264AVCEncoderTest );
 
-  ErrVal init     ( Int     argc,
-                    Char**  argv );
-  ErrVal go       ();
-  ErrVal destroy  ();
-  ErrVal ScalableDealing ();
+    ErrVal init (Int argc, Char** argv);
+    ErrVal go ();
+    ErrVal destroy ();
+    ErrVal ScalableDealing ();
 
 protected:
-  ErrVal  xGetNewPicBuffer( PicBuffer*&             rpcPicBuffer,
-                            UInt                    uiLayer,
-                            UInt                    uiSize );
-  ErrVal  xRemovePicBuffer( PicBufferList&          rcPicBufferUnusedList,
-                            UInt                    uiLayer );
+    ErrVal xGetNewPicBuffer(PicBuffer*& rpcPicBuffer,
+                            UInt uiLayer,
+                            UInt uiSize );
+    ErrVal xRemovePicBuffer(PicBufferList& rcPicBufferUnusedList,
+                            UInt uiLayer);
 
-  ErrVal  xWrite          ( ExtBinDataAccessorList& rcList,
-                            UInt&                   ruiBytesInFrame );
-  ErrVal  xRelease        ( ExtBinDataAccessorList& rcList );
+    ErrVal xWrite (ExtBinDataAccessorList& rcList,
+                   UInt& ruiBytesInFrame);
+    ErrVal xRelease (ExtBinDataAccessorList& rcList);
 
-  ErrVal  xWrite          ( PicBufferList&          rcList,
-                            UInt                    uiLayer );
-  ErrVal  xRelease        ( PicBufferList&          rcList,
-                            UInt                    uiLayer );
+    ErrVal xWrite (PicBufferList& rcList,
+                   UInt uiLayer);
+    ErrVal xRelease (PicBufferList& rcList,
+                     UInt uiLayer);
 #if DOLBY_ENCMUX_ENABLE
   //Dolby muxing functions
   void sbsMux(UChar *output, Int iStrideOut, UChar *input0, UChar *input1, Int iStrideIn, Int width, Int height, Int offset0=0, Int offset1=1, Int iFilterIdx=7);
@@ -68,28 +66,28 @@ protected:
 protected:
   EncoderIoParameter            m_cEncoderIoParameter;
   EncoderCodingParameter*       m_pcEncoderCodingParameter;
-  h264::CreaterH264AVCEncoder*  m_pcH264AVCEncoder;
+  JSVM::CreaterH264AVCEncoder*  m_pcH264AVCEncoder;
   WriteBitstreamToFile*         m_pcWriteBitstreamToFile;
-  WriteYuvToFile*               m_apcWriteYuv           [MAX_LAYERS];
-  ReadYuvFile*                  m_apcReadYuv            [MAX_LAYERS];
+  WriteYuvToFile*               m_apcWriteYuv[MAX_LAYERS];
+  ReadYuvFile*                  m_apcReadYuv[MAX_LAYERS];
 
-  PicBufferList                 m_acActivePicBufferList [MAX_LAYERS];
-  PicBufferList                 m_acUnusedPicBufferList [MAX_LAYERS];
-  UInt                          m_auiLumOffset          [MAX_LAYERS];
-  UInt                          m_auiCbOffset           [MAX_LAYERS];
-  UInt                          m_auiCrOffset           [MAX_LAYERS];
-  UInt                          m_auiHeight             [MAX_LAYERS];
-  UInt                          m_auiWidth              [MAX_LAYERS];
-  UInt                          m_auiStride             [MAX_LAYERS];
-  UInt                          m_aauiCropping          [MAX_LAYERS][4];
+  PicBufferList  m_acActivePicBufferList[MAX_LAYERS];
+  PicBufferList  m_acUnusedPicBufferList[MAX_LAYERS];
+  UInt           m_auiLumOffset[MAX_LAYERS];
+  UInt           m_auiCbOffset[MAX_LAYERS];
+  UInt           m_auiCrOffset[MAX_LAYERS];
+  UInt           m_auiHeight[MAX_LAYERS];
+  UInt           m_auiWidth [MAX_LAYERS];
+  UInt           m_auiStride[MAX_LAYERS];
+  UInt           m_aauiCropping[MAX_LAYERS][4];
 
-  UChar                         m_aucStartCodeBuffer[5];
-  BinData                       m_cBinDataStartCode;
-  std::string                   m_cWriteToBitFileName;
-  std::string                   m_cWriteToBitFileTempName;
+  UChar          m_aucStartCodeBuffer[5];
+  BinData        m_cBinDataStartCode;
+  std::string    m_cWriteToBitFileName;
+  std::string    m_cWriteToBitFileTempName;
 };
 
 
 
 
-#endif //__H264AVCENCODERTEST_H_D65BE9B4_A8DA_11D3_AFE7_005004464B79
+#endif //_H264AVCENCODERTEST_H_

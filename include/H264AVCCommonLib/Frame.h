@@ -1,18 +1,11 @@
-
-#if !defined(AFX_INTFRAME_H__98AFB9AC_5EE3_45A9_B09B_859511AC9090__INCLUDED_)
-#define AFX_INTFRAME_H__98AFB9AC_5EE3_45A9_B09B_859511AC9090__INCLUDED_
-
-
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef _INTFRAME_H_
+#define _INTFRAME_H_
 
 
 #include "H264AVCCommonLib/YuvPicBuffer.h"
 #include "ResizeParameters.h"
 
-H264AVC_NAMESPACE_BEGIN
+namespace JSVM {
 
 
 class DownConvert;
@@ -22,34 +15,39 @@ class DPBUnit;
 class RecPicBufUnit;
 class ReconstructionBypass;
 
-class H264AVCCOMMONLIB_API Frame
+class Frame
 {
 public:
-    Frame                (YuvBufferCtrl& rcYuvFullPelBufferCtrl,
-                          YuvBufferCtrl& rcYuvHalfPelBufferCtrl,
-                          PicType        ePicType,
-                          Frame*         pcFrame );
-    virtual ~Frame       ();
+    Frame(YuvBufferCtrl& rcYuvFullPelBufferCtrl,
+          YuvBufferCtrl& rcYuvHalfPelBufferCtrl,
+          PicType        ePicType,
+          Frame*         pcFrame);
 
-    ErrVal  init            ();
-    ErrVal  initHalfPel     ();
-    ErrVal  initHalfPel     ( XPel*& rpucYuvBuffer );
+    virtual ~Frame();
 
-    static ErrVal create    ( Frame*& rpcIntFrame, YuvBufferCtrl& rcYuvFullPelBufferCtrl, YuvBufferCtrl& rcYuvHalfPelBufferCtrl, PicType ePicType, Frame* pcFrame );
-    ErrVal  destroy         ();
-    ErrVal  uninit          ();
-    ErrVal  uninitHalfPel   ();
+    ErrVal  init();
+    ErrVal  initHalfPel();
+    ErrVal  initHalfPel(XPel*& rpucYuvBuffer);
 
-    ErrVal  load            ( PicBuffer*        pcPicBuffer );
-    ErrVal  store           ( PicBuffer*        pcPicBuffer, PicType ePicType = FRAME );
+    static ErrVal create(Frame*& rpcIntFrame,
+                         YuvBufferCtrl& rcYuvFullPelBufferCtrl,
+                         YuvBufferCtrl& rcYuvHalfPelBufferCtrl,
+                         PicType ePicType,
+                         Frame* pcFrame);
+    ErrVal  destroy();
+    ErrVal  uninit();
+    ErrVal  uninitHalfPel();
 
-    ErrVal  addFrameFieldBuffer   ();
+    ErrVal  load(PicBuffer* pcPicBuffer);
+    ErrVal  store(PicBuffer* pcPicBuffer, PicType ePicType = FRAME);
+
+    ErrVal  addFrameFieldBuffer();
     ErrVal  removeFrameFieldBuffer();
-    ErrVal  addFieldBuffer        ( PicType ePicType );
-    ErrVal  removeFieldBuffer     ( PicType ePicType );
-    ErrVal  extendFrame           ( QuarterPelFilter* pcQuarterPelFilter, PicType ePicType=FRAME, Bool bFrameMbsOnlyFlag=true );
+    ErrVal  addFieldBuffer(PicType ePicType);
+    ErrVal  removeFieldBuffer(PicType ePicType);
+    ErrVal  extendFrame(QuarterPelFilter* pcQuarterPelFilter, PicType ePicType=FRAME, Bool bFrameMbsOnlyFlag=true);
 
-    Void      setDPBUnit(DPBUnit*  pcDPBUnit)
+    Void setDPBUnit(DPBUnit*  pcDPBUnit)
     {
         m_pcDPBUnit = pcDPBUnit;
     }
@@ -57,19 +55,21 @@ public:
     {
         return m_pcDPBUnit;
     }
-    Bool      isLongTerm()          const { return m_bLongTerm; }
-    Void      setLongTerm ( Bool b )
+    Bool isLongTerm() const { return m_bLongTerm; }
+    Void setLongTerm (Bool b)
     {
         m_bLongTerm = b;
-        if( NULL != m_pcFrameTopField ) m_pcFrameTopField->setLongTerm( m_bLongTerm );
-        if( NULL != m_pcFrameBotField ) m_pcFrameBotField->setLongTerm( m_bLongTerm );
+        if(NULL != m_pcFrameTopField )
+            m_pcFrameTopField->setLongTerm(m_bLongTerm);
+        if(NULL != m_pcFrameBotField )
+            m_pcFrameBotField->setLongTerm(m_bLongTerm);
     }
 
-    const PictureParameters&  getPicParameters()                    const;
-    const PictureParameters&  getPicParameters( PicType ePicType )  const;
-    ErrVal  setPicParameters  ( const ResizeParameters&   rcRP,     const SliceHeader* pcSH     = 0 );
-    ErrVal  setPicParameters  ( const PictureParameters&  rcPP,     PicType            ePicType = FRAME );
-    ErrVal  copyPicParameters ( const Frame&              rcFrame,  PicType            ePicType = FRAME );
+    const PictureParameters& getPicParameters() const;
+    const PictureParameters& getPicParameters(PicType ePicType)  const;
+    ErrVal  setPicParameters (const ResizeParameters& rcRP, const SliceHeader* pcSH = 0);
+    ErrVal  setPicParameters (const PictureParameters& rcPP, PicType ePicType = FRAME );
+    ErrVal  copyPicParameters (const Frame&  rcFrame,  PicType  ePicType = FRAME );
 
     const Frame*  getFrame() const { return m_pcFrame; }
 
@@ -109,14 +109,14 @@ public:
         return Err::m_nOK;
     }
 
-    ErrVal update(Frame* pcMCPFrame, Frame* pcSrcFrame, UInt uiShift )
+    ErrVal update(Frame* pcMCPFrame, Frame* pcSrcFrame, UInt uiShift)
     {
         ASSERT( m_ePicType==FRAME );
         getFullPelYuvBuffer()->update(pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame->getFullPelYuvBuffer(), uiShift);
         return Err::m_nOK;
     }
 
-    ErrVal inverseUpdate(Frame* pcMCPFrame, Frame* pcSrcFrame, UInt uiShift )
+    ErrVal inverseUpdate(Frame* pcMCPFrame, Frame* pcSrcFrame, UInt uiShift)
     {
         ASSERT( m_ePicType==FRAME );
         getFullPelYuvBuffer()->inverseUpdate(pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame->getFullPelYuvBuffer(), uiShift);
@@ -124,230 +124,241 @@ public:
     }
 
 
-    ErrVal update(Frame* pcMCPFrame0, Frame* pcMCPFrame1, Frame* pcSrcFrame )
+    ErrVal update(Frame* pcMCPFrame0, Frame* pcMCPFrame1, Frame* pcSrcFrame)
     {
         ASSERT( m_ePicType==FRAME );
         getFullPelYuvBuffer()->update(pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame0->getFullPelYuvBuffer(), pcMCPFrame1->getFullPelYuvBuffer());
         return Err::m_nOK;
     }
 
-    ErrVal inverseUpdate    ( Frame* pcMCPFrame0, Frame* pcMCPFrame1, Frame* pcSrcFrame )
+    ErrVal inverseUpdate(Frame* pcMCPFrame0, Frame* pcMCPFrame1, Frame* pcSrcFrame)
     {
         ASSERT( m_ePicType==FRAME );
         if (pcMCPFrame0 && pcMCPFrame1)
         {
-            getFullPelYuvBuffer()->inverseUpdate    ( pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame0->getFullPelYuvBuffer(), pcMCPFrame1->getFullPelYuvBuffer());
+            getFullPelYuvBuffer()->inverseUpdate(pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame0->getFullPelYuvBuffer(), pcMCPFrame1->getFullPelYuvBuffer());
         }
         else if (pcMCPFrame0)
         {
-            getFullPelYuvBuffer()->inverseUpdate    ( pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame0->getFullPelYuvBuffer(), (YuvPicBuffer*)NULL);
+            getFullPelYuvBuffer()->inverseUpdate(pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame0->getFullPelYuvBuffer(), (YuvPicBuffer*)NULL);
         }
         else
         {
-            getFullPelYuvBuffer()->inverseUpdate    ( pcSrcFrame->getFullPelYuvBuffer(), (YuvPicBuffer*)NULL, pcMCPFrame1->getFullPelYuvBuffer());
+            getFullPelYuvBuffer()->inverseUpdate(pcSrcFrame->getFullPelYuvBuffer(), (YuvPicBuffer*)NULL, pcMCPFrame1->getFullPelYuvBuffer());
         }
         return Err::m_nOK;
     }
 
-    ErrVal inversePrediction( Frame* pcMCPFrame,  Frame* pcSrcFrame, PicType ePicType )
+    ErrVal inversePrediction(Frame* pcMCPFrame,  Frame* pcSrcFrame, PicType ePicType)
     {
-      ASSERT( m_ePicType==FRAME );
+        ASSERT( m_ePicType==FRAME );
 
-      if( ePicType==FRAME )
-    {
-        RNOK( getFullPelYuvBuffer()->inversePrediction( pcSrcFrame->getFullPelYuvBuffer(),
-                                                        pcMCPFrame->getFullPelYuvBuffer() ) );
-      }
-      else
-    {
-        RNOK(             addFieldBuffer( ePicType ) );
-        RNOK( pcSrcFrame->addFieldBuffer( ePicType ) );
-        RNOK( pcMCPFrame->addFieldBuffer( ePicType ) );
-        RNOK( getPic( ePicType )->getFullPelYuvBuffer()->inversePrediction( pcSrcFrame->getPic( ePicType )->getFullPelYuvBuffer(),
-                                                                            pcMCPFrame->getPic( ePicType )->getFullPelYuvBuffer() ) );
+        if(ePicType==FRAME)
+        {
+            getFullPelYuvBuffer()->inversePrediction(pcSrcFrame->getFullPelYuvBuffer(),
+                                                     pcMCPFrame->getFullPelYuvBuffer());
+        }
+        else
+        {
+            addFieldBuffer(ePicType);
+            pcSrcFrame->addFieldBuffer(ePicType);
+            pcMCPFrame->addFieldBuffer(ePicType);
+            getPic(ePicType)->getFullPelYuvBuffer()->inversePrediction(pcSrcFrame->getPic(ePicType)->getFullPelYuvBuffer(),
+                                                                       pcMCPFrame->getPic(ePicType)->getFullPelYuvBuffer());
 
-      }
-      return Err::m_nOK;
+        }
+        return Err::m_nOK;
     }
 
 
-    ErrVal  copyAll     ( Frame* pcSrcFrame )
+    ErrVal copyAll(Frame* pcSrcFrame )
     {
-      ASSERT( m_ePicType==FRAME );
-      m_iPoc          = pcSrcFrame->m_iPoc;
-      m_iTopFieldPoc  = pcSrcFrame->m_iTopFieldPoc;
-      m_iBotFieldPoc  = pcSrcFrame->m_iBotFieldPoc;
-      RNOK( getFullPelYuvBuffer()->copy( pcSrcFrame->getFullPelYuvBuffer() ) );
+        ASSERT( m_ePicType==FRAME );
+        m_iPoc          = pcSrcFrame->m_iPoc;
+        m_iTopFieldPoc  = pcSrcFrame->m_iTopFieldPoc;
+        m_iBotFieldPoc  = pcSrcFrame->m_iBotFieldPoc;
+        getFullPelYuvBuffer()->copy(pcSrcFrame->getFullPelYuvBuffer());
 
-      return Err::m_nOK;
+        return Err::m_nOK;
     }
 
-    ErrVal copy             ( Frame* pcSrcFrame, PicType ePicType )
+    ErrVal copy(Frame* pcSrcFrame, PicType ePicType)
     {
-      ASSERT( m_ePicType==FRAME );
-      if( ePicType==FRAME )
-      {
-        RNOK( getFullPelYuvBuffer()->copy( pcSrcFrame->getFullPelYuvBuffer()) );
-      }
-      else
-      {
-        RNOK(             addFieldBuffer( ePicType ) );
-        RNOK( pcSrcFrame->addFieldBuffer( ePicType ) );
-        RNOK( getPic( ePicType )->getFullPelYuvBuffer()->copy( pcSrcFrame->getPic( ePicType )->getFullPelYuvBuffer() ) );
-      }
-      return Err::m_nOK;
+        ASSERT( m_ePicType==FRAME );
+        if(ePicType==FRAME)
+        {
+            getFullPelYuvBuffer()->copy(pcSrcFrame->getFullPelYuvBuffer());
+        }
+        else
+        {
+            addFieldBuffer(ePicType);
+            pcSrcFrame->addFieldBuffer(ePicType);
+            getPic(ePicType)->getFullPelYuvBuffer()->copy(pcSrcFrame->getPic(ePicType)->getFullPelYuvBuffer());
+        }
+        return Err::m_nOK;
     }
 
       //JVT-X046 {
-    ErrVal predictionSlices       (Frame* pcSrcFrame,Frame* pcMCPFrame, UInt uiMbY, UInt uiMbX)
+    ErrVal predictionSlices(Frame* pcSrcFrame,Frame* pcMCPFrame, UInt uiMbY, UInt uiMbX)
     {
-      RNOK( getFullPelYuvBuffer()->predictionSlices( pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame->getFullPelYuvBuffer(), uiMbY, uiMbX ) );
-      return Err::m_nOK;
+        getFullPelYuvBuffer()->predictionSlices(pcSrcFrame->getFullPelYuvBuffer(),
+                                                pcMCPFrame->getFullPelYuvBuffer(),
+                                                uiMbY,
+                                                uiMbX);
+        return Err::m_nOK;
     }
-    ErrVal inversepredictionSlices       (Frame* pcSrcFrame,Frame* pcMCPFrame, UInt uiMbY, UInt uiMbX)
+    ErrVal inversepredictionSlices(Frame* pcSrcFrame,Frame* pcMCPFrame, UInt uiMbY, UInt uiMbX)
     {
-      RNOK( getFullPelYuvBuffer()->inversepredictionSlices( pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame->getFullPelYuvBuffer(), uiMbY, uiMbX ) );
-      return Err::m_nOK;
+        getFullPelYuvBuffer()->inversepredictionSlices(pcSrcFrame->getFullPelYuvBuffer(),
+                                                       pcMCPFrame->getFullPelYuvBuffer(),
+                                                       uiMbY,
+                                                       uiMbX);
+        return Err::m_nOK;
     }
-    ErrVal copyMb       (Frame* pcSrcFrame, UInt uiMbY ,UInt uiMbX)
+    ErrVal copyMb(Frame* pcSrcFrame, UInt uiMbY ,UInt uiMbX)
     {
-      RNOK( getFullPelYuvBuffer()->copyMb( pcSrcFrame->getFullPelYuvBuffer(), uiMbY, uiMbX ) );
-      return Err::m_nOK;
+        getFullPelYuvBuffer()->copyMb(pcSrcFrame->getFullPelYuvBuffer(), uiMbY, uiMbX);
+        return Err::m_nOK;
     }
-    void   setMBZero( UInt uiMBY, UInt uiMBX ) { getFullPelYuvBuffer()->setMBZero(uiMBY,uiMBX); }
-    ErrVal copySlice (Frame* pcSrcFrame, PicType ePicType, UInt uiFirstMB, UInt uiLastMB)
+    void setMBZero(UInt uiMBY, UInt uiMBX)
     {
-      ASSERT( m_ePicType==FRAME );
-      if( ePicType==FRAME )
-      {
-        RNOK( getFullPelYuvBuffer()->copySlice( pcSrcFrame->getFullPelYuvBuffer(),uiFirstMB,uiLastMB) );
-      }
-      return Err::m_nOK;
+        getFullPelYuvBuffer()->setMBZero(uiMBY,uiMBX);
+    }
+    ErrVal copySlice(Frame* pcSrcFrame, PicType ePicType, UInt uiFirstMB, UInt uiLastMB)
+    {
+        ASSERT( m_ePicType==FRAME );
+        if(ePicType==FRAME)
+        {
+            getFullPelYuvBuffer()->copySlice(pcSrcFrame->getFullPelYuvBuffer(),uiFirstMB,uiLastMB);
+        }
+        return Err::m_nOK;
     }
     //JVT-X046 }
 
-    ErrVal  subtract    ( Frame* pcSrcFrame0, Frame* pcSrcFrame1 )
+    ErrVal subtract(Frame* pcSrcFrame0, Frame* pcSrcFrame1)
     {
-      ASSERT( m_ePicType==FRAME );
-      RNOK( getFullPelYuvBuffer()->subtract( pcSrcFrame0->getFullPelYuvBuffer(), pcSrcFrame1->getFullPelYuvBuffer() ) );
-      return Err::m_nOK;
+        ASSERT( m_ePicType==FRAME );
+        getFullPelYuvBuffer()->subtract(pcSrcFrame0->getFullPelYuvBuffer(),
+                                        pcSrcFrame1->getFullPelYuvBuffer());
+        return Err::m_nOK;
     }
 
-    ErrVal add              ( Frame* pcSrcFrame,  PicType ePicType )
+    ErrVal add(Frame* pcSrcFrame, PicType ePicType)
     {
-      ASSERT( m_ePicType==FRAME );
+        ASSERT( m_ePicType==FRAME );
 
-      if( ePicType==FRAME )
-    {
-      RNOK( getFullPelYuvBuffer()->add ( pcSrcFrame->getFullPelYuvBuffer()) );
-      }
-      else
-      {
-        RNOK(             addFieldBuffer( ePicType ) );
-        RNOK( pcSrcFrame->addFieldBuffer( ePicType ) );
-        RNOK( getPic( ePicType )->getFullPelYuvBuffer()->add( pcSrcFrame->getPic( ePicType )->getFullPelYuvBuffer() ) );
-      }
-      return Err::m_nOK;
+        if(ePicType==FRAME)
+        {
+            getFullPelYuvBuffer()->add(pcSrcFrame->getFullPelYuvBuffer());
+        }
+        else
+        {
+            addFieldBuffer(ePicType);
+            pcSrcFrame->addFieldBuffer(ePicType);
+            getPic(ePicType )->getFullPelYuvBuffer()->add(pcSrcFrame->getPic(ePicType)->getFullPelYuvBuffer());
+        }
+        return Err::m_nOK;
     }
 
-    ErrVal  setZero     ()
+    ErrVal setZero()
     {
-      ASSERT( m_ePicType==FRAME );
-      getFullPelYuvBuffer()->setZero();
-      return Err::m_nOK;
+        ASSERT( m_ePicType==FRAME );
+        getFullPelYuvBuffer()->setZero();
+        return Err::m_nOK;
     }
 
-    ErrVal  setNonZeroFlags( UShort* pusNonZeroFlags, UInt uiStride )
+    ErrVal setNonZeroFlags(UShort* pusNonZeroFlags, UInt uiStride)
     {
-      ASSERT( m_ePicType==FRAME );
-      return getFullPelYuvBuffer()->setNonZeroFlags( pusNonZeroFlags, uiStride );
+        ASSERT( m_ePicType==FRAME );
+        return getFullPelYuvBuffer()->setNonZeroFlags(pusNonZeroFlags, uiStride);
     }
 
-    ErrVal getSSD( Double& dSSDY, Double& dSSDU, Double& dSSDV, PicBuffer* pcOrgPicBuffer )
+    ErrVal getSSD(Double& dSSDY, Double& dSSDU, Double& dSSDV, PicBuffer* pcOrgPicBuffer)
     {
-      ASSERT( m_ePicType==FRAME );
-      RNOK( m_cFullPelYuvBuffer.getSSD( dSSDY, dSSDU, dSSDV, pcOrgPicBuffer ) );
-      return Err::m_nOK;
+        ASSERT( m_ePicType==FRAME );
+        m_cFullPelYuvBuffer.getSSD(dSSDY, dSSDU, dSSDV, pcOrgPicBuffer);
+        return Err::m_nOK;
     }
 
-    ErrVal dump( FILE* pFile, Int uiBandType, MbDataCtrl* pcMbDataCtrl )
+    ErrVal dump(FILE* pFile, Int uiBandType, MbDataCtrl* pcMbDataCtrl)
     {
-      if( uiBandType != 0 )
-      {
-        RNOK( getFullPelYuvBuffer()->dumpHPS( pFile, pcMbDataCtrl ) );
-      }
-      else
-      {
-        RNOK( getFullPelYuvBuffer()->dumpLPS( pFile ) );
-      }
-      fflush( pFile );
-      return Err::m_nOK;
+        if(uiBandType != 0)
+        {
+            getFullPelYuvBuffer()->dumpHPS(pFile, pcMbDataCtrl);
+        }
+        else
+        {
+            getFullPelYuvBuffer()->dumpLPS(pFile);
+        }
+        fflush(pFile);
+        return Err::m_nOK;
     }
 
-    ErrVal  intraUpsampling   ( Frame*                pcBaseFrame,
-                                Frame*                pcTempBaseFrame,
-                                Frame*                pcTempFrame,
-                                DownConvert&          rcDownConvert,
-                                ResizeParameters*     pcParameters,
-                                MbDataCtrl*           pcMbDataCtrlBase,
-                                MbDataCtrl*           pcMbDataCtrlPredFrm,
-                                MbDataCtrl*           pcMbDataCtrlPredFld,
-                                ReconstructionBypass* pcReconstructionBypass,
-                                Bool                  bConstrainedIntraUpsamplingFlag,
-                                Bool*                 pabBaseModeAllowedFlagArrayFrm = 0,
-                                Bool*                 pabBaseModeAllowedFlagArrayFld = 0 );
-    ErrVal residualUpsampling ( Frame*                pcBaseFrame,
-                                DownConvert&          rcDownConvert,
-                                ResizeParameters*     pcParameters,
-                                MbDataCtrl*           pcMbDataCtrlBase );
+    ErrVal  intraUpsampling(Frame*  pcBaseFrame,
+                            Frame*  pcTempBaseFrame,
+                            Frame*  pcTempFrame,
+                            DownConvert&       rcDownConvert,
+                            ResizeParameters*  pcParameters,
+                            MbDataCtrl*        pcMbDataCtrlBase,
+                            MbDataCtrl*        pcMbDataCtrlPredFrm,
+                            MbDataCtrl*        pcMbDataCtrlPredFld,
+                            ReconstructionBypass* pcReconstructionBypass,
+                            Bool   bConstrainedIntraUpsamplingFlag,
+                            Bool*  pabBaseModeAllowedFlagArrayFrm = 0,
+                            Bool*  pabBaseModeAllowedFlagArrayFld = 0);
 
-    const YuvPicBuffer* getFullPelYuvBuffer() const  { return &m_cFullPelYuvBuffer; }
-    YuvPicBuffer*       getFullPelYuvBuffer()        { return &m_cFullPelYuvBuffer; }
-    YuvPicBuffer*       getHalfPelYuvBuffer()        { return &m_cHalfPelYuvBuffer; }
+    ErrVal residualUpsampling(Frame*                pcBaseFrame,
+                              DownConvert&          rcDownConvert,
+                              ResizeParameters*     pcParameters,
+                              MbDataCtrl*           pcMbDataCtrlBase );
 
-    Bool  isPocAvailable()           const { return m_bPocIsSet; }
-    Int   getPoc        ()           const { return m_iPoc; }
-    Int   getTopFieldPoc()           const { return m_iTopFieldPoc; }
-    Int   getBotFieldPoc()           const { return m_iBotFieldPoc; }
+    const YuvPicBuffer* getFullPelYuvBuffer () const    { return &m_cFullPelYuvBuffer; }
+    YuvPicBuffer* getFullPelYuvBuffer ()                { return &m_cFullPelYuvBuffer; }
+    YuvPicBuffer* getHalfPelYuvBuffer ()                { return &m_cHalfPelYuvBuffer; }
 
-    Void  clearPoc      ()
+    Bool isPocAvailable () const               { return m_bPocIsSet; }
+    Int  getPoc () const                       { return m_iPoc; }
+    Int  getTopFieldPoc () const               { return m_iTopFieldPoc; }
+    Int  getBotFieldPoc () const               { return m_iBotFieldPoc; }
+
+    Void  clearPoc()
     {
-      if( m_pcFrameTopField )
-      {
-        m_pcFrameTopField->clearPoc();
-      }
-      if( m_pcFrameBotField )
-      {
-        m_pcFrameBotField->clearPoc();
-      }
-      m_iTopFieldPoc  = MSYS_INT_MIN;
-      m_iBotFieldPoc  = MSYS_INT_MIN;
-      m_iPoc          = MSYS_INT_MIN;
-      m_bPocIsSet     = false;
+        if(m_pcFrameTopField)
+        {
+            m_pcFrameTopField->clearPoc();
+        }
+        if(m_pcFrameBotField)
+        {
+            m_pcFrameBotField->clearPoc();
+        }
+        m_iTopFieldPoc  = MSYS_INT_MIN;
+        m_iBotFieldPoc  = MSYS_INT_MIN;
+        m_iPoc          = MSYS_INT_MIN;
+        m_bPocIsSet     = false;
     }
 
-    Void  setPoc        ( Int iPoc )                    { m_iPoc = iPoc; m_bPocIsSet = true; }
-    Void  setPoc        ( const SliceHeader& rcSH )
+    Void  setPoc(Int iPoc)                    { m_iPoc = iPoc; m_bPocIsSet = true; }
+    Void  setPoc(const SliceHeader& rcSH)
     {
         ASSERT( m_ePicType==FRAME );
         const PicType ePicType = rcSH.getPicType();
 
-        if( ePicType & TOP_FIELD )
+        if(ePicType & TOP_FIELD)
         {
             m_iTopFieldPoc = rcSH.getTopFieldPoc();
-            if( m_pcFrameTopField && m_pcFrameBotField )
+            if(m_pcFrameTopField && m_pcFrameBotField )
             {
-                m_pcFrameTopField->setPoc( m_iTopFieldPoc );
-                setPoc( m_pcFrameBotField->isPocAvailable() ? gMax( m_pcFrameBotField->getPoc(), m_iTopFieldPoc ) : m_iTopFieldPoc );
+                m_pcFrameTopField->setPoc(m_iTopFieldPoc);
+                setPoc(m_pcFrameBotField->isPocAvailable() ? gMax(m_pcFrameBotField->getPoc(), m_iTopFieldPoc ) : m_iTopFieldPoc );
             }
         }
-        if( ePicType & BOT_FIELD )
+        if(ePicType & BOT_FIELD)
         {
             m_iBotFieldPoc = rcSH.getBotFieldPoc();
-            if( m_pcFrameTopField && m_pcFrameBotField )
+            if(m_pcFrameTopField && m_pcFrameBotField )
             {
-                m_pcFrameBotField->setPoc( m_iBotFieldPoc );
-                setPoc( m_pcFrameTopField->isPocAvailable() ? gMin( m_pcFrameTopField->getPoc(), m_iBotFieldPoc ) : m_iBotFieldPoc );
+                m_pcFrameBotField->setPoc(m_iBotFieldPoc );
+                setPoc(m_pcFrameTopField->isPocAvailable() ? gMin(m_pcFrameTopField->getPoc(), m_iBotFieldPoc ) : m_iBotFieldPoc);
             }
         }
         if(!m_pcFrameTopField || !m_pcFrameBotField)
@@ -356,24 +367,26 @@ public:
         }
     }
 
-    Bool  isHalfPel()   { return m_bHalfPel; }
+    Bool isHalfPel()   { return m_bHalfPel; }
 
-    const Frame*  getPic( PicType ePicType ) const;
-    Frame*        getPic( PicType ePicType );
+    const Frame*  getPic(PicType ePicType) const;
+    Frame* getPic(PicType ePicType);
 
-    PicType getPicType ()            const { return m_ePicType; }
-    Void setPicType    ( PicType ePicType ){ m_ePicType = ePicType; }
+    PicType getPicType() const           { return m_ePicType; }
+    Void setPicType(PicType ePicType)    { m_ePicType = ePicType; }
 
-    Bool  isExtended () { return m_bExtended; }
+    Bool  isExtended()    { return m_bExtended; }
     Void  clearExtended() { m_bExtended = false; }
-    Void  setExtended  ()                  { m_bExtended = true; }
+    Void  setExtended()   { m_bExtended = true; }
 
     // JVT-R057 LA-RDO{
     Void   initChannelDistortion();
     Void   uninitChannelDistortion()
     {
         if(m_piChannelDistortion)
+        {
             delete[] m_piChannelDistortion;
+        }
     }
     const UInt* getChannelDistortion()  const { return m_piChannelDistortion; }
     UInt*       getChannelDistortion()        { return m_piChannelDistortion; }
@@ -383,8 +396,8 @@ public:
     // JVT-R057 LA-RDO}
 
     Void  setUnvalid()  { m_bUnvalid = true;  }
-    Void  setValid  ()  { m_bUnvalid = false; }
-    Bool  isUnvalid ()  { return m_bUnvalid;  }
+    Void  setValid()    { m_bUnvalid = false; }
+    Bool  isUnvalid()   { return m_bUnvalid;  }
 
 protected:
     ErrVal  xUpdatePicParameters();
@@ -415,13 +428,13 @@ protected:
     Bool      m_bUnvalid;
 };
 
-H264AVCCOMMONLIB_API extern __inline ErrVal gSetFrameFieldLists(RefFrameList& rcTopFieldList,
-                                                                RefFrameList& rcBotFieldList,
-                                                                RefFrameList& rcRefFrameList)
+extern __inline ErrVal gSetFrameFieldLists(RefFrameList& rcTopFieldList,
+                                           RefFrameList& rcBotFieldList,
+                                           RefFrameList& rcRefFrameList)
 {
     rcTopFieldList.reset();
     rcBotFieldList.reset();
-    const Int iMaxEntries = gMin( rcRefFrameList.getSize(), rcRefFrameList.getActive() );
+    const Int iMaxEntries = gMin(rcRefFrameList.getSize(), rcRefFrameList.getActive());
     for(Int iFrmIdx = 0; iFrmIdx < iMaxEntries; iFrmIdx++)
     {
         Frame* pcTopField = rcRefFrameList.getEntry(iFrmIdx)->getPic(TOP_FIELD);
@@ -435,23 +448,23 @@ H264AVCCOMMONLIB_API extern __inline ErrVal gSetFrameFieldLists(RefFrameList& rc
 }
 
 
-H264AVCCOMMONLIB_API extern __inline  ErrVal gSetFrameFieldLists(RefListStruct& rcTopFieldStruct,
-                                                                 RefListStruct& rcBotFieldStruct,
-                                                                 RefListStruct& rcRefFrameStruct)
+extern __inline  ErrVal gSetFrameFieldLists(RefListStruct& rcTopFieldStruct,
+                                            RefListStruct& rcBotFieldStruct,
+                                            RefListStruct& rcRefFrameStruct)
 {
-    gSetFrameFieldLists( rcTopFieldStruct.acRefFrameListME[0], rcBotFieldStruct.acRefFrameListME[0], rcRefFrameStruct.acRefFrameListME[0]);
-    gSetFrameFieldLists( rcTopFieldStruct.acRefFrameListME[1], rcBotFieldStruct.acRefFrameListME[1], rcRefFrameStruct.acRefFrameListME[1]);
-    gSetFrameFieldLists( rcTopFieldStruct.acRefFrameListMC[0], rcBotFieldStruct.acRefFrameListMC[0], rcRefFrameStruct.acRefFrameListMC[0]);
-    gSetFrameFieldLists( rcTopFieldStruct.acRefFrameListMC[1], rcBotFieldStruct.acRefFrameListMC[1], rcRefFrameStruct.acRefFrameListMC[1]);
-    gSetFrameFieldLists( rcTopFieldStruct.acRefFrameListRC[0], rcBotFieldStruct.acRefFrameListRC[0], rcRefFrameStruct.acRefFrameListRC[0]);
-    gSetFrameFieldLists( rcTopFieldStruct.acRefFrameListRC[1], rcBotFieldStruct.acRefFrameListRC[1], rcRefFrameStruct.acRefFrameListRC[1]);
+    gSetFrameFieldLists(rcTopFieldStruct.acRefFrameListME[0], rcBotFieldStruct.acRefFrameListME[0], rcRefFrameStruct.acRefFrameListME[0]);
+    gSetFrameFieldLists(rcTopFieldStruct.acRefFrameListME[1], rcBotFieldStruct.acRefFrameListME[1], rcRefFrameStruct.acRefFrameListME[1]);
+    gSetFrameFieldLists(rcTopFieldStruct.acRefFrameListMC[0], rcBotFieldStruct.acRefFrameListMC[0], rcRefFrameStruct.acRefFrameListMC[0]);
+    gSetFrameFieldLists(rcTopFieldStruct.acRefFrameListMC[1], rcBotFieldStruct.acRefFrameListMC[1], rcRefFrameStruct.acRefFrameListMC[1]);
+    gSetFrameFieldLists(rcTopFieldStruct.acRefFrameListRC[0], rcBotFieldStruct.acRefFrameListRC[0], rcRefFrameStruct.acRefFrameListRC[0]);
+    gSetFrameFieldLists(rcTopFieldStruct.acRefFrameListRC[1], rcBotFieldStruct.acRefFrameListRC[1], rcRefFrameStruct.acRefFrameListRC[1]);
     rcTopFieldStruct.bMCandRClistsDiffer  = rcRefFrameStruct.bMCandRClistsDiffer;
     rcBotFieldStruct.bMCandRClistsDiffer  = rcRefFrameStruct.bMCandRClistsDiffer;
     return Err::m_nOK;
 }
 
 
-H264AVCCOMMONLIB_API extern __inline ErrVal gSetFrameFieldArrays( Frame* apcFrame[4], Frame* pcFrame )
+extern __inline ErrVal gSetFrameFieldArrays(Frame* apcFrame[4], Frame* pcFrame)
 {
     if(pcFrame == NULL)
     {
@@ -471,7 +484,7 @@ H264AVCCOMMONLIB_API extern __inline ErrVal gSetFrameFieldArrays( Frame* apcFram
     return Err::m_nOK;
 }
 
-H264AVC_NAMESPACE_END
+}  //namespace JSVM {
 
 
-#endif // !defined(AFX_INTFRAME_H__98AFB9AC_5EE3_45A9_B09B_859511AC9090__INCLUDED_)
+#endif //_INTFRAME_H_
