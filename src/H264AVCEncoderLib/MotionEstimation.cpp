@@ -124,16 +124,16 @@ ErrVal MotionEstimation::uninit()
 }
 
 
-ErrVal MotionEstimation::estimateBlockWithStart(const MbDataAccess&          rcMbDataAccess,
-                                                 const Frame&                 rcRefFrame,
-                                                 Mv&                          rcMv, // start and result
-                                                 const Mv&                    rcMvPred,
-                                                 UInt&                        ruiBits,
-                                                 UInt&                        ruiCost,
-                                                 const UInt                   uiBlk,
-                                                 const UInt                   uiMode,
-                                                 const UInt                   uiSearchRange,
-                                                 const PredWeight*            pcPW,
+ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAccess,
+                                                 const Frame&         rcRefFrame,
+                                                 Mv&                  rcMv, // start and result
+                                                 const Mv&            rcMvPred,
+                                                 UInt&                ruiBits,
+                                                 UInt&                ruiCost,
+                                                 const UInt           uiBlk,
+                                                 const UInt           uiMode,
+                                                 const UInt           uiSearchRange,
+                                                 const PredWeight*    pcPW,
                                                  const MEBiSearchParameters*  pcBSP)
 {
     const LumaIdx cIdx                 = B4x4Idx(uiBlk);
@@ -157,6 +157,7 @@ ErrVal MotionEstimation::estimateBlockWithStart(const MbDataAccess&          rcM
     const Int iXSize                       = m_pcXDistortion->getBlockWidth (uiMode);
     const Int iYSize                       = m_pcXDistortion->getBlockHeight(uiMode);
 
+    //双向预测(List 0 与 List1)
     if(pcBSP) // bi prediction
     {
         ROF(pcBSP->pcAltRefPelData  );
@@ -178,29 +179,29 @@ ErrVal MotionEstimation::estimateBlockWithStart(const MbDataAccess&          rcM
             //----- weighting -----
             if(iScale == 128) // same distance -> use normal function for same result
             {
-               m_pcSampleWeighting->inverseLumaSamples(pcWeightedYuvBuffer,
-                                                       m_pcXDistortion->getYuvMbBuffer(),
-                                                       pcBSP->pcAltRefPelData,
-                                                       iYSize, iXSize);
+               m_pcSampleWeighting->inverseLumaSamples (pcWeightedYuvBuffer,
+                                                        m_pcXDistortion->getYuvMbBuffer(),
+                                                        pcBSP->pcAltRefPelData,
+                                                        iYSize, iXSize);
                fWeight = 0.5;
             }
             else
             {
                 acIPW[1].scaleL1Weight(iScale  );
                 acIPW[0].scaleL0Weight(acIPW[1]);
-                m_pcSampleWeighting->weightInverseLumaSamples(pcWeightedYuvBuffer,
-                                                               m_pcXDistortion->getYuvMbBuffer(),
-                                                               pcBSP->pcAltRefPelData,
-                                                               &acIPW[pcBSP->uiL1Search],
-                                                               &acIPW[1-pcBSP->uiL1Search],
-                                                               fWeight, iYSize, iXSize);
+                m_pcSampleWeighting->weightInverseLumaSamples (pcWeightedYuvBuffer,
+                                                                m_pcXDistortion->getYuvMbBuffer(),
+                                                                pcBSP->pcAltRefPelData,
+                                                                &acIPW[pcBSP->uiL1Search],
+                                                                &acIPW[1-pcBSP->uiL1Search],
+                                                                fWeight, iYSize, iXSize);
             }
         }
         else if(pcBSP->apcWeight[LIST_0]->getLumaWeightFlag() ||
-                 pcBSP->apcWeight[LIST_1]->getLumaWeightFlag()  )
+                pcBSP->apcWeight[LIST_1]->getLumaWeightFlag())
         {
           //----- explicit weighting -----
-          m_pcSampleWeighting->weightInverseLumaSamples(pcWeightedYuvBuffer,
+          m_pcSampleWeighting->weightInverseLumaSamples (pcWeightedYuvBuffer,
                                                          m_pcXDistortion->getYuvMbBuffer(),
                                                          pcBSP->pcAltRefPelData,
                                                          pcBSP->apcWeight[pcBSP->uiL1Search],
@@ -217,42 +218,43 @@ ErrVal MotionEstimation::estimateBlockWithStart(const MbDataAccess&          rcM
             fWeight = 0.5;
         }
     }
-    else // unidirectional prediction
+    //单项预测(List 0 或 List1)
+    else //unidirectional prediction
     {
         ROF(pcPW);
-        if(pcPW->getLumaWeightFlag() ||(bOriginalSearchModeIsYUVSAD && pcPW->getChromaWeightFlag()))
+        if (pcPW->getLumaWeightFlag() ||(bOriginalSearchModeIsYUVSAD && pcPW->getChromaWeightFlag()))
         {
             pcWeightedYuvBuffer = &cWeightedYuvBuffer;
             pcWeightedYuvBuffer ->set4x4Block(cIdx);
             //----- weighting -----
-            m_pcSampleWeighting->weightInverseLumaSamples(pcWeightedYuvBuffer,
+            m_pcSampleWeighting->weightInverseLumaSamples (pcWeightedYuvBuffer,
                                                            m_pcXDistortion->getYuvMbBuffer(),
                                                            pcPW, fWeight, iYSize, iXSize);
             if(bOriginalSearchModeIsYUVSAD)
             {
-              m_pcSampleWeighting->weightInverseChromaSamples(pcWeightedYuvBuffer,
-                                                               m_pcXDistortion->getYuvMbBuffer(),
-                                                               pcPW, afCW, iYSize, iXSize);
+                m_pcSampleWeighting->weightInverseChromaSamples (pcWeightedYuvBuffer,
+                                                                 m_pcXDistortion->getYuvMbBuffer(),
+                                                                 pcPW, afCW, iYSize, iXSize);
             }
         }
         else
         {
-          //----- no weighting -----
-          pcWeightedYuvBuffer = m_pcXDistortion->getYuvMbBuffer();
-          fWeight = afCW[0] = afCW[1] = 1.0;
+            //----- no weighting -----
+            pcWeightedYuvBuffer = m_pcXDistortion->getYuvMbBuffer();
+            fWeight = afCW[0] = afCW[1] = 1.0;
         }
     }
 
     //===== FULL-PEL ESTIMATION ======
-    if(bOriginalSearchModeIsYUVSAD &&(pcBSP /* bi-prediction */ || fWeight != afCW[0] || fWeight != afCW[1] /* different component weights */))
+    if (bOriginalSearchModeIsYUVSAD &&(pcBSP /* bi-prediction */ || fWeight != afCW[0] || fWeight != afCW[1] /* different component weights */))
     {
         m_cParams.setFullPelDFunc(DF_SAD); // set to normal SAD
     }
     // <<< heiko.schwarz@hhi.fhg.de (fix for uninitialized memory with YUV_SAD and bi-directional search)
-    xSetMEPars     (2,(1 != m_cParams.getFullPelDFunc()));
-    xSetPredictor  (rcMvPred);
+    xSetMEPars    (2,(1 != m_cParams.getFullPelDFunc()));
+    xSetPredictor (rcMvPred);
     m_pcXDistortion ->getDistStruct(uiMode, m_cParams.getFullPelDFunc(), false, m_cXDSS);
-    m_cXDSS.pYOrg   = pcWeightedYuvBuffer->getLumBlk();
+    m_cXDSS.pYOrg   = pcWeightedYuvBuffer->getLumBlk ();
     m_cXDSS.pUOrg   = pcWeightedYuvBuffer->getCbBlk ();
     m_cXDSS.pVOrg   = pcWeightedYuvBuffer->getCrBlk ();
 
@@ -319,10 +321,17 @@ ErrVal MotionEstimation::estimateBlockWithStart(const MbDataAccess&          rcM
 
     //===== SUB-PEL ESTIMATION =====
     xSetMEPars(0,(1 !=(1 & m_cParams.getSubPelDFunc())));
-    m_pcXDistortion->getDistStruct(uiMode, m_cParams.getSubPelDFunc(), false, m_cXDSS);
+    m_pcXDistortion->getDistStruct (uiMode,
+                                    m_cParams.getSubPelDFunc(),
+                                    false,
+                                    m_cXDSS);
     m_cXDSS.pYOrg = pcWeightedYuvBuffer->getLumBlk();
 
-    xSubPelSearch (pcRefPelData[1], cMv, uiMinSAD, uiBlk, uiMode);
+    xSubPelSearch (pcRefPelData[1],
+                   cMv,
+                   uiMinSAD,
+                   uiBlk,
+                   uiMode);
 
     Short sHor      = cMv.getHor();
     Short sVer      = cMv.getVer();
@@ -338,7 +347,9 @@ ErrVal MotionEstimation::estimateBlockWithStart(const MbDataAccess&          rcM
 
 ErrVal MotionEstimation::initMb (UInt uiMbPosY, UInt uiMbPosX, MbDataAccess& rcMbDataAccess)
 {
-    MotionCompensation::initMb (uiMbPosY, uiMbPosX, rcMbDataAccess);// TMM_INTERLACE
+    MotionCompensation::initMb (uiMbPosY,
+                                uiMbPosX,
+                                rcMbDataAccess);// TMM_INTERLACE
 
     return Err::m_nOK;
 }

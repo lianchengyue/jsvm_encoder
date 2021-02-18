@@ -214,71 +214,81 @@ UInt XDistortion::getLum4x4(XPel *pPel, Int iStride, DFunc eDFunc)
 }
 
 
-UInt XDistortion::getLum16x16(XPel *pPel, Int iStride, DFunc eDFunc)
+UInt XDistortion::getLum16x16 (XPel *pPel, Int iStride, DFunc eDFunc)
+{
+    XDistSearchStruct cDSS;
+    getDistStruct(MODE_16x16, eDFunc, false, cDSS);
+    cDSS.pYOrg    = m_cOrgData.getMbLumAddr();  // i do not like this
+    cDSS.pYSearch = pPel;
+    cDSS.iYStride = iStride;
+    return cDSS.Func(&cDSS);
+}
+
+UInt XDistortion::getLum16x16RP (XPel *pPel, Int iStride, DFunc eDFunc)
 {
   XDistSearchStruct cDSS;
   getDistStruct(MODE_16x16, eDFunc, false, cDSS);
   cDSS.pYOrg    = m_cOrgData.getMbLumAddr();  // i do not like this
   cDSS.pYSearch = pPel;
   cDSS.iYStride = iStride;
-  return cDSS.Func(&cDSS);
-}
-
-UInt XDistortion::getLum16x16RP(XPel *pPel, Int iStride, DFunc eDFunc)
-{
-  XDistSearchStruct cDSS;
-  getDistStruct(MODE_16x16, eDFunc, false, cDSS);
-  cDSS.pYOrg    = m_cOrgData.getMbLumAddr();  // i do not like this
-  cDSS.pYSearch = pPel;
-  cDSS.iYStride = iStride;
-  if(checkLargeDistortion(cDSS.pYOrg, cDSS.pYSearch, iStride))
-    return 10*cDSS.Func(&cDSS);
+  if(checkLargeDistortion (cDSS.pYOrg, cDSS.pYSearch, iStride))
+  {
+      return 10*cDSS.Func(&cDSS);
+  }
 
   return cDSS.Func(&cDSS);
 }
 
-UInt XDistortion::checkLargeDistortion(XPel *pOrg, XPel *pPel, Int iStride)
+UInt XDistortion::checkLargeDistortion (XPel *pOrg, XPel *pPel, Int iStride)
 {
-  int i, j, m, n;
-  XPel a[16];
+    int i, j, m, n;
+    XPel a[16];
 
-  for(i=0; i<4; i++)
-    for(j=0; j<4; j++)
+    for(i=0; i<4; i++)
     {
-      for(m=0; m<4; m++)
-        for(n=0; n<4; n++)
+        for(j=0; j<4; j++)
         {
-          int offset = (i*4+m)*iStride + j*4 + n;
-          a[m*4+n] = abs(pOrg[offset]-pPel[offset]);
+            for(m=0; m<4; m++)
+            {
+              for(n=0; n<4; n++)
+              {
+                int offset = (i*4+m)*iStride + j*4 + n;
+                a[m*4+n] = abs(pOrg[offset]-pPel[offset]);
+              }
+            }
+
+            int ave=0;
+            for(m=0; m<16; m++)
+            {
+              ave += a[m];
+            }
+            ave = (ave+8)/16;
+
+            for(m=0; m<16; m++)
+            {
+              a[m] = a[m]>2*ave? 1:0;
+            }
+            for(m=0,n=0; m<4; m++, n+=4)
+            {
+              if(a[n]+a[n+1]+a[n+2]+a[n+3]>=3)
+                return 1;
+              if(a[m]+a[m+4]+a[m+8]+a[m+12]>=3)
+                return 1;
+            }
         }
-
-      int ave=0;
-      for(m=0; m<16; m++)
-        ave += a[m];
-      ave = (ave+8)/16;
-
-      for(m=0; m<16; m++)
-        a[m] = a[m]>2*ave? 1:0;
-      for(m=0,n=0; m<4; m++, n+=4)
-      {
-        if(a[n]+a[n+1]+a[n+2]+a[n+3]>=3)
-          return 1;
-        if(a[m]+a[m+4]+a[m+8]+a[m+12]>=3)
-          return 1;
-      }
     }
-  return 0;
+    return 0;
 }
 
 
-UInt XDistortion::getLum8x8(XPel *pPel, Int iStride, DFunc eDFunc)
+UInt XDistortion::getLum8x8 (XPel *pPel, Int iStride, DFunc eDFunc)
 {
-  XDistSearchStruct cDSS;
-  getDistStruct(BLK_8x8, eDFunc, false, cDSS);
-  cDSS.pYOrg    = m_cOrgData.getLumBlk();
-  cDSS.pYSearch = pPel;
-  cDSS.iYStride = iStride;
-  return cDSS.Func(&cDSS);
+    XDistSearchStruct cDSS;
+    getDistStruct(BLK_8x8, eDFunc, false, cDSS);
+    cDSS.pYOrg    = m_cOrgData.getLumBlk();
+    cDSS.pYSearch = pPel;
+    cDSS.iYStride = iStride;
+    return cDSS.Func(&cDSS);
 }
 
 
@@ -286,7 +296,7 @@ UInt XDistortion::getLum8x8(XPel *pPel, Int iStride, DFunc eDFunc)
 #define X_OFFSET 1
 
 
-UInt XDistortion::xCalcHadamard4x4(XPel *pucOrg, XPel *pPel, Int iStride)
+UInt XDistortion::xCalcHadamard4x4 (XPel *pucOrg, XPel *pPel, Int iStride)
 {
   XPel* pucCur = pPel;
   UInt uiSum = 0;
@@ -296,95 +306,95 @@ UInt XDistortion::xCalcHadamard4x4(XPel *pucOrg, XPel *pPel, Int iStride)
 
   for(n = 0; n < 4; n++)
   {
-    aai[n][0] = pucOrg[0] - pucCur[0];
-    aai[n][1] = pucOrg[1] - pucCur[1];
-    aai[n][2] = pucOrg[2] - pucCur[2];
-    aai[n][3] = pucOrg[3] - pucCur[3];
-    pucCur += iStride;
-    pucOrg += MB_BUFFER_WIDTH;
+      aai[n][0] = pucOrg[0] - pucCur[0];
+      aai[n][1] = pucOrg[1] - pucCur[1];
+      aai[n][2] = pucOrg[2] - pucCur[2];
+      aai[n][3] = pucOrg[3] - pucCur[3];
+      pucCur += iStride;
+      pucOrg += MB_BUFFER_WIDTH;
   }
 
 
   for(n = 0; n < 4; n++)
   {
-    ai[0] = aai[0][n] + aai[3][n];
-    ai[1] = aai[1][n] + aai[2][n];
-    ai[2] = aai[1][n] - aai[2][n];
-    ai[3] = aai[0][n] - aai[3][n];
+      ai[0] = aai[0][n] + aai[3][n];
+      ai[1] = aai[1][n] + aai[2][n];
+      ai[2] = aai[1][n] - aai[2][n];
+      ai[3] = aai[0][n] - aai[3][n];
 
-    aai[0][n] = ai[0] + ai[1];
-    aai[2][n] = ai[0] - ai[1];
-    aai[1][n] = ai[3] + ai[2];
-    aai[3][n] = ai[3] - ai[2];
+      aai[0][n] = ai[0] + ai[1];
+      aai[2][n] = ai[0] - ai[1];
+      aai[1][n] = ai[3] + ai[2];
+      aai[3][n] = ai[3] - ai[2];
   }
 
   for(n = 0; n < 4; n++)
   {
-    Int iTemp1;
-    Int iTemp2;
-    iTemp1 = aai[n][0] + aai[n][3];
-    iTemp2 = aai[n][1] + aai[n][2];
+      Int iTemp1;
+      Int iTemp2;
+      iTemp1 = aai[n][0] + aai[n][3];
+      iTemp2 = aai[n][1] + aai[n][2];
 
-    uiSum += Abs(iTemp1 + iTemp2);
-    uiSum += Abs(iTemp1 - iTemp2);
+      uiSum += Abs(iTemp1 + iTemp2);
+      uiSum += Abs(iTemp1 - iTemp2);
 
-    iTemp1 = aai[n][1] - aai[n][2];
-    iTemp2 = aai[n][0] - aai[n][3];
+      iTemp1 = aai[n][1] - aai[n][2];
+      iTemp2 = aai[n][0] - aai[n][3];
 
-    uiSum += Abs(iTemp1 + iTemp2);
-    uiSum += Abs(iTemp1 - iTemp2);
+      uiSum += Abs(iTemp1 + iTemp2);
+      uiSum += Abs(iTemp1 - iTemp2);
   }
   return uiSum/2;
 }
 
 
-UInt XDistortion::xCalcBiHadamard4x4(XPel *pucOrg, XPel *pPelFix, XPel *pPel, Int iStride)
+UInt XDistortion::xCalcBiHadamard4x4 (XPel *pucOrg, XPel *pPelFix, XPel *pPel, Int iStride)
 {
-  XPel* pucCur = pPel;
+    XPel* pucCur = pPel;
 
-  UInt uiSum = 0;
-  Int aai[4][4];
-  Int ai[4];
-  Int n;
+    UInt uiSum = 0;
+    Int aai[4][4];
+    Int ai[4];
+    Int n;
 
-  for(n = 0; n < 4; n++)
-  {
-    aai[n][0] = pucOrg[0] - ((pucCur[0] + pPelFix[0] + 1)>>1);
-    aai[n][1] = pucOrg[1] - ((pucCur[1] + pPelFix[1] + 1)>>1);
-    aai[n][2] = pucOrg[2] - ((pucCur[2] + pPelFix[2] + 1)>>1);
-    aai[n][3] = pucOrg[3] - ((pucCur[3] + pPelFix[3] + 1)>>1);
-    pucCur += iStride;
-    pucOrg  += MB_BUFFER_WIDTH;
-    pPelFix += 24;
-  }
+    for(n = 0; n < 4; n++)
+    {
+        aai[n][0] = pucOrg[0] - ((pucCur[0] + pPelFix[0] + 1)>>1);
+        aai[n][1] = pucOrg[1] - ((pucCur[1] + pPelFix[1] + 1)>>1);
+        aai[n][2] = pucOrg[2] - ((pucCur[2] + pPelFix[2] + 1)>>1);
+        aai[n][3] = pucOrg[3] - ((pucCur[3] + pPelFix[3] + 1)>>1);
+        pucCur += iStride;
+        pucOrg  += MB_BUFFER_WIDTH;
+        pPelFix += 24;
+    }
 
-  for(n = 0; n < 4; n++)
-  {
-    ai[0] = aai[0][n] + aai[3][n];
-    ai[1] = aai[1][n] + aai[2][n];
-    ai[2] = aai[1][n] - aai[2][n];
-    ai[3] = aai[0][n] - aai[3][n];
+    for(n = 0; n < 4; n++)
+    {
+        ai[0] = aai[0][n] + aai[3][n];
+        ai[1] = aai[1][n] + aai[2][n];
+        ai[2] = aai[1][n] - aai[2][n];
+        ai[3] = aai[0][n] - aai[3][n];
 
-    aai[0][n] = ai[0] + ai[1];
-    aai[2][n] = ai[0] - ai[1];
-    aai[1][n] = ai[2] + ai[3];
-    aai[3][n] = ai[3] - ai[2];
-  }
+        aai[0][n] = ai[0] + ai[1];
+        aai[2][n] = ai[0] - ai[1];
+        aai[1][n] = ai[2] + ai[3];
+        aai[3][n] = ai[3] - ai[2];
+    }
 
-  for(n = 0; n < 4; n++)
-  {
-    ai[0] = aai[n][0] + aai[n][3];
-    ai[1] = aai[n][1] + aai[n][2];
-    ai[2] = aai[n][1] - aai[n][2];
-    ai[3] = aai[n][0] - aai[n][3];
+    for(n = 0; n < 4; n++)
+    {
+        ai[0] = aai[n][0] + aai[n][3];
+        ai[1] = aai[n][1] + aai[n][2];
+        ai[2] = aai[n][1] - aai[n][2];
+        ai[3] = aai[n][0] - aai[n][3];
 
-    uiSum += Abs(ai[0] + ai[1]);
-    uiSum += Abs(ai[0] - ai[1]);
-    uiSum += Abs(ai[2] + ai[3]);
-    uiSum += Abs(ai[3] - ai[2]);
-  }
+        uiSum += Abs(ai[0] + ai[1]);
+        uiSum += Abs(ai[0] - ai[1]);
+        uiSum += Abs(ai[2] + ai[3]);
+        uiSum += Abs(ai[3] - ai[2]);
+    }
 
-  return uiSum/2;
+    return uiSum/2;
 
 }
 
@@ -392,38 +402,38 @@ UInt XDistortion::xCalcBiHadamard4x4(XPel *pucOrg, XPel *pPelFix, XPel *pPel, In
 
 
 
-UInt XDistortion::xGetSAD16x(XDistSearchStruct* pcDSS)
+UInt XDistortion::xGetSAD16x (XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt uiSum = 0;
+    UInt uiSum = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSum += Abs(pucOrg[0x0] - pucCur[0x0]);
-    uiSum += Abs(pucOrg[0x1] - pucCur[0x1]);
-    uiSum += Abs(pucOrg[0x2] - pucCur[0x2]);
-    uiSum += Abs(pucOrg[0x3] - pucCur[0x3]);
-    uiSum += Abs(pucOrg[0x4] - pucCur[0x4]);
-    uiSum += Abs(pucOrg[0x5] - pucCur[0x5]);
-    uiSum += Abs(pucOrg[0x6] - pucCur[0x6]);
-    uiSum += Abs(pucOrg[0x7] - pucCur[0x7]);
-    uiSum += Abs(pucOrg[0x8] - pucCur[0x8]);
-    uiSum += Abs(pucOrg[0x9] - pucCur[0x9]);
-    uiSum += Abs(pucOrg[0xa] - pucCur[0xa]);
-    uiSum += Abs(pucOrg[0xb] - pucCur[0xb]);
-    uiSum += Abs(pucOrg[0xc] - pucCur[0xc]);
-    uiSum += Abs(pucOrg[0xd] - pucCur[0xd]);
-    uiSum += Abs(pucOrg[0xe] - pucCur[0xe]);
-    uiSum += Abs(pucOrg[0xf] - pucCur[0xf]);
-    pucOrg += MB_BUFFER_WIDTH;
-    pucCur += iStride;
-  }
+    for(; iRows != 0; iRows--)
+    {
+        uiSum += Abs(pucOrg[0x0] - pucCur[0x0]);
+        uiSum += Abs(pucOrg[0x1] - pucCur[0x1]);
+        uiSum += Abs(pucOrg[0x2] - pucCur[0x2]);
+        uiSum += Abs(pucOrg[0x3] - pucCur[0x3]);
+        uiSum += Abs(pucOrg[0x4] - pucCur[0x4]);
+        uiSum += Abs(pucOrg[0x5] - pucCur[0x5]);
+        uiSum += Abs(pucOrg[0x6] - pucCur[0x6]);
+        uiSum += Abs(pucOrg[0x7] - pucCur[0x7]);
+        uiSum += Abs(pucOrg[0x8] - pucCur[0x8]);
+        uiSum += Abs(pucOrg[0x9] - pucCur[0x9]);
+        uiSum += Abs(pucOrg[0xa] - pucCur[0xa]);
+        uiSum += Abs(pucOrg[0xb] - pucCur[0xb]);
+        uiSum += Abs(pucOrg[0xc] - pucCur[0xc]);
+        uiSum += Abs(pucOrg[0xd] - pucCur[0xd]);
+        uiSum += Abs(pucOrg[0xe] - pucCur[0xe]);
+        uiSum += Abs(pucOrg[0xf] - pucCur[0xf]);
+        pucOrg += MB_BUFFER_WIDTH;
+        pucCur += iStride;
+    }
 
-  return uiSum;
+    return uiSum;
 }
 
 
@@ -432,74 +442,74 @@ UInt XDistortion::xGetSAD16x(XDistSearchStruct* pcDSS)
 
 UInt XDistortion::xGetYuvSAD16x(XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
-  UInt  uiSumY  = 0;
-  UInt  uiSumU  = 0;
-  UInt  uiSumV  = 0;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
+    UInt  uiSumY  = 0;
+    UInt  uiSumU  = 0;
+    UInt  uiSumV  = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSumY  += Abs(pucOrg[0x0] - pucCur[0x0]);
-    uiSumY  += Abs(pucOrg[0x1] - pucCur[0x1]);
-    uiSumY  += Abs(pucOrg[0x2] - pucCur[0x2]);
-    uiSumY  += Abs(pucOrg[0x3] - pucCur[0x3]);
-    uiSumY  += Abs(pucOrg[0x4] - pucCur[0x4]);
-    uiSumY  += Abs(pucOrg[0x5] - pucCur[0x5]);
-    uiSumY  += Abs(pucOrg[0x6] - pucCur[0x6]);
-    uiSumY  += Abs(pucOrg[0x7] - pucCur[0x7]);
-    uiSumY  += Abs(pucOrg[0x8] - pucCur[0x8]);
-    uiSumY  += Abs(pucOrg[0x9] - pucCur[0x9]);
-    uiSumY  += Abs(pucOrg[0xa] - pucCur[0xa]);
-    uiSumY  += Abs(pucOrg[0xb] - pucCur[0xb]);
-    uiSumY  += Abs(pucOrg[0xc] - pucCur[0xc]);
-    uiSumY  += Abs(pucOrg[0xd] - pucCur[0xd]);
-    uiSumY  += Abs(pucOrg[0xe] - pucCur[0xe]);
-    uiSumY  += Abs(pucOrg[0xf] - pucCur[0xf]);
-    pucOrg  += MB_BUFFER_WIDTH;
-    pucCur  += iStride;
-  }
+    for(; iRows != 0; iRows--)
+    {
+        uiSumY  += Abs(pucOrg[0x0] - pucCur[0x0]);
+        uiSumY  += Abs(pucOrg[0x1] - pucCur[0x1]);
+        uiSumY  += Abs(pucOrg[0x2] - pucCur[0x2]);
+        uiSumY  += Abs(pucOrg[0x3] - pucCur[0x3]);
+        uiSumY  += Abs(pucOrg[0x4] - pucCur[0x4]);
+        uiSumY  += Abs(pucOrg[0x5] - pucCur[0x5]);
+        uiSumY  += Abs(pucOrg[0x6] - pucCur[0x6]);
+        uiSumY  += Abs(pucOrg[0x7] - pucCur[0x7]);
+        uiSumY  += Abs(pucOrg[0x8] - pucCur[0x8]);
+        uiSumY  += Abs(pucOrg[0x9] - pucCur[0x9]);
+        uiSumY  += Abs(pucOrg[0xa] - pucCur[0xa]);
+        uiSumY  += Abs(pucOrg[0xb] - pucCur[0xb]);
+        uiSumY  += Abs(pucOrg[0xc] - pucCur[0xc]);
+        uiSumY  += Abs(pucOrg[0xd] - pucCur[0xd]);
+        uiSumY  += Abs(pucOrg[0xe] - pucCur[0xe]);
+        uiSumY  += Abs(pucOrg[0xf] - pucCur[0xf]);
+        pucOrg  += MB_BUFFER_WIDTH;
+        pucCur  += iStride;
+    }
 
-  pucCur  = pcDSS->pUSearch;
-  pucOrg  = pcDSS->pUOrg;
-  iStride = pcDSS->iCStride;
-  iRows   = pcDSS->iRows / 2;
+    pucCur  = pcDSS->pUSearch;
+    pucOrg  = pcDSS->pUOrg;
+    iStride = pcDSS->iCStride;
+    iRows   = pcDSS->iRows / 2;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSumU  += Abs(pucOrg[0x0] - pucCur[0x0]);
-    uiSumU  += Abs(pucOrg[0x1] - pucCur[0x1]);
-    uiSumU  += Abs(pucOrg[0x2] - pucCur[0x2]);
-    uiSumU  += Abs(pucOrg[0x3] - pucCur[0x3]);
-    uiSumU  += Abs(pucOrg[0x4] - pucCur[0x4]);
-    uiSumU  += Abs(pucOrg[0x5] - pucCur[0x5]);
-    uiSumU  += Abs(pucOrg[0x6] - pucCur[0x6]);
-    uiSumU  += Abs(pucOrg[0x7] - pucCur[0x7]);
-    pucOrg  += MB_BUFFER_WIDTH;
-    pucCur  += iStride;
-  }
+    for(; iRows != 0; iRows--)
+    {
+        uiSumU  += Abs(pucOrg[0x0] - pucCur[0x0]);
+        uiSumU  += Abs(pucOrg[0x1] - pucCur[0x1]);
+        uiSumU  += Abs(pucOrg[0x2] - pucCur[0x2]);
+        uiSumU  += Abs(pucOrg[0x3] - pucCur[0x3]);
+        uiSumU  += Abs(pucOrg[0x4] - pucCur[0x4]);
+        uiSumU  += Abs(pucOrg[0x5] - pucCur[0x5]);
+        uiSumU  += Abs(pucOrg[0x6] - pucCur[0x6]);
+        uiSumU  += Abs(pucOrg[0x7] - pucCur[0x7]);
+        pucOrg  += MB_BUFFER_WIDTH;
+        pucCur  += iStride;
+    }
 
-  pucCur  = pcDSS->pVSearch;
-  pucOrg  = pcDSS->pVOrg;
-  iRows   = pcDSS->iRows / 2;
+    pucCur  = pcDSS->pVSearch;
+    pucOrg  = pcDSS->pVOrg;
+    iRows   = pcDSS->iRows / 2;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSumV  += Abs(pucOrg[0x0] - pucCur[0x0]);
-    uiSumV  += Abs(pucOrg[0x1] - pucCur[0x1]);
-    uiSumV  += Abs(pucOrg[0x2] - pucCur[0x2]);
-    uiSumV  += Abs(pucOrg[0x3] - pucCur[0x3]);
-    uiSumV  += Abs(pucOrg[0x4] - pucCur[0x4]);
-    uiSumV  += Abs(pucOrg[0x5] - pucCur[0x5]);
-    uiSumV  += Abs(pucOrg[0x6] - pucCur[0x6]);
-    uiSumV  += Abs(pucOrg[0x7] - pucCur[0x7]);
-    pucOrg  += MB_BUFFER_WIDTH;
-    pucCur  += iStride;
-  }
+    for(; iRows != 0; iRows--)
+    {
+        uiSumV  += Abs(pucOrg[0x0] - pucCur[0x0]);
+        uiSumV  += Abs(pucOrg[0x1] - pucCur[0x1]);
+        uiSumV  += Abs(pucOrg[0x2] - pucCur[0x2]);
+        uiSumV  += Abs(pucOrg[0x3] - pucCur[0x3]);
+        uiSumV  += Abs(pucOrg[0x4] - pucCur[0x4]);
+        uiSumV  += Abs(pucOrg[0x5] - pucCur[0x5]);
+        uiSumV  += Abs(pucOrg[0x6] - pucCur[0x6]);
+        uiSumV  += Abs(pucOrg[0x7] - pucCur[0x7]);
+        pucOrg  += MB_BUFFER_WIDTH;
+        pucCur  += iStride;
+    }
 
-  return uiSumY+uiSumU+uiSumV;
+    return uiSumY+uiSumU+uiSumV;
 }
 
 
@@ -519,70 +529,70 @@ UInt XDistortion::xGetSSE16x(XDistSearchStruct* pcDSS)
 
   for(; iRows != 0; iRows--)
   {
-    iTemp = pucOrg[0x0] - pucCur[0x0];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0x1] - pucCur[0x1];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0x2] - pucCur[0x2];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0x3] - pucCur[0x3];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0x4] - pucCur[0x4];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0x5] - pucCur[0x5];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0x6] - pucCur[0x6];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0x7] - pucCur[0x7];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0x8] - pucCur[0x8];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0x9] - pucCur[0x9];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0xa] - pucCur[0xa];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0xb] - pucCur[0xb];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0xc] - pucCur[0xc];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0xd] - pucCur[0xd];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0xe] - pucCur[0xe];
-    uiSum += iTemp * iTemp;
-    iTemp = pucOrg[0xf] - pucCur[0xf];
-    uiSum += iTemp * iTemp;
-    pucOrg += MB_BUFFER_WIDTH;
-    pucCur += iStride;
+      iTemp = pucOrg[0x0] - pucCur[0x0];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0x1] - pucCur[0x1];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0x2] - pucCur[0x2];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0x3] - pucCur[0x3];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0x4] - pucCur[0x4];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0x5] - pucCur[0x5];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0x6] - pucCur[0x6];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0x7] - pucCur[0x7];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0x8] - pucCur[0x8];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0x9] - pucCur[0x9];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0xa] - pucCur[0xa];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0xb] - pucCur[0xb];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0xc] - pucCur[0xc];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0xd] - pucCur[0xd];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0xe] - pucCur[0xe];
+      uiSum += iTemp * iTemp;
+      iTemp = pucOrg[0xf] - pucCur[0xf];
+      uiSum += iTemp * iTemp;
+      pucOrg += MB_BUFFER_WIDTH;
+      pucCur += iStride;
   }
   return uiSum;
 }
 
 
-UInt XDistortion::xGetSAD8x(XDistSearchStruct* pcDSS)
+UInt XDistortion::xGetSAD8x (XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt uiSum = 0;
+    UInt uiSum = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSum += Abs(pucOrg[0] - pucCur[0]);
-    uiSum += Abs(pucOrg[1] - pucCur[1]);
-    uiSum += Abs(pucOrg[2] - pucCur[2]);
-    uiSum += Abs(pucOrg[3] - pucCur[3]);
-    uiSum += Abs(pucOrg[4] - pucCur[4]);
-    uiSum += Abs(pucOrg[5] - pucCur[5]);
-    uiSum += Abs(pucOrg[6] - pucCur[6]);
-    uiSum += Abs(pucOrg[7] - pucCur[7]);
-    pucOrg += MB_BUFFER_WIDTH;
-    pucCur += iStride;
+    for(; iRows != 0; iRows--)
+    {
+        uiSum += Abs(pucOrg[0] - pucCur[0]);
+        uiSum += Abs(pucOrg[1] - pucCur[1]);
+        uiSum += Abs(pucOrg[2] - pucCur[2]);
+        uiSum += Abs(pucOrg[3] - pucCur[3]);
+        uiSum += Abs(pucOrg[4] - pucCur[4]);
+        uiSum += Abs(pucOrg[5] - pucCur[5]);
+        uiSum += Abs(pucOrg[6] - pucCur[6]);
+        uiSum += Abs(pucOrg[7] - pucCur[7]);
+        pucOrg += MB_BUFFER_WIDTH;
+        pucCur += iStride;
+    }
+
+    return uiSum;
   }
-
-  return uiSum;
-}
 
 
 
@@ -688,24 +698,24 @@ UInt XDistortion::xGetSSE8x(XDistSearchStruct* pcDSS)
 
 UInt XDistortion::xGetSAD4x(XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt uiSum = 0;
+    UInt uiSum = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSum  += Abs(pucOrg[0] - pucCur[0]);
-    uiSum  += Abs(pucOrg[1] - pucCur[1]);
-    uiSum  += Abs(pucOrg[2] - pucCur[2]);
-    uiSum  += Abs(pucOrg[3] - pucCur[3]);
-    pucOrg += MB_BUFFER_WIDTH;
-    pucCur += iStride;
-  }
+    for(; iRows != 0; iRows--)
+    {
+      uiSum  += Abs(pucOrg[0] - pucCur[0]);
+      uiSum  += Abs(pucOrg[1] - pucCur[1]);
+      uiSum  += Abs(pucOrg[2] - pucCur[2]);
+      uiSum  += Abs(pucOrg[3] - pucCur[3]);
+      pucOrg += MB_BUFFER_WIDTH;
+      pucCur += iStride;
+    }
 
-  return uiSum;
+    return uiSum;
 }
 
 
@@ -715,619 +725,619 @@ UInt XDistortion::xGetSAD4x(XDistSearchStruct* pcDSS)
 
 UInt XDistortion::xGetYuvSAD4x(XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
-  UInt  uiSumY  = 0;
-  UInt  uiSumU  = 0;
-  UInt  uiSumV  = 0;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
+    UInt  uiSumY  = 0;
+    UInt  uiSumU  = 0;
+    UInt  uiSumV  = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSumY += Abs(pucOrg[0] - pucCur[0]);
-    uiSumY += Abs(pucOrg[1] - pucCur[1]);
-    uiSumY += Abs(pucOrg[2] - pucCur[2]);
-    uiSumY += Abs(pucOrg[3] - pucCur[3]);
-    pucOrg += MB_BUFFER_WIDTH;
-    pucCur += iStride;
-  }
+    for(; iRows != 0; iRows--)
+    {
+        uiSumY += Abs(pucOrg[0] - pucCur[0]);
+        uiSumY += Abs(pucOrg[1] - pucCur[1]);
+        uiSumY += Abs(pucOrg[2] - pucCur[2]);
+        uiSumY += Abs(pucOrg[3] - pucCur[3]);
+        pucOrg += MB_BUFFER_WIDTH;
+        pucCur += iStride;
+    }
 
-  pucCur  = pcDSS->pUSearch;
-  pucOrg  = pcDSS->pUOrg;
-  iStride = pcDSS->iCStride;
-  iRows   = pcDSS->iRows / 2;
+    pucCur  = pcDSS->pUSearch;
+    pucOrg  = pcDSS->pUOrg;
+    iStride = pcDSS->iCStride;
+    iRows   = pcDSS->iRows / 2;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSumU += Abs(pucOrg[0] - pucCur[0]);
-    uiSumU += Abs(pucOrg[1] - pucCur[1]);
-    pucOrg += MB_BUFFER_WIDTH;
-    pucCur += iStride;
-  }
+    for(; iRows != 0; iRows--)
+    {
+        uiSumU += Abs(pucOrg[0] - pucCur[0]);
+        uiSumU += Abs(pucOrg[1] - pucCur[1]);
+        pucOrg += MB_BUFFER_WIDTH;
+        pucCur += iStride;
+    }
 
-  pucCur  = pcDSS->pVSearch;
-  pucOrg  = pcDSS->pVOrg;
-  iRows   = pcDSS->iRows / 2;
+    pucCur  = pcDSS->pVSearch;
+    pucOrg  = pcDSS->pVOrg;
+    iRows   = pcDSS->iRows / 2;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSumV += Abs(pucOrg[0] - pucCur[0]);
-    uiSumV += Abs(pucOrg[1] - pucCur[1]);
-    pucOrg += MB_BUFFER_WIDTH;
-    pucCur += iStride;
-  }
+    for(; iRows != 0; iRows--)
+    {
+        uiSumV += Abs(pucOrg[0] - pucCur[0]);
+        uiSumV += Abs(pucOrg[1] - pucCur[1]);
+        pucOrg += MB_BUFFER_WIDTH;
+        pucCur += iStride;
+    }
 
-  return uiSumY+uiSumU+uiSumV;
+    return uiSumY+uiSumU+uiSumV;
 }
 
 
 
 
-UInt XDistortion::xGetSSE4x(XDistSearchStruct* pcDSS)
+UInt XDistortion::xGetSSE4x (XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt uiSum = 0;
-  Int  iTemp;
+    UInt uiSum = 0;
+    Int  iTemp;
 
-  for(; iRows != 0; iRows--)
-  {
-    iTemp   = pucOrg[0] - pucCur[0];
-    uiSum  += iTemp * iTemp;
-    iTemp   = pucOrg[1] - pucCur[1];
-    uiSum  += iTemp * iTemp;
-    iTemp   = pucOrg[2] - pucCur[2];
-    uiSum  += iTemp * iTemp;
-    iTemp   = pucOrg[3] - pucCur[3];
-    uiSum  += iTemp * iTemp;
-    pucOrg += MB_BUFFER_WIDTH;
-    pucCur += iStride;
-  }
+    for(; iRows != 0; iRows--)
+    {
+        iTemp   = pucOrg[0] - pucCur[0];
+        uiSum  += iTemp * iTemp;
+        iTemp   = pucOrg[1] - pucCur[1];
+        uiSum  += iTemp * iTemp;
+        iTemp   = pucOrg[2] - pucCur[2];
+        uiSum  += iTemp * iTemp;
+        iTemp   = pucOrg[3] - pucCur[3];
+        uiSum  += iTemp * iTemp;
+        pucOrg += MB_BUFFER_WIDTH;
+        pucCur += iStride;
+    }
 
-  return uiSum;
+    return uiSum;
 }
 
 
 
 UInt XDistortion::xGetHAD16x (XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows>>2;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows>>2;
 
-  UInt uiSum = 0;
+    UInt uiSum = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSum += xCalcHadamard4x4 (pucOrg+0x0, pucCur+0x0, iStride);
-    uiSum += xCalcHadamard4x4 (pucOrg+0x4, pucCur+0x4, iStride);
-    uiSum += xCalcHadamard4x4 (pucOrg+0x8, pucCur+0x8, iStride);
-    uiSum += xCalcHadamard4x4 (pucOrg+0xc, pucCur+0xc, iStride);
-    pucOrg += 4*MB_BUFFER_WIDTH;
-    pucCur += 4*iStride;
-  }
-  return uiSum;
+    for(; iRows != 0; iRows--)
+    {
+       uiSum += xCalcHadamard4x4 (pucOrg+0x0, pucCur+0x0, iStride);
+       uiSum += xCalcHadamard4x4 (pucOrg+0x4, pucCur+0x4, iStride);
+       uiSum += xCalcHadamard4x4 (pucOrg+0x8, pucCur+0x8, iStride);
+       uiSum += xCalcHadamard4x4 (pucOrg+0xc, pucCur+0xc, iStride);
+       pucOrg += 4*MB_BUFFER_WIDTH;
+       pucCur += 4*iStride;
+    }
+    return uiSum;
 }
 
 
 UInt XDistortion::xGetHAD8x  (XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows>>2;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows>>2;
 
-  UInt uiSum = 0;
+    UInt uiSum = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSum += xCalcHadamard4x4(pucOrg+0x0, pucCur+0x0, iStride);
-    uiSum += xCalcHadamard4x4(pucOrg+0x4, pucCur+0x4, iStride);
-    pucOrg += 4*MB_BUFFER_WIDTH;
-    pucCur += 4*iStride;
+    for(; iRows != 0; iRows--)
+    {
+        uiSum += xCalcHadamard4x4(pucOrg+0x0, pucCur+0x0, iStride);
+        uiSum += xCalcHadamard4x4(pucOrg+0x4, pucCur+0x4, iStride);
+        pucOrg += 4*MB_BUFFER_WIDTH;
+        pucCur += 4*iStride;
+    }
+    return uiSum;
   }
-  return uiSum;
-}
 
-UInt XDistortion::xGetHAD4x  (XDistSearchStruct* pcDSS)
-{
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows>>2;
-
-  UInt uiSum = 0;
-
-  for(; iRows != 0; iRows--)
+  UInt XDistortion::xGetHAD4x  (XDistSearchStruct* pcDSS)
   {
-    uiSum += xCalcHadamard4x4(pucOrg+0x0, pucCur+0x0, iStride);
-    pucOrg += 4*MB_BUFFER_WIDTH;
-    pucCur += 4*iStride;
-  }
-  return uiSum;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows>>2;
+
+    UInt uiSum = 0;
+
+    for(; iRows != 0; iRows--)
+    {
+        uiSum += xCalcHadamard4x4(pucOrg+0x0, pucCur+0x0, iStride);
+        pucOrg += 4*MB_BUFFER_WIDTH;
+        pucCur += 4*iStride;
+    }
+    return uiSum;
 }
 
 
 
 UInt XDistortion::xGetBiSAD16x(XDistSearchStruct* pcDSS)
 {
-  XPel* pucSrc1 = pcDSS->pYSearch;
-  XPel* pucSrc2 = pcDSS->pYFix;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    XPel* pucSrc1 = pcDSS->pYSearch;
+    XPel* pucSrc2 = pcDSS->pYFix;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt  x;
-  UInt  uiSum = 0;
-  UInt  uiOffset1 = 0;
-  UInt  uiOffset2 = 0;
+    UInt  x;
+    UInt  uiSum = 0;
+    UInt  uiOffset1 = 0;
+    UInt  uiOffset2 = 0;
 
-  iStride -= 16;
+    iStride -= 16;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 16; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSum += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 16; x != 0; x--)
+        {
+            uiSum += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-16;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-16;
-    uiOffset2 += iStride;
-  }
 
-  return uiSum;
+    return uiSum;
 }
 
 
 
 UInt XDistortion::xGetBiYuvSAD16x(XDistSearchStruct* pcDSS)
 {
-  UInt  x;
-  XPel* pucSrc1   = pcDSS->pYSearch;
-  XPel* pucSrc2   = pcDSS->pYFix;
-  XPel* pucOrg    = pcDSS->pYOrg;
-  Int   iStride   = pcDSS->iYStride - 16;
-  Int   iRows     = pcDSS->iRows;
-  UInt  uiSumY    = 0;
-  UInt  uiSumU    = 0;
-  UInt  uiSumV    = 0;
-  UInt  uiOffset1 = 0;
-  UInt  uiOffset2 = 0;
+    UInt  x;
+    XPel* pucSrc1   = pcDSS->pYSearch;
+    XPel* pucSrc2   = pcDSS->pYFix;
+    XPel* pucOrg    = pcDSS->pYOrg;
+    Int   iStride   = pcDSS->iYStride - 16;
+    Int   iRows     = pcDSS->iRows;
+    UInt  uiSumY    = 0;
+    UInt  uiSumU    = 0;
+    UInt  uiSumV    = 0;
+    UInt  uiOffset1 = 0;
+    UInt  uiOffset2 = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 16; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSumY   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 16; x != 0; x--)
+        {
+            uiSumY   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-16;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-16;
-    uiOffset2 += iStride;
-  }
 
-  pucSrc1   = pcDSS->pUSearch;
-  pucSrc2   = pcDSS->pUFix;
-  pucOrg    = pcDSS->pUOrg;
-  iStride   = pcDSS->iCStride - 8;
-  iRows     = pcDSS->iRows / 2;
-  uiOffset1 = 0;
-  uiOffset2 = 0;
+    pucSrc1   = pcDSS->pUSearch;
+    pucSrc2   = pcDSS->pUFix;
+    pucOrg    = pcDSS->pUOrg;
+    iStride   = pcDSS->iCStride - 8;
+    iRows     = pcDSS->iRows / 2;
+    uiOffset1 = 0;
+    uiOffset2 = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 8; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSumU   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 8; x != 0; x--)
+        {
+            uiSumU   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-8;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-8;
-    uiOffset2 += iStride;
-  }
 
-  pucSrc1   = pcDSS->pVSearch;
-  pucSrc2   = pcDSS->pVFix;
-  pucOrg    = pcDSS->pVOrg;
-  iRows     = pcDSS->iRows / 2;
-  uiOffset1 = 0;
-  uiOffset2 = 0;
+    pucSrc1   = pcDSS->pVSearch;
+    pucSrc2   = pcDSS->pVFix;
+    pucOrg    = pcDSS->pVOrg;
+    iRows     = pcDSS->iRows / 2;
+    uiOffset1 = 0;
+    uiOffset2 = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 8; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSumV   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 8; x != 0; x--)
+        {
+          uiSumV   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+          uiOffset1++;
+          uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-8;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-8;
-    uiOffset2 += iStride;
-  }
 
-  return uiSumY+uiSumU+uiSumV;
+    return uiSumY+uiSumU+uiSumV;
 }
 
 
 
-UInt XDistortion::xGetBiSAD8x(XDistSearchStruct* pcDSS)
+UInt XDistortion::xGetBiSAD8x (XDistSearchStruct* pcDSS)
 {
-  UInt  x;
-  XPel* pucSrc1 = pcDSS->pYSearch;
-  XPel* pucSrc2 = pcDSS->pYFix;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    UInt  x;
+    XPel* pucSrc1 = pcDSS->pYSearch;
+    XPel* pucSrc2 = pcDSS->pYFix;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt  uiSum = 0;
-  UInt  uiOffset1 = 0;
-  UInt  uiOffset2 = 0;
+    UInt  uiSum = 0;
+    UInt  uiOffset1 = 0;
+    UInt  uiOffset2 = 0;
 
-  iStride -= 8;
+    iStride -= 8;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 8; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSum += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 8; x != 0; x--)
+        {
+            uiSum += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-8;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-8;
-    uiOffset2 += iStride;
-  }
 
-  return uiSum;
+    return uiSum;
 }
 
 
 UInt XDistortion::xGetBiYuvSAD8x(XDistSearchStruct* pcDSS)
 {
-  UInt  x;
-  XPel* pucSrc1   = pcDSS->pYSearch;
-  XPel* pucSrc2   = pcDSS->pYFix;
-  XPel* pucOrg    = pcDSS->pYOrg;
-  Int   iStride   = pcDSS->iYStride - 8;
-  Int   iRows     = pcDSS->iRows;
-  UInt  uiSumY    = 0;
-  UInt  uiSumU    = 0;
-  UInt  uiSumV    = 0;
-  UInt  uiOffset1 = 0;
-  UInt  uiOffset2 = 0;
+    UInt  x;
+    XPel* pucSrc1   = pcDSS->pYSearch;
+    XPel* pucSrc2   = pcDSS->pYFix;
+    XPel* pucOrg    = pcDSS->pYOrg;
+    Int   iStride   = pcDSS->iYStride - 8;
+    Int   iRows     = pcDSS->iRows;
+    UInt  uiSumY    = 0;
+    UInt  uiSumU    = 0;
+    UInt  uiSumV    = 0;
+    UInt  uiOffset1 = 0;
+    UInt  uiOffset2 = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 8; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSumY   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 8; x != 0; x--)
+        {
+            uiSumY   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-8;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-8;
-    uiOffset2 += iStride;
-  }
 
-  pucSrc1   = pcDSS->pUSearch;
-  pucSrc2   = pcDSS->pUFix;
-  pucOrg    = pcDSS->pUOrg;
-  iStride   = pcDSS->iCStride - 4;
-  iRows     = pcDSS->iRows / 2;
-  uiOffset1 = 0;
-  uiOffset2 = 0;
+    pucSrc1   = pcDSS->pUSearch;
+    pucSrc2   = pcDSS->pUFix;
+    pucOrg    = pcDSS->pUOrg;
+    iStride   = pcDSS->iCStride - 4;
+    iRows     = pcDSS->iRows / 2;
+    uiOffset1 = 0;
+    uiOffset2 = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 4; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSumU   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 4; x != 0; x--)
+        {
+            uiSumU   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-4;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-4;
-    uiOffset2 += iStride;
-  }
 
-  pucSrc1   = pcDSS->pVSearch;
-  pucSrc2   = pcDSS->pVFix;
-  pucOrg    = pcDSS->pVOrg;
-  iRows     = pcDSS->iRows / 2;
-  uiOffset1 = 0;
-  uiOffset2 = 0;
+    pucSrc1   = pcDSS->pVSearch;
+    pucSrc2   = pcDSS->pVFix;
+    pucOrg    = pcDSS->pVOrg;
+    iRows     = pcDSS->iRows / 2;
+    uiOffset1 = 0;
+    uiOffset2 = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 4; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSumV   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 4; x != 0; x--)
+        {
+            uiSumV   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-4;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-4;
-    uiOffset2 += iStride;
-  }
 
-  return uiSumY+uiSumU+uiSumV;
+    return uiSumY+uiSumU+uiSumV;
 }
 
 
 
 UInt XDistortion::xGetBiSAD4x(XDistSearchStruct* pcDSS)
 {
-  XPel* pucSrc1 = pcDSS->pYSearch;
-  XPel* pucSrc2 = pcDSS->pYFix;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    XPel* pucSrc1 = pcDSS->pYSearch;
+    XPel* pucSrc2 = pcDSS->pYFix;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt  x;
-  UInt  uiSum = 0;
-  UInt  uiOffset1 = 0;
-  UInt  uiOffset2 = 0;
+    UInt  x;
+    UInt  uiSum = 0;
+    UInt  uiOffset1 = 0;
+    UInt  uiOffset2 = 0;
 
-  iStride -= 4;
+    iStride -= 4;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 4; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSum += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 4; x != 0; x--)
+        {
+            uiSum += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-4;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-4;
-    uiOffset2 += iStride;
-  }
 
-  return uiSum;
+    return uiSum;
 }
 
 
 
 UInt XDistortion::xGetBiYuvSAD4x(XDistSearchStruct* pcDSS)
 {
-  UInt  x;
-  XPel* pucSrc1   = pcDSS->pYSearch;
-  XPel* pucSrc2   = pcDSS->pYFix;
-  XPel* pucOrg    = pcDSS->pYOrg;
-  Int   iStride   = pcDSS->iYStride - 4;
-  Int   iRows     = pcDSS->iRows;
-  UInt  uiSumY    = 0;
-  UInt  uiSumU    = 0;
-  UInt  uiSumV    = 0;
-  UInt  uiOffset1 = 0;
-  UInt  uiOffset2 = 0;
+    UInt  x;
+    XPel* pucSrc1   = pcDSS->pYSearch;
+    XPel* pucSrc2   = pcDSS->pYFix;
+    XPel* pucOrg    = pcDSS->pYOrg;
+    Int   iStride   = pcDSS->iYStride - 4;
+    Int   iRows     = pcDSS->iRows;
+    UInt  uiSumY    = 0;
+    UInt  uiSumU    = 0;
+    UInt  uiSumV    = 0;
+    UInt  uiOffset1 = 0;
+    UInt  uiOffset2 = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 4; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSumY   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 4; x != 0; x--)
+        {
+            uiSumY   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-4;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-4;
-    uiOffset2 += iStride;
-  }
 
-  pucSrc1   = pcDSS->pUSearch;
-  pucSrc2   = pcDSS->pUFix;
-  pucOrg    = pcDSS->pUOrg;
-  iStride   = pcDSS->iCStride - 2;
-  iRows     = pcDSS->iRows / 2;
-  uiOffset1 = 0;
-  uiOffset2 = 0;
+    pucSrc1   = pcDSS->pUSearch;
+    pucSrc2   = pcDSS->pUFix;
+    pucOrg    = pcDSS->pUOrg;
+    iStride   = pcDSS->iCStride - 2;
+    iRows     = pcDSS->iRows / 2;
+    uiOffset1 = 0;
+    uiOffset2 = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 2; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSumU   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 2; x != 0; x--)
+        {
+            uiSumU   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-2;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-2;
-    uiOffset2 += iStride;
-  }
 
-  pucSrc1   = pcDSS->pVSearch;
-  pucSrc2   = pcDSS->pVFix;
-  pucOrg    = pcDSS->pVOrg;
-  iRows     = pcDSS->iRows / 2;
-  uiOffset1 = 0;
-  uiOffset2 = 0;
+    pucSrc1   = pcDSS->pVSearch;
+    pucSrc2   = pcDSS->pVFix;
+    pucOrg    = pcDSS->pVOrg;
+    iRows     = pcDSS->iRows / 2;
+    uiOffset1 = 0;
+    uiOffset2 = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 2; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      uiSumV   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
-      uiOffset1++;
-      uiOffset2++;
+        for (x = 2; x != 0; x--)
+        {
+            uiSumV   += Abs(pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1));
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-2;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-2;
-    uiOffset2 += iStride;
-  }
 
-  return uiSumY+uiSumU+uiSumV;
+    return uiSumY+uiSumU+uiSumV;
 }
 
 
 
-UInt XDistortion::xGetBiSSE16x(XDistSearchStruct* pcDSS)
+UInt XDistortion::xGetBiSSE16x (XDistSearchStruct* pcDSS)
 {
-  XPel* pucSrc1 = pcDSS->pYSearch;
-  XPel* pucSrc2 = pcDSS->pYFix;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    XPel* pucSrc1 = pcDSS->pYSearch;
+    XPel* pucSrc2 = pcDSS->pYFix;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt  x;
-  UInt  uiSum = 0;
-  UInt  uiOffset1 = 0;
-  UInt  uiOffset2 = 0;
-  Int   iTemp;
+    UInt  x;
+    UInt  uiSum = 0;
+    UInt  uiOffset1 = 0;
+    UInt  uiOffset2 = 0;
+    Int   iTemp;
 
-  iStride -= 16;
+    iStride -= 16;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 16; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      iTemp = pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1) ;
-      uiSum += iTemp * iTemp;
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 16; x != 0; x--)
+        {
+            iTemp = pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1) ;
+            uiSum += iTemp * iTemp;
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-16;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-16;
-    uiOffset2 += iStride;
-  }
 
-  return uiSum;
+    return uiSum;
 }
 
 
 UInt XDistortion::xGetBiSSE8x(XDistSearchStruct* pcDSS)
 {
-  XPel* pucSrc1 = pcDSS->pYSearch;
-  XPel* pucSrc2 = pcDSS->pYFix;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    XPel* pucSrc1 = pcDSS->pYSearch;
+    XPel* pucSrc2 = pcDSS->pYFix;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt  x;
-  UInt  uiSum = 0;
-  UInt  uiOffset1 = 0;
-  UInt  uiOffset2 = 0;
-  Int   iTemp;
+    UInt  x;
+    UInt  uiSum = 0;
+    UInt  uiOffset1 = 0;
+    UInt  uiOffset2 = 0;
+    Int   iTemp;
 
-  iStride -= 8;
+    iStride -= 8;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 8; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      iTemp = pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1) ;
-      uiSum += iTemp * iTemp;
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 8; x != 0; x--)
+        {
+            iTemp = pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1) ;
+            uiSum += iTemp * iTemp;
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-8;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-8;
-    uiOffset2 += iStride;
-  }
 
-  return uiSum;
+    return uiSum;
 }
 
 
 UInt XDistortion::xGetBiSSE4x(XDistSearchStruct* pcDSS)
 {
-  XPel* pucSrc1 = pcDSS->pYSearch;
-  XPel* pucSrc2 = pcDSS->pYFix;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows;
+    XPel* pucSrc1 = pcDSS->pYSearch;
+    XPel* pucSrc2 = pcDSS->pYFix;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows;
 
-  UInt  x;
-  UInt  uiSum = 0;
-  UInt  uiOffset1 = 0;
-  UInt  uiOffset2 = 0;
-  Int   iTemp;
+    UInt  x;
+    UInt  uiSum = 0;
+    UInt  uiOffset1 = 0;
+    UInt  uiOffset2 = 0;
+    Int   iTemp;
 
-  iStride -= 4;
+    iStride -= 4;
 
-  for(; iRows != 0; iRows--)
-  {
-    for(x = 4; x != 0; x--)
+    for(; iRows != 0; iRows--)
     {
-      iTemp = pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1) ;
-      uiSum += iTemp * iTemp;
-      uiOffset1++;
-      uiOffset2++;
+        for(x = 4; x != 0; x--)
+        {
+            iTemp = pucOrg[uiOffset1] - ((pucSrc1[uiOffset2] + pucSrc2[uiOffset1] + 1) >> 1) ;
+            uiSum += iTemp * iTemp;
+            uiOffset1++;
+            uiOffset2++;
+        }
+        uiOffset1 += MB_BUFFER_WIDTH-4;
+        uiOffset2 += iStride;
     }
-    uiOffset1 += MB_BUFFER_WIDTH-4;
-    uiOffset2 += iStride;
-  }
 
-  return uiSum;
+    return uiSum;
 }
 
 
 
 UInt XDistortion::xGetBiHAD16x (XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucFix  = pcDSS->pYFix;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows>>2;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucFix  = pcDSS->pYFix;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows>>2;
 
-  UInt uiSum = 0;
+    UInt uiSum = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSum += xCalcBiHadamard4x4(pucOrg+0x0, pucFix+0x0, pucCur+0x0, iStride);
-    uiSum += xCalcBiHadamard4x4(pucOrg+0x4, pucFix+0x4, pucCur+0x4, iStride);
-    uiSum += xCalcBiHadamard4x4(pucOrg+0x8, pucFix+0x8, pucCur+0x8, iStride);
-    uiSum += xCalcBiHadamard4x4(pucOrg+0xc, pucFix+0xc, pucCur+0xc, iStride);
-    pucOrg += 4*MB_BUFFER_WIDTH;
-    pucCur += 4*iStride;
-    pucFix += 4*MB_BUFFER_WIDTH;
-  }
-  return uiSum;
+    for(; iRows != 0; iRows--)
+    {
+        uiSum += xCalcBiHadamard4x4(pucOrg+0x0, pucFix+0x0, pucCur+0x0, iStride);
+        uiSum += xCalcBiHadamard4x4(pucOrg+0x4, pucFix+0x4, pucCur+0x4, iStride);
+        uiSum += xCalcBiHadamard4x4(pucOrg+0x8, pucFix+0x8, pucCur+0x8, iStride);
+        uiSum += xCalcBiHadamard4x4(pucOrg+0xc, pucFix+0xc, pucCur+0xc, iStride);
+        pucOrg += 4*MB_BUFFER_WIDTH;
+        pucCur += 4*iStride;
+        pucFix += 4*MB_BUFFER_WIDTH;
+    }
+    return uiSum;
 }
 
 
-UInt XDistortion::xGetBiHAD8x  (XDistSearchStruct* pcDSS)
+UInt XDistortion::xGetBiHAD8x (XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucFix  = pcDSS->pYFix;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows>>2;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucFix  = pcDSS->pYFix;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows>>2;
 
-  UInt uiSum = 0;
+    UInt uiSum = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSum += xCalcBiHadamard4x4(pucOrg+0x0, pucFix+0x0, pucCur+0x0, iStride);
-    uiSum += xCalcBiHadamard4x4(pucOrg+0x4, pucFix+0x4, pucCur+0x4, iStride);
-    pucOrg += 4*MB_BUFFER_WIDTH;
-    pucCur += 4*iStride;
-    pucFix += 4*MB_BUFFER_WIDTH;
-  }
-  return uiSum;
+    for(; iRows != 0; iRows--)
+    {
+        uiSum += xCalcBiHadamard4x4(pucOrg+0x0, pucFix+0x0, pucCur+0x0, iStride);
+        uiSum += xCalcBiHadamard4x4(pucOrg+0x4, pucFix+0x4, pucCur+0x4, iStride);
+        pucOrg += 4*MB_BUFFER_WIDTH;
+        pucCur += 4*iStride;
+        pucFix += 4*MB_BUFFER_WIDTH;
+    }
+    return uiSum;
 }
 
 UInt XDistortion::xGetBiHAD4x  (XDistSearchStruct* pcDSS)
 {
-  XPel* pucCur  = pcDSS->pYSearch;
-  XPel* pucFix  = pcDSS->pYFix;
-  XPel* pucOrg  = pcDSS->pYOrg;
-  Int   iStride = pcDSS->iYStride;
-  Int   iRows   = pcDSS->iRows>>2;
+    XPel* pucCur  = pcDSS->pYSearch;
+    XPel* pucFix  = pcDSS->pYFix;
+    XPel* pucOrg  = pcDSS->pYOrg;
+    Int   iStride = pcDSS->iYStride;
+    Int   iRows   = pcDSS->iRows>>2;
 
-  UInt uiSum = 0;
+    UInt uiSum = 0;
 
-  for(; iRows != 0; iRows--)
-  {
-    uiSum += xCalcBiHadamard4x4(pucOrg+0x0, pucFix+0x0, pucCur+0x0, iStride);
-    pucOrg += 4*MB_BUFFER_WIDTH;
-    pucCur += 4*iStride;
-    pucFix += 4*MB_BUFFER_WIDTH;
-  }
-  return uiSum;
+    for(; iRows != 0; iRows--)
+    {
+        uiSum += xCalcBiHadamard4x4(pucOrg+0x0, pucFix+0x0, pucCur+0x0, iStride);
+        pucOrg += 4*MB_BUFFER_WIDTH;
+        pucCur += 4*iStride;
+        pucFix += 4*MB_BUFFER_WIDTH;
+    }
+    return uiSum;
 }
 
 //TMM_WP
-Void XDistortion::xGetWeight(XPel *pucRef, XPel *pucOrg, const UInt uiStride,
-                             const UInt uiHeight, const UInt uiWidth,
-                             Double &dDCOrg, Double &dDCRef)
+Void XDistortion::xGetWeight (XPel *pucRef, XPel *pucOrg, const UInt uiStride,
+                              const UInt uiHeight, const UInt uiWidth,
+                              Double &dDCOrg, Double &dDCRef)
 {
     /* get dc of org & ref frame */
     for (UInt y = 0; y < uiHeight; y++)
@@ -1345,89 +1355,96 @@ Void XDistortion::xGetWeight(XPel *pucRef, XPel *pucOrg, const UInt uiStride,
 
 
 
-ErrVal XDistortion::getLumaWeight(YuvPicBuffer* pcOrgPicBuffer,
-                                  YuvPicBuffer* pcRefPicBuffer, Double& rfWeight,
-                                  UInt uiLumaLog2WeightDenom)
+ErrVal XDistortion::getLumaWeight (YuvPicBuffer* pcOrgPicBuffer,
+                                   YuvPicBuffer* pcRefPicBuffer,
+                                   Double& rfWeight,
+                                   UInt uiLumaLog2WeightDenom)
 {
-  ROT(NULL == pcRefPicBuffer);
-  ROT(NULL == pcOrgPicBuffer);
+    ROT(NULL == pcRefPicBuffer);
+    ROT(NULL == pcOrgPicBuffer);
 
-  const Int iStride = pcRefPicBuffer->getLStride();
-  const Int iHeight = pcRefPicBuffer->getLHeight();
-  const Int iWidth  = pcRefPicBuffer->getLWidth();
+    const Int iStride = pcRefPicBuffer->getLStride();
+    const Int iHeight = pcRefPicBuffer->getLHeight();
+    const Int iWidth  = pcRefPicBuffer->getLWidth();
 
-  AOT_DBG(iStride != pcOrgPicBuffer->getLStride());
+    AOT_DBG(iStride != pcOrgPicBuffer->getLStride());
 
-  XPel* pucRef = pcRefPicBuffer->getLumOrigin();
-  XPel* pucOrg = pcOrgPicBuffer->getLumOrigin();
+    XPel* pucRef = pcRefPicBuffer->getLumOrigin();
+    XPel* pucOrg = pcOrgPicBuffer->getLumOrigin();
 
-  Double dDCOrg = 0;
-  Double dDCRef = 0;
-  xGetWeight(pucRef, pucOrg, iStride, iHeight, iWidth, dDCOrg, dDCRef);
+    Double dDCOrg = 0;
+    Double dDCRef = 0;
+    xGetWeight (pucRef, pucOrg, iStride, iHeight, iWidth, dDCOrg, dDCRef);
 
-  if(dDCRef)
-  {
-      rfWeight = (Int) (rfWeight * dDCOrg / dDCRef + 0.5);
+    if(dDCRef)
+    {
+        rfWeight = (Int) (rfWeight * dDCOrg / dDCRef + 0.5);
 
-      if(rfWeight < -64 || rfWeight > 127)
-          rfWeight = 1 << uiLumaLog2WeightDenom;
-  }
+        if(rfWeight < -64 || rfWeight > 127)
+        {
+            rfWeight = 1 << uiLumaLog2WeightDenom;
+        }
+    }
 
-  return Err::m_nOK;
+    return Err::m_nOK;
 }
 
 
-ErrVal XDistortion::getChromaWeight(YuvPicBuffer* pcOrgPicBuffer,
-                                    YuvPicBuffer* pcRefPicBuffer,
-                                    Double& rfWeight, UInt uiChromaLog2WeightDenom, Bool bCb)
-{
-  ROT(NULL == pcRefPicBuffer);
-  ROT(NULL == pcOrgPicBuffer);
-
-  /* no weights for chroma */
-  rfWeight = 1 << uiChromaLog2WeightDenom;
-
-  return Err::m_nOK;
-}
-
-ErrVal XDistortion::getLumaOffsets(YuvPicBuffer* pcOrgPicBuffer,
-                                   YuvPicBuffer* pcRefPicBuffer, Double& rfOffset)
-{
-  ROT(NULL == pcRefPicBuffer);
-  ROT(NULL == pcOrgPicBuffer);
-
-  const Int iStride = pcRefPicBuffer->getLStride();
-  const Int iHeight = pcRefPicBuffer->getLHeight();
-  const Int iWidth  = pcRefPicBuffer->getLWidth();
-
-  AOT_DBG(iStride != pcOrgPicBuffer->getLStride());
-
-  XPel* pucRef = pcRefPicBuffer->getLumOrigin();
-  XPel* pucOrg = pcOrgPicBuffer->getLumOrigin();
-
-  Double dDCOrg = 0;
-  Double dDCRef = 0;
-  xGetWeight(pucRef, pucOrg, iStride, iHeight, iWidth, dDCOrg, dDCRef);
-
-  rfOffset = (Int) (((dDCOrg - dDCRef)/ (iHeight * iWidth)) + 0.5);
-
-  rfOffset = (rfOffset < -128) ? -128 : (rfOffset > 127 ? 127 : rfOffset);
-
-  return Err::m_nOK;
-}
-
-
-ErrVal XDistortion::getChromaOffsets(YuvPicBuffer* pcOrgPicBuffer,
+ErrVal XDistortion::getChromaWeight (YuvPicBuffer* pcOrgPicBuffer,
                                      YuvPicBuffer* pcRefPicBuffer,
-                                     Double& rfOffset, Bool bCb)
+                                     Double& rfWeight,
+                                     UInt uiChromaLog2WeightDenom,
+                                     Bool bCb)
 {
-  ROT(NULL == pcRefPicBuffer);
-  ROT(NULL == pcOrgPicBuffer);
+    ROT(NULL == pcRefPicBuffer);
+    ROT(NULL == pcOrgPicBuffer);
 
-  /* no offsets for chroma */
-  rfOffset = 0;
+    /* no weights for chroma */
+    rfWeight = 1 << uiChromaLog2WeightDenom;
 
-  return Err::m_nOK;
+    return Err::m_nOK;
+}
+
+ErrVal XDistortion::getLumaOffsets (YuvPicBuffer* pcOrgPicBuffer,
+                                    YuvPicBuffer* pcRefPicBuffer,
+                                    Double& rfOffset)
+{
+    ROT(NULL == pcRefPicBuffer);
+    ROT(NULL == pcOrgPicBuffer);
+
+    const Int iStride = pcRefPicBuffer->getLStride();
+    const Int iHeight = pcRefPicBuffer->getLHeight();
+    const Int iWidth  = pcRefPicBuffer->getLWidth();
+
+    AOT_DBG(iStride != pcOrgPicBuffer->getLStride());
+
+    XPel* pucRef = pcRefPicBuffer->getLumOrigin();
+    XPel* pucOrg = pcOrgPicBuffer->getLumOrigin();
+
+    Double dDCOrg = 0;
+    Double dDCRef = 0;
+    xGetWeight(pucRef, pucOrg, iStride, iHeight, iWidth, dDCOrg, dDCRef);
+
+    rfOffset = (Int) (((dDCOrg - dDCRef)/ (iHeight * iWidth)) + 0.5);
+
+    rfOffset = (rfOffset < -128) ? -128 : (rfOffset > 127 ? 127 : rfOffset);
+
+    return Err::m_nOK;
+}
+
+
+ErrVal XDistortion::getChromaOffsets  (YuvPicBuffer* pcOrgPicBuffer,
+                                       YuvPicBuffer* pcRefPicBuffer,
+                                       Double& rfOffset,
+                                       Bool bCb)
+{
+    ROT(NULL == pcRefPicBuffer);
+    ROT(NULL == pcOrgPicBuffer);
+
+    /* no offsets for chroma */
+    rfOffset = 0;
+
+    return Err::m_nOK;
 }
 //TMM_WP
 

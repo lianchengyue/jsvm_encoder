@@ -383,9 +383,9 @@ ErrVal NalUnitEncoder::write(const SliceHeader& rcSH)
     for(UInt uiMGSFragment = 0; true; uiMGSFragment++)
     {
         //----- modify copy of slice header -----
-        cSH.setDependencyId                   (rcSH.getLayerCGSSNR         ());
-        cSH.setQualityId                      (rcSH.getQualityLevelCGSSNR  () + uiMGSFragment);
-        cSH.setDiscardableFlag                (rcSH.getDiscardableFlag     ());
+        cSH.setDependencyId                   (rcSH.getLayerCGSSNR        ());
+        cSH.setQualityId                      (rcSH.getQualityLevelCGSSNR () + uiMGSFragment);
+        cSH.setDiscardableFlag                (rcSH.getDiscardableFlag    ());
         cSH.setNoInterLayerPredFlag           (rcSH.getNoInterLayerPredFlag() && cSH.getQualityId() == 0);
         cSH.setScanIdxStart                   (rcSH.getSPS().getMGSCoeffStart(uiMGSFragment));
         cSH.setScanIdxStop                    (rcSH.getSPS().getMGSCoeffStop (uiMGSFragment));

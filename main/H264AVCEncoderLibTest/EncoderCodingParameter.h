@@ -417,7 +417,7 @@ ErrVal EncoderCodingParameter::init (Int argc,
         {
             ROTS(NULL == argv[n]);
             std::string cFilename = argv[n];
-            RNOKS(xReadFromFile(cFilename, rcBitstreamFile));
+            xReadFromFile(cFilename, rcBitstreamFile);
             continue;
         }
 
@@ -600,7 +600,7 @@ ErrVal EncoderCodingParameter::init (Int argc,
     }
 
 
-    RNOKS(check());
+    CodingParameter::check();
 
     return Err::m_nOK;
 }
@@ -663,7 +663,7 @@ Void EncoderCodingParameter::printHelp()
 }
 
 
-ErrVal EncoderCodingParameter::xReadLine(FILE* hFile, std::string* pacTag)
+ErrVal EncoderCodingParameter::xReadLine (FILE* hFile, std::string* pacTag)
 {
     ROF(pacTag);
 
@@ -672,12 +672,12 @@ ErrVal EncoderCodingParameter::xReadLine(FILE* hFile, std::string* pacTag)
     Bool bComment  = false;
     std::string* pcTag = &pacTag[0];
 
-    for(n = 0; n < 4; n++)
+    for (n = 0; n < 4; n++)
     {
         pacTag[n] = "";
     }
 
-    for(n = 0; ; n++)
+    for (n = 0; ; n++)
     {
         Char cChar = (Char)fgetc(hFile);
         ROTRS(cChar == '\n' || feof(hFile), Err::m_nOK);  // end of line
@@ -705,7 +705,7 @@ ErrVal EncoderCodingParameter::xReadLine(FILE* hFile, std::string* pacTag)
 }
 
 //FLQ, 加载配置文件MVC.cfg
-ErrVal EncoderCodingParameter::xReadFromFile(std::string& rcFilename, std::string& rcBitstreamFile)
+ErrVal EncoderCodingParameter::xReadFromFile (std::string& rcFilename, std::string& rcBitstreamFile)
 {
     std::string acLayerConfigName[MAX_LAYERS];
     std::string acTags[4];
@@ -973,13 +973,13 @@ ErrVal EncoderCodingParameter::xReadFromFile(std::string& rcFilename, std::strin
 
 //DS_FIX_FT_09_2007
         //uiBaseLayerId is no more discardable
-        if(uiBaseLayerId != MSYS_UINT_MAX)
+        if (uiBaseLayerId != MSYS_UINT_MAX)
         {
             getLayerParameters(uiBaseLayerId).setNonDiscardable();
         }
 //~DS_FIX_FT_09_2007
 
-        if(uiBaseLayerId != MSYS_UINT_MAX)
+        if (uiBaseLayerId != MSYS_UINT_MAX)
         {
             LayerParameters&  rcCurrLayer       = getLayerParameters(ui);
             LayerParameters&  rcBaseLayer       = getLayerParameters(uiBaseLayerId);
@@ -1029,7 +1029,7 @@ ErrVal EncoderCodingParameter::xReadFromFile(std::string& rcFilename, std::strin
         }
     }
     //>>> zhangxd_20101220 >>>
-    for(ui = 0; ui < m_uiNumberOfLayers; ui++)
+    for (ui = 0; ui < m_uiNumberOfLayers; ui++)
     {
         UInt uiBaseLayerId   = getLayerParameters(ui).getBaseLayerId();
         UInt maxDependencyId = getLayerParameters(m_uiNumberOfLayers - 1).getLayerCGSSNR();
@@ -1241,7 +1241,7 @@ ErrVal EncoderCodingParameter::xReadLayerFromFile (std::string&  rcFilename,
         {
             continue;
         }
-        for(UInt ui=0; m_pLayerLines[ui] != NULL; ui++)
+        for (UInt ui=0; m_pLayerLines[ui] != NULL; ui++)
         {
             if(acTags[0] == m_pLayerLines[ui]->getTag())
             {
@@ -1251,7 +1251,7 @@ ErrVal EncoderCodingParameter::xReadLayerFromFile (std::string&  rcFilename,
         }
     }
 
-    for(UInt uiSMIdx = 0; uiSMIdx < 8; uiSMIdx++)
+    for (UInt uiSMIdx = 0; uiSMIdx < 8; uiSMIdx++)
     {
         if(rcLayer.m_acScalMatFiles[uiSMIdx].empty())
         {
@@ -1264,15 +1264,15 @@ ErrVal EncoderCodingParameter::xReadLayerFromFile (std::string&  rcFilename,
     }
 
     //S051{
-    if(cEncSIPFilename.length())
+    if (cEncSIPFilename.length())
     {
         rcLayer.setEncSIP(true);
         rcLayer.setInSIPFileName((char*) cEncSIPFilename.c_str());
     }
     //S051}
 
-    rcLayer.setInputFilename((Char*)cInputFilename.c_str());
-    rcLayer.setOutputFilename((Char*)cOutputFilename.c_str());
+    rcLayer.setInputFilename ((Char*)cInputFilename.c_str());
+    rcLayer.setOutputFilename ((Char*)cOutputFilename.c_str());
 
     uiParLnCount = 0;
     while(m_pLayerLines[uiParLnCount] != NULL)
@@ -1291,7 +1291,7 @@ ErrVal EncoderCodingParameter::xReadLayerFromFile (std::string&  rcFilename,
     rcLayer.m_cResizeParameters.m_iRefLayerWidthInSamples   = 0; // is set later
     rcLayer.m_cResizeParameters.m_iRefLayerHeightInSamples  = 0; // is set later
 
-    if(!rcLayer.m_cResizeParameters.m_iExtendedSpatialScalability)
+    if (!rcLayer.m_cResizeParameters.m_iExtendedSpatialScalability)
     {
         rcLayer.m_cResizeParameters.m_iScaledRefFrmWidth      = rcLayer.m_cResizeParameters.m_iWidthInSamples;
         rcLayer.m_cResizeParameters.m_iScaledRefFrmHeight     = rcLayer.m_cResizeParameters.m_iHeightInSamples;
@@ -1314,7 +1314,7 @@ ErrVal EncoderCodingParameter::xReadLayerFromFile (std::string&  rcFilename,
     return Err::m_nOK;
 }
 
-ErrVal EncoderCodingParameter::xReadScalMat(UChar* pBuffer, Int iCnt, std::string& rcFileName)
+ErrVal EncoderCodingParameter::xReadScalMat (UChar* pBuffer, Int iCnt, std::string& rcFileName)
 {
     FILE* pFile = ::fopen(rcFileName.c_str(), "rt");
     if(!pFile)

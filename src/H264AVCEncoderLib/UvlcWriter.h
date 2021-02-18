@@ -11,9 +11,7 @@ namespace JSVM {
 
 #define REFSYM_MB    384
 
-class UvlcWriter :
-public MbSymbolWriteIf
-, public HeaderSymbolWriteIf
+class UvlcWriter : public MbSymbolWriteIf, public HeaderSymbolWriteIf
 
 {
 public://
@@ -35,19 +33,19 @@ public:
     ErrVal init( BitWriteBufferIf* pcBitWriteBufferIf);
     ErrVal uninit();
 
-    HeaderSymbolWriteIf* getHeaderSymbolWriteIfNextSlice(Bool bStartNewBitstream ) { return xGetUvlcWriterNextSlice(bStartNewBitstream); }
-    MbSymbolWriteIf*     getSymbolWriteIfNextSlice()                                { return xGetUvlcWriterNextSlice(false); }
-    Void                 setTraceEnableBit(Bool bActive )                          { m_bTraceEnable = bActive; }
+    HeaderSymbolWriteIf* getHeaderSymbolWriteIfNextSlice (Bool bStartNewBitstream) { return xGetUvlcWriterNextSlice(bStartNewBitstream); }
+    MbSymbolWriteIf*     getSymbolWriteIfNextSlice ()                              { return xGetUvlcWriterNextSlice(false); }
+    Void                 setTraceEnableBit (Bool bActive)                          { m_bTraceEnable = bActive; }
 
-    ErrVal  startSlice(const SliceHeader& rcSliceHeader);
-    ErrVal  getLastByte(UChar &uiLastByte, UInt &uiLastBitPos); //FIX_FRAG_CAVLC
+    ErrVal  startSlice  (const SliceHeader& rcSliceHeader);
+    ErrVal  getLastByte (UChar &uiLastByte, UInt &uiLastBitPos); //FIX_FRAG_CAVLC
     ErrVal  setFirstBits(UChar ucByte,UInt uiLastBitPos); //FIX_FRAG_CAVLC
-    ErrVal  finishSlice();
+    ErrVal  finishSlice ();
 
-    ErrVal  blockModes(MbDataAccess& rcMbDataAccess);
-    ErrVal  mbMode (MbDataAccess& rcMbDataAccess);
-    ErrVal  resPredFlag(MbDataAccess& rcMbDataAccess);
-    ErrVal  fieldFlag (MbDataAccess& rcMbDataAccess);
+    ErrVal  blockModes  (MbDataAccess& rcMbDataAccess);
+    ErrVal  mbMode      (MbDataAccess& rcMbDataAccess);
+    ErrVal  resPredFlag (MbDataAccess& rcMbDataAccess);
+    ErrVal  fieldFlag   (MbDataAccess& rcMbDataAccess);
 
     ErrVal  mvd (MbDataAccess& rcMbDataAccess, ListIdx eLstIdx);
     ErrVal  mvd (MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx16x8 eParIdx);
@@ -80,7 +78,7 @@ public:
     ErrVal  samplesPCM (MbDataAccess& rcMbDataAccess);
     ErrVal  skipFlag (MbDataAccess& rcMbDataAccess);
     ErrVal  BLSkipFlag(MbDataAccess& rcMbDataAccess);
-    ErrVal  terminatingBit (UInt uiIsLast ) { return Err::m_nOK;}
+    ErrVal  terminatingBit (UInt uiIsLast) { return Err::m_nOK;}
 
     ErrVal writeUvlc (UInt uiCode,                const Char* pcTraceString);
     ErrVal writeSvlc (Int  iCode,                 const Char* pcTraceString);

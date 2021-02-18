@@ -22,19 +22,22 @@ public:
     ErrVal init (BitWriteBufferIf* pcBitWriteBufferIf);
     ErrVal uninit();
 
-    ErrVal writeEPSymbol (UInt uiSymbol);
-    ErrVal writeSymbol (UInt uiSymbol, CabacContextModel& rcCCModel);
+    ErrVal writeEPSymbol       (UInt uiSymbol);
+    ErrVal writeSymbol         (UInt uiSymbol, CabacContextModel& rcCCModel);
     ErrVal writeUnaryMaxSymbol (UInt uiSymbol, CabacContextModel* pcCCModel, Int iOffset, UInt uiMaxSymbol);
-    ErrVal writeUnarySymbol (UInt uiSymbol, CabacContextModel* pcCCModel, Int iOffset);
+    ErrVal writeUnarySymbol    (UInt uiSymbol, CabacContextModel* pcCCModel, Int iOffset);
 
-    ErrVal writeExGolombLevel (UInt uiSymbol, CabacContextModel& rcCCModel);
-    ErrVal writeEpExGolomb (UInt uiSymbol, UInt uiCount);
-    ErrVal writeExGolombMvd (UInt uiSymbol, CabacContextModel* pcCCModel, UInt uiMaxBin);
+    ErrVal writeExGolombLevel  (UInt uiSymbol, CabacContextModel& rcCCModel);
+    ErrVal writeEpExGolomb     (UInt uiSymbol, UInt uiCount);
+    ErrVal writeExGolombMvd    (UInt uiSymbol, CabacContextModel* pcCCModel, UInt uiMaxBin);
     ErrVal writeTerminatingBit (UInt uiBit);
     ErrVal finish();
-    UInt   getWrittenBits()  { return m_pcBitWriteBufferIf->getNumberOfWrittenBits() + 8 + m_uiBitsToFollow - m_uiBitsLeft + 1; } //JVT-P031
+    UInt  getWrittenBits ()
+    {
+        return m_pcBitWriteBufferIf->getNumberOfWrittenBits() + 8 + m_uiBitsToFollow - m_uiBitsLeft + 1;
+    } //JVT-P031
 
-    Void setStates(CabaEncoder* pcExtEncoder )
+    Void setStates (CabaEncoder* pcExtEncoder )
     {
         m_pcBitWriteBufferIf  = pcExtEncoder->m_pcBitWriteBufferIf;
         m_uiRange        = pcExtEncoder->m_uiRange;
@@ -43,7 +46,7 @@ public:
         m_uiBitsLeft     = pcExtEncoder->m_uiBitsLeft;
         m_uiBitsToFollow = pcExtEncoder->m_uiBitsToFollow;
     }
-    Void getStates(CabaEncoder* pcExtEncoder)
+    Void getStates (CabaEncoder* pcExtEncoder)
     {
         pcExtEncoder->m_pcBitWriteBufferIf  = m_pcBitWriteBufferIf;
         pcExtEncoder->m_uiRange             = m_uiRange;
@@ -52,11 +55,11 @@ public:
         pcExtEncoder->m_uiBitsLeft          = m_uiBitsLeft;
         pcExtEncoder->m_uiBitsToFollow      = m_uiBitsToFollow;
     }
-    BitWriteBufferIf* getBitWriteBufferIf(void){return m_pcBitWriteBufferIf;}//JVT-X046
+    BitWriteBufferIf* getBitWriteBufferIf (void)  {return m_pcBitWriteBufferIf;}//JVT-X046
 
 private:
-    __inline ErrVal xWriteBit(UInt uiBit);
-    __inline ErrVal xWriteBitAndBitsToFollow(UInt uiBit);
+    __inline ErrVal  xWriteBit (UInt uiBit);
+    __inline ErrVal  xWriteBitAndBitsToFollow (UInt uiBit);
 
 protected:
     BitWriteBufferIf* m_pcBitWriteBufferIf;

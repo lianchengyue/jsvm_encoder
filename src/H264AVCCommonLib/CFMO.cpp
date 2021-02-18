@@ -37,6 +37,7 @@ int FMO::m_iFrame = -1;
  */
 int FMO::GenerateMapUnitToSliceGroupMap()
 {
+    printf("FMO::GenerateMapUnitToSliceGroupMap(), pps_.slice_group_map_type=%d\n", pps_.slice_group_map_type);
 
     if(initMapUnitToSliceGroupMap() == 0)
     {
@@ -132,9 +133,9 @@ int FMO::GenerateMbToSliceGroupMap()
  */
 Void FMO::printFmoMaps()
 {
-#if 1 // NO_DEBUG
+#ifdef NO_DEBUG
     return;
-#endif
+#else
 
     unsigned i,j;
 
@@ -161,6 +162,7 @@ Void FMO::printFmoMaps()
         printf("\n");
     }
     printf("\n");
+#endif
 }
 
 int FMO::init()

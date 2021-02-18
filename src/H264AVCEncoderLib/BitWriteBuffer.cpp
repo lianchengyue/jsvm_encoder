@@ -179,7 +179,7 @@ ErrVal BitWriteBuffer::writeAlignZero()
 
 ErrVal BitWriteBuffer::writeAlignOne()
 {
-    return write((1 << (m_iValidBits & 0x7)) - 1, m_iValidBits & 0x7);
+    return write ((1 << (m_iValidBits & 0x7)) - 1, m_iValidBits & 0x7);
 }
 
 
@@ -192,7 +192,7 @@ ErrVal BitWriteBuffer::flushBuffer()
     m_uiBitsWritten = (m_uiBitsWritten+7)/8;
 
     m_uiBitsWritten *= 8;
-    if(nextBitWriteBufferActive())
+    if (nextBitWriteBufferActive())
     {
         getNextBitWriteBuffer(false)->flushBuffer();
     }

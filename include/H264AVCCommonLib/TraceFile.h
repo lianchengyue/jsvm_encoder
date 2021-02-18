@@ -1,6 +1,7 @@
 #ifndef _TRACEFILE_H_
 #define _TRACEFILE_H_
 
+#include "Typedefs.h"
 
 #define ENCODER_TRACE     1
 #define DECODER_TRACE     0
@@ -26,9 +27,9 @@ protected:
     class TraceDQId
     {
     public:
-        static ErrVal create  (TraceDQId*& rpcTraceDQId,
-                               const Char* pucBaseName,
-                               UInt        uiDQIdplus1);
+        static ErrVal create (TraceDQId*& rpcTraceDQId,
+                              const Char* pucBaseName,
+                              UInt  uiDQIdplus1);
         ErrVal  destroy();
         ErrVal  output(const Char* pucLine);
         ErrVal  storePos();
@@ -114,7 +115,7 @@ protected:
   #define ETRACE_NEWPIC    if(m_bTraceEnable) TraceFile::startPicture()
   #define ETRACE_NEWSLICE  if(m_bTraceEnable) TraceFile::startSlice  ()
   #define ETRACE_NEWMB(x)  if(m_bTraceEnable) TraceFile::startMb     (x)
-  #define ETRACE_HEADER(x)                      TraceFile::printHeading(x,true)
+  #define ETRACE_HEADER(x)                    TraceFile::printHeading(x,true)
 
   #define ETRACE_POS       if(m_bTraceEnable) TraceFile::printPos    ()
   #define ETRACE_COUNT(i)  if(m_bTraceEnable) TraceFile::countBits   (i)
@@ -123,11 +124,14 @@ protected:
   #define ETRACE_BITS(v,l) if(m_bTraceEnable) TraceFile::addBits     (v,l)
   #define ETRACE_CODE(v)   if(m_bTraceEnable) TraceFile::printCode   (v)
 
+//ETRACE_TH:  @0     NAL unit header: forbidden_zero_bit
   #define ETRACE_TH(t)     if(m_bTraceEnable) TraceFile::printString (t)
+//ETRACE_TY:  ue(v)
   #define ETRACE_TY(t)     if(m_bTraceEnable) TraceFile::printType   (t)
   #define ETRACE_V(t)      if(m_bTraceEnable) TraceFile::printVal    (t)
   #define ETRACE_X(t)      if(m_bTraceEnable) TraceFile::printXVal   (t)
 
+//:ETRACE_N: 输出/新起一行
   #define ETRACE_N         if(m_bTraceEnable) TraceFile::newLine     ()
   #define ETRACE_DO(x)     if(m_bTraceEnable) x
   #define ETRACE_DECLARE(x) x

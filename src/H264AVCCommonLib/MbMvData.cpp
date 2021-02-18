@@ -66,7 +66,7 @@ ErrVal MbMotionData::load(FILE* pFile)
 
 Void MbMvData::copyFrom(const MbMvData& rcMbMvData, const ParIdx8x8 eParIdx)
 {
-    m_acMv[eParIdx    ] = rcMbMvData.m_acMv[eParIdx    ];
+    m_acMv[eParIdx]     = rcMbMvData.m_acMv[eParIdx];
     m_acMv[eParIdx + 1] = rcMbMvData.m_acMv[eParIdx + 1];
     m_acMv[eParIdx + 4] = rcMbMvData.m_acMv[eParIdx + 4];
     m_acMv[eParIdx + 5] = rcMbMvData.m_acMv[eParIdx + 5];

@@ -161,26 +161,26 @@ MbSymbolWriteIf* CabacWriter::getSymbolWriteIfNextSlice()
 }
 
 
-ErrVal CabacWriter::startSlice(const SliceHeader& rcSliceHeader)
+ErrVal CabacWriter::startSlice (const SliceHeader& rcSliceHeader)
 {
-    m_pcSliceHeader     = &rcSliceHeader;
-    m_uiLastDQpNonZero  = 0;
-    ROTRS(m_pcSliceHeader->getSliceSkipFlag(), Err::m_nOK);
-    xInitContextModels(rcSliceHeader);
-    CabaEncoder::start();
+    m_pcSliceHeader = &rcSliceHeader;
+    m_uiLastDQpNonZero = 0;
+    ROTRS (m_pcSliceHeader->getSliceSkipFlag(), Err::m_nOK);
+    xInitContextModels (rcSliceHeader);
+    CabaEncoder::start ();
 
     return Err::m_nOK;
 }
 
 //FIX_FRAG_CAVLC
-ErrVal CabacWriter::getLastByte(UChar &uiLastByte, UInt &uiLastBitPos)
+ErrVal CabacWriter::getLastByte (UChar &uiLastByte, UInt &uiLastBitPos)
 {
-    CabaEncoder::getLastByte(uiLastByte, uiLastBitPos);
+    CabaEncoder::getLastByte (uiLastByte, uiLastBitPos);
     return Err::m_nOK;
 }
-ErrVal CabacWriter::setFirstBits(UChar ucByte, UInt uiLastBitPos)
+ErrVal CabacWriter::setFirstBits (UChar ucByte, UInt uiLastBitPos)
 {
-    CabaEncoder::setFirstBits(ucByte, uiLastBitPos);
+    CabaEncoder::setFirstBits (ucByte, uiLastBitPos);
     return Err::m_nOK;
 }
 //~FIX_FRAG_CAVLC
@@ -192,54 +192,76 @@ ErrVal CabacWriter::finishSlice()
 }
 
 
-ErrVal CabacWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx)
+ErrVal CabacWriter::refFrame (MbDataAccess& rcMbDataAccess, ListIdx eLstIdx)
 {
     UInt uiRefFrame = rcMbDataAccess.getMbMotionData(eLstIdx).getRefIdx();
-    xRefFrame(rcMbDataAccess, uiRefFrame, eLstIdx, PART_8x8_0);
+    xRefFrame (rcMbDataAccess,
+               uiRefFrame,
+               eLstIdx,
+               PART_8x8_0);
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx16x8 eParIdx )
+ErrVal CabacWriter::refFrame (MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx16x8 eParIdx)
 {
     UInt uiRefFrame = rcMbDataAccess.getMbMotionData(eLstIdx).getRefIdx(eParIdx);
-    xRefFrame(rcMbDataAccess, uiRefFrame, eLstIdx, ParIdx8x8(eParIdx));
+    xRefFrame (rcMbDataAccess,
+               uiRefFrame,
+               eLstIdx,
+               ParIdx8x8(eParIdx));
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x16 eParIdx )
+ErrVal CabacWriter::refFrame (MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x16 eParIdx)
 {
     UInt uiRefFrame = rcMbDataAccess.getMbMotionData(eLstIdx).getRefIdx(eParIdx);
-    xRefFrame(rcMbDataAccess, uiRefFrame, eLstIdx, ParIdx8x8(eParIdx));
+    xRefFrame(rcMbDataAccess,
+              uiRefFrame,
+              eLstIdx,
+              ParIdx8x8(eParIdx));
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::refFrame(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8  eParIdx )
+ErrVal CabacWriter::refFrame (MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8  eParIdx)
 {
     UInt uiRefFrame = rcMbDataAccess.getMbMotionData(eLstIdx).getRefIdx(eParIdx);
-    xRefFrame(rcMbDataAccess, uiRefFrame, eLstIdx, ParIdx8x8(eParIdx));
+    xRefFrame (rcMbDataAccess,
+               uiRefFrame,
+               eLstIdx,
+               ParIdx8x8(eParIdx));
     return Err::m_nOK;
 }
 
 
-ErrVal CabacWriter::motionPredFlag(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx)
+ErrVal CabacWriter::motionPredFlag (MbDataAccess& rcMbDataAccess,
+                                    ListIdx eLstIdx)
 {
-    return xMotionPredFlag(rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(), eLstIdx);
+    return xMotionPredFlag (rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(), eLstIdx);
 }
-ErrVal CabacWriter::motionPredFlag(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx16x8 eParIdx)
+ErrVal CabacWriter::motionPredFlag (MbDataAccess& rcMbDataAccess,
+                                    ListIdx eLstIdx,
+                                    ParIdx16x8 eParIdx)
 {
-    return xMotionPredFlag(rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(eParIdx), eLstIdx);
+    return xMotionPredFlag (rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(eParIdx), eLstIdx);
 }
-ErrVal CabacWriter::motionPredFlag(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x16 eParIdx)
+ErrVal CabacWriter::motionPredFlag (MbDataAccess& rcMbDataAccess,
+                                    ListIdx eLstIdx,
+                                    ParIdx8x16 eParIdx)
 {
-    return xMotionPredFlag(rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(eParIdx), eLstIdx);
+    return xMotionPredFlag (rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(eParIdx), eLstIdx);
 }
-ErrVal CabacWriter::motionPredFlag(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8 eParIdx)
+ErrVal CabacWriter::motionPredFlag (MbDataAccess& rcMbDataAccess,
+                                    ListIdx eLstIdx,
+                                    ParIdx8x8 eParIdx)
 {
-    return xMotionPredFlag(rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(eParIdx), eLstIdx);
+    return xMotionPredFlag (rcMbDataAccess.getMbMotionData(eLstIdx).getMotPredFlag(eParIdx), eLstIdx);
 }
 
 
-ErrVal CabacWriter::xRefFrame(MbDataAccess& rcMbDataAccess, UInt uiRefFrame, ListIdx eLstIdx, ParIdx8x8 eParIdx)
+ErrVal CabacWriter::xRefFrame (MbDataAccess& rcMbDataAccess,
+                               UInt uiRefFrame,
+                               ListIdx eLstIdx,
+                               ParIdx8x8 eParIdx)
 {
     AOT_DBG((Int)uiRefFrame == -1);
     AOT_DBG((Int)uiRefFrame == -2);
@@ -278,7 +300,7 @@ ErrVal CabacWriter::xMotionPredFlag(Bool bFlag, ListIdx eLstIdx)
 }
 
 
-ErrVal CabacWriter::blockModes(MbDataAccess& rcMbDataAccess)
+ErrVal CabacWriter::blockModes (MbDataAccess& rcMbDataAccess)
 {
     for(B8x8Idx c8x8Idx; c8x8Idx.isLegal(); c8x8Idx++)
     {
@@ -287,7 +309,7 @@ ErrVal CabacWriter::blockModes(MbDataAccess& rcMbDataAccess)
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::xWriteBlockMode(UInt uiBlockMode)
+ErrVal CabacWriter::xWriteBlockMode (UInt uiBlockMode)
 {
     UInt uiSymbol;
 
@@ -358,7 +380,7 @@ ErrVal CabacWriter::xWriteBlockMode(UInt uiBlockMode)
 
 
 
-ErrVal CabacWriter::fieldFlag(MbDataAccess& rcMbDataAccess)
+ErrVal CabacWriter::fieldFlag (MbDataAccess& rcMbDataAccess)
 {
     UInt uiSymbol = rcMbDataAccess.getMbData().getFieldFlag() ? 1 : 0;
 
@@ -371,7 +393,7 @@ ErrVal CabacWriter::fieldFlag(MbDataAccess& rcMbDataAccess)
 
     return Err::m_nOK;
 }
-ErrVal CabacWriter::skipFlag(MbDataAccess& rcMbDataAccess)
+ErrVal CabacWriter::skipFlag (MbDataAccess& rcMbDataAccess)
 {
     ROTRS(m_pcSliceHeader->isIntraSlice(), Err::m_nOK);
 
@@ -385,7 +407,7 @@ ErrVal CabacWriter::skipFlag(MbDataAccess& rcMbDataAccess)
     {
         CabaEncoder::writeSymbol(uiSymbol, m_cMbTypeCCModel.get(1, rcMbDataAccess.getCtxMbSkipped()));
     }
-    rcMbDataAccess.getMbData().setSkipFlag(uiSymbol!=0);
+    rcMbDataAccess.getMbData().setSkipFlag (uiSymbol!=0);
     ROTRS(0 == uiSymbol, Err::m_nOK);
 
     m_uiLastDQpNonZero = 0; // no DeltaQP for Skipped Macroblock
@@ -398,7 +420,7 @@ ErrVal CabacWriter::skipFlag(MbDataAccess& rcMbDataAccess)
 }
 
 
-ErrVal CabacWriter::BLSkipFlag(MbDataAccess& rcMbDataAccess)
+ErrVal CabacWriter::BLSkipFlag (MbDataAccess& rcMbDataAccess)
 {
     UInt uiSymbol = rcMbDataAccess.getMbData().getBLSkipFlag() ? 1 : 0;
     UInt uiCtx = rcMbDataAccess.getCtxBLSkipFlag();
@@ -414,7 +436,7 @@ ErrVal CabacWriter::BLSkipFlag(MbDataAccess& rcMbDataAccess)
 }
 
 
-ErrVal CabacWriter::resPredFlag(MbDataAccess& rcMbDataAccess)
+ErrVal CabacWriter::resPredFlag (MbDataAccess& rcMbDataAccess)
 {
     UInt  uiSymbol = (rcMbDataAccess.getMbData().getResidualPredFlag() ? 1 : 0);
     UInt  uiCtx    = (rcMbDataAccess.getMbData().getBLSkipFlag() ? 0 : 1);
@@ -430,7 +452,7 @@ ErrVal CabacWriter::resPredFlag(MbDataAccess& rcMbDataAccess)
 }
 
 
-ErrVal CabacWriter::mbMode(MbDataAccess& rcMbDataAccess)
+ErrVal CabacWriter::mbMode (MbDataAccess& rcMbDataAccess)
 {
     UInt uiMbMode     = rcMbDataAccess.getConvertMbType();
     ETRACE_DECLARE(UInt uiOrigMbMode = uiMbMode);
@@ -617,7 +639,7 @@ ErrVal CabacWriter::mbMode(MbDataAccess& rcMbDataAccess)
 
 
 
-ErrVal CabacWriter::xWriteMvdComponent(Short sMvdComp, UInt uiAbsSum, UInt uiCtx)
+ErrVal CabacWriter::xWriteMvdComponent (Short sMvdComp, UInt uiAbsSum, UInt uiCtx)
 {
     //--- set context ---
     UInt uiLocalCtx = uiCtx;
@@ -645,49 +667,65 @@ ErrVal CabacWriter::xWriteMvdComponent(Short sMvdComp, UInt uiAbsSum, UInt uiCtx
 }
 
 
-ErrVal CabacWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx)
+ErrVal CabacWriter::mvd (MbDataAccess& rcMbDataAccess,
+                         ListIdx eLstIdx)
 {
     Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv();
     xWriteMvd(rcMbDataAccess, cMv, B4x4Idx(0), eLstIdx);
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx16x8 eParIdx )
+ErrVal CabacWriter::mvd (MbDataAccess& rcMbDataAccess,
+                         ListIdx eLstIdx,
+                         ParIdx16x8 eParIdx)
 {
     Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx);
     xWriteMvd(rcMbDataAccess, cMv, B4x4Idx(eParIdx), eLstIdx);
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x16 eParIdx )
+ErrVal CabacWriter::mvd (MbDataAccess& rcMbDataAccess,
+                         ListIdx eLstIdx,
+                         ParIdx8x16 eParIdx)
 {
     Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx);
     xWriteMvd(rcMbDataAccess, cMv, B4x4Idx(eParIdx), eLstIdx);
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8  eParIdx )
+ErrVal CabacWriter::mvd (MbDataAccess& rcMbDataAccess,
+                         ListIdx eLstIdx,
+                         ParIdx8x8  eParIdx)
 {
     Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx);
     xWriteMvd(rcMbDataAccess, cMv, B4x4Idx(eParIdx), eLstIdx);
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8  eParIdx, SParIdx8x4 eSParIdx)
+ErrVal CabacWriter::mvd (MbDataAccess& rcMbDataAccess,
+                         ListIdx eLstIdx,
+                         ParIdx8x8  eParIdx,
+                         SParIdx8x4 eSParIdx)
 {
     Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx, eSParIdx);
     xWriteMvd(rcMbDataAccess, cMv, B4x4Idx(eParIdx+eSParIdx), eLstIdx);
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8  eParIdx, SParIdx4x8 eSParIdx)
+ErrVal CabacWriter::mvd (MbDataAccess& rcMbDataAccess,
+                         ListIdx eLstIdx,
+                         ParIdx8x8  eParIdx,
+                         SParIdx4x8 eSParIdx)
 {
     Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx, eSParIdx);
     xWriteMvd(rcMbDataAccess, cMv, B4x4Idx(eParIdx+eSParIdx), eLstIdx);
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8  eParIdx, SParIdx4x4 eSParIdx)
+ErrVal CabacWriter::mvd (MbDataAccess& rcMbDataAccess,
+                         ListIdx eLstIdx,
+                         ParIdx8x8  eParIdx,
+                         SParIdx4x4 eSParIdx)
 {
     Mv cMv = rcMbDataAccess.getMbMvdData(eLstIdx).getMv(eParIdx, eSParIdx);
     xWriteMvd(rcMbDataAccess, cMv, B4x4Idx(eParIdx+eSParIdx), eLstIdx);
@@ -695,7 +733,10 @@ ErrVal CabacWriter::mvd(MbDataAccess& rcMbDataAccess, ListIdx eLstIdx, ParIdx8x8
 }
 
 
-ErrVal CabacWriter::xWriteMvd(MbDataAccess& rcMbDataAccess, Mv cMv, LumaIdx cIdx, ListIdx eLstIdx)
+ErrVal CabacWriter::xWriteMvd (MbDataAccess& rcMbDataAccess,
+                               Mv cMv,
+                               LumaIdx cIdx,
+                               ListIdx eLstIdx)
 {
     Mv cMvA;
     Mv cMvB;
@@ -846,7 +887,7 @@ ErrVal CabacWriter::cbp(MbDataAccess& rcMbDataAccess, UInt uiStart, UInt uiStop)
 }
 
 
-ErrVal CabacWriter::residualBlock(MbDataAccess&  rcMbDataAccess,
+ErrVal CabacWriter::residualBlock (MbDataAccess&  rcMbDataAccess,
                                    LumaIdx        cIdx,
                                    ResidualMode   eResidualMode,
                                    UInt           uiStart,
@@ -874,7 +915,7 @@ ErrVal CabacWriter::residualBlock(MbDataAccess&  rcMbDataAccess,
 
 
 
-ErrVal CabacWriter::residualBlock(MbDataAccess&  rcMbDataAccess,
+ErrVal CabacWriter::residualBlock (MbDataAccess&  rcMbDataAccess,
                                    ChromaIdx      cIdx,
                                    ResidualMode   eResidualMode,
                                    UInt           uiStart,
@@ -922,7 +963,12 @@ ErrVal CabacWriter::residualBlock(MbDataAccess&  rcMbDataAccess,
 
 
 
-ErrVal CabacWriter::xWriteBCbp(MbDataAccess& rcMbDataAccess, UInt uiNumSig, ResidualMode eResidualMode, LumaIdx cIdx, UInt uiStart, UInt uiStop)
+ErrVal CabacWriter::xWriteBCbp(MbDataAccess& rcMbDataAccess,
+                               UInt uiNumSig,
+                               ResidualMode eResidualMode,
+                               LumaIdx cIdx,
+                               UInt uiStart,
+                               UInt uiStop)
 {
     UInt uiBitPos = 0;
 
@@ -949,7 +995,12 @@ ErrVal CabacWriter::xWriteBCbp(MbDataAccess& rcMbDataAccess, UInt uiNumSig, Resi
     return Err::m_nOK;
 }
 
-ErrVal CabacWriter::xWriteBCbp(MbDataAccess& rcMbDataAccess, UInt uiNumSig, ResidualMode eResidualMode, ChromaIdx cIdx, UInt uiStart, UInt uiStop)
+ErrVal CabacWriter::xWriteBCbp (MbDataAccess& rcMbDataAccess,
+                                UInt uiNumSig,
+                                ResidualMode eResidualMode,
+                                ChromaIdx cIdx,
+                                UInt uiStart,
+                                UInt uiStop)
 {
     UInt uiBitPos;
 
@@ -977,10 +1028,14 @@ ErrVal CabacWriter::xWriteBCbp(MbDataAccess& rcMbDataAccess, UInt uiNumSig, Resi
     return Err::m_nOK;
 }
 
-UInt CabacWriter::xGetNumberOfSigCoeff(TCoeff* piCoeff, ResidualMode eResidualMode, const UChar* pucScan, UInt uiStart, UInt uiStop)
+UInt CabacWriter::xGetNumberOfSigCoeff(TCoeff* piCoeff,
+                                       ResidualMode eResidualMode,
+                                       const UChar* pucScan,
+                                       UInt uiStart,
+                                       UInt uiStop)
 {
     UInt uiNumSig = 0;
-    if(CHROMA_DC == eResidualMode || LUMA_I16_DC == eResidualMode)
+    if (CHROMA_DC == eResidualMode || LUMA_I16_DC == eResidualMode)
     {
         if(uiStart == 0 && uiStop > 0)
         {
@@ -992,7 +1047,7 @@ UInt CabacWriter::xGetNumberOfSigCoeff(TCoeff* piCoeff, ResidualMode eResidualMo
             return 0;
         }
     }
-    else if(CHROMA_AC == eResidualMode || LUMA_I16_AC == eResidualMode)
+    else if (CHROMA_AC == eResidualMode || LUMA_I16_AC == eResidualMode)
     {
         if(uiStop > 1)
         {
@@ -1004,7 +1059,7 @@ UInt CabacWriter::xGetNumberOfSigCoeff(TCoeff* piCoeff, ResidualMode eResidualMo
         }
     }
 
-    for(UInt ui = uiStart; ui < uiStop; ui++)
+    for (UInt ui = uiStart; ui < uiStop; ui++)
     {
         if(piCoeff[ pucScan[ ui ] ])
         {
@@ -1016,19 +1071,19 @@ UInt CabacWriter::xGetNumberOfSigCoeff(TCoeff* piCoeff, ResidualMode eResidualMo
 }
 
 
-ErrVal CabacWriter::xWriteCoeff(UInt         uiNumSig,
-                                 TCoeff*      piCoeff,
+ErrVal CabacWriter::xWriteCoeff (UInt     uiNumSig,
+                                 TCoeff*  piCoeff,
                                  ResidualMode eResidualMode,
                                  const UChar* pucScan,
-                                 Bool         bFrame,
-                                 UInt         uiStart,
-                                 UInt         uiStop)
+                                 Bool  bFrame,
+                                 UInt  uiStart,
+                                 UInt  uiStop)
 {
     CabacContextModel2DBuffer&  rcMapCCModel  = (bFrame ? m_cMapCCModel : m_cFldMapCCModel);
     CabacContextModel2DBuffer&  rcLastCCModel = (bFrame ? m_cLastCCModel: m_cFldLastCCModel);
     UInt uiCodedSig = 0;
 
-    if(CHROMA_DC == eResidualMode || LUMA_I16_DC == eResidualMode)
+    if (CHROMA_DC == eResidualMode || LUMA_I16_DC == eResidualMode)
     {
         if(uiStart == 0 && uiStop > 0)
         {
@@ -1041,7 +1096,7 @@ ErrVal CabacWriter::xWriteCoeff(UInt         uiNumSig,
     }
     else
     {
-        if(CHROMA_AC == eResidualMode || LUMA_I16_AC == eResidualMode)
+        if (CHROMA_AC == eResidualMode || LUMA_I16_AC == eResidualMode)
         {
             if(uiStop > 1)
             {
@@ -1057,12 +1112,12 @@ ErrVal CabacWriter::xWriteCoeff(UInt         uiNumSig,
 
     UInt ui;
     //----- encode significance map -----
-    for(ui = uiStart; ui < uiStop; ui++) // if last coeff is reached, it has to be significant
+    for (ui = uiStart; ui < uiStop; ui++) // if last coeff is reached, it has to be significant
     {
         UInt uiSig = piCoeff[pucScan[ui]] ? 1 : 0;
         CabaEncoder::writeSymbol(uiSig, rcMapCCModel.get(type2ctx2 [eResidualMode], ui));
 
-        if(uiSig)
+        if (uiSig)
         {
             UInt uiLast = (++uiCodedSig == uiNumSig ? 1 : 0);
 
@@ -1133,7 +1188,7 @@ ErrVal CabacWriter::terminatingBit (UInt uiIsLast)
 }
 
 
-ErrVal CabacWriter::deltaQp(MbDataAccess& rcMbDataAccess)
+ErrVal CabacWriter::deltaQp (MbDataAccess& rcMbDataAccess)
 {
     Int   iDQp  = rcMbDataAccess.getDeltaQp();
     UInt  uiCtx = m_uiLastDQpNonZero;

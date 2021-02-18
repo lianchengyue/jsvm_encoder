@@ -9,8 +9,8 @@ namespace JSVM {
 
 //================================= Frame Spec : begin ===================================
 FrameSpec::FrameSpec()
-: m_bInit     (false )
-, m_pcMmcoBuf (NULL )
+: m_bInit     (false)
+, m_pcMmcoBuf (NULL)
 {
     m_apcRplrBuf[LIST_0] = NULL;
     m_apcRplrBuf[LIST_1] = NULL;
@@ -26,21 +26,23 @@ Void FrameSpec::uninit()
     m_bInit = false;
 }
 
-ErrVal FrameSpec::init(UChar        ucType,
-                       UInt         uiFrameNum,
-                       Bool         bAnchor,
-                       UInt         uiFramesSkipped,
-                       Bool         bUseBaseRep,
-                       UInt         uiLayer,
-                       DecRefPicMarking*  pcMmcoBuf,
-                       RefPicListReOrdering*  pcRplrBufL0,
-                       RefPicListReOrdering*  pcRplrBufL1 )
+//TQQ, 解析排列得到的I、B、P帧顺序
+ErrVal FrameSpec::init (UChar  ucType,
+                        UInt   uiFrameNum,
+                        Bool   bAnchor,
+                        UInt   uiFramesSkipped,
+                        Bool   bUseBaseRep,
+                        UInt   uiLayer,
+                        DecRefPicMarking*  pcMmcoBuf,
+                        RefPicListReOrdering*  pcRplrBufL0,
+                        RefPicListReOrdering*  pcRplrBufL1)
 {
-  //===== set slice_type, nal_unit_type, nal_ref_idc
-  switch(ucType )
-  {
+    //===== set slice_type, nal_unit_type, nal_ref_idc
+    switch(ucType)
+    {
         case 'A': //========== IDR picture ===========
           {
+            printf("A, =============================== IDR picture ================================\n");
             m_eNalUnitType  = NAL_UNIT_CODED_SLICE_IDR;
             m_eNalRefIdc    = NAL_REF_IDC_PRIORITY_HIGHEST;
             m_eSliceType    = I_SLICE;
@@ -92,14 +94,14 @@ ErrVal FrameSpec::init(UChar        ucType,
           {
             m_eNalUnitType  = NAL_UNIT_CODED_SLICE;
             m_eNalRefIdc    = NAL_REF_IDC_PRIORITY_LOW;
-            m_eSliceType    = SliceType   (MSYS_UINT_MAX );
+            m_eSliceType    = SliceType   (MSYS_UINT_MAX);
           }
           break;
         case 's': //========== skipped picture (not coded / not stored) ===========
           {
-            m_eNalUnitType  = NalUnitType (MSYS_UINT_MAX );
-            m_eNalRefIdc    = NalRefIdc   (MSYS_UINT_MAX );
-            m_eSliceType    = SliceType   (MSYS_UINT_MAX );
+            m_eNalUnitType  = NalUnitType (MSYS_UINT_MAX);
+            m_eNalRefIdc    = NalRefIdc   (MSYS_UINT_MAX);
+            m_eSliceType    = SliceType   (MSYS_UINT_MAX);
           }
           break;
         default:
@@ -129,67 +131,67 @@ Bool FrameSpec::isInitialized() const
 
 UInt FrameSpec::getContFrameNumber() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_uiContFrameNumber;
 }
 
 SliceType FrameSpec::getSliceType() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_eSliceType;
 }
 
 NalUnitType FrameSpec::getNalUnitType() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_eNalUnitType;
 }
 
 NalRefIdc FrameSpec::getNalRefIdc() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_eNalRefIdc;
 }
 
 Bool FrameSpec::isSkipped() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_eSliceType == MSYS_UINT_MAX;
 }
 
 Bool FrameSpec::isBaseRep() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_bUseBaseRep;
 }
 
 Bool FrameSpec::isAnchor() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_bAnchor;
 }
 
 UInt FrameSpec::getFramesSkipped() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_uiFramesSkipped;
 }
 
 UInt FrameSpec::getTemporalLayer() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_uiTemporalLayer;
 }
 
 const DecRefPicMarking* FrameSpec::getMmcoBuf() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_pcMmcoBuf;
 }
 
 const RefPicListReOrdering* FrameSpec::getRplrBuf(ListIdx eLstIdx) const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_apcRplrBuf[eLstIdx];
 }
 //================================= Frame Spec : end ===================================
@@ -200,8 +202,8 @@ const RefPicListReOrdering* FrameSpec::getRplrBuf(ListIdx eLstIdx) const
 
 //================================= Frame Descriptor : begin ===================================
 SequenceStructure::FrameDescriptor::FrameDescriptor()
-: m_bInit       (false )
-, m_pcMmcoBuf   (NULL )
+: m_bInit       (false)
+, m_pcMmcoBuf   (NULL)
 {
     m_apcRplrBuf[0] = NULL;
     m_apcRplrBuf[1] = NULL;
@@ -219,15 +221,15 @@ Void SequenceStructure::FrameDescriptor::uninit()
     delete m_apcRplrBuf[LIST_0];
     delete m_apcRplrBuf[LIST_1];
 
-    m_pcMmcoBuf          = NULL;
+    m_pcMmcoBuf = NULL;
     m_apcRplrBuf[LIST_0] = NULL;
     m_apcRplrBuf[LIST_1] = NULL;
-    m_bInit              = false;
+    m_bInit = false;
 }
 
 
-ErrVal SequenceStructure::FrameDescriptor::init(const String& rcString,
-                                          UInt          uiLastAnchorFrameNumIncrement )
+ErrVal SequenceStructure::FrameDescriptor::init(const String&  rcString,
+                                                UInt  uiLastAnchorFrameNumIncrement)
 {
     //===== clear object =====
     uninit();
@@ -240,27 +242,36 @@ ErrVal SequenceStructure::FrameDescriptor::init(const String& rcString,
     FormattedStringParser::separatString(rcString, cFDString, cMmcoString, cRplrStringL0, cRplrStringL1);
 
     //===== parse basic parameters =====
-    RNOKS(FormattedStringParser::extractFrameDescription (cFDString,
-                                                            m_ucType, m_uiFrameNumIncrement, m_bUseBaseRep, m_uiLayer ) );
-    m_bAnchor         = (m_uiFrameNumIncrement > uiLastAnchorFrameNumIncrement || uiLastAnchorFrameNumIncrement == MSYS_UINT_MAX );
-    m_uiFramesSkipped = (m_bAnchor ? m_uiFrameNumIncrement - uiLastAnchorFrameNumIncrement - 1 : 0 );
+    //Example:
+    //B5L2
+    //B:  m_ucType
+    //5:  m_uiFrameNumIncrement
+    //L:
+    //2:  m_uiLayer
+    FormattedStringParser::extractFrameDescription (cFDString,
+                                                    m_ucType,
+                                                    m_uiFrameNumIncrement,
+                                                    m_bUseBaseRep,
+                                                    m_uiLayer);
+    m_bAnchor = (m_uiFrameNumIncrement > uiLastAnchorFrameNumIncrement || uiLastAnchorFrameNumIncrement == MSYS_UINT_MAX);
+    m_uiFramesSkipped = (m_bAnchor ? m_uiFrameNumIncrement - uiLastAnchorFrameNumIncrement - 1 : 0);
 
     //===== parse and set MMCO and RPLR commands =====
     if(!cMmcoString.empty())
     {
-        ROT(NULL == (m_pcMmcoBuf = new DecRefPicMarking(false ) ) );
+        ROT(NULL == (m_pcMmcoBuf = new DecRefPicMarking(false)));
         FormattedStringParser::extractMmco(cMmcoString, *m_pcMmcoBuf);
     }
 
     if(!cRplrStringL0.empty())
     {
-        ROT(NULL == (m_apcRplrBuf[LIST_0] = new RefPicListReOrdering() ) );
+        ROT(NULL == (m_apcRplrBuf[LIST_0] = new RefPicListReOrdering()));
         FormattedStringParser::extractRplr(cRplrStringL0, *m_apcRplrBuf[LIST_0]);
     }
 
     if(!cRplrStringL1.empty())
     {
-        ROT(NULL == (m_apcRplrBuf[LIST_1] = new RefPicListReOrdering ) );
+        ROT(NULL == (m_apcRplrBuf[LIST_1] = new RefPicListReOrdering));
         FormattedStringParser::extractRplr(cRplrStringL1, *m_apcRplrBuf[LIST_1]);
     }
 
@@ -270,11 +281,11 @@ ErrVal SequenceStructure::FrameDescriptor::init(const String& rcString,
 }
 
 
-ErrVal SequenceStructure::FrameDescriptor::reduceFramesSkipped(UInt uiNotCoded )
+ErrVal SequenceStructure::FrameDescriptor::reduceFramesSkipped(UInt uiNotCoded)
 {
-    ROFRS(isAnchor(), Err::m_nOK );
+    ROFRS(isAnchor(), Err::m_nOK);
 
-    ROT(uiNotCoded > m_uiFramesSkipped );
+    ROT(uiNotCoded > m_uiFramesSkipped);
     m_uiFramesSkipped -= uiNotCoded;
     return Err::m_nOK;
 }
@@ -282,116 +293,108 @@ ErrVal SequenceStructure::FrameDescriptor::reduceFramesSkipped(UInt uiNotCoded )
 
 ErrVal SequenceStructure::FrameDescriptor::check() const
 {
-  ROFS(m_bInit );
+    ROFS(m_bInit);
 
-  //limited version, since encoder support is limited
-  ROTS(m_ucType == 's' || m_ucType == 'S' );
+    //limited version, since encoder support is limited
+    ROTS(m_ucType == 's' || m_ucType == 'S');
 
-  if(m_pcMmcoBuf )
-  {
-    for(UInt uiPos = 0; ; uiPos++ )
+    if(m_pcMmcoBuf)
     {
-      MmcoCommand cCommand = m_pcMmcoBuf->get(uiPos );
-      if(cCommand.isEnd() )
-      {
-        break;
-      }
-      UInt uiVal1, uiVal2;
-      ROTS(cCommand.getCommand(uiVal1, uiVal2 ) != MMCO_SHORT_TERM_UNUSED );
-    }
-  }
-  for(UInt uiList = 0; uiList < 2; uiList++ )
-  {
-    if(m_apcRplrBuf[uiList] )
-    {
-      for(UInt uiPos = 0; ; uiPos++ )
-      {
-        RplrCommand cCommand = m_apcRplrBuf[uiList]->get(uiPos );
-        if(cCommand.isEnd() )
+        for(UInt uiPos = 0; ; uiPos++)
         {
-          break;
+            MmcoCommand cCommand = m_pcMmcoBuf->get(uiPos);
+            if(cCommand.isEnd())
+            {
+                break;
+            }
+            UInt uiVal1, uiVal2;
+            ROTS(cCommand.getCommand(uiVal1, uiVal2) != MMCO_SHORT_TERM_UNUSED);
         }
-        UInt uiVal;
-        ROTS(cCommand.getCommand(uiVal ) != RPLR_NEG &&
-              cCommand.getCommand(uiVal ) != RPLR_POS    );
-      }
     }
-  }
+    for(UInt uiList = 0; uiList < 2; uiList++)
+    {
+        if(m_apcRplrBuf[uiList])
+        {
+            for(UInt uiPos = 0; ; uiPos++)
+            {
+                RplrCommand cCommand = m_apcRplrBuf[uiList]->get(uiPos);
+                if(cCommand.isEnd())
+                {
+                    break;
+                }
+                UInt uiVal;
+                ROTS(cCommand.getCommand(uiVal) != RPLR_NEG &&
+                     cCommand.getCommand(uiVal) != RPLR_POS);
+            }
+        }
+    }
 
 
   return Err::m_nOK;
 }
 
-Bool
-SequenceStructure::FrameDescriptor::isIDR() const
+Bool SequenceStructure::FrameDescriptor::isIDR() const
 {
-  AOF_DBG(m_bInit );
-  return (m_ucType == 'A' );
+    AOF_DBG(m_bInit);
+    return (m_ucType == 'A');
 }
 
-Bool
-SequenceStructure::FrameDescriptor::isSkipped() const
+Bool SequenceStructure::FrameDescriptor::isSkipped() const
 {
-  AOF_DBG(m_bInit );
-  return (m_ucType == 's' ) || (m_ucType == 'S' );
+    AOF_DBG(m_bInit);
+    return (m_ucType == 's') || (m_ucType == 'S');
 }
 
-Bool
-SequenceStructure::FrameDescriptor::isCoded() const
+Bool SequenceStructure::FrameDescriptor::isCoded() const
 {
-  AOF_DBG(m_bInit );
-  return ! isSkipped();
+    AOF_DBG(m_bInit);
+    return !isSkipped();
 }
 
-Bool
-SequenceStructure::FrameDescriptor::isReference() const
+Bool SequenceStructure::FrameDescriptor::isReference() const
 {
-  AOF_DBG(m_bInit );
-  return (m_ucType == 'A' || m_ucType == 'I' || m_ucType == 'P' || m_ucType == 'B' || m_ucType == 'S' );
+    AOF_DBG(m_bInit);
+    return (m_ucType == 'A' || m_ucType == 'I' || m_ucType == 'P' || m_ucType == 'B' || m_ucType == 'S');
 }
 
-Bool
-SequenceStructure::FrameDescriptor::isAnchor() const
+Bool SequenceStructure::FrameDescriptor::isAnchor() const
 {
-  AOF_DBG(m_bInit );
-  return m_bAnchor;
+    AOF_DBG(m_bInit);
+    return m_bAnchor;
 }
 
-Bool
-SequenceStructure::FrameDescriptor::isBaseRep() const
+Bool SequenceStructure::FrameDescriptor::isBaseRep() const
 {
-  AOF_DBG(m_bInit );
-  return m_bUseBaseRep;
+    AOF_DBG(m_bInit);
+    return m_bUseBaseRep;
 }
 
-UInt
-SequenceStructure::FrameDescriptor::getIncrement() const
+UInt SequenceStructure::FrameDescriptor::getIncrement() const
 {
-  AOF_DBG(m_bInit );
-  return m_uiFrameNumIncrement;
+    AOF_DBG(m_bInit);
+    return m_uiFrameNumIncrement;
 }
 
-UInt
-SequenceStructure::FrameDescriptor::getFramesSkipped() const
+UInt SequenceStructure::FrameDescriptor::getFramesSkipped() const
 {
-  AOF_DBG(m_bInit );
-  return m_uiFramesSkipped;
+    AOF_DBG(m_bInit);
+    return m_uiFramesSkipped;
 }
 
 
 ErrVal SequenceStructure::FrameDescriptor::setFrameSpec(FrameSpec& rcFrameSpec, UInt uiFrameNumOffset) const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
 
-    rcFrameSpec.init(m_ucType,
-                     m_uiFrameNumIncrement + uiFrameNumOffset,
-                     m_bAnchor,
-                     m_uiFramesSkipped,
-                     m_bUseBaseRep,
-                     m_uiLayer,
-                     m_pcMmcoBuf,
-                     m_apcRplrBuf[LIST_0],
-                     m_apcRplrBuf[LIST_1]);
+    rcFrameSpec.init (m_ucType,
+                      m_uiFrameNumIncrement + uiFrameNumOffset,
+                      m_bAnchor,
+                      m_uiFramesSkipped,
+                      m_bUseBaseRep,
+                      m_uiLayer,
+                      m_pcMmcoBuf,
+                      m_apcRplrBuf[LIST_0],
+                      m_apcRplrBuf[LIST_1]);
 
     return Err::m_nOK;
 }
@@ -424,50 +427,50 @@ Void SequenceStructure::FrameSequencePart::uninit()
 }
 
 
-ErrVal SequenceStructure::FrameSequencePart::init(const String& rcString )
+ErrVal SequenceStructure::FrameSequencePart::init(const String& rcString)
 {
     uninit();
 
     //----- get number of repetitions and number of frames -----
     String cNoRepString;
-    RNOKS(FormattedStringParser::extractRepetitions(rcString, cNoRepString, m_uiNumberOfRepetitions ) );
-    RNOKS(FormattedStringParser::getNumberOfFrames (         cNoRepString, m_uiNumberOfFrames      ) );
-    ROFS (m_uiNumberOfRepetitions );
-    ROFS (m_uiNumberOfFrames      );
+    FormattedStringParser::extractRepetitions (rcString, cNoRepString, m_uiNumberOfRepetitions);
+    FormattedStringParser::getNumberOfFrames (cNoRepString, m_uiNumberOfFrames);
+    ROFS (m_uiNumberOfRepetitions);
+    ROFS (m_uiNumberOfFrames    );
 
     //----- create array -----
-    ROFS((m_pacFrameDescriptor = new FrameDescriptor [ m_uiNumberOfFrames ] ) );
+    ROFS((m_pacFrameDescriptor = new FrameDescriptor [m_uiNumberOfFrames]));
 
     //----- initialize array -----
     UInt uiPos, uiIndex, uiLastAnchorFrameNumIncrement = MSYS_UINT_MAX;
-    for(uiPos = 0, uiIndex = 0; uiIndex < m_uiNumberOfFrames; uiIndex++ )
+    for(uiPos = 0, uiIndex = 0; uiIndex < m_uiNumberOfFrames; uiIndex++)
     {
-      String cFDString;
-      RNOKS(FormattedStringParser::extractNextFrameDescription (cNoRepString, cFDString, uiPos ) );
-      m_pacFrameDescriptor[uiIndex].init                        (cFDString, uiLastAnchorFrameNumIncrement );
+        String cFDString;
+        FormattedStringParser::extractNextFrameDescription (cNoRepString, cFDString, uiPos);
+        m_pacFrameDescriptor[uiIndex].init (cFDString, uiLastAnchorFrameNumIncrement);
 
-      if(m_pacFrameDescriptor[uiIndex].isSkipped() )
-      {
-        for(Int iIdx = (Int)(uiIndex-1); iIdx >= 0; iIdx-- )
+        if(m_pacFrameDescriptor[uiIndex].isSkipped())
         {
-          if(m_pacFrameDescriptor[iIdx].isAnchor() )
-          {
-            if(m_pacFrameDescriptor[iIdx].getIncrement() > m_pacFrameDescriptor[uiIndex].getIncrement() )
+            for(Int iIdx = (Int)(uiIndex-1); iIdx >= 0; iIdx--)
             {
-              m_pacFrameDescriptor[iIdx].reduceFramesSkipped(1 );
+                if(m_pacFrameDescriptor[iIdx].isAnchor())
+                {
+                    if(m_pacFrameDescriptor[iIdx].getIncrement() > m_pacFrameDescriptor[uiIndex].getIncrement())
+                    {
+                        m_pacFrameDescriptor[iIdx].reduceFramesSkipped(1);
+                    }
+                    break;
+                }
             }
-            break;
-          }
+            if((Int)m_pacFrameDescriptor[uiIndex].getIncrement() > (Int)uiLastAnchorFrameNumIncrement)
+            {
+                uiLastAnchorFrameNumIncrement = m_pacFrameDescriptor[uiIndex].getIncrement();
+            }
         }
-        if((Int)m_pacFrameDescriptor[uiIndex].getIncrement() > (Int)uiLastAnchorFrameNumIncrement )
+        else if(m_pacFrameDescriptor[uiIndex].isAnchor())
         {
-          uiLastAnchorFrameNumIncrement = m_pacFrameDescriptor[uiIndex].getIncrement();
+            uiLastAnchorFrameNumIncrement = m_pacFrameDescriptor[uiIndex].getIncrement();
         }
-      }
-      else if(m_pacFrameDescriptor[uiIndex].isAnchor() )
-      {
-        uiLastAnchorFrameNumIncrement = m_pacFrameDescriptor[uiIndex].getIncrement();
-      }
     }
 
     //----- reset -----
@@ -476,21 +479,21 @@ ErrVal SequenceStructure::FrameSequencePart::init(const String& rcString )
 
     //----- get minimum required DPB sizes -----
     UInt*   pauiStored;
-    ROFS((pauiStored = new UInt [ m_uiNumberOfFrames ] ) );
-    ::memset(pauiStored, 0x00, m_uiNumberOfFrames*sizeof(UInt) );
+    ROFS((pauiStored = new UInt [m_uiNumberOfFrames]));
+    ::memset(pauiStored, 0x00, m_uiNumberOfFrames*sizeof(UInt));
     m_uiMinDPBSizeRef = 0;
     m_uiMinDPBSizeNonRef = 0;
     UInt uiNextOutput = 0;
     UInt uiStoredRef = 0;
     UInt uiStoredNonRef = 0;
-    for(uiIndex = 0; uiIndex < m_uiNumberOfFrames; uiIndex++ )
+    for(uiIndex = 0; uiIndex < m_uiNumberOfFrames; uiIndex++)
     {
         UInt  uiCurrPos = m_pacFrameDescriptor[uiIndex].getIncrement();
         Bool  bRefFrame = m_pacFrameDescriptor[uiIndex].isReference ();
 
-        if(uiCurrPos > uiNextOutput )
+        if(uiCurrPos > uiNextOutput)
         {
-            ROT(uiCurrPos >= m_uiNumberOfFrames );
+            ROT(uiCurrPos >= m_uiNumberOfFrames);
             //===== store current frame =====
             if(bRefFrame)
             {
@@ -527,8 +530,8 @@ ErrVal SequenceStructure::FrameSequencePart::init(const String& rcString )
             }
         }
         //----- update minimum required DPB sizes -----
-        m_uiMinDPBSizeRef     = gMax(m_uiMinDPBSizeRef,    uiStoredRef    );
-        m_uiMinDPBSizeNonRef  = gMax(m_uiMinDPBSizeNonRef, uiStoredNonRef );
+        m_uiMinDPBSizeRef     = gMax(m_uiMinDPBSizeRef,    uiStoredRef);
+        m_uiMinDPBSizeNonRef  = gMax(m_uiMinDPBSizeNonRef, uiStoredNonRef);
     }
     delete[] pauiStored;
 
@@ -541,7 +544,7 @@ ErrVal SequenceStructure::FrameSequencePart::init(const String& rcString )
 
 Void SequenceStructure::FrameSequencePart::reset()
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
 
     m_uiCurrentFrame = 0;
     m_uiCurrentRepetition = 0;
@@ -550,25 +553,25 @@ Void SequenceStructure::FrameSequencePart::reset()
 
 ErrVal SequenceStructure::FrameSequencePart::check()
 {
-    ROFS(m_bInit );
-    ROFS(m_uiNumberOfRepetitions );
-    ROFS(m_uiNumberOfFrames );
+    ROFS(m_bInit);
+    ROFS(m_uiNumberOfRepetitions);
+    ROFS(m_uiNumberOfFrames);
 
     Bool*   pabCovered;
     UInt    uiIndex;
-    ROFS((pabCovered = new Bool [m_uiNumberOfFrames]) );
+    ROFS((pabCovered = new Bool [m_uiNumberOfFrames]));
     for(uiIndex = 0; uiIndex < m_uiNumberOfFrames; uiIndex++)
     {
         pabCovered[uiIndex] = false;
     }
-    for(uiIndex = 0; uiIndex < m_uiNumberOfFrames; uiIndex++ )
+    for(uiIndex = 0; uiIndex < m_uiNumberOfFrames; uiIndex++)
     {
-        RNOKS(m_pacFrameDescriptor[uiIndex].check() );
+        m_pacFrameDescriptor[uiIndex].check();
 
         UInt uiInc = m_pacFrameDescriptor[uiIndex].getIncrement();
 
-        ROTS(uiInc >= m_uiNumberOfFrames );
-        ROTS(pabCovered[ uiInc ] );
+        ROTS(uiInc >= m_uiNumberOfFrames);
+        ROTS(pabCovered[uiInc]);
 
         pabCovered[uiInc] = true;
     }
@@ -578,43 +581,43 @@ ErrVal SequenceStructure::FrameSequencePart::check()
 }
 
 
-Bool SequenceStructure::FrameSequencePart::isFirstIDR()  const
+Bool SequenceStructure::FrameSequencePart::isFirstIDR() const
 {
-    AOF_DBG(m_bInit );
-    AOF_DBG(m_uiNumberOfFrames );
+    AOF_DBG(m_bInit);
+    AOF_DBG(m_uiNumberOfFrames);
     return m_pacFrameDescriptor[0].isIDR();
 }
 
-UInt SequenceStructure::FrameSequencePart::getMinDPBSizeRef()  const
+UInt SequenceStructure::FrameSequencePart::getMinDPBSizeRef() const
 {
     AOF_DBG(m_bInit);
     return m_uiMinDPBSizeRef;
 }
 
 
-UInt SequenceStructure::FrameSequencePart::getMinDPBSizeNonRef()  const
+UInt SequenceStructure::FrameSequencePart::getMinDPBSizeNonRef() const
 {
     AOF_DBG(m_bInit);
     return m_uiMinDPBSizeNonRef;
 }
 
 
-Bool SequenceStructure::FrameSequencePart::getNextFrameSpec(FrameSpec& rcFrameSpec,
-                                                        UInt&      uiFrameNumPartOffset )
+Bool SequenceStructure::FrameSequencePart::getNextFrameSpec (FrameSpec& rcFrameSpec,
+                                                             UInt&  uiFrameNumPartOffset)
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
 
     //----- set frame Spec -----
-    ANOK(m_pacFrameDescriptor[ m_uiCurrentFrame ].setFrameSpec(rcFrameSpec, uiFrameNumPartOffset ) );
+    m_pacFrameDescriptor[m_uiCurrentFrame].setFrameSpec(rcFrameSpec, uiFrameNumPartOffset);
 
     //----- update parameters -----
     Bool bPartFinished = false;
-    if(++m_uiCurrentFrame == m_uiNumberOfFrames )
+    if(++m_uiCurrentFrame == m_uiNumberOfFrames)
     {
         m_uiCurrentFrame      = 0;
         uiFrameNumPartOffset += m_uiNumberOfFrames;
 
-        if(++m_uiCurrentRepetition == m_uiNumberOfRepetitions )
+        if(++m_uiCurrentRepetition == m_uiNumberOfRepetitions)
         {
             m_uiCurrentRepetition = 0;
             bPartFinished = true;
@@ -631,8 +634,8 @@ Bool SequenceStructure::FrameSequencePart::getNextFrameSpec(FrameSpec& rcFrameSp
 
 //================================= General Sequence Part : begin ===================================
 SequenceStructure::GeneralSequencePart::GeneralSequencePart()
-: m_bInit               (false )
-, m_papcSequencePart    (0     )
+: m_bInit               (false)
+, m_papcSequencePart    (0)
 {
 }
 
@@ -646,7 +649,7 @@ Void SequenceStructure::GeneralSequencePart::uninit()
 {
     if(m_papcSequencePart)
     {
-        for(UInt uiIndex = 0; uiIndex < m_uiNumberOfParts; uiIndex++ )
+        for(UInt uiIndex = 0; uiIndex < m_uiNumberOfParts; uiIndex++)
         {
             delete m_papcSequencePart[uiIndex];
         }
@@ -658,37 +661,37 @@ Void SequenceStructure::GeneralSequencePart::uninit()
 }
 
 
-ErrVal SequenceStructure::GeneralSequencePart::init(const String& rcString )
+ErrVal SequenceStructure::GeneralSequencePart::init (const String& rcString)
 {
     uninit();
 
     //----- get number of repetitions and number of frames -----
     String cNoRepString;
-    RNOKS(FormattedStringParser::extractRepetitions (rcString, cNoRepString, m_uiNumberOfRepetitions ) );
-    RNOKS(FormattedStringParser::getNumberOfParts   (         cNoRepString, m_uiNumberOfParts       ) );
-    ROFS (m_uiNumberOfRepetitions );
-    ROFS (m_uiNumberOfParts       );
+    FormattedStringParser::extractRepetitions (rcString, cNoRepString, m_uiNumberOfRepetitions);
+    FormattedStringParser::getNumberOfParts (cNoRepString, m_uiNumberOfParts);
+    ROFS (m_uiNumberOfRepetitions);
+    ROFS (m_uiNumberOfParts);
 
     //----- create array -----
-    ROFS((m_papcSequencePart = new SequencePart* [ m_uiNumberOfParts ] ) );
+    ROFS((m_papcSequencePart = new SequencePart* [m_uiNumberOfParts]));
 
     //----- initialize array -----
     UInt uiPos, uiIndex;
-    for(uiPos = 0, uiIndex = 0; uiIndex < m_uiNumberOfParts; uiIndex++ )
+    for(uiPos = 0, uiIndex = 0; uiIndex < m_uiNumberOfParts; uiIndex++)
     {
         String cPartString;
-        RNOKS(FormattedStringParser::extractPart(cNoRepString, cPartString, uiPos ) );
+        FormattedStringParser::extractPart(cNoRepString, cPartString, uiPos);
 
-        if(FormattedStringParser::isFrameSequencePart(cPartString ) )
+        if(FormattedStringParser::isFrameSequencePart (cPartString))
         {
-            ROFS((m_papcSequencePart[uiIndex] = new FrameSequencePart  () ) );
+            ROFS((m_papcSequencePart[uiIndex] = new FrameSequencePart  ()));
         }
         else
         {
-            ROFS((m_papcSequencePart[uiIndex] = new GeneralSequencePart() ) );
+            ROFS((m_papcSequencePart[uiIndex] = new GeneralSequencePart()));
         }
 
-        m_papcSequencePart[uiIndex]->init(cPartString );
+        m_papcSequencePart[uiIndex]->init(cPartString);
     }
 
     //----- reset -----
@@ -698,10 +701,10 @@ ErrVal SequenceStructure::GeneralSequencePart::init(const String& rcString )
     //----- check required DPB buffer sizes -----
     m_uiMinDPBSizeRef     = 0;
     m_uiMinDPBSizeNonRef  = 0;
-    for(uiIndex = 0; uiIndex < m_uiNumberOfParts; uiIndex++ )
+    for(uiIndex = 0; uiIndex < m_uiNumberOfParts; uiIndex++)
     {
-        m_uiMinDPBSizeRef    = gMax(m_uiMinDPBSizeRef,    m_papcSequencePart[uiIndex]->getMinDPBSizeRef   () );
-        m_uiMinDPBSizeNonRef = gMax(m_uiMinDPBSizeNonRef, m_papcSequencePart[uiIndex]->getMinDPBSizeNonRef() );
+        m_uiMinDPBSizeRef    = gMax(m_uiMinDPBSizeRef,    m_papcSequencePart[uiIndex]->getMinDPBSizeRef());
+        m_uiMinDPBSizeNonRef = gMax(m_uiMinDPBSizeNonRef, m_papcSequencePart[uiIndex]->getMinDPBSizeNonRef());
     }
 
     //----- set inititalization flag -----
@@ -713,7 +716,7 @@ ErrVal SequenceStructure::GeneralSequencePart::init(const String& rcString )
 
 Void SequenceStructure::GeneralSequencePart::reset()
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
 
     for(UInt uiIndex = 0; uiIndex < m_uiNumberOfParts; uiIndex++)
     {
@@ -727,60 +730,60 @@ Void SequenceStructure::GeneralSequencePart::reset()
 
 ErrVal SequenceStructure::GeneralSequencePart::check()
 {
-    ROFS(m_bInit );
-    ROFS(m_uiNumberOfRepetitions );
-    ROFS(m_uiNumberOfParts );
+    ROFS(m_bInit);
+    ROFS(m_uiNumberOfRepetitions);
+    ROFS(m_uiNumberOfParts);
 
-    for(UInt uiIndex = 0; uiIndex < m_uiNumberOfParts; uiIndex++)
+    for (UInt uiIndex = 0; uiIndex < m_uiNumberOfParts; uiIndex++)
     {
-        RNOKS(m_papcSequencePart[uiIndex]->check() );
+        m_papcSequencePart[uiIndex]->check();
     }
 
     return Err::m_nOK;
 }
 
 
-Bool SequenceStructure::GeneralSequencePart::isFirstIDR()  const
+Bool SequenceStructure::GeneralSequencePart::isFirstIDR() const
 {
-    AOF_DBG(m_bInit );
-    AOF_DBG(m_uiNumberOfParts );
+    AOF_DBG(m_bInit);
+    AOF_DBG(m_uiNumberOfParts);
     return m_papcSequencePart[0]->isFirstIDR();
 }
 
-UInt SequenceStructure::GeneralSequencePart::getMinDPBSizeRef()  const
+UInt SequenceStructure::GeneralSequencePart::getMinDPBSizeRef() const
 {
     AOF_DBG(m_bInit);
     return m_uiMinDPBSizeRef;
 }
 
 
-UInt SequenceStructure::GeneralSequencePart::getMinDPBSizeNonRef()  const
+UInt SequenceStructure::GeneralSequencePart::getMinDPBSizeNonRef() const
 {
     AOF_DBG(m_bInit);
     return m_uiMinDPBSizeNonRef;
 }
 
 
-Bool SequenceStructure::GeneralSequencePart::getNextFrameSpec(FrameSpec& rcFrameSpec,
-                                                          UInt&      uiFrameNumPartOffset)
+Bool SequenceStructure::GeneralSequencePart::getNextFrameSpec (FrameSpec& rcFrameSpec,
+                                                               UInt&  uiFrameNumPartOffset)
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
 
     //----- set frame Spec -----
     Bool  bPartFinished     = false;
-    Bool  bCurrPartFinished = m_papcSequencePart[ m_uiCurrentPart ]->getNextFrameSpec(rcFrameSpec, uiFrameNumPartOffset );
+    Bool  bCurrPartFinished = m_papcSequencePart[m_uiCurrentPart]->getNextFrameSpec(rcFrameSpec, uiFrameNumPartOffset);
 
     //----- update parameters -----
-    if(bCurrPartFinished )
+    if(bCurrPartFinished)
     {
-        if(++m_uiCurrentPart == m_uiNumberOfParts )
+        if(++m_uiCurrentPart == m_uiNumberOfParts)
         {
             m_uiCurrentPart = 0;
 
             if(++m_uiCurrentRepetition == m_uiNumberOfRepetitions)
             {
                 m_uiCurrentRepetition = 0;
-                bPartFinished         = true;
+                bPartFinished = true;
             }
         }
     }
@@ -795,8 +798,8 @@ Bool SequenceStructure::GeneralSequencePart::getNextFrameSpec(FrameSpec& rcFrame
 
 //================================= Sequence Structure : begin ===================================
 SequenceStructure::SequenceStructure()
-: m_bInit             (false )
-, m_pcSequencePart    (0     )
+: m_bInit          (false)
+, m_pcSequencePart (0)
 {
 }
 
@@ -806,20 +809,20 @@ SequenceStructure::~SequenceStructure()
 }
 
 
-ErrVal SequenceStructure::create(SequenceStructure*& rpcSequenceStructure )
+ErrVal SequenceStructure::create (SequenceStructure*& rpcSequenceStructure)
 {
     rpcSequenceStructure = new SequenceStructure;
-    ROT(rpcSequenceStructure == NULL );
+    ROT(rpcSequenceStructure == NULL);
     return Err::m_nOK;
 }
 
-ErrVal SequenceStructure::destroy()
+ErrVal SequenceStructure::destroy ()
 {
     delete this;
     return Err::m_nOK;
 }
 
-ErrVal SequenceStructure::uninit()
+ErrVal SequenceStructure::uninit ()
 {
     m_cFrameSpec.uninit();
 
@@ -830,21 +833,21 @@ ErrVal SequenceStructure::uninit()
     return Err::m_nOK;
 }
 
-ErrVal SequenceStructure::init(const String& rcString,
-                         UInt          uiNumberOfFrames )
+ErrVal SequenceStructure::init (const String& rcString,
+                                UInt  uiNumberOfFrames)
 {
     uninit();
 
-    if(FormattedStringParser::isFrameSequencePart(rcString ) )
+    if(FormattedStringParser::isFrameSequencePart(rcString))
     {
-        ROFS((m_pcSequencePart = new FrameSequencePart   () ) );
-        RNOKS( m_pcSequencePart->init(rcString ) );
+        ROFS ((m_pcSequencePart = new FrameSequencePart()));
+        m_pcSequencePart->init(rcString);
     }
     else
     {
-        ROFS((m_pcSequencePart = new GeneralSequencePart () ) );
+        ROFS ((m_pcSequencePart = new GeneralSequencePart()));
         String cString = "*n{" + rcString + "}";   // to be on the safe side
-        RNOKS( m_pcSequencePart->init(cString ) );
+        m_pcSequencePart->init(cString);
     }
 
     //----- init parameters -----
@@ -860,7 +863,7 @@ ErrVal SequenceStructure::init(const String& rcString,
     m_uiMinDelay                = 0;
     m_uiMaxLayer                = 0;
 
-    if(uiNumberOfFrames != MSYS_UINT_MAX )
+    if(uiNumberOfFrames != MSYS_UINT_MAX)
     {
         xInitParameters();
     }
@@ -870,8 +873,8 @@ ErrVal SequenceStructure::init(const String& rcString,
 
 Void SequenceStructure::reset()
 {
-    m_pcSequencePart->reset();
-    m_cFrameSpec    . uninit();
+    m_pcSequencePart->reset ();
+    m_cFrameSpec.uninit ();
 
     m_uiNumberOfFramesProcessed = 0;
     m_uiFrameNumPartOffset      = 0;
@@ -880,190 +883,190 @@ Void SequenceStructure::reset()
 
 ErrVal SequenceStructure::check()
 {
-    ROFS  (m_bInit );
-    RNOKS (m_pcSequencePart->check() );
+    ROFS (m_bInit);
+    m_pcSequencePart->check();
     return Err::m_nOK;
 }
 
 
 const FrameSpec& SequenceStructure::getFrameSpec()
 {
-    AOF_DBG(m_bInit );
-    AOF_DBG(m_cFrameSpec.isInitialized() );
+    AOF_DBG (m_bInit);
+    AOF_DBG (m_cFrameSpec.isInitialized());
     return m_cFrameSpec;
 }
 
 
 const FrameSpec& SequenceStructure::getNextFrameSpec()
 {
-    AOF_DBG(m_bInit );
-    ANOK   (xGetNextValidFrameSpec(m_cFrameSpec, m_uiNumberOfTotalFrames) );
+    AOF_DBG (m_bInit);
+    xGetNextValidFrameSpec(m_cFrameSpec, m_uiNumberOfTotalFrames);
     return m_cFrameSpec;
 }
 
 
-Bool SequenceStructure::checkString(const String&  rcString )
+Bool SequenceStructure::checkString(const String&  rcString)
 {
     SequenceStructure cSStruct;
 
-    ROFRS(cSStruct.init        (rcString, MSYS_UINT_MAX ) == Err::m_nOK, true );
-    ROFRS(cSStruct.check       ()                          == Err::m_nOK, true );
-    ROFRS(cSStruct.xIsFirstIDR (),                                        true );
+    ROFRS (cSStruct.init (rcString, MSYS_UINT_MAX) == Err::m_nOK, true);
+    ROFRS (cSStruct.check ()                       == Err::m_nOK, true);
+    ROFRS (cSStruct.xIsFirstIDR (),                               true);
     return false;
 }
 
 
-ErrVal SequenceStructure::debugOutput(const String&  rcString,
-                                UInt           uiNumberOfFrames,
-                                FILE*          pcFile )
+ErrVal SequenceStructure::debugOutput (const String&  rcString,
+                                       UInt   uiNumberOfFrames,
+                                       FILE*  pcFile)
 {
     SequenceStructure cSStruct;
 
-    RNOKS(cSStruct.init  (rcString, uiNumberOfFrames )  );
-    RNOKS(cSStruct.check () );
+    cSStruct.init (rcString, uiNumberOfFrames);
+    cSStruct.check ();
 
-    for(UInt uiIndex = 0; uiIndex < uiNumberOfFrames; uiIndex++ )
+    for(UInt uiIndex = 0; uiIndex < uiNumberOfFrames; uiIndex++)
     {
-      const FrameSpec&  cFSpec   = cSStruct.getNextFrameSpec();
-      String            cTypeStr;
-      String            cStoreStr;
-      String            cKeyStr;
-      String            cMmcoString;
-      String            cRplrL0String;
-      String            cRplrL1String;
+        const FrameSpec&  cFSpec   = cSStruct.getNextFrameSpec();
+        String            cTypeStr;
+        String            cStoreStr;
+        String            cKeyStr;
+        String            cMmcoString;
+        String            cRplrL0String;
+        String            cRplrL1String;
 
-      if(cFSpec.getNalUnitType() == NAL_UNIT_CODED_SLICE_IDR )
-      {
-        cTypeStr = " IDR ";
-      }
-      else if(cFSpec.getSliceType() == I_SLICE )
-      {
-        cTypeStr = "   I ";
-      }
-      else if(cFSpec.getSliceType() == P_SLICE )
-      {
-        cTypeStr = "   P ";
-      }
-      else if(cFSpec.getSliceType() == B_SLICE )
-      {
-        cTypeStr = "   B ";
-      }
-      else
-      {
-       AF();
-      }
+        if(cFSpec.getNalUnitType() == NAL_UNIT_CODED_SLICE_IDR)
+        {
+            cTypeStr = " IDR ";
+        }
+        else if(cFSpec.getSliceType() == I_SLICE)
+        {
+            cTypeStr = "   I ";
+        }
+        else if(cFSpec.getSliceType() == P_SLICE)
+        {
+            cTypeStr = "   P ";
+        }
+        else if(cFSpec.getSliceType() == B_SLICE)
+        {
+            cTypeStr = "   B ";
+        }
+        else
+        {
+         AF();
+        }
 
-      if(cFSpec.getNalRefIdc() == NAL_REF_IDC_PRIORITY_LOWEST )
-      {
-        cStoreStr = "        ";
-      }
-      else
-      {
-        cStoreStr = " stored ";
-      }
+        if(cFSpec.getNalRefIdc() == NAL_REF_IDC_PRIORITY_LOWEST)
+        {
+            cStoreStr = "        ";
+        }
+        else
+        {
+            cStoreStr = " stored ";
+        }
 
-      if(cFSpec.isBaseRep() )
-      {
-        cKeyStr   = " base ";
-      }
-      else
-      {
-        cKeyStr   = "     ";
-      }
+        if(cFSpec.isBaseRep())
+        {
+            cKeyStr   = " base ";
+        }
+        else
+        {
+            cKeyStr   = "     ";
+        }
 
-      if(cFSpec.getMmcoBuf() )
-      {
-        cMmcoString = " MMCO ";
-      }
-      else
-      {
-        cMmcoString = "      ";
-      }
+        if(cFSpec.getMmcoBuf())
+        {
+            cMmcoString = " MMCO ";
+        }
+        else
+        {
+            cMmcoString = "      ";
+        }
 
-      if(cFSpec.getRplrBuf(LIST_0 ) )
-      {
-        cRplrL0String = " RPLR-L0 ";
-      }
-      else
-      {
-        cRplrL0String = "         ";
-      }
+        if(cFSpec.getRplrBuf(LIST_0))
+        {
+            cRplrL0String = " RPLR-L0 ";
+        }
+        else
+        {
+            cRplrL0String = "         ";
+        }
 
-      if(cFSpec.getRplrBuf(LIST_1 ) )
-      {
-        cRplrL1String = " RPLR-L1 ";
-      }
-      else
-      {
-        cRplrL1String = "         ";
-      }
+        if(cFSpec.getRplrBuf(LIST_1))
+        {
+            cRplrL1String = " RPLR-L1 ";
+        }
+        else
+        {
+            cRplrL1String = "         ";
+        }
 
-      fprintf(pcFile, "%5d%sL%d%s%s%s%s%s\n",
-              cFSpec.getContFrameNumber(),
-              cTypeStr.c_str(),
-              cFSpec.getTemporalLayer(),
-              cStoreStr.c_str(),
-              cKeyStr.c_str(),
-              cMmcoString.c_str(),
-              cRplrL0String.c_str(),
-              cRplrL1String.c_str() );
+        fprintf (pcFile, "%5d%sL%d%s%s%s%s%s\n",
+                 cFSpec.getContFrameNumber(),
+                 cTypeStr.c_str(),
+                 cFSpec.getTemporalLayer(),
+                 cStoreStr.c_str(),
+                 cKeyStr.c_str(),
+                 cMmcoString.c_str(),
+                 cRplrL0String.c_str(),
+                 cRplrL1String.c_str());
     }
 
     return Err::m_nOK;
 }
 
 
-UInt SequenceStructure::getNumberOfTotalFrames()  const
+UInt SequenceStructure::getNumberOfTotalFrames() const
 {
     AOF_DBG(m_bInit);
     return m_uiNumberOfTotalFrames;
 }
 
-UInt SequenceStructure::getNumberOfIDRFrames()  const
+UInt SequenceStructure::getNumberOfIDRFrames() const
 {
     AOF_DBG(m_bInit);
     return m_uiNumIDR;
 }
 
-UInt SequenceStructure::getNumberOfIntraFrames()  const
+UInt SequenceStructure::getNumberOfIntraFrames() const
 {
     AOF_DBG(m_bInit);
     return m_uiNumIntra;
 }
 
-UInt SequenceStructure::getNumberOfInterFrames()  const
+UInt SequenceStructure::getNumberOfInterFrames() const
 {
     AOF_DBG(m_bInit);
     return m_uiNumCoded - m_uiNumIntra;
 }
 
-UInt SequenceStructure::getNumberOfRefFrames()  const
+UInt SequenceStructure::getNumberOfRefFrames() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_uiNumRef;
 }
 
-UInt SequenceStructure::getNumberOfCodedFrames()  const
+UInt SequenceStructure::getNumberOfCodedFrames() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_uiNumCoded;
 }
 
-UInt SequenceStructure::getMaxAbsFrameDiffRef()  const
+UInt SequenceStructure::getMaxAbsFrameDiffRef() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_uiMaxAbsFrameDiffRef;
 }
 
-UInt SequenceStructure::getMinDelay()  const
+UInt SequenceStructure::getMinDelay() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_uiMinDelay;
 }
 
-UInt SequenceStructure::getNumTemporalLayers()  const
+UInt SequenceStructure::getNumTemporalLayers() const
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_uiMaxLayer + 1;
 }
 
@@ -1071,14 +1074,14 @@ UInt SequenceStructure::getNumTemporalLayers()  const
 
 Bool SequenceStructure::xIsFirstIDR()
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
     return m_pcSequencePart->isFirstIDR();
 }
 
 
 Void SequenceStructure::xInitParameters()
 {
-    AOF_DBG(m_bInit );
+    AOF_DBG(m_bInit);
 
     m_uiNumIDR                  = 0;
     m_uiNumIntra                = 0;
@@ -1090,24 +1093,24 @@ Void SequenceStructure::xInitParameters()
     Int       iLastFrameNumRef  = 0;
     FrameSpec cFSpec;
 
-    for(UInt uiIndex = 0; uiIndex < m_uiNumberOfTotalFrames; uiIndex++ )
+    for(UInt uiIndex = 0; uiIndex < m_uiNumberOfTotalFrames; uiIndex++)
     {
-        ANOK(xGetNextValidFrameSpec(cFSpec, m_uiNumberOfTotalFrames ) );
+        xGetNextValidFrameSpec(cFSpec, m_uiNumberOfTotalFrames);
 
         //----- add up frame counts -----
-        if(! cFSpec.isSkipped() )
+        if(! cFSpec.isSkipped())
         {
             m_uiNumCoded++;
         }
-        if(cFSpec.getNalUnitType() == NAL_UNIT_CODED_SLICE_IDR )
+        if(cFSpec.getNalUnitType() == NAL_UNIT_CODED_SLICE_IDR)
         {
             m_uiNumIDR++;
         }
-        if(cFSpec.getSliceType() == I_SLICE )
+        if(cFSpec.getSliceType() == I_SLICE)
         {
             m_uiNumIntra++;
         }
-        if(cFSpec.getNalRefIdc() )
+        if(cFSpec.getNalRefIdc())
         {
             m_uiNumRef++;
         }
@@ -1125,14 +1128,14 @@ Void SequenceStructure::xInitParameters()
         }
 
         //----- check POC differences -----
-        if(uiIndex == 0 )
+        if(uiIndex == 0)
         {
-            AOT_DBG(cFSpec.getNalUnitType() != NAL_UNIT_CODED_SLICE_IDR );
+            AOT_DBG(cFSpec.getNalUnitType() != NAL_UNIT_CODED_SLICE_IDR);
             iLastFrameNumRef = cFSpec.getContFrameNumber();
         }
         else
         {
-            if(! cFSpec.isSkipped() )
+            if(! cFSpec.isSkipped())
             {
                 Int iFrameNumber = cFSpec.getContFrameNumber();
                 UInt uiAbsFrameDiffRef = abs(iFrameNumber - iLastFrameNumRef);
@@ -1152,18 +1155,19 @@ Void SequenceStructure::xInitParameters()
 }
 
 
-ErrVal SequenceStructure::xGetNextValidFrameSpec(FrameSpec& rcFrameSpec,
-                                           UInt       uiTotalFrames )
+//Step ?:获取下一帧，是I，B，P
+ErrVal SequenceStructure::xGetNextValidFrameSpec (FrameSpec& rcFrameSpec,
+                                                  UInt  uiTotalFrames)
 {
     rcFrameSpec.uninit();
 
-    ROF(m_uiNumberOfFramesProcessed < uiTotalFrames );
+    ROF(m_uiNumberOfFramesProcessed < uiTotalFrames);
 
-    while(! rcFrameSpec.isInitialized() )
+    while(!rcFrameSpec.isInitialized())
     {
-        m_pcSequencePart->getNextFrameSpec(rcFrameSpec, m_uiFrameNumPartOffset );
+        m_pcSequencePart->getNextFrameSpec (rcFrameSpec, m_uiFrameNumPartOffset);
 
-        if(rcFrameSpec.getContFrameNumber() >= uiTotalFrames )
+        if(rcFrameSpec.getContFrameNumber() >= uiTotalFrames)
         {
             rcFrameSpec.uninit();
         }
@@ -1184,22 +1188,22 @@ const String FormattedStringParser::sm_cSetOfDigits     ("0123456789");
 const String FormattedStringParser::sm_cSetOfPartStart  ("AIPBSipbs*");
 
 
-ErrVal FormattedStringParser::separatString(const String& rcString,
-                                            String&       rcFDString,
-                                            String&       rcMmcoString,
-                                            String&       rcRplrStringL0,
-                                            String&       rcRplrStringL1 )
+ErrVal FormattedStringParser::separatString (const String& rcString,
+                                             String&  rcFDString,
+                                             String&  rcMmcoString,
+                                             String&  rcRplrStringL0,
+                                             String&  rcRplrStringL1)
 {
-    UInt uiMPos   = (UInt)rcString.find_first_of("M" );
-    UInt uiR1Pos  = (UInt)rcString.find_first_of("R" );
-    UInt uiR2Pos  = (UInt)rcString.find_last_of ("R" );
+    UInt uiMPos   = (UInt)rcString.find_first_of("M");
+    UInt uiR1Pos  = (UInt)rcString.find_first_of("R");
+    UInt uiR2Pos  = (UInt)rcString.find_last_of ("R");
     UInt uiSize   = (UInt)rcString.size();
 
     if(UInt(String::npos) == uiMPos) // MMCO commands are not present
     {
         rcMmcoString = "";
 
-        if(UInt(String::npos) == uiR1Pos )
+        if(UInt(String::npos) == uiR1Pos)
         {
             rcFDString = rcString;
             rcRplrStringL0 = "";
@@ -1209,7 +1213,7 @@ ErrVal FormattedStringParser::separatString(const String& rcString,
         {
             rcFDString = rcString.substr(0, uiR1Pos);
 
-            if(uiR1Pos == uiR2Pos )
+            if(uiR1Pos == uiR2Pos)
             {
                 rcRplrStringL0 = rcString.substr(uiR1Pos, uiSize - uiR1Pos);
                 rcRplrStringL1 = "";
@@ -1225,8 +1229,8 @@ ErrVal FormattedStringParser::separatString(const String& rcString,
     {
         if(UInt(String::npos) == uiR1Pos)
         {
-            rcFDString     = rcString.substr(0,       uiMPos );
-            rcMmcoString   = rcString.substr(uiMPos,  uiSize - uiMPos );
+            rcFDString     = rcString.substr(0,       uiMPos);
+            rcMmcoString   = rcString.substr(uiMPos,  uiSize - uiMPos);
             rcRplrStringL0 = "";
             rcRplrStringL1 = "";
         }
@@ -1278,11 +1282,11 @@ ErrVal FormattedStringParser::separatString(const String& rcString,
         }
     }
 
-    if(rcRplrStringL0.size() == 1 )
+    if(rcRplrStringL0.size() == 1)
     {
       rcRplrStringL0 = "";
     }
-    if(rcRplrStringL1.size() == 1 )
+    if(rcRplrStringL1.size() == 1)
     {
       rcRplrStringL1 = "";
     }
@@ -1293,21 +1297,21 @@ ErrVal FormattedStringParser::separatString(const String& rcString,
 
 
 ErrVal FormattedStringParser::extractFrameDescription(const String&  rcString,
-                                                      UChar&         rucType,
-                                                      UInt&          ruiIncrement,
-                                                      Bool&          rbUseBaseRep,
-                                                      UInt&          ruiLayer)
+                                                      UChar&  rucType,
+                                                      UInt&   ruiIncrement,
+                                                      Bool&   rbUseBaseRep,
+                                                      UInt&   ruiLayer)
 {
-    UInt    uiKeyPos   = (UInt)rcString.find_first_of("K" );
-    UInt    uiLayerPos = (UInt)rcString.find_first_of("L" );
+    UInt    uiKeyPos   = (UInt)rcString.find_first_of("K");
+    UInt    uiLayerPos = (UInt)rcString.find_first_of("L");
     String  cKeyString;
     String  cLayerString;
     String  cFrameString;
 
     //===== separate strings =====
-    if(uiLayerPos == UInt(String::npos) )
+    if(uiLayerPos == UInt(String::npos))
     {
-        if(uiKeyPos == UInt(String::npos) )
+        if(uiKeyPos == UInt(String::npos))
         {
             cFrameString  = rcString;
             cKeyString    = "";
@@ -1315,53 +1319,53 @@ ErrVal FormattedStringParser::extractFrameDescription(const String&  rcString,
         }
         else
         {
-            cFrameString  = rcString.substr(0,           uiKeyPos );
-            cKeyString    = rcString.substr(uiKeyPos,    rcString.size() - uiKeyPos );
+            cFrameString  = rcString.substr(0, uiKeyPos);
+            cKeyString    = rcString.substr(uiKeyPos, rcString.size() - uiKeyPos);
             cLayerString  = "";
         }
     }
-    else if(uiKeyPos == UInt(String::npos) )
+    else if(uiKeyPos == UInt(String::npos))
     {
-        cFrameString    = rcString.substr(0,           uiLayerPos );
-        cLayerString    = rcString.substr(uiLayerPos,  rcString.size() - uiLayerPos );
+        cFrameString    = rcString.substr(0, uiLayerPos);
+        cLayerString    = rcString.substr(uiLayerPos, rcString.size() - uiLayerPos);
         cKeyString      = "";
     }
-    else if(uiKeyPos < uiLayerPos )
+    else if(uiKeyPos < uiLayerPos)
     {
-        cFrameString    = rcString.substr(0,           uiKeyPos );
-        cKeyString      = rcString.substr(uiKeyPos,    uiLayerPos      - uiKeyPos );
-        cLayerString    = rcString.substr(uiLayerPos,  rcString.size() - uiLayerPos );
+        cFrameString    = rcString.substr(0, uiKeyPos);
+        cKeyString      = rcString.substr(uiKeyPos, uiLayerPos - uiKeyPos);
+        cLayerString    = rcString.substr(uiLayerPos, rcString.size() - uiLayerPos);
     }
     else
     {
-        cFrameString    = rcString.substr(0,           uiLayerPos );
-        cLayerString    = rcString.substr(uiLayerPos,  uiKeyPos        - uiLayerPos );
-        cKeyString      = rcString.substr(uiKeyPos,    rcString.size() - uiKeyPos );
+        cFrameString    = rcString.substr(0, uiLayerPos);
+        cLayerString    = rcString.substr(uiLayerPos, uiKeyPos - uiLayerPos);
+        cKeyString      = rcString.substr(uiKeyPos, rcString.size() - uiKeyPos);
     }
 
     //===== check frame string =====
-    ROFS  (cFrameString.find_first_of   (sm_cSetOfTypes   ) == 0 );   // first character must be a type
-    ROFS  (cFrameString.find_first_of   (sm_cSetOfDigits  ) == 1 );   // second character must be a digit
-    ROFS  (cFrameString.find_last_not_of(sm_cSetOfDigits  ) == 0 );   // all other characters must be digits
+    ROFS (cFrameString.find_first_of (sm_cSetOfTypes ) == 0);   // first character must be a type
+    ROFS (cFrameString.find_first_of (sm_cSetOfDigits) == 1);   // second character must be a digit
+    ROFS (cFrameString.find_last_not_of (sm_cSetOfDigits) == 0);   // all other characters must be digits
 
     //===== check layer string =====
     if(!cLayerString.empty())
     {
-        ROFS(cLayerString.find_first_of   (sm_cSetOfDigits  ) == 1 );   // second character must be a digit
-        ROFS(cLayerString.find_last_not_of(sm_cSetOfDigits  ) == 0 );   // all other characters must be digits
+        ROFS(cLayerString.find_first_of (sm_cSetOfDigits) == 1);   // second character must be a digit
+        ROFS(cLayerString.find_last_not_of (sm_cSetOfDigits) == 0);   // all other characters must be digits
     }
 
     //===== check key string =====
     if(!cKeyString.empty())
     {
-        ROFS(cKeyString.size() == 1 ); // single character string
+        ROFS(cKeyString.size() == 1); // single character string
     }
 
     //===== assign parameters =====
     rucType       = cFrameString[0];
-    ruiIncrement  = atoi(cFrameString.c_str() + 1 );
-    rbUseBaseRep  = (! cKeyString.empty() );
-    ruiLayer      = (cLayerString.empty() ? 0 : atoi(cLayerString.c_str() + 1 ) );
+    ruiIncrement  = atoi(cFrameString.c_str() + 1);
+    rbUseBaseRep  = (!cKeyString.empty());
+    ruiLayer      = (cLayerString.empty() ? 0 : atoi(cLayerString.c_str() + 1));
 
     return Err::m_nOK;
 }
@@ -1370,33 +1374,33 @@ ErrVal FormattedStringParser::extractFrameDescription(const String&  rcString,
 ErrVal FormattedStringParser::extractRplr(const String& rcString,
                                           RefPicListReOrdering& rcRplrBuf)
 {
-  //--- check if string is correct ---
-  ROFS(rcString.find_first_of("R" ) == 0 );
-
-  UInt uiSize = (UInt)rcString.size();
-  UInt uiNext = 0;
-
-  for(UInt nBuf = 0, nPos = 1; nPos < uiSize; nPos = uiNext, nBuf++)
-  {
-      uiNext = gMin((UInt)rcString.find_first_of("L+-", nPos+1), uiSize);
-      String cString = rcString.substr(nPos,  uiNext-nPos);
-
-      extractSingleRplrCommand(cString, rcRplrBuf.get(nBuf));
-  }
-
-  return Err::m_nOK;
-}
-
-
-ErrVal FormattedStringParser::extractMmco(const String& rcString, DecRefPicMarking& rcMmcoBuf)
-{
     //--- check if string is correct ---
-    ROFS(rcString.find_first_of   ("M" ) == 0 );
+    ROFS(rcString.find_first_of("R") == 0);
 
     UInt uiSize = (UInt)rcString.size();
     UInt uiNext = 0;
 
-    for(UInt nBuf = 0, nPos = 1; nPos < uiSize; nPos = uiNext, nBuf++ )
+    for(UInt nBuf = 0, nPos = 1; nPos < uiSize; nPos = uiNext, nBuf++)
+    {
+        uiNext = gMin((UInt)rcString.find_first_of("L+-", nPos+1), uiSize);
+        String cString = rcString.substr(nPos,  uiNext-nPos);
+
+        extractSingleRplrCommand(cString, rcRplrBuf.get(nBuf));
+    }
+
+    return Err::m_nOK;
+}
+
+
+ErrVal FormattedStringParser::extractMmco (const String& rcString, DecRefPicMarking& rcMmcoBuf)
+{
+    //--- check if string is correct ---
+    ROFS(rcString.find_first_of   ("M") == 0);
+
+    UInt uiSize = (UInt)rcString.size();
+    UInt uiNext = 0;
+
+    for(UInt nBuf = 0, nPos = 1; nPos < uiSize; nPos = uiNext, nBuf++)
     {
         uiNext = gMin((UInt)rcString.find_first_of("LNE", nPos+1), uiSize);
         String cString = rcString.substr(nPos, uiNext-nPos);
@@ -1408,30 +1412,30 @@ ErrVal FormattedStringParser::extractMmco(const String& rcString, DecRefPicMarki
 }
 
 
-ErrVal FormattedStringParser::extractSingleRplrCommand(const String&  rcString,
-                                                 RplrCommand&          rcRplr )
+ErrVal FormattedStringParser::extractSingleRplrCommand (const String&  rcString,
+                                                        RplrCommand&  rcRplr)
 {
     //--- check if string is correct ---
-    ROFS(rcString.find_first_of   ("L+-" ) == 0 );
+    ROFS (rcString.find_first_of("L+-") == 0);
     Char cCommand = rcString[0];
 
-    ROFS(1 == rcString.find_first_of   (sm_cSetOfDigits  ) );
-    ROFS(0 == rcString.find_last_not_of(sm_cSetOfDigits  ) );
-    UInt uiNum  = atoi(rcString.c_str() + 1 );
+    ROFS (1 == rcString.find_first_of   (sm_cSetOfDigits));
+    ROFS (0 == rcString.find_last_not_of(sm_cSetOfDigits));
+    UInt uiNum  = atoi(rcString.c_str() + 1);
 
-    if(cCommand == 'L' )
+    if(cCommand == 'L')
     {
-        rcRplr = RplrCommand(RPLR_LONG, uiNum );
+        rcRplr = RplrCommand(RPLR_LONG, uiNum);
         return Err::m_nOK;
     }
-    else if(cCommand == '+' )
+    else if(cCommand == '+')
     {
-        rcRplr = RplrCommand(RPLR_POS, uiNum );
+        rcRplr = RplrCommand(RPLR_POS, uiNum);
         return Err::m_nOK;
     }
-    else if(cCommand == '-' )
+    else if(cCommand == '-')
     {
-        rcRplr = RplrCommand(RPLR_NEG, uiNum );
+        rcRplr = RplrCommand(RPLR_NEG, uiNum);
         return Err::m_nOK;
     }
 
@@ -1440,49 +1444,49 @@ ErrVal FormattedStringParser::extractSingleRplrCommand(const String&  rcString,
 }
 
 
-ErrVal FormattedStringParser::extractSingleMmcoCommand(const String&  rcString,
-                                                MmcoCommand&          rcMmco )
+ErrVal FormattedStringParser::extractSingleMmcoCommand (const String&  rcString,
+                                                        MmcoCommand&  rcMmco)
 {
     //--- check if string is correct ---
-    ROFS(rcString.find_first_of("LNE" ) == 0 );
+    ROFS(rcString.find_first_of("LNE") == 0);
 
     UInt uiSize = (UInt)rcString.size();
     Char cCommand1 = rcString[0];
 
     if(cCommand1 == 'L')
     {
-        UInt  uiEnd = (UInt)rcString.find_first_of("+-$:" );
-        ROTS(uiEnd == UInt(String::npos) );
-        String cString = rcString.substr(1, uiEnd-1 );
+        UInt  uiEnd = (UInt)rcString.find_first_of("+-$:");
+        ROTS (uiEnd == UInt(String::npos));
+        String cString = rcString.substr(1, uiEnd-1);
 
-        ROTS(0            != cString.find_first_of   (sm_cSetOfDigits  ) );
-        ROTS(UInt(String::npos) != cString.find_last_not_of(sm_cSetOfDigits  ) );
-        UInt uiLtId  = atoi(cString.c_str() );
+        ROTS (0 != cString.find_first_of (sm_cSetOfDigits));
+        ROTS (UInt(String::npos) != cString.find_last_not_of(sm_cSetOfDigits));
+        UInt uiLtId  = atoi(cString.c_str());
 
         Char cCommand2 = rcString[uiEnd];
-        if(cCommand2 == '+' )
+        if(cCommand2 == '+')
         {
-            rcMmco = MmcoCommand(MMCO_SET_LONG_TERM, uiLtId );
+            rcMmco = MmcoCommand(MMCO_SET_LONG_TERM, uiLtId);
             return Err::m_nOK;
         }
-        else if(cCommand2 == '-' )
+        else if(cCommand2 == '-')
         {
-            rcMmco = MmcoCommand(MMCO_LONG_TERM_UNUSED, uiLtId );
+            rcMmco = MmcoCommand(MMCO_LONG_TERM_UNUSED, uiLtId);
             return Err::m_nOK;
         }
-        else if(cCommand2 == '$' )
+        else if(cCommand2 == '$')
         {
-            rcMmco = MmcoCommand(MMCO_MAX_LONG_TERM_IDX, uiLtId );
+            rcMmco = MmcoCommand(MMCO_MAX_LONG_TERM_IDX, uiLtId);
             return Err::m_nOK;
         }
-        else if(cCommand2 == ':' )
+        else if(cCommand2 == ':')
         {
-            String cString2 = rcString.substr(uiEnd+1, uiSize );
-            ROTS(0            != cString2.find_first_of   (sm_cSetOfDigits  ) );
-            ROTS(UInt(String::npos) != cString2.find_last_not_of(sm_cSetOfDigits  ) );
+            String cString2 = rcString.substr(uiEnd+1, uiSize);
+            ROTS(0            != cString2.find_first_of   (sm_cSetOfDigits));
+            ROTS(UInt(String::npos) != cString2.find_last_not_of(sm_cSetOfDigits));
 
-            UInt uiStId  = atoi(cString2.c_str() );
-            rcMmco = MmcoCommand(MMCO_ASSIGN_LONG_TERM, uiLtId, uiStId );
+            UInt uiStId  = atoi(cString2.c_str());
+            rcMmco = MmcoCommand(MMCO_ASSIGN_LONG_TERM, uiLtId, uiStId);
             return Err::m_nOK;
         }
         else
@@ -1491,17 +1495,17 @@ ErrVal FormattedStringParser::extractSingleMmcoCommand(const String&  rcString,
             return Err::m_nERR;
         }
     }
-    else if(cCommand1 == 'N' )
+    else if(cCommand1 == 'N')
     {
-        ROFS(1 == rcString.find_first_of   (sm_cSetOfDigits  ) );
-        ROFS(0 == rcString.find_last_not_of(sm_cSetOfDigits  ) );
-        UInt uiNum  = atoi(rcString.c_str() + 1 );
-        rcMmco = MmcoCommand(MMCO_SHORT_TERM_UNUSED, uiNum );
+        ROFS(1 == rcString.find_first_of   (sm_cSetOfDigits));
+        ROFS(0 == rcString.find_last_not_of(sm_cSetOfDigits));
+        UInt uiNum  = atoi(rcString.c_str() + 1);
+        rcMmco = MmcoCommand(MMCO_SHORT_TERM_UNUSED, uiNum);
         return Err::m_nOK;
     }
-    else if(cCommand1 == 'E' )
+    else if(cCommand1 == 'E')
     {
-        rcMmco = MmcoCommand(MMCO_RESET );
+        rcMmco = MmcoCommand(MMCO_RESET);
         return Err::m_nOK;
     }
 
@@ -1510,42 +1514,41 @@ ErrVal FormattedStringParser::extractSingleMmcoCommand(const String&  rcString,
 }
 
 
-Bool
-FormattedStringParser::isFrameSequencePart(const String& rcString )
+Bool FormattedStringParser::isFrameSequencePart (const String& rcString)
 {
-  return (rcString.find('*', 1 ) == String::npos );
+    return (rcString.find('*', 1) == String::npos);
 }
 
 
-ErrVal FormattedStringParser::extractRepetitions(const String&  rcString,
-                                                 String&        rcNoRepString,
-                                                 UInt&          ruiNumberOfRepetitions )
+ErrVal FormattedStringParser::extractRepetitions (const String&  rcString,
+                                                  String&  rcNoRepString,
+                                                  UInt&    ruiNumberOfRepetitions)
 {
     if(rcString[0] != '*')
     {
         ruiNumberOfRepetitions  = 1;
-        rcNoRepString           = rcString;
+        rcNoRepString = rcString;
     }
     else
     {
         UInt  uiLastPos   = (UInt)rcString.length () - 1;
-        UInt  uiOpenPos   = (UInt)rcString.find   ('{' );
-        UInt  uiClosePos  = (UInt)rcString.rfind  ('}' );
+        UInt  uiOpenPos   = (UInt)rcString.find   ('{');
+        UInt  uiClosePos  = (UInt)rcString.rfind  ('}');
 
-        ROTS(uiOpenPos   == UInt(String::npos)  );
-        ROFS(uiClosePos  == uiLastPos          );
+        ROTS (uiOpenPos   == UInt(String::npos));
+        ROFS (uiClosePos  == uiLastPos);
 
-        rcNoRepString     = rcString.substr(uiOpenPos+1, uiClosePos-uiOpenPos-1 );
-        String cNStr      = rcString.substr(1,           uiOpenPos - 1          );
+        rcNoRepString     = rcString.substr(uiOpenPos+1, uiClosePos-uiOpenPos-1);
+        String cNStr      = rcString.substr(1, uiOpenPos - 1);
 
-        if(uiOpenPos==2 && cNStr[0]=='n' )
+        if(uiOpenPos==2 && cNStr[0]=='n')
         {
-          ruiNumberOfRepetitions  = MSYS_UINT_MAX;
+            ruiNumberOfRepetitions  = MSYS_UINT_MAX;
         }
         else
         {
-            ROFS(cNStr.find_first_not_of(sm_cSetOfDigits ) == String::npos );
-            ruiNumberOfRepetitions  = atoi(cNStr.c_str() );
+            ROFS(cNStr.find_first_not_of(sm_cSetOfDigits) == String::npos);
+            ruiNumberOfRepetitions  = atoi(cNStr.c_str());
         }
     }
 
@@ -1554,15 +1557,15 @@ ErrVal FormattedStringParser::extractRepetitions(const String&  rcString,
 
 
 
-ErrVal FormattedStringParser::getNumberOfFrames(const String& rcString, UInt& ruiNumberOfFrames )
+ErrVal FormattedStringParser::getNumberOfFrames (const String& rcString, UInt& ruiNumberOfFrames)
 {
     UInt uiPos = (UInt)rcString.find_first_of(sm_cSetOfTypes);
     ruiNumberOfFrames = 0;
 
-    while(uiPos != UInt(String::npos) )
+    while(uiPos != UInt(String::npos))
     {
         ruiNumberOfFrames++;
-        uiPos = (UInt)rcString.find_first_of(sm_cSetOfTypes, uiPos+1 );
+        uiPos = (UInt)rcString.find_first_of(sm_cSetOfTypes, uiPos+1);
     }
 
     return Err::m_nOK;
@@ -1570,14 +1573,14 @@ ErrVal FormattedStringParser::getNumberOfFrames(const String& rcString, UInt& ru
 
 
 
-ErrVal FormattedStringParser::extractNextFrameDescription(const String&  rcString,
-                                                          String&        rcFDString,
-                                                          UInt&          ruiStartPos )
+ErrVal FormattedStringParser::extractNextFrameDescription (const String&  rcString,
+                                                           String&  rcFDString,
+                                                           UInt&    ruiStartPos)
 {
-    ROTS(ruiStartPos >= rcString.length() - 1 );
+    ROTS(ruiStartPos >= rcString.length() - 1);
 
-    UInt uiEndPos = (UInt)rcString.find_first_of(sm_cSetOfTypes, ruiStartPos + 1 );
-    rcFDString    = rcString.substr       (ruiStartPos, uiEndPos - ruiStartPos );
+    UInt uiEndPos = (UInt)rcString.find_first_of (sm_cSetOfTypes, ruiStartPos + 1);
+    rcFDString    = rcString.substr (ruiStartPos, uiEndPos - ruiStartPos);
     ruiStartPos   = uiEndPos;
 
     return Err::m_nOK;
@@ -1585,35 +1588,41 @@ ErrVal FormattedStringParser::extractNextFrameDescription(const String&  rcStrin
 
 
 
-ErrVal FormattedStringParser::getNumberOfParts(const String& rcString, UInt& ruiNumberOfParts )
+ErrVal FormattedStringParser::getNumberOfParts(const String& rcString, UInt& ruiNumberOfParts)
 {
-    UInt uiPos = (UInt)rcString.find_first_of(sm_cSetOfPartStart );
+    UInt uiPos = (UInt)rcString.find_first_of(sm_cSetOfPartStart);
     ruiNumberOfParts = 0;
 
-    while(uiPos != UInt(String::npos) )
+    while(uiPos != UInt(String::npos))
     {
         ruiNumberOfParts++;
 
-        if(rcString[uiPos] == '*' )
+        if(rcString[uiPos] == '*')
         {
-            UInt  uiEndPos        = (UInt)rcString.find('{', uiPos+1 );
+            UInt  uiEndPos        = (UInt)rcString.find('{', uiPos+1);
             UInt  uiOpenBrackets  = 1;
-            ROTS(uiEndPos == UInt(String::npos) );
+            ROTS(uiEndPos == UInt(String::npos));
 
-            while(uiOpenBrackets )
+            while(uiOpenBrackets)
             {
-                uiEndPos  = (UInt)rcString.find_first_of("{}", uiEndPos+1 );
-                ROTS(uiEndPos == UInt(String::npos) );
+                uiEndPos  = (UInt)rcString.find_first_of("{}", uiEndPos+1);
+                ROTS(uiEndPos == UInt(String::npos));
 
-                if(rcString[uiEndPos] == '{' )   uiOpenBrackets++;
-                else                              uiOpenBrackets--;
+                if(rcString[uiEndPos] == '{')
+                {
+                    uiOpenBrackets++;
+                }
+                else
+                {
+                    uiOpenBrackets--;
+                }
             }
 
-            uiPos = (UInt)rcString.find_first_of(sm_cSetOfPartStart, uiEndPos + 1 );
+            uiPos = (UInt)rcString.find_first_of(sm_cSetOfPartStart, uiEndPos + 1);
         }
         else
         {
-            uiPos = (UInt)rcString.find('*', uiPos+1 );
+            uiPos = (UInt)rcString.find('*', uiPos+1);
         }
     }
 
@@ -1622,37 +1631,43 @@ ErrVal FormattedStringParser::getNumberOfParts(const String& rcString, UInt& rui
 
 
 
-ErrVal FormattedStringParser::extractPart(const String&  rcString,
-                                          String&        rcPartString,
-                                          UInt&          ruiStartPos )
+ErrVal FormattedStringParser::extractPart (const String&  rcString,
+                                           String&  rcPartString,
+                                           UInt&    ruiStartPos)
 {
-    ROTS(ruiStartPos >= rcString.length() - 1 );
+    ROTS(ruiStartPos >= rcString.length() - 1);
 
     UInt uiNextStartPos;
 
-    if(rcString[ruiStartPos] == '*' )
+    if(rcString[ruiStartPos] == '*')
     {
-        UInt  uiEndPos        = (UInt)rcString.find('{', ruiStartPos+1 );
+        UInt  uiEndPos        = (UInt)rcString.find('{', ruiStartPos+1);
         UInt  uiOpenBrackets  = 1;
-        ROTS(uiEndPos == UInt(String::npos) );
+        ROTS(uiEndPos == UInt(String::npos));
 
-        while(uiOpenBrackets )
+        while(uiOpenBrackets)
         {
-            uiEndPos  = (UInt)rcString.find_first_of("{}", uiEndPos+1 );
-            ROTS(uiEndPos == UInt(String::npos) );
+            uiEndPos  = (UInt)rcString.find_first_of("{}", uiEndPos+1);
+            ROTS(uiEndPos == UInt(String::npos));
 
-            if(rcString[uiEndPos] == '{' )   uiOpenBrackets++;
-            else                              uiOpenBrackets--;
+            if(rcString[uiEndPos] == '{')
+            {
+                uiOpenBrackets++;
+            }
+            else
+            {
+                uiOpenBrackets--;
+            }
         }
 
-        uiNextStartPos = (UInt)rcString.find_first_of(sm_cSetOfPartStart, uiEndPos + 1 );
+        uiNextStartPos = (UInt)rcString.find_first_of (sm_cSetOfPartStart, uiEndPos + 1);
     }
     else
     {
-        uiNextStartPos = (UInt)rcString.find('*', ruiStartPos+1 );
+        uiNextStartPos = (UInt)rcString.find ('*', ruiStartPos+1);
     }
 
-    rcPartString  = rcString.substr(ruiStartPos, uiNextStartPos - ruiStartPos );
+    rcPartString  = rcString.substr (ruiStartPos, uiNextStartPos - ruiStartPos);
     ruiStartPos   = uiNextStartPos;
 
     return Err::m_nOK;

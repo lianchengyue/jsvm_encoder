@@ -40,13 +40,13 @@ ControlMngH264AVCEncoder::~ControlMngH264AVCEncoder()
 
 
 ErrVal ControlMngH264AVCEncoder::initParameterSets(const SequenceParameterSet&  rcSPS,
-                                                   const PictureParameterSet&   rcPPS)
+                                                   const PictureParameterSet&  rcPPS)
 {
-    UInt  uiLayer  = rcSPS.getDependencyId();
-    UInt  uiMbX    = rcSPS.getFrameWidthInMbs();
-    UInt  uiMbY    = rcSPS.getFrameHeightInMbs();
-    m_auiMbXinFrame[uiLayer]  = uiMbX;
-    m_auiMbYinFrame[uiLayer]  = uiMbY;
+    UInt  uiLayer  = rcSPS.getDependencyId ();
+    UInt  uiMbX    = rcSPS.getFrameWidthInMbs ();
+    UInt  uiMbY    = rcSPS.getFrameHeightInMbs ();
+    m_auiMbXinFrame[uiLayer] = uiMbX;
+    m_auiMbYinFrame[uiLayer] = uiMbY;
 
     //===== initialize buffer controls and LayerEncoder =====
     UInt uiAllocX = rcSPS.getAllocFrameMbsX() << 4;
@@ -240,6 +240,7 @@ ErrVal ControlMngH264AVCEncoder::initSliceForCoding(const SliceHeader& rcSH)
         m_pcMbSymbolWriteIf = m_pcUvlcWriter;
     }
 
+    //STEP ?: 选择CAVLC或CABAC
     m_pcMbSymbolWriteIf->startSlice(rcSH);
     MbSymbolWriteIf *pcCurrentWriter = m_pcMbSymbolWriteIf;
     for(UInt uiMGSFragments = 0; rcSH.getSPS().getMGSCoeffStop(uiMGSFragments) < 16; uiMGSFragments++)
@@ -266,11 +267,15 @@ ErrVal ControlMngH264AVCEncoder::initSliceForFiltering(const SliceHeader& rcSH)
 }
 
 
-ErrVal ControlMngH264AVCEncoder::initMbForCoding(MbDataAccess& rcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff, Bool bFieldFlag)
+ErrVal ControlMngH264AVCEncoder::initMbForCoding (MbDataAccess& rcMbDataAccess,
+                                                  UInt uiMbY,
+                                                  UInt uiMbX,
+                                                  Bool bMbAff,
+                                                  Bool bFieldFlag)
 {
     ROF(m_uiCurrLayer < MAX_LAYERS);
 
-    if(bMbAff)
+    if (bMbAff)
     {
         rcMbDataAccess.setFieldMode(bFieldFlag);
     }
@@ -288,7 +293,11 @@ ErrVal ControlMngH264AVCEncoder::initMbForCoding(MbDataAccess& rcMbDataAccess, U
     return Err::m_nOK;
 }
 
-ErrVal ControlMngH264AVCEncoder::initMbForFiltering(MbDataAccess*& rpcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff)
+ErrVal ControlMngH264AVCEncoder::initMbForFiltering (MbDataAccess*&
+                                                     rpcMbDataAccess,
+                                                     UInt uiMbY,
+                                                     UInt uiMbX,
+                                                     Bool bMbAff)
 {
     ROF(m_uiCurrLayer < MAX_LAYERS);
 
@@ -299,7 +308,10 @@ ErrVal ControlMngH264AVCEncoder::initMbForFiltering(MbDataAccess*& rpcMbDataAcce
     return Err::m_nOK;
 }
 
-ErrVal ControlMngH264AVCEncoder::initMbForFiltering(MbDataAccess& rcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff)
+ErrVal ControlMngH264AVCEncoder::initMbForFiltering (MbDataAccess& rcMbDataAccess,
+                                                     UInt uiMbY,
+                                                     UInt uiMbX,
+                                                     Bool bMbAff)
 {
     ROF(m_uiCurrLayer < MAX_LAYERS);
 
@@ -309,7 +321,7 @@ ErrVal ControlMngH264AVCEncoder::initMbForFiltering(MbDataAccess& rcMbDataAccess
 }
 
 
-ErrVal ControlMngH264AVCEncoder::initSliceForWeighting(const SliceHeader& rcSH)
+ErrVal ControlMngH264AVCEncoder::initSliceForWeighting (const SliceHeader& rcSH)
 {
      return m_pcSampleWeighting->initSlice(rcSH);
 }

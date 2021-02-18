@@ -88,8 +88,8 @@ const LoopFilter::AlphaClip LoopFilter::g_acAlphaClip[52] =
 
 
 LoopFilter::LoopFilter()
-: m_pcControlMngIf        ( 0 )
-, m_pcReconstructionBypass( 0 )
+: m_pcControlMngIf        (0)
+, m_pcReconstructionBypass(0)
 {
 }
 
@@ -97,10 +97,10 @@ LoopFilter::~LoopFilter()
 {
 }
 
-ErrVal LoopFilter::create( LoopFilter*& rpcLoopFilter )
+ErrVal LoopFilter::create(LoopFilter*& rpcLoopFilter)
 {
     rpcLoopFilter = new LoopFilter;
-    ROF( rpcLoopFilter );
+    ROF(rpcLoopFilter);
     return Err::m_nOK;
 }
 
@@ -110,12 +110,12 @@ ErrVal LoopFilter::destroy()
     return Err::m_nOK;
 }
 
-ErrVal LoopFilter::init( ControlMngIf*         pcControlMngIf,
+ErrVal LoopFilter::init(ControlMngIf*         pcControlMngIf,
                   ReconstructionBypass* pcReconstructionBypass,
-                  Bool                  bEncoder )
+                  Bool                  bEncoder)
 {
-    ROF( pcControlMngIf );
-    ROF( pcReconstructionBypass );
+    ROF(pcControlMngIf);
+    ROF(pcReconstructionBypass);
 
     m_pcControlMngIf          = pcControlMngIf;
     m_pcReconstructionBypass  = pcReconstructionBypass;
@@ -131,17 +131,17 @@ ErrVal LoopFilter::uninit()
 }
 
 
-ErrVal LoopFilter::process( SliceHeader&             rcSH,
+ErrVal LoopFilter::process(SliceHeader&             rcSH,
                      Frame*                   pcFrame,
                      Frame*                   pcResidual,
                      MbDataCtrl*              pcMbDataCtrl,
                      const DBFilterParameter* pcInterLayerDBParameter,
                      Bool                     bSpatialScalabilityFlag,
-                     const MbStatus*          apcMbStatus )
+                     const MbStatus*          apcMbStatus)
 {
-    ROF ( m_pcControlMngIf );
-    ROF ( pcFrame );
-    ROF ( pcMbDataCtrl );
+    ROF (m_pcControlMngIf);
+    ROF (pcFrame);
+    ROF (pcMbDataCtrl);
 
     m_pcControlMngIf->initSliceForFiltering(rcSH);
     pcMbDataCtrl->initSliceLF(rcSH, apcMbStatus);
@@ -155,40 +155,40 @@ ErrVal LoopFilter::process( SliceHeader&             rcSH,
 
     apcFrame[TOP_FIELD] = pcFrame->getPic(TOP_FIELD);
     apcFrame[BOT_FIELD] = pcFrame->getPic(BOT_FIELD);
-    apcFrame[FRAME    ] = pcFrame->getPic(FRAME    );
-    if( pcResidual )
+    apcFrame[FRAME    ] = pcFrame->getPic(FRAME   );
+    if(pcResidual)
     {
         pcResidual->addFrameFieldBuffer();
         apcResidual [TOP_FIELD] = pcResidual->getPic(TOP_FIELD);
         apcResidual [BOT_FIELD] = pcResidual->getPic(BOT_FIELD);
-        apcResidual [FRAME    ] = pcResidual->getPic(FRAME    );
+        apcResidual [FRAME    ] = pcResidual->getPic(FRAME   );
     }
 
 
     //===== filtering =====
-    for( LFPass eLFPass = FIRST_PASS; eLFPass < TWO_PASSES; eLFPass = LFPass( eLFPass + 1 ) )
+    for(LFPass eLFPass = FIRST_PASS; eLFPass < TWO_PASSES; eLFPass = LFPass(eLFPass + 1))
     {
-        for( UInt uiMbAddress = 0; uiMbAddress < rcSH.getMbInPic(); uiMbAddress++ )
+        for(UInt uiMbAddress = 0; uiMbAddress < rcSH.getMbInPic(); uiMbAddress++)
         {
             MbDataAccess* pcMbDataAccess = 0;
             UInt          uiMbY, uiMbX;
-            rcSH.getMbPositionFromAddress( uiMbY, uiMbX, uiMbAddress );
+            rcSH.getMbPositionFromAddress(uiMbY, uiMbX, uiMbAddress);
 
             pcMbDataCtrl->initMb(pcMbDataAccess, uiMbY, uiMbX);
             m_pcControlMngIf->initMbForFiltering(*pcMbDataAccess, uiMbY, uiMbX, rcSH.isMbaffFrame());
             PicType             eMbPicType        = pcMbDataAccess->getMbPicType();
             YuvPicBuffer*       pcFrameBuffer     = apcFrame[ eMbPicType ]->getFullPelYuvBuffer();
-            YuvPicBuffer*       pcResidualBuffer  = ( pcResidual ? apcResidual[ eMbPicType ]->getFullPelYuvBuffer() : 0 );
+            YuvPicBuffer*       pcResidualBuffer  = (pcResidual ? apcResidual[ eMbPicType ]->getFullPelYuvBuffer() : 0);
 
             const SliceHeader*  pcDBSliceHeader   = 0;
-            if( apcMbStatus )
+            if(apcMbStatus)
             {
-                const UInt      uiMbIdx     = rcSH.getMbIndexFromAddress( uiMbAddress );
+                const UInt      uiMbIdx     = rcSH.getMbIndexFromAddress(uiMbAddress);
                 const MbStatus& rcMbStatus  = apcMbStatus[ uiMbIdx ];
                 pcDBSliceHeader             = rcMbStatus.getLastCodedSliceHeader();
             }
 
-            xFilterMb( pcMbDataCtrl, *pcMbDataAccess, pcFrameBuffer, pcResidualBuffer, pcInterLayerDBParameter, bSpatialScalabilityFlag, eLFPass, pcDBSliceHeader); //VB-JV 04/08
+            xFilterMb(pcMbDataCtrl, *pcMbDataAccess, pcFrameBuffer, pcResidualBuffer, pcInterLayerDBParameter, bSpatialScalabilityFlag, eLFPass, pcDBSliceHeader); //VB-JV 04/08
         }
     }
 
@@ -203,11 +203,11 @@ ErrVal LoopFilter::xFilterMb(const MbDataCtrl*        pcMbDataCtrl,
                              const DBFilterParameter* pcInterLayerDBParameter,
                              Bool                     bSpatialScalableFlag,
                              LFPass                   eLFPass,
-                             const SliceHeader*       pcDBSliceHeader )
+                             const SliceHeader*       pcDBSliceHeader)
 {
-    Bool                      bInterLayerFlag = ( pcInterLayerDBParameter != 0 );//VB-JV 04/08
-    const DBFilterParameter&  rcDFPStd        = ( pcDBSliceHeader ? pcDBSliceHeader->getDeblockingFilterParameter() : pcMbDataCtrl->getDBFPars( rcMbDataAccess ) );
-    const DBFilterParameter&  rcDFP           = ( bInterLayerFlag ? *pcInterLayerDBParameter : rcDFPStd );
+    Bool                      bInterLayerFlag = (pcInterLayerDBParameter != 0);//VB-JV 04/08
+    const DBFilterParameter&  rcDFPStd        = (pcDBSliceHeader ? pcDBSliceHeader->getDeblockingFilterParameter() : pcMbDataCtrl->getDBFPars(rcMbDataAccess));
+    const DBFilterParameter&  rcDFP           = (bInterLayerFlag ? *pcInterLayerDBParameter : rcDFPStd);
     Int                       iFilterIdc      = rcDFP.getDisableDeblockingFilterIdc();
     Bool                      b8x8            = rcMbDataAccess.getMbData().isTransformSize8x8();
 
@@ -218,68 +218,68 @@ ErrVal LoopFilter::xFilterMb(const MbDataCtrl*        pcMbDataCtrl,
 
     //===== check residual blocks and set "residual CBP" =====
     UInt uiCbp = 0;
-    if( pcResidual )
+    if(pcResidual)
     {
-      if( b8x8 )
+      if(b8x8)
       {
-        for( B8x8Idx c8x8Idx; c8x8Idx.isLegal(); c8x8Idx++ )
+        for(B8x8Idx c8x8Idx; c8x8Idx.isLegal(); c8x8Idx++)
         {
-          uiCbp += ( ( pcResidual->isCurr8x8BlkNotZero( c8x8Idx ) ? 0x33 : 0 ) << c8x8Idx.b8x8() );
+          uiCbp += ((pcResidual->isCurr8x8BlkNotZero(c8x8Idx) ? 0x33 : 0) << c8x8Idx.b8x8());
         }
       }
       else
       {
-        for( B4x4Idx c4x4Idx; c4x4Idx.isLegal(); c4x4Idx++ )
+        for(B4x4Idx c4x4Idx; c4x4Idx.isLegal(); c4x4Idx++)
         {
-          uiCbp += ( ( pcResidual->isCurr4x4BlkNotZero( c4x4Idx ) ? 0x01 : 0 ) << c4x4Idx.b4x4() );
+          uiCbp += ((pcResidual->isCurr4x4BlkNotZero(c4x4Idx) ? 0x01 : 0) << c4x4Idx.b4x4());
         }
       }
     }
-    rcMbDataAccess.getMbData().setMbCbpResidual( uiCbp );
+    rcMbDataAccess.getMbData().setMbCbpResidual(uiCbp);
 
     //===== set mode parameters =====
     Bool bFieldFlag   = rcMbDataAccess.getMbData().getFieldFlag();
-    Bool bCurrFrame   = ( rcMbDataAccess.getMbPicType() == FRAME );
-    m_bVerMixedMode   = ( bFieldFlag != rcMbDataAccess.getMbDataLeft().getFieldFlag() );
-    if( bFieldFlag )
+    Bool bCurrFrame   = (rcMbDataAccess.getMbPicType() == FRAME);
+    m_bVerMixedMode   = (bFieldFlag != rcMbDataAccess.getMbDataLeft().getFieldFlag());
+    if(bFieldFlag)
     {
-      m_bHorMixedMode = ( bFieldFlag != rcMbDataAccess.getMbDataAboveAbove().getFieldFlag() );
+      m_bHorMixedMode = (bFieldFlag != rcMbDataAccess.getMbDataAboveAbove().getFieldFlag());
     }
     else
     {
-      m_bHorMixedMode = ( bFieldFlag != rcMbDataAccess.getMbDataAbove().getFieldFlag() );
+      m_bHorMixedMode = (bFieldFlag != rcMbDataAccess.getMbDataAbove().getFieldFlag());
     }
 
     //===== determine boundary filter strength =====
     m_bAddEdge        = true;
-    if( m_bHorMixedMode && bCurrFrame )
+    if(m_bHorMixedMode && bCurrFrame)
     {
-      for( B4x4Idx cIdx; cIdx.b4x4() < 4; cIdx++ )
+      for(B4x4Idx cIdx; cIdx.b4x4() < 4; cIdx++)
       {
-        m_aucBsHorTop[cIdx.x()] = xGetHorFilterStrength( rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass );
+        m_aucBsHorTop[cIdx.x()] = xGetHorFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
       }
     }
-    if( m_bVerMixedMode )
+    if(m_bVerMixedMode)
     {
-      for( B4x4Idx cIdx; cIdx.b4x4() < 16; cIdx = B4x4Idx( cIdx + 4 ) )
+      for(B4x4Idx cIdx; cIdx.b4x4() < 16; cIdx = B4x4Idx(cIdx + 4))
       {
-        m_aucBsVerBot[cIdx.y()] = xGetVerFilterStrength( rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass );
+        m_aucBsVerBot[cIdx.y()] = xGetVerFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
       }
     }
     m_bAddEdge = false;
-    for( B4x4Idx cIdx; cIdx.isLegal(); cIdx++ )
+    for(B4x4Idx cIdx; cIdx.isLegal(); cIdx++)
     {
-      if( !b8x8 || ( ( cIdx.x() & 1 ) == 0 ) )
+      if(!b8x8 || ((cIdx.x() & 1) == 0))
       {
-        m_aaaucBs[VER][cIdx.x()][cIdx.y()]  = xGetVerFilterStrength( rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass );
+        m_aaaucBs[VER][cIdx.x()][cIdx.y()]  = xGetVerFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
       }
       else
       {
         m_aaaucBs[VER][cIdx.x()][cIdx.y()]  = 0;
       }
-      if( !b8x8 || ( ( cIdx.y() & 1 ) == 0 ) )
+      if(!b8x8 || ((cIdx.y() & 1) == 0))
       {
-        m_aaaucBs[HOR][cIdx.x()][cIdx.y()]  = xGetHorFilterStrength( rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass );
+        m_aaaucBs[HOR][cIdx.x()][cIdx.y()]  = xGetHorFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
       }
       else
       {
@@ -291,7 +291,7 @@ ErrVal LoopFilter::xFilterMb(const MbDataCtrl*        pcMbDataCtrl,
     m_bHorMixedMode = m_bHorMixedMode && bCurrFrame;
     xLumaVerFiltering(rcMbDataAccess, rcDFP, pcYuvBuffer);
     xLumaHorFiltering(rcMbDataAccess, rcDFP, pcYuvBuffer);
-    ROTRS ( iFilterIdc > 3, Err::m_nOK );
+    ROTRS (iFilterIdc > 3, Err::m_nOK);
     xChromaVerFiltering(rcMbDataAccess, rcDFP, pcYuvBuffer);
     xChromaHorFiltering(rcMbDataAccess, rcDFP, pcYuvBuffer);
     return Err::m_nOK;
@@ -300,7 +300,7 @@ ErrVal LoopFilter::xFilterMb(const MbDataCtrl*        pcMbDataCtrl,
 
 
 #if PROPOSED_DEBLOCKING_APRIL2010
-ErrVal LoopFilter::xRecalcCBP(MbDataAccess &rcMbDataAccess)
+ErrVal LoopFilter::xRecalcCBP (MbDataAccess &rcMbDataAccess)
 {
     UInt uiCbp    = 0;
     UInt uiStart  = 0;
@@ -310,12 +310,12 @@ ErrVal LoopFilter::xRecalcCBP(MbDataAccess &rcMbDataAccess)
         const UChar *pucScan = rcMbDataAccess.getMbData().getFieldFlag() ? g_aucFieldScan64 : g_aucFrameScan64;
         uiStart <<= 2;
         uiStop  <<= 2;
-        for( B8x8Idx cIdx; cIdx.isLegal(); cIdx++ )
+        for(B8x8Idx cIdx; cIdx.isLegal(); cIdx++)
         {
-            TCoeff *piCoeff = rcMbDataAccess.getMbTCoeffs().get8x8( cIdx );
-            for( UInt ui = uiStart; ui < uiStop; ui++ )
+            TCoeff *piCoeff = rcMbDataAccess.getMbTCoeffs().get8x8(cIdx);
+            for(UInt ui = uiStart; ui < uiStop; ui++)
             {
-                if( m_bEncoder ? piCoeff[pucScan[ui]].getLevel() : piCoeff[pucScan[ui]].getCoeff() )
+                if(m_bEncoder ? piCoeff[pucScan[ui]].getLevel() : piCoeff[pucScan[ui]].getCoeff())
                 {
                     uiCbp |= 0x33 << cIdx.b8x8();
                     break;
@@ -326,12 +326,12 @@ ErrVal LoopFilter::xRecalcCBP(MbDataAccess &rcMbDataAccess)
     else
     {
         const UChar *pucScan = rcMbDataAccess.getMbData().getFieldFlag() ? g_aucFieldScan : g_aucFrameScan;
-        for( B4x4Idx cIdx; cIdx.isLegal(); cIdx++ )
+        for(B4x4Idx cIdx; cIdx.isLegal(); cIdx++)
         {
-            TCoeff *piCoeff = rcMbDataAccess.getMbTCoeffs().get( cIdx );
-            for( UInt ui = uiStart; ui < uiStop; ui++ )
+            TCoeff *piCoeff = rcMbDataAccess.getMbTCoeffs().get(cIdx);
+            for(UInt ui = uiStart; ui < uiStop; ui++)
             {
-                if( m_bEncoder ? piCoeff[pucScan[ui]].getLevel() : piCoeff[pucScan[ui]].getCoeff() )
+                if(m_bEncoder ? piCoeff[pucScan[ui]].getLevel() : piCoeff[pucScan[ui]].getCoeff())
                 {
                     uiCbp |= 1<<cIdx.b4x4();
                     break;
@@ -355,13 +355,13 @@ UInt LoopFilter::xGetHorFilterStrength(const MbDataAccess& rcMbDataAccess,
                                        Int                 iFilterIdc,
                                        Bool                bInterLayerFlag,
                                        Bool                bSpatialScalableFlag,
-                                       LFPass              eLFPass )
+                                       LFPass              eLFPass)
 {
     Short sHorMvThr     = 4;
-    Short sVerMvThr     = ( rcMbDataAccess.getMbPicType() == FRAME ? 4 : 2 );
-    Bool  bFilterInside = xFilterInsideEdges( rcMbDataAccess, iFilterIdc, bInterLayerFlag, eLFPass );
-    Bool  bFilterTop    = xFilterTopEdge    ( rcMbDataAccess, iFilterIdc, bInterLayerFlag, eLFPass );
-    ROFRS( (! cIdx.y() && bFilterTop) || (cIdx.y() && bFilterInside ), 0);
+    Short sVerMvThr     = (rcMbDataAccess.getMbPicType() == FRAME ? 4 : 2);
+    Bool  bFilterInside = xFilterInsideEdges(rcMbDataAccess, iFilterIdc, bInterLayerFlag, eLFPass);
+    Bool  bFilterTop    = xFilterTopEdge    (rcMbDataAccess, iFilterIdc, bInterLayerFlag, eLFPass);
+    ROFRS((! cIdx.y() && bFilterTop) || (cIdx.y() && bFilterInside), 0);
 
 
     //--------------------------
@@ -372,46 +372,46 @@ UInt LoopFilter::xGetHorFilterStrength(const MbDataAccess& rcMbDataAccess,
         const MbData& rcMbDataCurr = rcMbDataAccess.getMbData();
 
         //===== check special condition for I_BL in spatial scalable coding =====
-        if( bSpatialScalableFlag && rcMbDataCurr.isIntraBL() )
+        if(bSpatialScalableFlag && rcMbDataCurr.isIntraBL())
         {
-          ROTRS( rcMbDataCurr.has4x4NonZeroLevels( cIdx                           ), 1 ); // only coefficients of the current layer are counted
-          ROTRS( rcMbDataCurr.has4x4NonZeroLevels( cIdx + CURR_MB_ABOVE_NEIGHBOUR ), 1 ); // only coefficients of the current layer are counted
+          ROTRS(rcMbDataCurr.has4x4NonZeroLevels(cIdx                          ), 1); // only coefficients of the current layer are counted
+          ROTRS(rcMbDataCurr.has4x4NonZeroLevels(cIdx + CURR_MB_ABOVE_NEIGHBOUR), 1); // only coefficients of the current layer are counted
           return 0;
         }
 
         //===== check for intra =====
-        ROTRS( rcMbDataCurr.isIntra(), 3 );
+        ROTRS(rcMbDataCurr.isIntra(), 3);
 
 #if PROPOSED_DEBLOCKING_APRIL2010
         //--- check inter-profile compatibility ---
-        if( ( rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE && rcMbDataAccess.getSH().getSPS().getConstrainedSet1Flag() ) ||
-            ( rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_HIGH_PROFILE     && rcMbDataAccess.getSH().getSPS().getConstrainedSet0Flag() )    )
+        if((rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE && rcMbDataAccess.getSH().getSPS().getConstrainedSet1Flag()) ||
+            (rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_HIGH_PROFILE     && rcMbDataAccess.getSH().getSPS().getConstrainedSet0Flag())   )
         {
-            if( ( rcMbDataCurr.is4x4BlkCoded( cIdx                           ) && !rcMbDataCurr.is4x4BlkResidual( cIdx                           ) ) ||
-                ( rcMbDataCurr.is4x4BlkCoded( cIdx + CURR_MB_ABOVE_NEIGHBOUR ) && !rcMbDataCurr.is4x4BlkResidual( cIdx + CURR_MB_ABOVE_NEIGHBOUR ) )    )
+            if((rcMbDataCurr.is4x4BlkCoded(cIdx                          ) && !rcMbDataCurr.is4x4BlkResidual(cIdx                          )) ||
+                (rcMbDataCurr.is4x4BlkCoded(cIdx + CURR_MB_ABOVE_NEIGHBOUR) && !rcMbDataCurr.is4x4BlkResidual(cIdx + CURR_MB_ABOVE_NEIGHBOUR))   )
             {
-                printf( "Profile compatibility issue with deblocking filter\n" );
+                printf("Profile compatibility issue with deblocking filter\n");
             }
         }
 #endif
 
         //===== check for transform coefficients and residual samples =====
-        ROTRS( rcMbDataCurr.is4x4BlkResidual    ( cIdx                           ), 2 );
-        ROTRS( rcMbDataCurr.is4x4BlkResidual    ( cIdx + CURR_MB_ABOVE_NEIGHBOUR ), 2 );
+        ROTRS(rcMbDataCurr.is4x4BlkResidual    (cIdx                          ), 2);
+        ROTRS(rcMbDataCurr.is4x4BlkResidual    (cIdx + CURR_MB_ABOVE_NEIGHBOUR), 2);
 #if PROPOSED_DEBLOCKING_APRIL2010
-        if( rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE )
+        if(rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE)
         {
-            ROTRS( rcMbDataCurr.is4x4BlkCoded     ( cIdx                           ), 2 );
-            ROTRS( rcMbDataCurr.is4x4BlkCoded     ( cIdx + CURR_MB_ABOVE_NEIGHBOUR ), 2 );
+            ROTRS(rcMbDataCurr.is4x4BlkCoded     (cIdx                          ), 2);
+            ROTRS(rcMbDataCurr.is4x4BlkCoded     (cIdx + CURR_MB_ABOVE_NEIGHBOUR), 2);
         }
         else
         {
-            ROTRS( rcMbDataCurr.isDQId0AndBlkCoded( cIdx                           ), 2 );
-            ROTRS( rcMbDataCurr.isDQId0AndBlkCoded( cIdx + CURR_MB_ABOVE_NEIGHBOUR ), 2 );
+            ROTRS(rcMbDataCurr.isDQId0AndBlkCoded(cIdx                          ), 2);
+            ROTRS(rcMbDataCurr.isDQId0AndBlkCoded(cIdx + CURR_MB_ABOVE_NEIGHBOUR), 2);
         }
 #else
-        ROTRS( rcMbDataCurr.isDQId0AndBlkCoded  ( cIdx                           ), 2 );
-        ROTRS( rcMbDataCurr.isDQId0AndBlkCoded  ( cIdx + CURR_MB_ABOVE_NEIGHBOUR ), 2 );
+        ROTRS(rcMbDataCurr.isDQId0AndBlkCoded  (cIdx                          ), 2);
+        ROTRS(rcMbDataCurr.isDQId0AndBlkCoded  (cIdx + CURR_MB_ABOVE_NEIGHBOUR), 2);
 #endif
 
         //===== check for motion vectors ====
@@ -427,71 +427,71 @@ UInt LoopFilter::xGetHorFilterStrength(const MbDataAccess& rcMbDataAccess,
     //---   EXTERNAL EDGE   ---
     //-------------------------
     const MbData& rcMbDataCurr  = rcMbDataAccess.getMbData();
-    const MbData& rcMbDataAbove = xGetMbDataAbove( rcMbDataAccess );
+    const MbData& rcMbDataAbove = xGetMbDataAbove(rcMbDataAccess);
 
     //===== check special condition for inter-layer deblocking =====
-    if( bInterLayerFlag )
+    if(bInterLayerFlag)
     {
         ROFRS(rcMbDataCurr .isIntra(),  0); // redundant - just for clarity
         ROFRS(rcMbDataAbove.isIntra(),  0);
     }
 
     //===== check special condition for I_BL in spatial scalable coding =====
-    if(bSpatialScalableFlag && ( rcMbDataCurr.isIntraBL() || rcMbDataAbove.isIntraBL()))
+    if(bSpatialScalableFlag && (rcMbDataCurr.isIntraBL() || rcMbDataAbove.isIntraBL()))
     {
-        UInt   bIntraBs = ( ! m_bHorMixedMode && rcMbDataAccess.getMbPicType() == FRAME ? 4 : 3 );
-        ROTRS( rcMbDataCurr .isIntraButnotIBL(),  bIntraBs );
-        ROTRS( rcMbDataAbove.isIntraButnotIBL(),  bIntraBs );
-        if( rcMbDataCurr.isIntraBL() && rcMbDataAbove.isIntraBL() )
+        UInt   bIntraBs = (! m_bHorMixedMode && rcMbDataAccess.getMbPicType() == FRAME ? 4 : 3);
+        ROTRS(rcMbDataCurr .isIntraButnotIBL(),  bIntraBs);
+        ROTRS(rcMbDataAbove.isIntraButnotIBL(),  bIntraBs);
+        if(rcMbDataCurr.isIntraBL() && rcMbDataAbove.isIntraBL())
         {
-            ROTRS( rcMbDataCurr .has4x4NonZeroLevels(cIdx ), 1 ); // only coefficients of the current layer are counted
-            ROTRS( rcMbDataAbove.has4x4NonZeroLevels(cIdx + ABOVE_MB_ABOVE_NEIGHBOUR ), 1 ); // only coefficients of the current layer are counted
+            ROTRS(rcMbDataCurr .has4x4NonZeroLevels(cIdx), 1); // only coefficients of the current layer are counted
+            ROTRS(rcMbDataAbove.has4x4NonZeroLevels(cIdx + ABOVE_MB_ABOVE_NEIGHBOUR), 1); // only coefficients of the current layer are counted
             return 0;
         }
-        ROTRS( ! rcMbDataCurr .isIntra() && rcMbDataCurr .is4x4BlkResidual( cIdx                            ), 2 );
-        ROTRS( ! rcMbDataAbove.isIntra() && rcMbDataAbove.is4x4BlkResidual( cIdx + ABOVE_MB_ABOVE_NEIGHBOUR ), 2 );
+        ROTRS(! rcMbDataCurr .isIntra() && rcMbDataCurr .is4x4BlkResidual(cIdx                           ), 2);
+        ROTRS(! rcMbDataAbove.isIntra() && rcMbDataAbove.is4x4BlkResidual(cIdx + ABOVE_MB_ABOVE_NEIGHBOUR), 2);
         return 1;
     }
 
     //===== check for intra =====
-    UInt   bIntraBs = ( ! m_bHorMixedMode && rcMbDataAccess.getMbPicType() == FRAME ? 4 : 3 );
-    ROTRS( rcMbDataCurr .isIntra(), bIntraBs );
-    ROTRS( rcMbDataAbove.isIntra(), bIntraBs );
+    UInt   bIntraBs = (! m_bHorMixedMode && rcMbDataAccess.getMbPicType() == FRAME ? 4 : 3);
+    ROTRS(rcMbDataCurr .isIntra(), bIntraBs);
+    ROTRS(rcMbDataAbove.isIntra(), bIntraBs);
 
 #if PROPOSED_DEBLOCKING_APRIL2010
     //--- check inter-profile compatibility ---
-    if((rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE && rcMbDataAccess.getSH().getSPS().getConstrainedSet1Flag() ) ||
-       (rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_HIGH_PROFILE     && rcMbDataAccess.getSH().getSPS().getConstrainedSet0Flag() )    )
+    if((rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE && rcMbDataAccess.getSH().getSPS().getConstrainedSet1Flag()) ||
+       (rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_HIGH_PROFILE     && rcMbDataAccess.getSH().getSPS().getConstrainedSet0Flag())   )
     {
         if((rcMbDataCurr.is4x4BlkCoded(cIdx) && !rcMbDataCurr.is4x4BlkResidual(cIdx))
-              || (rcMbDataCurr.is4x4BlkCoded(cIdx + ABOVE_MB_ABOVE_NEIGHBOUR ) && !rcMbDataCurr.is4x4BlkResidual(cIdx + ABOVE_MB_ABOVE_NEIGHBOUR)))
+              || (rcMbDataCurr.is4x4BlkCoded(cIdx + ABOVE_MB_ABOVE_NEIGHBOUR) && !rcMbDataCurr.is4x4BlkResidual(cIdx + ABOVE_MB_ABOVE_NEIGHBOUR)))
         {
-              printf( "Profile compatability issue with deblocking filter\n" );
+              printf("Profile compatability issue with deblocking filter\n");
         }
     }
 #endif
 
     //===== check for transform coefficients and residual samples =====
-    ROTRS( rcMbDataCurr. is4x4BlkResidual     ( cIdx                            ), 2 );
-    ROTRS( rcMbDataAbove.is4x4BlkResidual     ( cIdx + ABOVE_MB_ABOVE_NEIGHBOUR ), 2 );
+    ROTRS(rcMbDataCurr. is4x4BlkResidual     (cIdx                           ), 2);
+    ROTRS(rcMbDataAbove.is4x4BlkResidual     (cIdx + ABOVE_MB_ABOVE_NEIGHBOUR), 2);
 #if PROPOSED_DEBLOCKING_APRIL2010
-    if( rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE )
+    if(rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE)
     {
-        ROTRS( rcMbDataCurr. is4x4BlkCoded      ( cIdx                            ), 2 );
-        ROTRS( rcMbDataAbove.is4x4BlkCoded      ( cIdx + ABOVE_MB_ABOVE_NEIGHBOUR ), 2 );
+        ROTRS(rcMbDataCurr. is4x4BlkCoded      (cIdx                           ), 2);
+        ROTRS(rcMbDataAbove.is4x4BlkCoded      (cIdx + ABOVE_MB_ABOVE_NEIGHBOUR), 2);
     }
     else
     {
-        ROTRS( rcMbDataCurr. isDQId0AndBlkCoded ( cIdx                            ), 2 );
-        ROTRS( rcMbDataAbove.isDQId0AndBlkCoded ( cIdx + ABOVE_MB_ABOVE_NEIGHBOUR ), 2 );
+        ROTRS(rcMbDataCurr. isDQId0AndBlkCoded (cIdx                           ), 2);
+        ROTRS(rcMbDataAbove.isDQId0AndBlkCoded (cIdx + ABOVE_MB_ABOVE_NEIGHBOUR), 2);
     }
 #else
-    ROTRS( rcMbDataCurr. isDQId0AndBlkCoded   ( cIdx                            ), 2 );
-    ROTRS( rcMbDataAbove.isDQId0AndBlkCoded   ( cIdx + ABOVE_MB_ABOVE_NEIGHBOUR ), 2 );
+    ROTRS(rcMbDataCurr. isDQId0AndBlkCoded   (cIdx                           ), 2);
+    ROTRS(rcMbDataAbove.isDQId0AndBlkCoded   (cIdx + ABOVE_MB_ABOVE_NEIGHBOUR), 2);
 #endif
 
     //===== check for mixed mode =====
-    ROTRS( m_bHorMixedMode, 1 );
+    ROTRS(m_bHorMixedMode, 1);
 
     //===== check for motion vectors ====
     if(rcMbDataCurr.isInterPMb() && rcMbDataAbove.isInterPMb())
@@ -507,13 +507,13 @@ UInt LoopFilter::xGetVerFilterStrength(const MbDataAccess&  rcMbDataAccess,
                                        Int                  iFilterIdc,
                                        Bool                 bInterLayerFlag,
                                        Bool                 bSpatialScalableFlag,
-                                       LFPass               eLFPass )
+                                       LFPass               eLFPass)
 {
     Short sHorMvThr     = 4;
-    Short sVerMvThr     = ( rcMbDataAccess.getMbPicType() == FRAME ? 4 : 2 );
-    Bool  bFilterInside = xFilterInsideEdges( rcMbDataAccess, iFilterIdc, bInterLayerFlag, eLFPass );
-    Bool  bFilterLeft   = xFilterLeftEdge   ( rcMbDataAccess, iFilterIdc, bInterLayerFlag, eLFPass );
-    ROFRS( ( ! cIdx.x() && bFilterLeft ) || ( cIdx.x() && bFilterInside ), 0 );
+    Short sVerMvThr     = (rcMbDataAccess.getMbPicType() == FRAME ? 4 : 2);
+    Bool  bFilterInside = xFilterInsideEdges(rcMbDataAccess, iFilterIdc, bInterLayerFlag, eLFPass);
+    Bool  bFilterLeft   = xFilterLeftEdge   (rcMbDataAccess, iFilterIdc, bInterLayerFlag, eLFPass);
+    ROFRS((! cIdx.x() && bFilterLeft) || (cIdx.x() && bFilterInside), 0);
 
 
     //--------------------------
@@ -524,50 +524,50 @@ UInt LoopFilter::xGetVerFilterStrength(const MbDataAccess&  rcMbDataAccess,
         const MbData& rcMbDataCurr = rcMbDataAccess.getMbData();
 
         //===== check special condition for I_BL in spatial scalable coding =====
-        if( bSpatialScalableFlag && rcMbDataCurr.isIntraBL() )
+        if(bSpatialScalableFlag && rcMbDataCurr.isIntraBL())
         {
-          ROTRS( rcMbDataCurr.has4x4NonZeroLevels( cIdx                          ), 1 ); // only coefficients of the current layer are counted
-          ROTRS( rcMbDataCurr.has4x4NonZeroLevels( cIdx + CURR_MB_LEFT_NEIGHBOUR ), 1 ); // only coefficients of the current layer are counted
+          ROTRS(rcMbDataCurr.has4x4NonZeroLevels(cIdx                         ), 1); // only coefficients of the current layer are counted
+          ROTRS(rcMbDataCurr.has4x4NonZeroLevels(cIdx + CURR_MB_LEFT_NEIGHBOUR), 1); // only coefficients of the current layer are counted
           return 0;
         }
 
         //===== check for intra =====
-        ROTRS( rcMbDataCurr.isIntra(), 3 );
+        ROTRS(rcMbDataCurr.isIntra(), 3);
 
 #if PROPOSED_DEBLOCKING_APRIL2010
         //--- check inter-profile compatibility ---
-        if((rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE && rcMbDataAccess.getSH().getSPS().getConstrainedSet1Flag() ) ||
-           (rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_HIGH_PROFILE     && rcMbDataAccess.getSH().getSPS().getConstrainedSet0Flag() )    )
+        if((rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE && rcMbDataAccess.getSH().getSPS().getConstrainedSet1Flag()) ||
+           (rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_HIGH_PROFILE     && rcMbDataAccess.getSH().getSPS().getConstrainedSet0Flag())   )
         {
-            if((rcMbDataCurr.is4x4BlkCoded( cIdx                          ) && !rcMbDataCurr.is4x4BlkResidual( cIdx                          ) ) ||
-               (rcMbDataCurr.is4x4BlkCoded( cIdx + CURR_MB_LEFT_NEIGHBOUR ) && !rcMbDataCurr.is4x4BlkResidual( cIdx + CURR_MB_LEFT_NEIGHBOUR ) )    )
+            if((rcMbDataCurr.is4x4BlkCoded(cIdx                         ) && !rcMbDataCurr.is4x4BlkResidual(cIdx                         )) ||
+               (rcMbDataCurr.is4x4BlkCoded(cIdx + CURR_MB_LEFT_NEIGHBOUR) && !rcMbDataCurr.is4x4BlkResidual(cIdx + CURR_MB_LEFT_NEIGHBOUR))   )
             {
-                printf( "Profile compatability issue with deblocking filter\n" );
+                printf("Profile compatability issue with deblocking filter\n");
             }
         }
 #endif
 
         //===== check for transform coefficients and residual samples =====
-        ROTRS( rcMbDataCurr.is4x4BlkResidual(cIdx), 2);
-        ROTRS( rcMbDataCurr.is4x4BlkResidual(cIdx + CURR_MB_LEFT_NEIGHBOUR ), 2);
+        ROTRS(rcMbDataCurr.is4x4BlkResidual(cIdx), 2);
+        ROTRS(rcMbDataCurr.is4x4BlkResidual(cIdx + CURR_MB_LEFT_NEIGHBOUR), 2);
 #if PROPOSED_DEBLOCKING_APRIL2010
-        if( rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE )
+        if(rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE)
         {
-            ROTRS( rcMbDataCurr.is4x4BlkCoded(cIdx), 2);
-            ROTRS( rcMbDataCurr.is4x4BlkCoded(cIdx + CURR_MB_LEFT_NEIGHBOUR ), 2);
+            ROTRS(rcMbDataCurr.is4x4BlkCoded(cIdx), 2);
+            ROTRS(rcMbDataCurr.is4x4BlkCoded(cIdx + CURR_MB_LEFT_NEIGHBOUR), 2);
         }
         else
         {
-            ROTRS( rcMbDataCurr.isDQId0AndBlkCoded(cIdx), 2);
-            ROTRS( rcMbDataCurr.isDQId0AndBlkCoded(cIdx + CURR_MB_LEFT_NEIGHBOUR), 2);
+            ROTRS(rcMbDataCurr.isDQId0AndBlkCoded(cIdx), 2);
+            ROTRS(rcMbDataCurr.isDQId0AndBlkCoded(cIdx + CURR_MB_LEFT_NEIGHBOUR), 2);
         }
 #else
-        ROTRS( rcMbDataCurr.isDQId0AndBlkCoded(cIdx), 2);
-        ROTRS( rcMbDataCurr.isDQId0AndBlkCoded(cIdx + CURR_MB_LEFT_NEIGHBOUR ), 2);
+        ROTRS(rcMbDataCurr.isDQId0AndBlkCoded(cIdx), 2);
+        ROTRS(rcMbDataCurr.isDQId0AndBlkCoded(cIdx + CURR_MB_LEFT_NEIGHBOUR), 2);
 #endif
 
         //===== check for motion vectors ====
-        if( rcMbDataCurr.isInterPMb() )
+        if(rcMbDataCurr.isInterPMb())
         {
             return xCheckMvDataP(rcMbDataCurr, cIdx, rcMbDataCurr, cIdx + CURR_MB_LEFT_NEIGHBOUR, sHorMvThr, sVerMvThr);
         }
@@ -585,71 +585,71 @@ UInt LoopFilter::xGetVerFilterStrength(const MbDataAccess&  rcMbDataAccess,
     //===== check special condition for inter-layer deblocking =====
     if(bInterLayerFlag)
     {
-        ROFRS( rcMbDataCurr.isIntra(), 0 ); // redundant - just for clarity
-        ROFRS( rcMbDataLeft.isIntra(), 0 );
+        ROFRS(rcMbDataCurr.isIntra(), 0); // redundant - just for clarity
+        ROFRS(rcMbDataLeft.isIntra(), 0);
     }
 
     //===== check special condition for I_BL in spatial scalable coding =====
-    if(bSpatialScalableFlag && ( rcMbDataCurr.isIntraBL() || rcMbDataLeft.isIntraBL()))
+    if(bSpatialScalableFlag && (rcMbDataCurr.isIntraBL() || rcMbDataLeft.isIntraBL()))
     {
-        ROTRS( rcMbDataCurr.isIntraButnotIBL(),  4 );
-        ROTRS( rcMbDataLeft.isIntraButnotIBL(),  4 );
-        if( rcMbDataCurr.isIntraBL() && rcMbDataLeft.isIntraBL() )
+        ROTRS(rcMbDataCurr.isIntraButnotIBL(),  4);
+        ROTRS(rcMbDataLeft.isIntraButnotIBL(),  4);
+        if(rcMbDataCurr.isIntraBL() && rcMbDataLeft.isIntraBL())
         {
-            ROTRS( rcMbDataCurr.has4x4NonZeroLevels(cIdx), 1); // only coefficients of the current layer are counted
-            ROTRS( rcMbDataLeft.has4x4NonZeroLevels(cIdxLeft), 1); // only coefficients of the current layer are counted
+            ROTRS(rcMbDataCurr.has4x4NonZeroLevels(cIdx), 1); // only coefficients of the current layer are counted
+            ROTRS(rcMbDataLeft.has4x4NonZeroLevels(cIdxLeft), 1); // only coefficients of the current layer are counted
             return 0;
         }
-        ROTRS( ! rcMbDataCurr.isIntra() && rcMbDataCurr.is4x4BlkResidual( cIdx     ), 2 );
-        ROTRS( ! rcMbDataLeft.isIntra() && rcMbDataLeft.is4x4BlkResidual( cIdxLeft ), 2 );
+        ROTRS(! rcMbDataCurr.isIntra() && rcMbDataCurr.is4x4BlkResidual(cIdx    ), 2);
+        ROTRS(! rcMbDataLeft.isIntra() && rcMbDataLeft.is4x4BlkResidual(cIdxLeft), 2);
         return 1;
     }
 
     //===== check for intra =====
-    ROTRS( rcMbDataCurr.isIntra(), 4 );
-    ROTRS( rcMbDataLeft.isIntra(), 4 );
+    ROTRS(rcMbDataCurr.isIntra(), 4);
+    ROTRS(rcMbDataLeft.isIntra(), 4);
 
 #if PROPOSED_DEBLOCKING_APRIL2010
     //--- check inter-profile compatibility ---
-    if((rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE && rcMbDataAccess.getSH().getSPS().getConstrainedSet1Flag() ) ||
-       (rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_HIGH_PROFILE     && rcMbDataAccess.getSH().getSPS().getConstrainedSet0Flag() )    )
+    if((rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE && rcMbDataAccess.getSH().getSPS().getConstrainedSet1Flag()) ||
+       (rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_HIGH_PROFILE     && rcMbDataAccess.getSH().getSPS().getConstrainedSet0Flag())   )
     {
         if((rcMbDataCurr.is4x4BlkCoded(cIdx) && !rcMbDataCurr.is4x4BlkResidual(cIdx)) ||
            (rcMbDataCurr.is4x4BlkCoded(cIdxLeft) && !rcMbDataCurr.is4x4BlkResidual(cIdxLeft)))
         {
-            printf( "Profile compatability issue with deblocking filter\n" );
+            printf("Profile compatability issue with deblocking filter\n");
         }
     }
 #endif
 
     //===== check for transform coefficients and residual samples =====
-    ROTRS( rcMbDataCurr.is4x4BlkResidual(cIdx), 2);
-    ROTRS( rcMbDataLeft.is4x4BlkResidual(cIdxLeft), 2);
+    ROTRS(rcMbDataCurr.is4x4BlkResidual(cIdx), 2);
+    ROTRS(rcMbDataLeft.is4x4BlkResidual(cIdxLeft), 2);
 #if PROPOSED_DEBLOCKING_APRIL2010
     if(rcMbDataAccess.getSH().getSPS().getProfileIdc() == SCALABLE_BASELINE_PROFILE)
     {
-        ROTRS( rcMbDataCurr.is4x4BlkCoded(cIdx), 2);
-        ROTRS( rcMbDataLeft.is4x4BlkCoded(cIdxLeft), 2);
+        ROTRS(rcMbDataCurr.is4x4BlkCoded(cIdx), 2);
+        ROTRS(rcMbDataLeft.is4x4BlkCoded(cIdxLeft), 2);
     }
     else
     {
-        ROTRS( rcMbDataCurr.isDQId0AndBlkCoded(cIdx), 2);
-        ROTRS( rcMbDataLeft.isDQId0AndBlkCoded(cIdxLeft), 2);
+        ROTRS(rcMbDataCurr.isDQId0AndBlkCoded(cIdx), 2);
+        ROTRS(rcMbDataLeft.isDQId0AndBlkCoded(cIdxLeft), 2);
     }
 #else
-    ROTRS( rcMbDataCurr.isDQId0AndBlkCoded(cIdx), 2);
-    ROTRS( rcMbDataLeft.isDQId0AndBlkCoded(cIdxLeft), 2);
+    ROTRS(rcMbDataCurr.isDQId0AndBlkCoded(cIdx), 2);
+    ROTRS(rcMbDataLeft.isDQId0AndBlkCoded(cIdxLeft), 2);
 #endif
 
     //===== check for mixed mode =====
-    ROTRS( m_bVerMixedMode, 1 );
+    ROTRS(m_bVerMixedMode, 1);
 
     //===== check for motion vectors ====
-    if( rcMbDataCurr.isInterPMb() && rcMbDataLeft.isInterPMb() )
+    if(rcMbDataCurr.isInterPMb() && rcMbDataLeft.isInterPMb())
     {
-        return xCheckMvDataP( rcMbDataCurr, cIdx, rcMbDataLeft, cIdxLeft, sHorMvThr, sVerMvThr );
+        return xCheckMvDataP(rcMbDataCurr, cIdx, rcMbDataLeft, cIdxLeft, sHorMvThr, sVerMvThr);
     }
-    return   xCheckMvDataB( rcMbDataCurr, cIdx, rcMbDataLeft, cIdxLeft, sHorMvThr, sVerMvThr );
+    return   xCheckMvDataB(rcMbDataCurr, cIdx, rcMbDataLeft, cIdxLeft, sHorMvThr, sVerMvThr);
 }
 
 
@@ -657,34 +657,34 @@ const MbData& LoopFilter::xGetMbDataLeft(const MbDataAccess& rcMbDataAccess, Lum
 {
     if(!m_bVerMixedMode)
     {
-        rcIdx = ( rcIdx + LEFT_MB_LEFT_NEIGHBOUR );
+        rcIdx = (rcIdx + LEFT_MB_LEFT_NEIGHBOUR);
 
         return rcMbDataAccess.getMbDataLeft();
     }
-    if( rcMbDataAccess.getMbPicType() == FRAME )
+    if(rcMbDataAccess.getMbPicType() == FRAME)
     {
-        rcIdx = (LumaIdx)B4x4Idx( rcMbDataAccess.isTopMb() ? ( rcIdx < 8 ? 3 : 7 ) : ( rcIdx < 8 ? 11 : 15 ) );
-        ROTRS(  rcMbDataAccess.isTopMb() &&  m_bAddEdge,  rcMbDataAccess.getMbDataBelowLeft() );
-        ROTRS( !rcMbDataAccess.isTopMb() && !m_bAddEdge,  rcMbDataAccess.getMbDataAboveLeft() );
+        rcIdx = (LumaIdx)B4x4Idx(rcMbDataAccess.isTopMb() ? (rcIdx < 8 ? 3 : 7) : (rcIdx < 8 ? 11 : 15));
+        ROTRS (rcMbDataAccess.isTopMb() &&  m_bAddEdge,  rcMbDataAccess.getMbDataBelowLeft());
+        ROTRS (!rcMbDataAccess.isTopMb() && !m_bAddEdge,  rcMbDataAccess.getMbDataAboveLeft());
 
         return  rcMbDataAccess.getMbDataLeft();
     }
     Bool bBotHalf = (rcIdx > 7);
     rcIdx = (LumaIdx)B4x4Idx(((rcIdx % 8) << 1) + (m_bAddEdge ? 7 : 3));
-    ROTRS(  rcMbDataAccess.isTopMb() &&  bBotHalf, rcMbDataAccess.getMbDataBelowLeft() );
-    ROTRS( !rcMbDataAccess.isTopMb() && !bBotHalf, rcMbDataAccess.getMbDataAboveLeft() );
+    ROTRS (rcMbDataAccess.isTopMb() &&  bBotHalf, rcMbDataAccess.getMbDataBelowLeft());
+    ROTRS (!rcMbDataAccess.isTopMb() && !bBotHalf, rcMbDataAccess.getMbDataAboveLeft());
 
     return rcMbDataAccess.getMbDataLeft();
 }
 
 
-const MbData& LoopFilter::xGetMbDataAbove( const MbDataAccess& rcMbDataAccess )
+const MbData& LoopFilter::xGetMbDataAbove(const MbDataAccess& rcMbDataAccess)
 {
-    ROTRS( ! m_bHorMixedMode && rcMbDataAccess.getMbData().getFieldFlag(),  rcMbDataAccess.getMbDataAboveAbove()  );
-    ROTRS( ! m_bHorMixedMode,                                               rcMbDataAccess.getMbDataAbove()       );
-    ROTRS( rcMbDataAccess.getMbPicType() == FRAME && m_bAddEdge,            rcMbDataAccess.getMbDataAboveAbove()  );
-    ROTRS( rcMbDataAccess.getMbPicType() == FRAME,                          rcMbDataAccess.getMbDataAbove()       );
-    ROTRS( rcMbDataAccess.isTopMb(),                                        rcMbDataAccess.getMbDataAbove()       );
+    ROTRS(! m_bHorMixedMode && rcMbDataAccess.getMbData().getFieldFlag(),  rcMbDataAccess.getMbDataAboveAbove() );
+    ROTRS(! m_bHorMixedMode,                                               rcMbDataAccess.getMbDataAbove()      );
+    ROTRS(rcMbDataAccess.getMbPicType() == FRAME && m_bAddEdge,            rcMbDataAccess.getMbDataAboveAbove() );
+    ROTRS(rcMbDataAccess.getMbPicType() == FRAME,                          rcMbDataAccess.getMbDataAbove()      );
+    ROTRS(rcMbDataAccess.isTopMb(),                                        rcMbDataAccess.getMbDataAbove()      );
 
     return rcMbDataAccess.getMbDataAboveAbove();
 }
@@ -692,31 +692,31 @@ const MbData& LoopFilter::xGetMbDataAbove( const MbDataAccess& rcMbDataAccess )
 
 Bool LoopFilter::xFilterInsideEdges(const MbDataAccess& rcMbDataAccess, Int iFilterIdc, Bool bInterLayerFlag, LFPass eLFPass)
 {
-    ROTRS( iFilterIdc == 1,                                           false );
-    ROTRS( eLFPass    == SECOND_PASS,                                 false );
-    ROTRS( bInterLayerFlag && ! rcMbDataAccess.getMbData().isIntra(), false );
+    ROTRS(iFilterIdc == 1,                                           false);
+    ROTRS(eLFPass    == SECOND_PASS,                                 false);
+    ROTRS(bInterLayerFlag && ! rcMbDataAccess.getMbData().isIntra(), false);
     return true;
 }
 
 
-Bool LoopFilter::xFilterLeftEdge( const MbDataAccess& rcMbDataAccess, Int iFilterIdc, Bool bInterLayerFlag, LFPass eLFPass)
+Bool LoopFilter::xFilterLeftEdge(const MbDataAccess& rcMbDataAccess, Int iFilterIdc, Bool bInterLayerFlag, LFPass eLFPass)
 {
-    ROTRS( iFilterIdc == 1,                                           false );
-    ROFRS( rcMbDataAccess.isLeftMbExisting(),                         false );
+    ROTRS(iFilterIdc == 1,                                           false);
+    ROFRS(rcMbDataAccess.isLeftMbExisting(),                         false);
     if(!rcMbDataAccess.isAvailableLeftLF())
     {
-        ROTRS( iFilterIdc == 2,                                         false );
-        ROTRS( iFilterIdc == 5,                                         false );
-        ROTRS( iFilterIdc == 3 && eLFPass == FIRST_PASS,                false );
-        ROTRS( iFilterIdc == 6 && eLFPass == FIRST_PASS,                false );
-        ROTRS( iFilterIdc == 0 && eLFPass == SECOND_PASS,               false );
-        ROTRS( iFilterIdc == 4 && eLFPass == SECOND_PASS,               false );
+        ROTRS(iFilterIdc == 2,                                         false);
+        ROTRS(iFilterIdc == 5,                                         false);
+        ROTRS(iFilterIdc == 3 && eLFPass == FIRST_PASS,                false);
+        ROTRS(iFilterIdc == 6 && eLFPass == FIRST_PASS,                false);
+        ROTRS(iFilterIdc == 0 && eLFPass == SECOND_PASS,               false);
+        ROTRS(iFilterIdc == 4 && eLFPass == SECOND_PASS,               false);
     }
     else
     {
-        ROTRS( eLFPass    == SECOND_PASS,                               false );
+        ROTRS(eLFPass    == SECOND_PASS,                               false);
     }
-    ROTRS( bInterLayerFlag && ! rcMbDataAccess.getMbData().isIntra(), false );
+    ROTRS(bInterLayerFlag && ! rcMbDataAccess.getMbData().isIntra(), false);
     // NOTE: intra status of neighboring MB must be checked in dependence of the block index (and field mode)
     return true;
 }
@@ -724,22 +724,22 @@ Bool LoopFilter::xFilterLeftEdge( const MbDataAccess& rcMbDataAccess, Int iFilte
 
 Bool LoopFilter::xFilterTopEdge(const MbDataAccess& rcMbDataAccess, Int iFilterIdc, Bool bInterLayerFlag, LFPass eLFPass)
 {
-    ROTRS( iFilterIdc == 1, false );
-    ROFRS( rcMbDataAccess.isAboveMbExisting(), false );
+    ROTRS(iFilterIdc == 1, false);
+    ROFRS(rcMbDataAccess.isAboveMbExisting(), false);
     if(!rcMbDataAccess.isAvailableAboveLF())
     {
-        ROTRS( iFilterIdc == 2,                                         false );
-        ROTRS( iFilterIdc == 5,                                         false );
-        ROTRS( iFilterIdc == 3 && eLFPass == FIRST_PASS,                false );
-        ROTRS( iFilterIdc == 6 && eLFPass == FIRST_PASS,                false );
-        ROTRS( iFilterIdc == 0 && eLFPass == SECOND_PASS,               false );
-        ROTRS( iFilterIdc == 4 && eLFPass == SECOND_PASS,               false );
+        ROTRS(iFilterIdc == 2,                                         false);
+        ROTRS(iFilterIdc == 5,                                         false);
+        ROTRS(iFilterIdc == 3 && eLFPass == FIRST_PASS,                false);
+        ROTRS(iFilterIdc == 6 && eLFPass == FIRST_PASS,                false);
+        ROTRS(iFilterIdc == 0 && eLFPass == SECOND_PASS,               false);
+        ROTRS(iFilterIdc == 4 && eLFPass == SECOND_PASS,               false);
     }
     else
     {
-        ROTRS( eLFPass    == SECOND_PASS,                               false );
+        ROTRS(eLFPass    == SECOND_PASS,                               false);
     }
-    ROTRS( bInterLayerFlag && ! rcMbDataAccess.getMbData().isIntra(), false );
+    ROTRS(bInterLayerFlag && ! rcMbDataAccess.getMbData().isIntra(), false);
     // NOTE: intra status of neighboring MB must be checked in dependence of the block index (and field mode)
     return true;
 }
@@ -750,23 +750,23 @@ UChar LoopFilter::xCheckMvDataP(const MbData& rcQMbData,
                                 const MbData& rcPMbData,
                                 const LumaIdx cPIdx,
                                 const Short   sHorMvThr,
-                                const Short   sVerMvThr  )
+                                const Short   sVerMvThr )
 {
-    const MbMotionData& rcMbMotionDataL0Q = rcQMbData.getMbMotionData( LIST_0 );
-    const MbMotionData& rcMbMotionDataL0P = rcPMbData.getMbMotionData( LIST_0 );
+    const MbMotionData& rcMbMotionDataL0Q = rcQMbData.getMbMotionData(LIST_0);
+    const MbMotionData& rcMbMotionDataL0P = rcPMbData.getMbMotionData(LIST_0);
 
     //===== check reference pictures =====
-    const RefPicIdc&  rcRefPicIdcQ = rcMbMotionDataL0Q.getRefPicIdc( cQIdx );
-    const RefPicIdc&  rcRefPicIdcP = rcMbMotionDataL0P.getRefPicIdc( cPIdx );
-    ROF   ( rcRefPicIdcQ.isValid() );
-    ROF   ( rcRefPicIdcP.isValid() );
-    ROTRS ( rcRefPicIdcQ != rcRefPicIdcP, 1 );
+    const RefPicIdc&  rcRefPicIdcQ = rcMbMotionDataL0Q.getRefPicIdc(cQIdx);
+    const RefPicIdc&  rcRefPicIdcP = rcMbMotionDataL0P.getRefPicIdc(cPIdx);
+    ROF   (rcRefPicIdcQ.isValid());
+    ROF   (rcRefPicIdcP.isValid());
+    ROTRS (rcRefPicIdcQ != rcRefPicIdcP, 1);
 
     //===== check the motion vector distance =====
     const Mv& cMvQ = rcMbMotionDataL0Q.getMv(cQIdx);
     const Mv& cMvP = rcMbMotionDataL0P.getMv(cPIdx);
-    ROTRS( cMvP.getAbsHorDiff( cMvQ ) >= sHorMvThr, 1 );
-    ROTRS( cMvP.getAbsVerDiff( cMvQ ) >= sVerMvThr, 1 );
+    ROTRS(cMvP.getAbsHorDiff(cMvQ) >= sHorMvThr, 1);
+    ROTRS(cMvP.getAbsVerDiff(cMvQ) >= sVerMvThr, 1);
     return 0;
 }
 
@@ -776,7 +776,7 @@ UChar LoopFilter::xCheckMvDataB(const MbData& rcQMbData,
                                 const MbData& rcPMbData,
                                 const LumaIdx cPIdx,
                                 const Short   sHorMvThr,
-                                const Short   sVerMvThr )
+                                const Short   sVerMvThr)
 {
     const MbMotionData& rcMbMotionDataL0Q = rcQMbData.getMbMotionData(LIST_0);
     const MbMotionData& rcMbMotionDataL1Q = rcQMbData.getMbMotionData(LIST_1);
@@ -789,24 +789,24 @@ UChar LoopFilter::xCheckMvDataB(const MbData& rcQMbData,
     const RefPicIdc&  rcRefPicIdcL1P  = rcMbMotionDataL1P.getRefPicIdc(cPIdx);
     UInt uiNumRefPicQ = (rcRefPicIdcL0Q.isValid() ? 1 : 0) + (rcRefPicIdcL1Q.isValid() ? 1 : 0);
     UInt uiNumRefPicP = (rcRefPicIdcL0P.isValid() ? 1 : 0) + (rcRefPicIdcL1P.isValid() ? 1 : 0);
-    ROF( uiNumRefPicQ );
-    ROF( uiNumRefPicP );
+    ROF(uiNumRefPicQ);
+    ROF(uiNumRefPicP);
 
     //===== check number of reference pictures =====
-    ROTRS( uiNumRefPicQ != uiNumRefPicP, 1 );
+    ROTRS(uiNumRefPicQ != uiNumRefPicP, 1);
 
     if(uiNumRefPicP == 1) // one reference picture
     {
         //====_ check reference pictures =====
-        const RefPicIdc& rcRefPicIdcQ = ( rcRefPicIdcL0Q.isValid() ? rcRefPicIdcL0Q : rcRefPicIdcL1Q );
-        const RefPicIdc& rcRefPicIdcP = ( rcRefPicIdcL0P.isValid() ? rcRefPicIdcL0P : rcRefPicIdcL1P );
-        ROTRS( rcRefPicIdcQ != rcRefPicIdcP, 1 );
+        const RefPicIdc& rcRefPicIdcQ = (rcRefPicIdcL0Q.isValid() ? rcRefPicIdcL0Q : rcRefPicIdcL1Q);
+        const RefPicIdc& rcRefPicIdcP = (rcRefPicIdcL0P.isValid() ? rcRefPicIdcL0P : rcRefPicIdcL1P);
+        ROTRS(rcRefPicIdcQ != rcRefPicIdcP, 1);
 
         //===== check the motion vector distance =====
         const Mv& cMvQ = (rcRefPicIdcL0Q.isValid() ? rcMbMotionDataL0Q.getMv(cQIdx) : rcMbMotionDataL1Q.getMv(cQIdx));
         const Mv& cMvP = (rcRefPicIdcL0P.isValid() ? rcMbMotionDataL0P.getMv(cPIdx) : rcMbMotionDataL1P.getMv(cPIdx));
-        ROTRS( cMvP.getAbsHorDiff( cMvQ ) >= sHorMvThr, 1 );
-        ROTRS( cMvP.getAbsVerDiff( cMvQ ) >= sVerMvThr, 1 );
+        ROTRS(cMvP.getAbsHorDiff(cMvQ) >= sHorMvThr, 1);
+        ROTRS(cMvP.getAbsVerDiff(cMvQ) >= sVerMvThr, 1);
         return 0;
     }
 
@@ -817,66 +817,66 @@ UChar LoopFilter::xCheckMvDataB(const MbData& rcQMbData,
         // at least two diff ref pic are in use
         if(rcRefPicIdcL1P != rcRefPicIdcL1Q)
         {
-            ROTRS( rcRefPicIdcL1P != rcRefPicIdcL0Q, 1 );
-            ROTRS( rcRefPicIdcL0P != rcRefPicIdcL1Q, 1 );
+            ROTRS(rcRefPicIdcL1P != rcRefPicIdcL0Q, 1);
+            ROTRS(rcRefPicIdcL0P != rcRefPicIdcL1Q, 1);
 
             // rcRefPicL0P == rcRefPicL1Q && rcRefPicL1P == rcRefPicL0Q
             // check the motion vector distance
-            const Mv& cMvQ0 = rcMbMotionDataL0Q.getMv( cQIdx );
-            const Mv& cMvP0 = rcMbMotionDataL0P.getMv( cPIdx );
-            const Mv& cMvQ1 = rcMbMotionDataL1Q.getMv( cQIdx );
-            const Mv& cMvP1 = rcMbMotionDataL1P.getMv( cPIdx );
-            ROTRS( cMvP0.getAbsHorDiff( cMvQ1 ) >= sHorMvThr, 1 );
-            ROTRS( cMvP0.getAbsVerDiff( cMvQ1 ) >= sVerMvThr, 1 );
-            ROTRS( cMvP1.getAbsHorDiff( cMvQ0 ) >= sHorMvThr, 1 );
-            ROTRS( cMvP1.getAbsVerDiff( cMvQ0 ) >= sVerMvThr, 1 );
+            const Mv& cMvQ0 = rcMbMotionDataL0Q.getMv(cQIdx);
+            const Mv& cMvP0 = rcMbMotionDataL0P.getMv(cPIdx);
+            const Mv& cMvQ1 = rcMbMotionDataL1Q.getMv(cQIdx);
+            const Mv& cMvP1 = rcMbMotionDataL1P.getMv(cPIdx);
+            ROTRS(cMvP0.getAbsHorDiff(cMvQ1) >= sHorMvThr, 1);
+            ROTRS(cMvP0.getAbsVerDiff(cMvQ1) >= sVerMvThr, 1);
+            ROTRS(cMvP1.getAbsHorDiff(cMvQ0) >= sHorMvThr, 1);
+            ROTRS(cMvP1.getAbsVerDiff(cMvQ0) >= sVerMvThr, 1);
             return 0;
         }
 
         // rcRefPicL1P == rcRefPicL1Q
-        ROTRS( rcRefPicIdcL0P != rcRefPicIdcL0Q, 1 );
+        ROTRS(rcRefPicIdcL0P != rcRefPicIdcL0Q, 1);
 
         // rcRefPicL0P == rcRefPicL0Q && rcRefPicL1P == rcRefPicL1Q
         // check the motion vector distance
-        const Mv& cMvQ0 = rcMbMotionDataL0Q.getMv( cQIdx );
-        const Mv& cMvP0 = rcMbMotionDataL0P.getMv( cPIdx );
-        const Mv& cMvQ1 = rcMbMotionDataL1Q.getMv( cQIdx );
-        const Mv& cMvP1 = rcMbMotionDataL1P.getMv( cPIdx );
-        ROTRS( cMvP0.getAbsHorDiff( cMvQ0 ) >= sHorMvThr, 1 );
-        ROTRS( cMvP0.getAbsVerDiff( cMvQ0 ) >= sVerMvThr, 1 );
-        ROTRS( cMvP1.getAbsHorDiff( cMvQ1 ) >= sHorMvThr, 1 );
-        ROTRS( cMvP1.getAbsVerDiff( cMvQ1 ) >= sVerMvThr, 1 );
+        const Mv& cMvQ0 = rcMbMotionDataL0Q.getMv(cQIdx);
+        const Mv& cMvP0 = rcMbMotionDataL0P.getMv(cPIdx);
+        const Mv& cMvQ1 = rcMbMotionDataL1Q.getMv(cQIdx);
+        const Mv& cMvP1 = rcMbMotionDataL1P.getMv(cPIdx);
+        ROTRS(cMvP0.getAbsHorDiff(cMvQ0) >= sHorMvThr, 1);
+        ROTRS(cMvP0.getAbsVerDiff(cMvQ0) >= sVerMvThr, 1);
+        ROTRS(cMvP1.getAbsHorDiff(cMvQ1) >= sHorMvThr, 1);
+        ROTRS(cMvP1.getAbsVerDiff(cMvQ1) >= sVerMvThr, 1);
         return 0;
     }
 
     //  rcRefPicL1P == rcRefPicL0P
-    ROTRS( rcRefPicIdcL1Q != rcRefPicIdcL0Q, 1 ) ;
-    ROTRS( rcRefPicIdcL0P != rcRefPicIdcL0Q, 1 ) ;
+    ROTRS(rcRefPicIdcL1Q != rcRefPicIdcL0Q, 1) ;
+    ROTRS(rcRefPicIdcL0P != rcRefPicIdcL0Q, 1) ;
 
     // rcRefPicL0P == rcRefPicL0Q == rcRefPicL1P == rcRefPicL1Q
     // check the motion vector distance
-    const Mv& cMvQ0 = rcMbMotionDataL0Q.getMv( cQIdx );
-    const Mv& cMvP0 = rcMbMotionDataL0P.getMv( cPIdx );
-    const Mv& cMvQ1 = rcMbMotionDataL1Q.getMv( cQIdx );
-    const Mv& cMvP1 = rcMbMotionDataL1P.getMv( cPIdx );
+    const Mv& cMvQ0 = rcMbMotionDataL0Q.getMv(cQIdx);
+    const Mv& cMvP0 = rcMbMotionDataL0P.getMv(cPIdx);
+    const Mv& cMvQ1 = rcMbMotionDataL1Q.getMv(cQIdx);
+    const Mv& cMvP1 = rcMbMotionDataL1P.getMv(cPIdx);
 
-    Bool              bSameListCond  = ( (cMvP0.getAbsHorDiff( cMvQ0 ) >= sHorMvThr) );
-    bSameListCond = ( bSameListCond || ( (cMvP0.getAbsVerDiff( cMvQ0 ) >= sVerMvThr) ) );
-    bSameListCond = ( bSameListCond || ( (cMvP1.getAbsHorDiff( cMvQ1 ) >= sHorMvThr) ) );
-    bSameListCond = ( bSameListCond || ( (cMvP1.getAbsVerDiff( cMvQ1 ) >= sVerMvThr) ) );
-    Bool              bDiffListCond  = ( (cMvP0.getAbsHorDiff( cMvQ1 ) >= sHorMvThr) );
-    bDiffListCond = ( bDiffListCond || ( (cMvP0.getAbsVerDiff( cMvQ1 ) >= sVerMvThr) ) );
-    bDiffListCond = ( bDiffListCond || ( (cMvP1.getAbsHorDiff( cMvQ0 ) >= sHorMvThr) ) );
-    bDiffListCond = ( bDiffListCond || ( (cMvP1.getAbsVerDiff( cMvQ0 ) >= sVerMvThr) ) );
+    Bool              bSameListCond  = ((cMvP0.getAbsHorDiff(cMvQ0) >= sHorMvThr));
+    bSameListCond = (bSameListCond || ((cMvP0.getAbsVerDiff(cMvQ0) >= sVerMvThr)));
+    bSameListCond = (bSameListCond || ((cMvP1.getAbsHorDiff(cMvQ1) >= sHorMvThr)));
+    bSameListCond = (bSameListCond || ((cMvP1.getAbsVerDiff(cMvQ1) >= sVerMvThr)));
+    Bool              bDiffListCond  = ((cMvP0.getAbsHorDiff(cMvQ1) >= sHorMvThr));
+    bDiffListCond = (bDiffListCond || ((cMvP0.getAbsVerDiff(cMvQ1) >= sVerMvThr)));
+    bDiffListCond = (bDiffListCond || ((cMvP1.getAbsHorDiff(cMvQ0) >= sHorMvThr)));
+    bDiffListCond = (bDiffListCond || ((cMvP1.getAbsVerDiff(cMvQ0) >= sVerMvThr)));
 
-    ROTRS( bSameListCond && bDiffListCond, 1 );
+    ROTRS(bSameListCond && bDiffListCond, 1);
 
     return 0;
 }
 
 
 
-Void LoopFilter::xFilter( XPel* pFlt, const Int& iOffset, const Int& iIndexA, const Int& iIndexB, const UChar& ucBs, const Bool& bLum )
+Void LoopFilter::xFilter(XPel* pFlt, const Int& iOffset, const Int& iIndexA, const Int& iIndexB, const UChar& ucBs, const Bool& bLum)
 {
     Int iAlpha    = g_acAlphaClip[ iIndexA ].ucAlpha;
     Int P0        = pFlt[  -iOffset];
@@ -884,41 +884,41 @@ Void LoopFilter::xFilter( XPel* pFlt, const Int& iOffset, const Int& iIndexA, co
     Int P1        = pFlt[-2*iOffset];
     Int Q1        = pFlt[   iOffset];
     Int iDelta    = Q0 - P0;
-    Int iAbsDelta = abs( iDelta  );
+    Int iAbsDelta = abs(iDelta );
     Int iBeta     = g_aucBetaTab [ iIndexB ];
 
-    ROFVS( ucBs );
-    ROFVS( iAbsDelta < iAlpha );
-    ROFVS( (abs(P0 - P1) < iBeta) && (abs(Q0 - Q1) < iBeta) );
+    ROFVS(ucBs);
+    ROFVS(iAbsDelta < iAlpha);
+    ROFVS((abs(P0 - P1) < iBeta) && (abs(Q0 - Q1) < iBeta));
 
     if(ucBs < 4)
     {
         Int C0 = g_acAlphaClip[ iIndexA ].aucClip[ucBs];
 
-        if( bLum )
+        if(bLum)
         {
             Int P2 = pFlt[-3*iOffset] ;
             Int Q2 = pFlt[ 2*iOffset] ;
-            Int aq = (( abs( Q2 - Q0 ) < iBeta ) ? 1 : 0 );
-            Int ap = (( abs( P2 - P0 ) < iBeta ) ? 1 : 0 );
+            Int aq = ((abs(Q2 - Q0) < iBeta) ? 1 : 0);
+            Int ap = ((abs(P2 - P0) < iBeta) ? 1 : 0);
 
-            if( ap )
+            if(ap)
             {
-                pFlt[-2*iOffset] = P1 + gClipMinMax((P2 + ((P0 + Q0 + 1)>>1) - (P1<<1)) >> 1, -C0, C0 );
+                pFlt[-2*iOffset] = P1 + gClipMinMax((P2 + ((P0 + Q0 + 1)>>1) - (P1<<1)) >> 1, -C0, C0);
             }
 
             if(aq)
             {
-                pFlt[   iOffset] = Q1 + gClipMinMax((Q2 + ((P0 + Q0 + 1)>>1) - (Q1<<1)) >> 1, -C0, C0 );
+                pFlt[   iOffset] = Q1 + gClipMinMax((Q2 + ((P0 + Q0 + 1)>>1) - (Q1<<1)) >> 1, -C0, C0);
             }
 
             C0 += ap + aq -1;
         }
 
         C0++;
-        Int iDiff      = gClipMinMax(((iDelta << 2) + (P1 - Q1) + 4) >> 3, -C0, C0 ) ;
-        pFlt[-iOffset] = gClip( P0 + iDiff );
-        pFlt[       0] = gClip( Q0 - iDiff );
+        Int iDiff      = gClipMinMax(((iDelta << 2) + (P1 - Q1) + 4) >> 3, -C0, C0) ;
+        pFlt[-iOffset] = gClip(P0 + iDiff);
+        pFlt[       0] = gClip(Q0 - iDiff);
         return;
     }
 
@@ -932,8 +932,8 @@ Void LoopFilter::xFilter( XPel* pFlt, const Int& iOffset, const Int& iIndexA, co
         Int  P2      = pFlt[-3*iOffset] ;
         Int  Q2      = pFlt[ 2*iOffset] ;
         Bool bEnable = (iAbsDelta < ((iAlpha >> 2) + 2));
-        Bool aq      = bEnable & ( abs( Q2 - Q0 ) < iBeta );
-        Bool ap      = bEnable & ( abs( P2 - P0 ) < iBeta );
+        Bool aq      = bEnable & (abs(Q2 - Q0) < iBeta);
+        Bool ap      = bEnable & (abs(P2 - P0) < iBeta);
         Int  PQ0     = P0 + Q0;
 
         if(aq)
@@ -961,7 +961,7 @@ Void LoopFilter::xFilter( XPel* pFlt, const Int& iOffset, const Int& iIndexA, co
 }
 
 
-ErrVal LoopFilter::xLumaVerFiltering( const MbDataAccess& rcMbDataAccess, const DBFilterParameter& rcDFP, YuvPicBuffer* pcYuvBuffer )
+ErrVal LoopFilter::xLumaVerFiltering(const MbDataAccess& rcMbDataAccess, const DBFilterParameter& rcDFP, YuvPicBuffer* pcYuvBuffer)
 {
     Int   iCurrQp = rcMbDataAccess.getMbData().getQpLF();
     Int   iStride = pcYuvBuffer->getLStride();
@@ -972,9 +972,9 @@ ErrVal LoopFilter::xLumaVerFiltering( const MbDataAccess& rcMbDataAccess, const 
     {
       //-----  curr == FRM && left == FRM  or  curr == FLD && left == FLD  -----
       Int iLeftQp = rcMbDataAccess.getMbDataLeft().getQpLF();
-      Int iQp     = ( iLeftQp + iCurrQp + 1) >> 1;
-      Int iIndexA = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iQp, 0, 51);
-      Int iIndexB = gClipMinMax( rcDFP.getSliceBetaOffset()    + iQp, 0, 51);
+      Int iQp     = (iLeftQp + iCurrQp + 1) >> 1;
+      Int iIndexA = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iQp, 0, 51);
+      Int iIndexB = gClipMinMax(rcDFP.getSliceBetaOffset()    + iQp, 0, 51);
 
       for(Int yBlk = 0; yBlk < 4; yBlk++)
       {
@@ -991,15 +991,15 @@ ErrVal LoopFilter::xLumaVerFiltering( const MbDataAccess& rcMbDataAccess, const 
     }
     else
     {
-        Int iLeftQpTop = (rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataLeft     ().getQpLF() : rcMbDataAccess.getMbDataAboveLeft().getQpLF() );
-        Int iLeftQpBot = (rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataBelowLeft().getQpLF() : rcMbDataAccess.getMbDataLeft     ().getQpLF() );
+        Int iLeftQpTop = (rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataLeft     ().getQpLF() : rcMbDataAccess.getMbDataAboveLeft().getQpLF());
+        Int iLeftQpBot = (rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataBelowLeft().getQpLF() : rcMbDataAccess.getMbDataLeft     ().getQpLF());
         Int iQpTop     = (iLeftQpTop + iCurrQp + 1) >> 1;
         Int iQpBot     = (iLeftQpBot + iCurrQp + 1) >> 1;
 
-        Int iIndexATop = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iQpTop, 0, 51);
-        Int iIndexABot = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iQpBot, 0, 51);
-        Int iIndexBTop = gClipMinMax( rcDFP.getSliceBetaOffset()    + iQpTop, 0, 51);
-        Int iIndexBBot = gClipMinMax( rcDFP.getSliceBetaOffset()    + iQpBot, 0, 51);
+        Int iIndexATop = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iQpTop, 0, 51);
+        Int iIndexABot = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iQpBot, 0, 51);
+        Int iIndexBTop = gClipMinMax(rcDFP.getSliceBetaOffset()    + iQpTop, 0, 51);
+        Int iIndexBBot = gClipMinMax(rcDFP.getSliceBetaOffset()    + iQpBot, 0, 51);
 
         if(!rcMbDataAccess.getMbData().getFieldFlag())
         {
@@ -1062,8 +1062,8 @@ ErrVal LoopFilter::xLumaVerFiltering( const MbDataAccess& rcMbDataAccess, const 
 
     pPelLum -= 16*iStride-4;
 
-    Int iIndexA = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCurrQp, 0, 51);
-    Int iIndexB = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCurrQp, 0, 51);
+    Int iIndexA = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCurrQp, 0, 51);
+    Int iIndexB = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCurrQp, 0, 51);
 
     for(Int xBlk = 1; xBlk < 4; xBlk++)
     {
@@ -1086,7 +1086,7 @@ ErrVal LoopFilter::xLumaVerFiltering( const MbDataAccess& rcMbDataAccess, const 
 }
 
 
-ErrVal LoopFilter::xLumaHorFiltering( const MbDataAccess& rcMbDataAccess, const DBFilterParameter& rcDFP, YuvPicBuffer* pcYuvBuffer )
+ErrVal LoopFilter::xLumaHorFiltering(const MbDataAccess& rcMbDataAccess, const DBFilterParameter& rcDFP, YuvPicBuffer* pcYuvBuffer)
 {
     Int   iCurrQp = rcMbDataAccess.getMbData().getQpLF();
     Int   iStride = pcYuvBuffer->getLStride();
@@ -1096,21 +1096,21 @@ ErrVal LoopFilter::xLumaHorFiltering( const MbDataAccess& rcMbDataAccess, const 
     if(!m_bHorMixedMode)
     {
         //-----  any other combination than curr = FRM, above = FLD  -----
-        Int iAboveQp  = rcMbDataAccess.getMbData().getFieldFlag() && ( !rcMbDataAccess.isTopMb()||rcMbDataAccess.getMbDataAboveAbove().getFieldFlag() ) ?
+        Int iAboveQp  = rcMbDataAccess.getMbData().getFieldFlag() && (!rcMbDataAccess.isTopMb()||rcMbDataAccess.getMbDataAboveAbove().getFieldFlag()) ?
                         rcMbDataAccess.getMbDataAboveAbove().getQpLF() : rcMbDataAccess.getMbDataAbove().getQpLF();
-        Int iQp       = ( iAboveQp + iCurrQp + 1 ) >> 1;
-        Int iIndexA   = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iQp, 0, 51);
-        Int iIndexB   = gClipMinMax( rcDFP.getSliceBetaOffset()    + iQp, 0, 51);
+        Int iQp       = (iAboveQp + iCurrQp + 1) >> 1;
+        Int iIndexA   = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iQp, 0, 51);
+        Int iIndexB   = gClipMinMax(rcDFP.getSliceBetaOffset()    + iQp, 0, 51);
 
-        for( Int xBlk = 0; xBlk < 4; xBlk++)
+        for(Int xBlk = 0; xBlk < 4; xBlk++)
         {
             const UChar ucBs = m_aaaucBs[HOR][xBlk][0];
-            if( 0 != ucBs )
+            if(0 != ucBs)
             {
-                xFilter( pPelLum,   iStride, iIndexA, iIndexB, ucBs, true );
-                xFilter( pPelLum+1, iStride, iIndexA, iIndexB, ucBs, true );
-                xFilter( pPelLum+2, iStride, iIndexA, iIndexB, ucBs, true );
-                xFilter( pPelLum+3, iStride, iIndexA, iIndexB, ucBs, true );
+                xFilter(pPelLum,   iStride, iIndexA, iIndexB, ucBs, true);
+                xFilter(pPelLum+1, iStride, iIndexA, iIndexB, ucBs, true);
+                xFilter(pPelLum+2, iStride, iIndexA, iIndexB, ucBs, true);
+                xFilter(pPelLum+3, iStride, iIndexA, iIndexB, ucBs, true);
             }
             pPelLum += 4;
         }
@@ -1119,19 +1119,19 @@ ErrVal LoopFilter::xLumaHorFiltering( const MbDataAccess& rcMbDataAccess, const 
     else
     {
         //-----  curr = FRM, above = FLD  -----
-        AOT_DBG( ! rcMbDataAccess.isTopMb() );
-        AOT_DBG( ! rcMbDataAccess.isAboveMbExisting() );
+        AOT_DBG(! rcMbDataAccess.isTopMb());
+        AOT_DBG(! rcMbDataAccess.isAboveMbExisting());
 
         //===== top field filtering =====
         {
             XPel* pPelTop     = pcYuvBuffer->getMbLumAddr();
             Int   iTopStride  = pcYuvBuffer->getLStride()*2;
             Int   iAboveQp    = rcMbDataAccess.getMbDataAboveAbove().getQpLF();
-            Int   iQp         = ( iAboveQp + iCurrQp + 1) >> 1;
-            Int   iIndexA     = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iQp, 0, 51);
-            Int   iIndexB     = gClipMinMax( rcDFP.getSliceBetaOffset()    + iQp, 0, 51);
+            Int   iQp         = (iAboveQp + iCurrQp + 1) >> 1;
+            Int   iIndexA     = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iQp, 0, 51);
+            Int   iIndexB     = gClipMinMax(rcDFP.getSliceBetaOffset()    + iQp, 0, 51);
 
-            for( Int xBlk = 0; xBlk < 4; xBlk++)
+            for(Int xBlk = 0; xBlk < 4; xBlk++)
             {
                 const UChar ucBs = m_aucBsHorTop[xBlk];
                 if(0 != ucBs)
@@ -1149,11 +1149,11 @@ ErrVal LoopFilter::xLumaHorFiltering( const MbDataAccess& rcMbDataAccess, const 
             XPel* pPelBot     = pcYuvBuffer->getMbLumAddr()+pcYuvBuffer->getLStride();
             Int   iBotStride  = pcYuvBuffer->getLStride()*2;
             Int   iAboveQp    = rcMbDataAccess.getMbDataAbove().getQpLF();
-            Int   iQp         = ( iAboveQp + iCurrQp + 1) >> 1;
-            Int   iIndexA     = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iQp, 0, 51);
-            Int   iIndexB     = gClipMinMax( rcDFP.getSliceBetaOffset()    + iQp, 0, 51);
+            Int   iQp         = (iAboveQp + iCurrQp + 1) >> 1;
+            Int   iIndexA     = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iQp, 0, 51);
+            Int   iIndexB     = gClipMinMax(rcDFP.getSliceBetaOffset()    + iQp, 0, 51);
 
-            for( Int xBlk = 0; xBlk < 4; xBlk++)
+            for(Int xBlk = 0; xBlk < 4; xBlk++)
             {
                 const UChar ucBs = m_aaaucBs[HOR][xBlk][0];
                 if(0 != ucBs)
@@ -1170,15 +1170,15 @@ ErrVal LoopFilter::xLumaHorFiltering( const MbDataAccess& rcMbDataAccess, const 
 
     pPelLum += 4*iStride;
 
-    Int iIndexA = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCurrQp, 0, 51);
-    Int iIndexB = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCurrQp, 0, 51);
+    Int iIndexA = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCurrQp, 0, 51);
+    Int iIndexB = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCurrQp, 0, 51);
 
-    for( Int yBlk = 1; yBlk < 4; yBlk++)
+    for(Int yBlk = 1; yBlk < 4; yBlk++)
     {
-        for( Int xBlk = 0; xBlk < 4; xBlk++)
+        for(Int xBlk = 0; xBlk < 4; xBlk++)
         {
             const UChar ucBs = m_aaaucBs[HOR][xBlk][yBlk];
-            if( 0 != ucBs )
+            if(0 != ucBs)
             {
                 xFilter(pPelLum,   iStride, iIndexA, iIndexB, ucBs, true);
                 xFilter(pPelLum+1, iStride, iIndexA, iIndexB, ucBs, true);
@@ -1196,8 +1196,8 @@ ErrVal LoopFilter::xLumaHorFiltering( const MbDataAccess& rcMbDataAccess, const 
 
 ErrVal LoopFilter::xChromaHorFiltering(const MbDataAccess& rcMbDataAccess, const DBFilterParameter& rcDFP, YuvPicBuffer* pcYuvBuffer)
 {
-    Int   iCurrCbQp = rcMbDataAccess.getSH().getCbQp( rcMbDataAccess.getMbData().getQpLF() );
-    Int   iCurrCrQp = rcMbDataAccess.getSH().getCrQp( rcMbDataAccess.getMbData().getQpLF() );
+    Int   iCurrCbQp = rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.getMbData().getQpLF());
+    Int   iCurrCrQp = rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.getMbData().getQpLF());
     Int   iStride   = pcYuvBuffer->getCStride();
     XPel* pPelCb    = pcYuvBuffer->getMbCbAddr();
     XPel* pPelCr    = pcYuvBuffer->getMbCrAddr();
@@ -1207,17 +1207,17 @@ ErrVal LoopFilter::xChromaHorFiltering(const MbDataAccess& rcMbDataAccess, const
     {
         //-----  any other combination than curr = FRM, above = FLD  -----
         Int iAboveCbQp = rcMbDataAccess.getMbData().getFieldFlag() && (!rcMbDataAccess.isTopMb()||rcMbDataAccess.getMbDataAboveAbove().getFieldFlag()) ?
-                         rcMbDataAccess.getSH().getCbQp( rcMbDataAccess.getMbDataAboveAbove().getQpLF()) : rcMbDataAccess.getSH().getCbQp( rcMbDataAccess.getMbDataAbove().getQpLF());
+                         rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.getMbDataAboveAbove().getQpLF()) : rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.getMbDataAbove().getQpLF());
         Int iAboveCrQp = rcMbDataAccess.getMbData().getFieldFlag() && (!rcMbDataAccess.isTopMb()||rcMbDataAccess.getMbDataAboveAbove().getFieldFlag()) ?
-                         rcMbDataAccess.getSH().getCrQp( rcMbDataAccess.getMbDataAboveAbove().getQpLF()) : rcMbDataAccess.getSH().getCrQp( rcMbDataAccess.getMbDataAbove().getQpLF());
+                         rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.getMbDataAboveAbove().getQpLF()) : rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.getMbDataAbove().getQpLF());
         Int iCbQp      = (iAboveCbQp + iCurrCbQp + 1) >> 1;
         Int iCrQp      = (iAboveCrQp + iCurrCrQp + 1) >> 1;
-        Int iIndexACb  = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCbQp, 0, 51);
-        Int iIndexACr  = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCrQp, 0, 51);
-        Int iIndexBCb  = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCbQp, 0, 51);
-        Int iIndexBCr  = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCrQp, 0, 51);
+        Int iIndexACb  = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCbQp, 0, 51);
+        Int iIndexACr  = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCrQp, 0, 51);
+        Int iIndexBCb  = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCbQp, 0, 51);
+        Int iIndexBCr  = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCrQp, 0, 51);
 
-        for( Int xBlk = 0; xBlk < 4; xBlk++)
+        for(Int xBlk = 0; xBlk < 4; xBlk++)
         {
             const UChar ucBs = m_aaaucBs[HOR][xBlk][0];
             if(0 != ucBs)
@@ -1236,7 +1236,7 @@ ErrVal LoopFilter::xChromaHorFiltering(const MbDataAccess& rcMbDataAccess, const
     else
     {
       //-----  curr = FRM, above = FLD  -----
-      AOT_DBG( ! rcMbDataAccess.isTopMb() );
+      AOT_DBG(! rcMbDataAccess.isTopMb());
 
       //===== top field filtering =====
       {
@@ -1244,24 +1244,24 @@ ErrVal LoopFilter::xChromaHorFiltering(const MbDataAccess& rcMbDataAccess, const
         XPel* pPelFieldCr   = pcYuvBuffer->getMbCrAddr();
         Int   iFieldStride  = pcYuvBuffer->getCStride() * 2;
 
-        Int   iAboveCbQp    = rcMbDataAccess.getSH().getCbQp( rcMbDataAccess.getMbDataAboveAbove().getQpLF() );
-        Int   iAboveCrQp    = rcMbDataAccess.getSH().getCrQp( rcMbDataAccess.getMbDataAboveAbove().getQpLF() );
-        Int   iCbQp         = ( iAboveCbQp + iCurrCbQp + 1) >> 1;
-        Int   iCrQp         = ( iAboveCrQp + iCurrCrQp + 1) >> 1;
-        Int   iIndexACb     = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCbQp, 0, 51);
-        Int   iIndexACr     = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCrQp, 0, 51);
-        Int   iIndexBCb     = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCbQp, 0, 51);
-        Int   iIndexBCr     = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCrQp, 0, 51);
+        Int   iAboveCbQp    = rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.getMbDataAboveAbove().getQpLF());
+        Int   iAboveCrQp    = rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.getMbDataAboveAbove().getQpLF());
+        Int   iCbQp         = (iAboveCbQp + iCurrCbQp + 1) >> 1;
+        Int   iCrQp         = (iAboveCrQp + iCurrCrQp + 1) >> 1;
+        Int   iIndexACb     = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCbQp, 0, 51);
+        Int   iIndexACr     = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCrQp, 0, 51);
+        Int   iIndexBCb     = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCbQp, 0, 51);
+        Int   iIndexBCr     = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCrQp, 0, 51);
 
-        for( Int xBlk = 0; xBlk < 4; xBlk++)
+        for(Int xBlk = 0; xBlk < 4; xBlk++)
         {
           const UChar ucBs = m_aucBsHorTop[xBlk];
-          if( 0 != ucBs )
+          if(0 != ucBs)
           {
-            xFilter( pPelFieldCb,   iFieldStride, iIndexACb, iIndexBCb, ucBs, false );
-            xFilter( pPelFieldCb+1, iFieldStride, iIndexACb, iIndexBCb, ucBs, false );
-            xFilter( pPelFieldCr,   iFieldStride, iIndexACr, iIndexBCr, ucBs, false );
-            xFilter( pPelFieldCr+1, iFieldStride, iIndexACr, iIndexBCr, ucBs, false );
+            xFilter(pPelFieldCb,   iFieldStride, iIndexACb, iIndexBCb, ucBs, false);
+            xFilter(pPelFieldCb+1, iFieldStride, iIndexACb, iIndexBCb, ucBs, false);
+            xFilter(pPelFieldCr,   iFieldStride, iIndexACr, iIndexBCr, ucBs, false);
+            xFilter(pPelFieldCr+1, iFieldStride, iIndexACr, iIndexBCr, ucBs, false);
           }
           pPelFieldCb   += 2;
           pPelFieldCr   += 2;
@@ -1273,24 +1273,24 @@ ErrVal LoopFilter::xChromaHorFiltering(const MbDataAccess& rcMbDataAccess, const
         XPel* pPelFieldCr   = pcYuvBuffer->getMbCrAddr()+pcYuvBuffer->getCStride();
         Int   iFieldStride  = pcYuvBuffer->getCStride() * 2;
 
-        Int   iAboveCbQp    = rcMbDataAccess.getSH().getCbQp( rcMbDataAccess.getMbDataAbove().getQpLF() );
-        Int   iAboveCrQp    = rcMbDataAccess.getSH().getCrQp( rcMbDataAccess.getMbDataAbove().getQpLF() );
-        Int   iCbQp         = ( iAboveCbQp + iCurrCbQp + 1) >> 1;
-        Int   iCrQp         = ( iAboveCrQp + iCurrCrQp + 1) >> 1;
-        Int   iIndexACb     = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCbQp, 0, 51);
-        Int   iIndexACr     = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCrQp, 0, 51);
-        Int   iIndexBCb     = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCbQp, 0, 51);
-        Int   iIndexBCr     = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCrQp, 0, 51);
+        Int   iAboveCbQp    = rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.getMbDataAbove().getQpLF());
+        Int   iAboveCrQp    = rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.getMbDataAbove().getQpLF());
+        Int   iCbQp         = (iAboveCbQp + iCurrCbQp + 1) >> 1;
+        Int   iCrQp         = (iAboveCrQp + iCurrCrQp + 1) >> 1;
+        Int   iIndexACb     = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCbQp, 0, 51);
+        Int   iIndexACr     = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCrQp, 0, 51);
+        Int   iIndexBCb     = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCbQp, 0, 51);
+        Int   iIndexBCr     = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCrQp, 0, 51);
 
-        for( Int xBlk = 0; xBlk < 4; xBlk++)
+        for(Int xBlk = 0; xBlk < 4; xBlk++)
         {
           const UChar ucBs = m_aaaucBs[HOR][xBlk][0];
-          if( 0 != ucBs )
+          if(0 != ucBs)
           {
-            xFilter( pPelFieldCb,   iFieldStride, iIndexACb, iIndexBCb, ucBs, false );
-            xFilter( pPelFieldCb+1, iFieldStride, iIndexACb, iIndexBCb, ucBs, false );
-            xFilter( pPelFieldCr,   iFieldStride, iIndexACr, iIndexBCr, ucBs, false );
-            xFilter( pPelFieldCr+1, iFieldStride, iIndexACr, iIndexBCr, ucBs, false );
+            xFilter(pPelFieldCb,   iFieldStride, iIndexACb, iIndexBCb, ucBs, false);
+            xFilter(pPelFieldCb+1, iFieldStride, iIndexACb, iIndexBCb, ucBs, false);
+            xFilter(pPelFieldCr,   iFieldStride, iIndexACr, iIndexBCr, ucBs, false);
+            xFilter(pPelFieldCr+1, iFieldStride, iIndexACr, iIndexBCr, ucBs, false);
           }
           pPelFieldCb   += 2;
           pPelFieldCr   += 2;
@@ -1301,20 +1301,20 @@ ErrVal LoopFilter::xChromaHorFiltering(const MbDataAccess& rcMbDataAccess, const
     pPelCr += 4*iStride;
 
     // now we filter the remaining edge
-    Int iIndexACb = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCurrCbQp, 0, 51);
-    Int iIndexACr = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCurrCrQp, 0, 51);
-    Int iIndexBCb = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCurrCbQp, 0, 51);
-    Int iIndexBCr = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCurrCrQp, 0, 51);
+    Int iIndexACb = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCurrCbQp, 0, 51);
+    Int iIndexACr = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCurrCrQp, 0, 51);
+    Int iIndexBCb = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCurrCbQp, 0, 51);
+    Int iIndexBCr = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCurrCrQp, 0, 51);
 
-    for( Int xBlk = 0; xBlk < 4; xBlk++)
+    for(Int xBlk = 0; xBlk < 4; xBlk++)
     {
       const UChar ucBs = m_aaaucBs[HOR][xBlk][2];
-      if( 0 != ucBs )
+      if(0 != ucBs)
       {
-        xFilter( pPelCb,   iStride, iIndexACb, iIndexBCb, ucBs, false );
-        xFilter( pPelCb+1, iStride, iIndexACb, iIndexBCb, ucBs, false );
-        xFilter( pPelCr,   iStride, iIndexACr, iIndexBCr, ucBs, false );
-        xFilter( pPelCr+1, iStride, iIndexACr, iIndexBCr, ucBs, false );
+        xFilter(pPelCb,   iStride, iIndexACb, iIndexBCb, ucBs, false);
+        xFilter(pPelCb+1, iStride, iIndexACb, iIndexBCb, ucBs, false);
+        xFilter(pPelCr,   iStride, iIndexACr, iIndexBCr, ucBs, false);
+        xFilter(pPelCr+1, iStride, iIndexACr, iIndexBCr, ucBs, false);
       }
       pPelCb += 2;
       pPelCr += 2;
@@ -1326,8 +1326,8 @@ ErrVal LoopFilter::xChromaHorFiltering(const MbDataAccess& rcMbDataAccess, const
 
 ErrVal LoopFilter::xChromaVerFiltering(const MbDataAccess& rcMbDataAccess, const DBFilterParameter& rcDFP, YuvPicBuffer* pcYuvBuffer)
 {
-    Int   iCurrCbQp = rcMbDataAccess.getSH().getCbQp( rcMbDataAccess.getMbData().getQpLF() );
-    Int   iCurrCrQp = rcMbDataAccess.getSH().getCrQp( rcMbDataAccess.getMbData().getQpLF() );
+    Int   iCurrCbQp = rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.getMbData().getQpLF());
+    Int   iCurrCrQp = rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.getMbData().getQpLF());
     Int   iStride   = pcYuvBuffer->getCStride();
     XPel* pPelCb    = pcYuvBuffer->getMbCbAddr();
     XPel* pPelCr    = pcYuvBuffer->getMbCrAddr();
@@ -1336,14 +1336,14 @@ ErrVal LoopFilter::xChromaVerFiltering(const MbDataAccess& rcMbDataAccess, const
     if(!m_bVerMixedMode)
     {
         //-----  curr == FRM && left == FRM  or  curr == FLD && left == FLD  -----
-        Int iLeftCbQp = rcMbDataAccess.getSH().getCbQp( rcMbDataAccess.getMbDataLeft().getQpLF() );
-        Int iLeftCrQp = rcMbDataAccess.getSH().getCrQp( rcMbDataAccess.getMbDataLeft().getQpLF() );
-        Int iCbQp     = ( iLeftCbQp + iCurrCbQp + 1 ) >> 1;
-        Int iCrQp     = ( iLeftCrQp + iCurrCrQp + 1 ) >> 1;
-        Int iIndexACb = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCbQp, 0, 51);
-        Int iIndexACr = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCrQp, 0, 51);
-        Int iIndexBCb = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCbQp, 0, 51);
-        Int iIndexBCr = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCrQp, 0, 51);
+        Int iLeftCbQp = rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.getMbDataLeft().getQpLF());
+        Int iLeftCrQp = rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.getMbDataLeft().getQpLF());
+        Int iCbQp     = (iLeftCbQp + iCurrCbQp + 1) >> 1;
+        Int iCrQp     = (iLeftCrQp + iCurrCrQp + 1) >> 1;
+        Int iIndexACb = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCbQp, 0, 51);
+        Int iIndexACr = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCrQp, 0, 51);
+        Int iIndexBCb = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCbQp, 0, 51);
+        Int iIndexBCr = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCrQp, 0, 51);
 
         for(Int yBlk = 0; yBlk < 4; yBlk++)
         {
@@ -1361,22 +1361,22 @@ ErrVal LoopFilter::xChromaVerFiltering(const MbDataAccess& rcMbDataAccess, const
     }
     else
     {
-        Int iLeftCbQpTop = rcMbDataAccess.getSH().getCbQp( rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataLeft     ().getQpLF() : rcMbDataAccess.getMbDataAboveLeft().getQpLF() );
-        Int iLeftCrQpTop = rcMbDataAccess.getSH().getCrQp( rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataLeft     ().getQpLF() : rcMbDataAccess.getMbDataAboveLeft().getQpLF() );
-        Int iLeftCbQpBot = rcMbDataAccess.getSH().getCbQp( rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataBelowLeft().getQpLF() : rcMbDataAccess.getMbDataLeft     ().getQpLF() );
-        Int iLeftCrQpBot = rcMbDataAccess.getSH().getCrQp( rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataBelowLeft().getQpLF() : rcMbDataAccess.getMbDataLeft     ().getQpLF() );
-        Int iCbQpTop     = ( iLeftCbQpTop + iCurrCbQp + 1) >> 1;
-        Int iCrQpTop     = ( iLeftCrQpTop + iCurrCrQp + 1) >> 1;
-        Int iCbQpBot     = ( iLeftCbQpBot + iCurrCbQp + 1) >> 1;
-        Int iCrQpBot     = ( iLeftCrQpBot + iCurrCrQp + 1) >> 1;
-        Int iIndexATopCb = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCbQpTop, 0, 51);
-        Int iIndexATopCr = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCrQpTop, 0, 51);
-        Int iIndexABotCb = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCbQpBot, 0, 51);
-        Int iIndexABotCr = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCrQpBot, 0, 51);
-        Int iIndexBTopCb = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCbQpTop, 0, 51);
-        Int iIndexBTopCr = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCrQpTop, 0, 51);
-        Int iIndexBBotCb = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCbQpBot, 0, 51);
-        Int iIndexBBotCr = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCrQpBot, 0, 51);
+        Int iLeftCbQpTop = rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataLeft     ().getQpLF() : rcMbDataAccess.getMbDataAboveLeft().getQpLF());
+        Int iLeftCrQpTop = rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataLeft     ().getQpLF() : rcMbDataAccess.getMbDataAboveLeft().getQpLF());
+        Int iLeftCbQpBot = rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataBelowLeft().getQpLF() : rcMbDataAccess.getMbDataLeft     ().getQpLF());
+        Int iLeftCrQpBot = rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.isTopMb() ? rcMbDataAccess.getMbDataBelowLeft().getQpLF() : rcMbDataAccess.getMbDataLeft     ().getQpLF());
+        Int iCbQpTop     = (iLeftCbQpTop + iCurrCbQp + 1) >> 1;
+        Int iCrQpTop     = (iLeftCrQpTop + iCurrCrQp + 1) >> 1;
+        Int iCbQpBot     = (iLeftCbQpBot + iCurrCbQp + 1) >> 1;
+        Int iCrQpBot     = (iLeftCrQpBot + iCurrCrQp + 1) >> 1;
+        Int iIndexATopCb = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCbQpTop, 0, 51);
+        Int iIndexATopCr = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCrQpTop, 0, 51);
+        Int iIndexABotCb = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCbQpBot, 0, 51);
+        Int iIndexABotCr = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCrQpBot, 0, 51);
+        Int iIndexBTopCb = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCbQpTop, 0, 51);
+        Int iIndexBTopCr = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCrQpTop, 0, 51);
+        Int iIndexBBotCb = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCbQpBot, 0, 51);
+        Int iIndexBBotCr = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCrQpBot, 0, 51);
 
         if(!rcMbDataAccess.getMbData().getFieldFlag())
         {
@@ -1407,15 +1407,15 @@ ErrVal LoopFilter::xChromaVerFiltering(const MbDataAccess& rcMbDataAccess, const
             {
               const UChar ucBsTop = m_aaaucBs[VER][0][yBlk];
               const UChar ucBsBot = m_aucBsVerBot[yBlk];
-              if( 0 != ucBsTop )
+              if(0 != ucBsTop)
               {
-                  xFilter( pPelCb, 1, iIndexATopCb, iIndexBTopCb, ucBsTop, false );
-                  xFilter( pPelCr, 1, iIndexATopCr, iIndexBTopCr, ucBsTop, false );
+                  xFilter(pPelCb, 1, iIndexATopCb, iIndexBTopCb, ucBsTop, false);
+                  xFilter(pPelCr, 1, iIndexATopCr, iIndexBTopCr, ucBsTop, false);
               }
-              if( 0 != ucBsBot )
+              if(0 != ucBsBot)
               {
-                  xFilter( pPelCb+iStride, 1, iIndexATopCb, iIndexBTopCb, ucBsBot, false );
-                  xFilter( pPelCr+iStride, 1, iIndexATopCr, iIndexBTopCr, ucBsBot, false );
+                  xFilter(pPelCb+iStride, 1, iIndexATopCb, iIndexBTopCb, ucBsBot, false);
+                  xFilter(pPelCr+iStride, 1, iIndexATopCr, iIndexBTopCr, ucBsBot, false);
               }
               pPelCb += 2*iStride;
               pPelCr += 2*iStride;
@@ -1427,13 +1427,13 @@ ErrVal LoopFilter::xChromaVerFiltering(const MbDataAccess& rcMbDataAccess, const
                 const UChar ucBsBot = m_aucBsVerBot[yBlk];
                 if(0 != ucBsTop)
                 {
-                    xFilter( pPelCb, 1, iIndexABotCb, iIndexBBotCb, ucBsTop, false );
-                    xFilter( pPelCr, 1, iIndexABotCr, iIndexBBotCr, ucBsTop, false );
+                    xFilter(pPelCb, 1, iIndexABotCb, iIndexBBotCb, ucBsTop, false);
+                    xFilter(pPelCr, 1, iIndexABotCr, iIndexBBotCr, ucBsTop, false);
                 }
-                if( 0 != ucBsBot )
+                if(0 != ucBsBot)
                 {
-                    xFilter( pPelCb+iStride, 1, iIndexABotCb, iIndexBBotCb, ucBsBot, false );
-                    xFilter( pPelCr+iStride, 1, iIndexABotCr, iIndexBBotCr, ucBsBot, false );
+                    xFilter(pPelCb+iStride, 1, iIndexABotCb, iIndexBBotCb, ucBsBot, false);
+                    xFilter(pPelCr+iStride, 1, iIndexABotCr, iIndexBBotCr, ucBsBot, false);
                 }
                 pPelCb += 2*iStride;
                 pPelCr += 2*iStride;
@@ -1443,19 +1443,19 @@ ErrVal LoopFilter::xChromaVerFiltering(const MbDataAccess& rcMbDataAccess, const
     pPelCb -= 8*iStride-4;
     pPelCr -= 8*iStride-4;
 
-    Int iIndexACb = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCurrCbQp, 0, 51);
-    Int iIndexACr = gClipMinMax( rcDFP.getSliceAlphaC0Offset() + iCurrCrQp, 0, 51);
-    Int iIndexBCb = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCurrCbQp, 0, 51);
-    Int iIndexBCr = gClipMinMax( rcDFP.getSliceBetaOffset()    + iCurrCrQp, 0, 51);
+    Int iIndexACb = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCurrCbQp, 0, 51);
+    Int iIndexACr = gClipMinMax(rcDFP.getSliceAlphaC0Offset() + iCurrCrQp, 0, 51);
+    Int iIndexBCb = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCurrCbQp, 0, 51);
+    Int iIndexBCr = gClipMinMax(rcDFP.getSliceBetaOffset()    + iCurrCrQp, 0, 51);
     for(Int yBlk = 0; yBlk < 4; yBlk++)
     {
         const UChar ucBs = m_aaaucBs[VER][2][yBlk];
         if(0 != ucBs)
         {
-            xFilter( pPelCb,         1, iIndexACb, iIndexBCb, ucBs, false );
-            xFilter( pPelCb+iStride, 1, iIndexACb, iIndexBCb, ucBs, false );
-            xFilter( pPelCr,         1, iIndexACr, iIndexBCr, ucBs, false );
-            xFilter( pPelCr+iStride, 1, iIndexACr, iIndexBCr, ucBs, false );
+            xFilter(pPelCb,         1, iIndexACb, iIndexBCb, ucBs, false);
+            xFilter(pPelCb+iStride, 1, iIndexACb, iIndexBCb, ucBs, false);
+            xFilter(pPelCr,         1, iIndexACr, iIndexBCr, ucBs, false);
+            xFilter(pPelCr+iStride, 1, iIndexACr, iIndexBCr, ucBs, false);
         }
         pPelCb += 2*iStride;
         pPelCr += 2*iStride;

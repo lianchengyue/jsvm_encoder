@@ -1500,8 +1500,8 @@ ErrVal UvlcWriter::xWriteTotalRun4 (UInt uiVlcPos, UInt uiTotalRun)
 
 ErrVal UvlcWriter::xWriteTotalRun8(UInt uiVlcPos, UInt uiTotalRun)
 {
-    m_pcBitWriteBufferIf->write(g_aucCodeTableTZ8[uiVlcPos][uiTotalRun],
-                                g_aucLenTableTZ8[uiVlcPos][uiTotalRun]);
+    m_pcBitWriteBufferIf->write (g_aucCodeTableTZ8[uiVlcPos][uiTotalRun],
+                                 g_aucLenTableTZ8[uiVlcPos][uiTotalRun]);
 
     ETRACE_POS;
     ETRACE_TH("  TotalZeros8 vlc: ");
@@ -1515,7 +1515,7 @@ ErrVal UvlcWriter::xWriteTotalRun8(UInt uiVlcPos, UInt uiTotalRun)
 }
 
 
-ErrVal UvlcWriter::xWriteTotalRun16(UInt uiVlcPos, UInt uiTotalRun)
+ErrVal UvlcWriter::xWriteTotalRun16 (UInt uiVlcPos, UInt uiTotalRun)
 {
     m_pcBitWriteBufferIf->write (g_aucCodeTableTZ16[uiVlcPos][uiTotalRun],
                                  g_aucLenTableTZ16[uiVlcPos][uiTotalRun]);

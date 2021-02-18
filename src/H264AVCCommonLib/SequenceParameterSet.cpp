@@ -69,56 +69,56 @@ const SequenceParameterSet::LevelLimit SequenceParameterSet::m_aLevelLimit[52] =
 
 
 SequenceParameterSet::SequenceParameterSet  ()
-: m_eNalUnitType                            ( NAL_UNIT_UNSPECIFIED_0 )
-, m_uiDependencyId                          ( 0 )
-, m_eProfileIdc                             ( SCALABLE_HIGH_PROFILE )
-, m_bConstrainedSet0Flag                    ( false )
-, m_bConstrainedSet1Flag                    ( false )
-, m_bConstrainedSet2Flag                    ( false )
-, m_bConstrainedSet3Flag                    ( false )
-, m_uiLevelIdc                              ( 0 )
-, m_uiSeqParameterSetId                     ( MSYS_UINT_MAX )
-, m_uiChromaFormatIdc                       ( 1 ) //JVT-W046
-, m_bSeparateColourPlaneFlag                ( false )
-, m_uiBitDepthLumaMinus8                    ( 0 )
-, m_uiBitDepthChromaMinus8                  ( 0 )
-, m_bTransformBypassFlag                    ( false )
-, m_bSeqScalingMatrixPresentFlag            ( false )
-, m_uiLog2MaxFrameNum                       ( 0 )
-, m_uiPicOrderCntType                       ( 0 )
-, m_uiLog2MaxPicOrderCntLsb                 ( 4 )
-, m_bDeltaPicOrderAlwaysZeroFlag            ( false )
-, m_iOffsetForNonRefPic                     ( 0 )
-, m_iOffsetForTopToBottomField              ( 0 )
-, m_uiNumRefFramesInPicOrderCntCycle        ( 0 )
-, m_uiNumRefFrames                          ( 0 )
-, m_bGapsInFrameNumValueAllowedFlag         ( false )
-, m_uiFrameWidthInMbs                       ( 0 )
-, m_uiFrameHeightInMbs                      ( 0 )
-, m_bDirect8x8InferenceFlag                 ( false )
-, m_uiExtendedSpatialScalability            ( ESS_NONE ) // TMM_ESS
-, m_uiChromaPhaseXPlus1                     ( 0 ) // TMM_ESS
-, m_uiChromaPhaseYPlus1                     ( 1 )// TMM_ESS
-, m_uiBaseChromaPhaseXPlus1                 ( 0 ) //JVT-W046
-, m_uiBaseChromaPhaseYPlus1                 ( 1 ) //JVT-W046
-, m_bInterlayerDeblockingPresent            ( 0 )
-, m_bFrameMbsOnlyFlag                       ( true )
-, m_bMbAdaptiveFrameFieldFlag               ( false )
-, m_bAVCRewriteFlag                         ( false )   // V035
-, m_bAVCAdaptiveRewriteFlag                 ( false )
-, m_bAVCHeaderRewriteFlag                   ( false ) //JVT-W046
+: m_eNalUnitType                            (NAL_UNIT_UNSPECIFIED_0)
+, m_uiDependencyId                          (0)
+, m_eProfileIdc                             (SCALABLE_HIGH_PROFILE)
+, m_bConstrainedSet0Flag                    (false)
+, m_bConstrainedSet1Flag                    (false)
+, m_bConstrainedSet2Flag                    (false)
+, m_bConstrainedSet3Flag                    (false)
+, m_uiLevelIdc                              (0)
+, m_uiSeqParameterSetId                     (MSYS_UINT_MAX)
+, m_uiChromaFormatIdc                       (1) //JVT-W046
+, m_bSeparateColourPlaneFlag                (false)
+, m_uiBitDepthLumaMinus8                    (0)
+, m_uiBitDepthChromaMinus8                  (0)
+, m_bTransformBypassFlag                    (false)
+, m_bSeqScalingMatrixPresentFlag            (false)
+, m_uiLog2MaxFrameNum                       (0)
+, m_uiPicOrderCntType                       (0)
+, m_uiLog2MaxPicOrderCntLsb                 (4)
+, m_bDeltaPicOrderAlwaysZeroFlag            (false)
+, m_iOffsetForNonRefPic                     (0)
+, m_iOffsetForTopToBottomField              (0)
+, m_uiNumRefFramesInPicOrderCntCycle        (0)
+, m_uiNumRefFrames                          (0)
+, m_bGapsInFrameNumValueAllowedFlag         (false)
+, m_uiFrameWidthInMbs                       (0)
+, m_uiFrameHeightInMbs                      (0)
+, m_bDirect8x8InferenceFlag                 (false)
+, m_uiExtendedSpatialScalability            (ESS_NONE) // TMM_ESS
+, m_uiChromaPhaseXPlus1                     (0) // TMM_ESS
+, m_uiChromaPhaseYPlus1                     (1)// TMM_ESS
+, m_uiBaseChromaPhaseXPlus1                 (0) //JVT-W046
+, m_uiBaseChromaPhaseYPlus1                 (1) //JVT-W046
+, m_bInterlayerDeblockingPresent            (0)
+, m_bFrameMbsOnlyFlag                       (true)
+, m_bMbAdaptiveFrameFieldFlag               (false)
+, m_bAVCRewriteFlag                         (false)   // V035
+, m_bAVCAdaptiveRewriteFlag                 (false)
+, m_bAVCHeaderRewriteFlag                   (false) //JVT-W046
 //SSPS {
-, m_bSVCVUIParametersPresentFlag            ( false )
-, m_bAdditionalExtension2Flag               ( false )
+, m_bSVCVUIParametersPresentFlag            (false)
+, m_bAdditionalExtension2Flag               (false)
 //SSPS }
-, m_uiFrameCropLeftOffset                   ( 0 )
-, m_uiFrameCropRightOffset                  ( 0 )
-, m_uiFrameCropTopOffset                    ( 0 )
-, m_uiFrameCropBottomOffset                 ( 0 )
+, m_uiFrameCropLeftOffset                   (0)
+, m_uiFrameCropRightOffset                  (0)
+, m_uiFrameCropTopOffset                    (0)
+, m_uiFrameCropBottomOffset                 (0)
 {
   m_auiNumRefIdxUpdateActiveDefault[LIST_0]=1;// VW
   m_auiNumRefIdxUpdateActiveDefault[LIST_1]=1;// VW
-  ::memset( m_uiMGSVect,           0x00, 16*sizeof(UInt) );
+  ::memset(m_uiMGSVect,           0x00, 16*sizeof(UInt));
   m_uiMGSVect[0] = 16;
 }
 
@@ -131,7 +131,7 @@ SequenceParameterSet::~SequenceParameterSet()
 ErrVal SequenceParameterSet::create(SequenceParameterSet*& rpcSPS)
 {
     rpcSPS = new SequenceParameterSet;
-    ROT( NULL == rpcSPS);
+    ROT(NULL == rpcSPS);
     return Err::m_nOK;
 }
 
@@ -189,82 +189,82 @@ SequenceParameterSet& SequenceParameterSet::operator = (const SequenceParameterS
 
 Bool SequenceParameterSet::doesFulfillMGSConstraint(const SequenceParameterSet& rcSPS) const
 {
-  ROFRS( m_uiChromaFormatIdc                  == rcSPS.m_uiChromaFormatIdc,                 false );
-  ROFRS( m_bSeparateColourPlaneFlag           == rcSPS.m_bSeparateColourPlaneFlag,          false );
-  ROFRS( m_uiBitDepthLumaMinus8               == rcSPS.m_uiBitDepthLumaMinus8,              false );
-  ROFRS( m_uiBitDepthChromaMinus8             == rcSPS.m_uiBitDepthChromaMinus8,            false );
-  ROFRS( m_bTransformBypassFlag               == rcSPS.m_bTransformBypassFlag,              false );
-  ROFRS( m_bSeqScalingMatrixPresentFlag       == rcSPS.m_bSeqScalingMatrixPresentFlag,      false );
-  if( m_bSeqScalingMatrixPresentFlag )
+  ROFRS(m_uiChromaFormatIdc                  == rcSPS.m_uiChromaFormatIdc,                 false);
+  ROFRS(m_bSeparateColourPlaneFlag           == rcSPS.m_bSeparateColourPlaneFlag,          false);
+  ROFRS(m_uiBitDepthLumaMinus8               == rcSPS.m_uiBitDepthLumaMinus8,              false);
+  ROFRS(m_uiBitDepthChromaMinus8             == rcSPS.m_uiBitDepthChromaMinus8,            false);
+  ROFRS(m_bTransformBypassFlag               == rcSPS.m_bTransformBypassFlag,              false);
+  ROFRS(m_bSeqScalingMatrixPresentFlag       == rcSPS.m_bSeqScalingMatrixPresentFlag,      false);
+  if(m_bSeqScalingMatrixPresentFlag)
   {
-      ROFRS( m_cSeqScalingMatrix        .isSame( rcSPS.m_cSeqScalingMatrix ),               false );
+      ROFRS(m_cSeqScalingMatrix        .isSame(rcSPS.m_cSeqScalingMatrix),               false);
   }
-  ROFRS( m_uiLog2MaxFrameNum                  ==  rcSPS.m_uiLog2MaxFrameNum,                false );
-  ROFRS( m_uiPicOrderCntType                  ==  rcSPS.m_uiPicOrderCntType,                false );
-  if( m_uiPicOrderCntType == 0 )
+  ROFRS(m_uiLog2MaxFrameNum                  ==  rcSPS.m_uiLog2MaxFrameNum,                false);
+  ROFRS(m_uiPicOrderCntType                  ==  rcSPS.m_uiPicOrderCntType,                false);
+  if(m_uiPicOrderCntType == 0)
   {
-      ROFRS( m_uiLog2MaxPicOrderCntLsb          ==  rcSPS.m_uiLog2MaxPicOrderCntLsb,        false );
+      ROFRS(m_uiLog2MaxPicOrderCntLsb          ==  rcSPS.m_uiLog2MaxPicOrderCntLsb,        false);
   }
-  else if( m_uiPicOrderCntType == 1 )
+  else if(m_uiPicOrderCntType == 1)
   {
-      ROFRS( m_bDeltaPicOrderAlwaysZeroFlag     ==  rcSPS.m_bDeltaPicOrderAlwaysZeroFlag,     false );
-      ROFRS( m_iOffsetForNonRefPic              ==  rcSPS.m_iOffsetForNonRefPic,              false );
-      ROFRS( m_iOffsetForTopToBottomField       ==  rcSPS.m_iOffsetForTopToBottomField,       false );
-      ROFRS( m_uiNumRefFramesInPicOrderCntCycle ==  rcSPS.m_uiNumRefFramesInPicOrderCntCycle, false );
-      for( UInt ui = 0; ui < m_uiNumRefFramesInPicOrderCntCycle; ui++ )
+      ROFRS(m_bDeltaPicOrderAlwaysZeroFlag     ==  rcSPS.m_bDeltaPicOrderAlwaysZeroFlag,     false);
+      ROFRS(m_iOffsetForNonRefPic              ==  rcSPS.m_iOffsetForNonRefPic,              false);
+      ROFRS(m_iOffsetForTopToBottomField       ==  rcSPS.m_iOffsetForTopToBottomField,       false);
+      ROFRS(m_uiNumRefFramesInPicOrderCntCycle ==  rcSPS.m_uiNumRefFramesInPicOrderCntCycle, false);
+      for(UInt ui = 0; ui < m_uiNumRefFramesInPicOrderCntCycle; ui++)
       {
-          ROFRS( m_piOffsetForRefFrame[ ui ]      ==  rcSPS.m_piOffsetForRefFrame[ ui ],    false );
+          ROFRS(m_piOffsetForRefFrame[ ui ]      ==  rcSPS.m_piOffsetForRefFrame[ ui ],    false);
       }
   }
-  ROFRS( m_uiNumRefFrames                     ==  rcSPS.m_uiNumRefFrames,                   false );
-  ROFRS( m_bGapsInFrameNumValueAllowedFlag    ==  rcSPS.m_bGapsInFrameNumValueAllowedFlag,  false );
-  ROFRS( m_uiFrameWidthInMbs                  ==  rcSPS.m_uiFrameWidthInMbs,                false );
-  ROFRS( m_uiFrameHeightInMbs                 ==  rcSPS.m_uiFrameHeightInMbs,               false );
-  ROFRS( m_bFrameMbsOnlyFlag                  ==  rcSPS.m_bFrameMbsOnlyFlag,                false );
-  if( !m_bFrameMbsOnlyFlag )
+  ROFRS(m_uiNumRefFrames                     ==  rcSPS.m_uiNumRefFrames,                   false);
+  ROFRS(m_bGapsInFrameNumValueAllowedFlag    ==  rcSPS.m_bGapsInFrameNumValueAllowedFlag,  false);
+  ROFRS(m_uiFrameWidthInMbs                  ==  rcSPS.m_uiFrameWidthInMbs,                false);
+  ROFRS(m_uiFrameHeightInMbs                 ==  rcSPS.m_uiFrameHeightInMbs,               false);
+  ROFRS(m_bFrameMbsOnlyFlag                  ==  rcSPS.m_bFrameMbsOnlyFlag,                false);
+  if(!m_bFrameMbsOnlyFlag)
   {
-      ROFRS( m_bMbAdaptiveFrameFieldFlag        ==  rcSPS.m_bMbAdaptiveFrameFieldFlag,      false );
+      ROFRS(m_bMbAdaptiveFrameFieldFlag        ==  rcSPS.m_bMbAdaptiveFrameFieldFlag,      false);
   }
-  ROFRS( m_bDirect8x8InferenceFlag            ==  rcSPS.m_bDirect8x8InferenceFlag,          false );
-  ROFRS( m_uiFrameCropLeftOffset              ==  rcSPS.m_uiFrameCropLeftOffset,            false );
-  ROFRS( m_uiFrameCropRightOffset             ==  rcSPS.m_uiFrameCropRightOffset,           false );
-  ROFRS( m_uiFrameCropTopOffset               ==  rcSPS.m_uiFrameCropTopOffset,             false );
-  ROFRS( m_uiFrameCropBottomOffset            ==  rcSPS.m_uiFrameCropBottomOffset,          false );
+  ROFRS(m_bDirect8x8InferenceFlag            ==  rcSPS.m_bDirect8x8InferenceFlag,          false);
+  ROFRS(m_uiFrameCropLeftOffset              ==  rcSPS.m_uiFrameCropLeftOffset,            false);
+  ROFRS(m_uiFrameCropRightOffset             ==  rcSPS.m_uiFrameCropRightOffset,           false);
+  ROFRS(m_uiFrameCropTopOffset               ==  rcSPS.m_uiFrameCropTopOffset,             false);
+  ROFRS(m_uiFrameCropBottomOffset            ==  rcSPS.m_uiFrameCropBottomOffset,          false);
 
-  AOF  ( m_pcVUI );
-  AOF  ( rcSPS.m_pcVUI );
-  ROFRS( m_pcVUI->isSameExceptHRDParametersAndSVCExt( *rcSPS.m_pcVUI ),                     false );
+  AOF  (m_pcVUI);
+  AOF  (rcSPS.m_pcVUI);
+  ROFRS(m_pcVUI->isSameExceptHRDParametersAndSVCExt(*rcSPS.m_pcVUI),                     false);
 
   if(isSubSetSPS() && rcSPS.isSubSetSPS())
   {
-      ROFRS( m_bInterlayerDeblockingPresent     ==  rcSPS.m_bInterlayerDeblockingPresent,   false );
-      ROFRS( m_uiExtendedSpatialScalability     ==  rcSPS.m_uiExtendedSpatialScalability,   false );
+      ROFRS(m_bInterlayerDeblockingPresent     ==  rcSPS.m_bInterlayerDeblockingPresent,   false);
+      ROFRS(m_uiExtendedSpatialScalability     ==  rcSPS.m_uiExtendedSpatialScalability,   false);
       if(m_uiChromaFormatIdc == 1 || m_uiChromaFormatIdc == 2)
       {
-          ROFRS( m_uiChromaPhaseXPlus1            ==  rcSPS.m_uiChromaPhaseXPlus1,          false );
+          ROFRS(m_uiChromaPhaseXPlus1            ==  rcSPS.m_uiChromaPhaseXPlus1,          false);
       }
       if(m_uiChromaFormatIdc == 1)
       {
-          ROFRS( m_uiChromaPhaseYPlus1            ==  rcSPS.m_uiChromaPhaseYPlus1,          false );
+          ROFRS(m_uiChromaPhaseYPlus1            ==  rcSPS.m_uiChromaPhaseYPlus1,          false);
       }
       if(m_uiExtendedSpatialScalability == 1)
       {
-          if( m_uiChromaFormatIdc > 0 )
+          if(m_uiChromaFormatIdc > 0)
           {
-              ROFRS( m_uiBaseChromaPhaseXPlus1      ==  rcSPS.m_uiBaseChromaPhaseXPlus1,      false );
-              ROFRS( m_uiBaseChromaPhaseYPlus1      ==  rcSPS.m_uiBaseChromaPhaseYPlus1,      false );
+              ROFRS(m_uiBaseChromaPhaseXPlus1      ==  rcSPS.m_uiBaseChromaPhaseXPlus1,      false);
+              ROFRS(m_uiBaseChromaPhaseYPlus1      ==  rcSPS.m_uiBaseChromaPhaseYPlus1,      false);
           }
-          ROFRS( m_iScaledBaseLeftOffset          ==  rcSPS.m_iScaledBaseLeftOffset,          false );
-          ROFRS( m_iScaledBaseTopOffset           ==  rcSPS.m_iScaledBaseTopOffset,           false );
-          ROFRS( m_iScaledBaseRightOffset         ==  rcSPS.m_iScaledBaseRightOffset,         false );
-          ROFRS( m_iScaledBaseBottomOffset        ==  rcSPS.m_iScaledBaseBottomOffset,        false );
+          ROFRS(m_iScaledBaseLeftOffset          ==  rcSPS.m_iScaledBaseLeftOffset,          false);
+          ROFRS(m_iScaledBaseTopOffset           ==  rcSPS.m_iScaledBaseTopOffset,           false);
+          ROFRS(m_iScaledBaseRightOffset         ==  rcSPS.m_iScaledBaseRightOffset,         false);
+          ROFRS(m_iScaledBaseBottomOffset        ==  rcSPS.m_iScaledBaseBottomOffset,        false);
       }
-      ROFRS( m_bAVCRewriteFlag                  ==  rcSPS.m_bAVCRewriteFlag,                  false );
+      ROFRS(m_bAVCRewriteFlag                  ==  rcSPS.m_bAVCRewriteFlag,                  false);
       if(m_bAVCRewriteFlag)
       {
-          ROFRS( m_bAVCAdaptiveRewriteFlag        ==  rcSPS.m_bAVCAdaptiveRewriteFlag,        false );
+          ROFRS(m_bAVCAdaptiveRewriteFlag        ==  rcSPS.m_bAVCAdaptiveRewriteFlag,        false);
       }
-      ROFRS( m_bAVCHeaderRewriteFlag            ==  rcSPS.m_bAVCHeaderRewriteFlag,            false );
+      ROFRS(m_bAVCHeaderRewriteFlag            ==  rcSPS.m_bAVCHeaderRewriteFlag,            false);
   }
   return true;
 }
@@ -297,8 +297,8 @@ ErrVal SequenceParameterSet::copySPSDataForMGSEnhancement(const SequenceParamete
     m_uiFrameCropRightOffset            = rcSPS.m_uiFrameCropRightOffset;
     m_uiFrameCropTopOffset              = rcSPS.m_uiFrameCropTopOffset;
     m_uiFrameCropBottomOffset           = rcSPS.m_uiFrameCropBottomOffset;
-    ROF ( m_pcVUI );
-    ROF ( rcSPS.m_pcVUI );
+    ROF (m_pcVUI);
+    ROF (rcSPS.m_pcVUI);
     m_pcVUI->copyExceptHRDParametersAndSVCExt(*rcSPS.m_pcVUI);
     if(rcSPS.isSubSetSPS() && CurrQId != 1) //zhangxd_20101220
     {
@@ -324,9 +324,9 @@ UInt SequenceParameterSet::getMaxDPBSize() const
 {
     const LevelLimit* pcLevelLimit = 0;
     UInt              uiFrameSize = 384*getMbInFrame();
-    ANOK( xGetLevelLimit( pcLevelLimit, getConvertedLevelIdc() ) );
-    UInt uiNumDPBEntries  = pcLevelLimit->uiMaxDPBSizeX2 / ( 2*uiFrameSize );
-    uiNumDPBEntries       = gMin( uiNumDPBEntries, 16 );
+    ANOK(xGetLevelLimit(pcLevelLimit, getConvertedLevelIdc()));
+    UInt uiNumDPBEntries  = pcLevelLimit->uiMaxDPBSizeX2 / (2*uiFrameSize);
+    uiNumDPBEntries       = gMin(uiNumDPBEntries, 16);
     return uiNumDPBEntries;
 }
 
@@ -339,30 +339,30 @@ Void SequenceParameterSet::setVUI(SequenceParameterSet* pcSPS)
 UInt SequenceParameterSet::getMaxCPBSize() const
 {
     const LevelLimit* pcLevelLimit = 0;
-    ANOK( xGetLevelLimit(pcLevelLimit, getConvertedLevelIdc()));
+    ANOK(xGetLevelLimit(pcLevelLimit, getConvertedLevelIdc()));
     return pcLevelLimit->uiMaxCPBSize;
 }
 
 UInt SequenceParameterSet::getMaxBitRate() const
 {
     const LevelLimit* pcLevelLimit = 0;
-    ANOK( xGetLevelLimit(pcLevelLimit, getConvertedLevelIdc()));
+    ANOK(xGetLevelLimit(pcLevelLimit, getConvertedLevelIdc()));
     return pcLevelLimit->uiMaxBitRate;
 }
 // JVT-V068 HRD }
 
 UInt SequenceParameterSet::getMaxSliceSize(Bool bFieldPic) const
 {
-    ROTRS( m_uiFrameWidthInMbs * m_uiFrameHeightInMbs <= UInt(bFieldPic ? 3240 : 1620), MSYS_UINT_MAX );
+    ROTRS(m_uiFrameWidthInMbs * m_uiFrameHeightInMbs <= UInt(bFieldPic ? 3240 : 1620), MSYS_UINT_MAX);
     const LevelLimit* pcLevelLimit = 0;
-    ANOK( xGetLevelLimit(pcLevelLimit, getConvertedLevelIdc()) );
+    ANOK(xGetLevelLimit(pcLevelLimit, getConvertedLevelIdc()));
     return (pcLevelLimit->uiMaxFrameSize >> 2);
 }
 
 UInt SequenceParameterSet::getMaxMVsPer2Mb() const
 {
     const LevelLimit* pcLevelLimit = 0;
-    ANOK( xGetLevelLimit(pcLevelLimit, getConvertedLevelIdc()) );
+    ANOK(xGetLevelLimit(pcLevelLimit, getConvertedLevelIdc()));
     return pcLevelLimit->uiMaxMvsPer2Mb;
 }
 
@@ -372,11 +372,11 @@ Bool SequenceParameterSet::getBiPred8x8Disabled()  const
     {
         return (m_uiLevelIdc >= 31);
     }
-    if( m_eProfileIdc == SCALABLE_BASELINE_PROFILE )
+    if(m_eProfileIdc == SCALABLE_BASELINE_PROFILE)
     {
         return true;
     }
-    if( m_eProfileIdc == SCALABLE_HIGH_PROFILE )
+    if(m_eProfileIdc == SCALABLE_HIGH_PROFILE)
     {
         return (m_bConstrainedSet0Flag || m_uiLevelIdc >= 31);
     }
@@ -385,9 +385,9 @@ Bool SequenceParameterSet::getBiPred8x8Disabled()  const
 
 ErrVal SequenceParameterSet::xGetLevelLimit(const LevelLimit*& rpcLevelLimit, Int iLevelIdc)
 {
-    ROT ( iLevelIdc > 51 )
+    ROT (iLevelIdc > 51)
     rpcLevelLimit = &m_aLevelLimit[iLevelIdc];
-    ROFS( rpcLevelLimit->bValid )
+    ROFS(rpcLevelLimit->bValid)
     return Err::m_nOK;
 }
 
@@ -412,9 +412,9 @@ UInt SequenceParameterSet::getLevelIdc(UInt uiMbY,
         if(Err::m_nOK == xGetLevelLimit(pcLevelLimit, uiLevel))
         {
             UInt  uiMbPerLine  = (UInt)sqrt((Double)pcLevelLimit->uiMaxFrameSize * 8);
-            if((uiMbPerLine                   >= uiMbX      ) &&
-               (uiMbPerLine                   >= uiMbY      ) &&
-               (pcLevelLimit->uiMaxMbPerSec   >= uiMbPerSec ) &&
+            if((uiMbPerLine                   >= uiMbX     ) &&
+               (uiMbPerLine                   >= uiMbY     ) &&
+               (pcLevelLimit->uiMaxMbPerSec   >= uiMbPerSec) &&
                (pcLevelLimit->uiMaxFrameSize  >= uiFrameSize) &&
                (pcLevelLimit->uiMaxDPBSizeX2  >= uiDPBSizeX2) &&
                (pcLevelLimit->uiMaxVMvRange   >= uiMvRange))
@@ -427,18 +427,18 @@ UInt SequenceParameterSet::getLevelIdc(UInt uiMbY,
 }
 
 
-ErrVal SequenceParameterSet::write( HeaderSymbolWriteIf* pcWriteIf ) const
+ErrVal SequenceParameterSet::write (HeaderSymbolWriteIf* pcWriteIf) const
 {
     //===== NAL unit header =====
-    ETRACE_DECLARE( Bool m_bTraceEnable = true );
-    ETRACE_LAYER  ( 0 );
-    if( m_eNalUnitType == NAL_UNIT_SUBSET_SPS )
+    ETRACE_DECLARE(Bool m_bTraceEnable = true);
+    ETRACE_LAYER  (0);
+    if(m_eNalUnitType == NAL_UNIT_SUBSET_SPS)
     {
-        ETRACE_HEADER( "SUBSET SEQUENCE PARAMETER SET" );
+        ETRACE_HEADER ("SUBSET SEQUENCE PARAMETER SET");
     }
     else
     {
-        ETRACE_HEADER( "SEQUENCE PARAMETER SET" );
+        ETRACE_HEADER ("SEQUENCE PARAMETER SET");
     }
     pcWriteIf->writeFlag(0,                                        "NAL unit header: forbidden_zero_bit");
     pcWriteIf->writeCode(3, 2,                                     "NAL unit header: nal_ref_idc");
@@ -458,7 +458,7 @@ ErrVal SequenceParameterSet::write( HeaderSymbolWriteIf* pcWriteIf ) const
     xWriteFrext(pcWriteIf);
 
     UInt uiTmp = getLog2MaxFrameNum();
-    ROF ( uiTmp >= 4 );
+    ROF (uiTmp >= 4);
     pcWriteIf->writeUvlc(uiTmp - 4,                                "SPS: log2_max_frame_num_minus_4");
     pcWriteIf->writeUvlc(getPicOrderCntType(),                     "SPS: pic_order_cnt_type");
     if(getPicOrderCntType() == 0)
@@ -495,11 +495,11 @@ ErrVal SequenceParameterSet::write( HeaderSymbolWriteIf* pcWriteIf ) const
 
     if(m_uiFrameCropLeftOffset || m_uiFrameCropRightOffset || m_uiFrameCropTopOffset || m_uiFrameCropBottomOffset)
     {
-        pcWriteIf->writeFlag(true,                                     "SPS: frame_cropping_flag"     );
-        pcWriteIf->writeUvlc(m_uiFrameCropLeftOffset,                  "SPS: frame_crop_left_offset"  );
-        pcWriteIf->writeUvlc(m_uiFrameCropRightOffset,                 "SPS: frame_crop_right_offset" );
-        pcWriteIf->writeUvlc(m_uiFrameCropTopOffset,                   "SPS: frame_crop_top_offset"   );
-        pcWriteIf->writeUvlc(m_uiFrameCropBottomOffset,                "SPS: frame_crop_bottom_offset");
+        pcWriteIf->writeFlag (true,                                     "SPS: frame_cropping_flag"    );
+        pcWriteIf->writeUvlc (m_uiFrameCropLeftOffset,                  "SPS: frame_crop_left_offset" );
+        pcWriteIf->writeUvlc (m_uiFrameCropRightOffset,                 "SPS: frame_crop_right_offset");
+        pcWriteIf->writeUvlc (m_uiFrameCropTopOffset,                   "SPS: frame_crop_top_offset"  );
+        pcWriteIf->writeUvlc (m_uiFrameCropBottomOffset,                "SPS: frame_crop_bottom_offset");
     }
     else
     {
@@ -508,7 +508,7 @@ ErrVal SequenceParameterSet::write( HeaderSymbolWriteIf* pcWriteIf ) const
 
     m_pcVUI->write(pcWriteIf);
 
-    ROFRS( m_eNalUnitType == NAL_UNIT_SUBSET_SPS, Err::m_nOK );
+    ROFRS(m_eNalUnitType == NAL_UNIT_SUBSET_SPS, Err::m_nOK);
 
 
     //===== start of subset sequence parameter set extension ======
@@ -527,7 +527,7 @@ ErrVal SequenceParameterSet::write( HeaderSymbolWriteIf* pcWriteIf ) const
         }
         if(getExtendedSpatialScalability() == ESS_SEQ)
         {
-            if(getChromaFormatIdc() > 0 )
+            if(getChromaFormatIdc() > 0)
             {
                 pcWriteIf->writeCode(m_uiBaseChromaPhaseXPlus1, 1,     "SPS: seq_ref_layer_chroma_phase_x_plus1_flag");  //VB-JV 04/08
                 pcWriteIf->writeCode(m_uiBaseChromaPhaseYPlus1, 2,     "SPS: seq_ref_layer_chroma_phase_y_plus1");       //VB-JV 04/08
@@ -545,29 +545,29 @@ ErrVal SequenceParameterSet::write( HeaderSymbolWriteIf* pcWriteIf ) const
         pcWriteIf->writeFlag(m_bAVCHeaderRewriteFlag,                  "SPS: slice_header_restriction_flag");
 
         //===== SVC VUI extension ====
-        pcWriteIf->writeFlag( getSVCVUIParametersPresentFlag(),        "SPS: svc_vui_parameters_present_flag");
-        if( getSVCVUIParametersPresentFlag() )
+        pcWriteIf->writeFlag(getSVCVUIParametersPresentFlag(),        "SPS: svc_vui_parameters_present_flag");
+        if(getSVCVUIParametersPresentFlag())
         {
             m_pcVUI->writeSVCExtension(pcWriteIf);
         }
     }
 
     pcWriteIf->writeFlag(getAdditionalExtension2Flag(),                "SPS: additional_extension2_flag");
-    ROT ( getAdditionalExtension2Flag() ); // not supported
+    ROT (getAdditionalExtension2Flag()); // not supported
 
     return Err::m_nOK;
 }
 
 
-ErrVal SequenceParameterSet::read(HeaderSymbolReadIf* pcReadIf,
-                                  NalUnitType eNalUnitType,
-                                  Bool& rbCompletelyParsed)
+ErrVal SequenceParameterSet::read (HeaderSymbolReadIf* pcReadIf,
+                                   NalUnitType eNalUnitType,
+                                   Bool& rbCompletelyParsed)
 {
     rbCompletelyParsed = true;
 
     //===== NAL unit header =====
-    setNalUnitType          ( eNalUnitType );
-    setAVCHeaderRewriteFlag ( eNalUnitType == NAL_UNIT_SPS ); // for non-SVC SPS
+    setNalUnitType          (eNalUnitType);
+    setAVCHeaderRewriteFlag (eNalUnitType == NAL_UNIT_SPS); // for non-SVC SPS
     m_uiExtendedSpatialScalability = ESS_NONE; // for non-SVC SPS
 
     Bool  bTmp;
@@ -575,7 +575,7 @@ ErrVal SequenceParameterSet::read(HeaderSymbolReadIf* pcReadIf,
 
     //===== Sequence parameter set =====
     pcReadIf->getCode(uiTmp,                  8, "SPS: profile_idc");
-    m_eProfileIdc  = Profile ( uiTmp );
+    m_eProfileIdc  = Profile (uiTmp);
     pcReadIf->getFlag(m_bConstrainedSet0Flag,    "SPS: constraint_set0_flag");  //VB-JV 04/08
     pcReadIf->getFlag(m_bConstrainedSet1Flag,    "SPS: constraint_set1_flag");  //VB-JV 04/08
     pcReadIf->getFlag(m_bConstrainedSet2Flag,    "SPS: constraint_set2_flag");  //VB-JV 04/08
@@ -594,7 +594,7 @@ ErrVal SequenceParameterSet::read(HeaderSymbolReadIf* pcReadIf,
        m_eProfileIdc != HIGH_444_PROFILE           &&
        m_eProfileIdc != CAVLC_444_PROFILE          &&
        m_eProfileIdc != SCALABLE_BASELINE_PROFILE  &&
-       m_eProfileIdc != SCALABLE_HIGH_PROFILE        )
+       m_eProfileIdc != SCALABLE_HIGH_PROFILE       )
     {
         // unkown profile
         rbCompletelyParsed = false;
@@ -605,20 +605,20 @@ ErrVal SequenceParameterSet::read(HeaderSymbolReadIf* pcReadIf,
     xReadFrext(pcReadIf);
 
     pcReadIf->getUvlc(uiTmp,                                "SPS: log2_max_frame_num_minus_4");
-    ROT   ( uiTmp > 12 );
-    setLog2MaxFrameNum( uiTmp + 4 );
+    ROT   (uiTmp > 12);
+    setLog2MaxFrameNum(uiTmp + 4);
     xReadPicOrderCntInfo(pcReadIf);
-    pcReadIf->getUvlc( m_uiNumRefFrames,                    "SPS: num_ref_frames");
-    pcReadIf->getFlag( m_bGapsInFrameNumValueAllowedFlag,   "SPS: gaps_in_frame_num_value_allowed_flag");
+    pcReadIf->getUvlc(m_uiNumRefFrames,                    "SPS: num_ref_frames");
+    pcReadIf->getFlag(m_bGapsInFrameNumValueAllowedFlag,   "SPS: gaps_in_frame_num_value_allowed_flag");
 
-    pcReadIf->getUvlc( uiTmp,                               "SPS: pic_width_in_mbs_minus1");
-    setFrameWidthInMbs ( 1 + uiTmp );
-    pcReadIf->getUvlc( uiTmp,                               "SPS: pic_height_in_map_units_minus1");
-    pcReadIf->getFlag( m_bFrameMbsOnlyFlag,                 "SPS: frame_mbs_only_flag");
-    if( getFrameMbsOnlyFlag() )
+    pcReadIf->getUvlc(uiTmp,                               "SPS: pic_width_in_mbs_minus1");
+    setFrameWidthInMbs (1 + uiTmp);
+    pcReadIf->getUvlc(uiTmp,                               "SPS: pic_height_in_map_units_minus1");
+    pcReadIf->getFlag(m_bFrameMbsOnlyFlag,                 "SPS: frame_mbs_only_flag");
+    if(getFrameMbsOnlyFlag())
     {
-      setFrameHeightInMbs( uiTmp+1 );
-      setMbAdaptiveFrameFieldFlag( false );
+      setFrameHeightInMbs(uiTmp+1);
+      setMbAdaptiveFrameFieldFlag(false);
     }
     else
     {
@@ -628,12 +628,12 @@ ErrVal SequenceParameterSet::read(HeaderSymbolReadIf* pcReadIf,
     pcReadIf->getFlag(m_bDirect8x8InferenceFlag,                       "SPS: direct_8x8_inference_flag");
 
     Bool  bFrameCroppingFlag;
-    pcReadIf->getFlag(bFrameCroppingFlag,                              "SPS: frame_cropping_flag"      );
+    pcReadIf->getFlag(bFrameCroppingFlag,                              "SPS: frame_cropping_flag"     );
     if(bFrameCroppingFlag)
     {
-        pcReadIf->getUvlc(m_uiFrameCropLeftOffset,                     "SPS: frame_crop_left_offset"  );
-        pcReadIf->getUvlc(m_uiFrameCropRightOffset,                    "SPS: frame_crop_right_offset" );
-        pcReadIf->getUvlc(m_uiFrameCropTopOffset,                      "SPS: frame_crop_top_offset"   );
+        pcReadIf->getUvlc(m_uiFrameCropLeftOffset,                     "SPS: frame_crop_left_offset" );
+        pcReadIf->getUvlc(m_uiFrameCropRightOffset,                    "SPS: frame_crop_right_offset");
+        pcReadIf->getUvlc(m_uiFrameCropTopOffset,                      "SPS: frame_crop_top_offset"  );
         pcReadIf->getUvlc(m_uiFrameCropBottomOffset,                   "SPS: frame_crop_bottom_offset");
     }
     else
@@ -652,7 +652,7 @@ ErrVal SequenceParameterSet::read(HeaderSymbolReadIf* pcReadIf,
         m_pcVUI->read(pcReadIf);
     }
 
-    ROFRS( m_eNalUnitType == NAL_UNIT_SUBSET_SPS, Err::m_nOK );
+    ROFRS(m_eNalUnitType == NAL_UNIT_SUBSET_SPS, Err::m_nOK);
 
 
     //===== start of subset parameter extension =====
@@ -700,14 +700,14 @@ ErrVal SequenceParameterSet::read(HeaderSymbolReadIf* pcReadIf,
         pcReadIf->getFlag(m_bAVCHeaderRewriteFlag,                     "SPS: slice_header_restriction_flag");
 
         //===== svc VUI extension =====
-        pcReadIf->getFlag( m_bSVCVUIParametersPresentFlag,             "SPS: svc_vui_parameters_present_flag");
+        pcReadIf->getFlag(m_bSVCVUIParametersPresentFlag,             "SPS: svc_vui_parameters_present_flag");
         if(m_bSVCVUIParametersPresentFlag)
         {
             m_pcVUI->readSVCExtension(pcReadIf);
         }
     }
 
-    pcReadIf->getFlag(m_bAdditionalExtension2Flag,                     "SPS: additional_extension2_flag" );
+    pcReadIf->getFlag(m_bAdditionalExtension2Flag,                     "SPS: additional_extension2_flag");
     rbCompletelyParsed = !m_bAdditionalExtension2Flag;
 
     return Err::m_nOK;
@@ -715,41 +715,41 @@ ErrVal SequenceParameterSet::read(HeaderSymbolReadIf* pcReadIf,
 
 
 
-ErrVal SequenceParameterSet::xWriteFrext( HeaderSymbolWriteIf* pcWriteIf ) const
+ErrVal SequenceParameterSet::xWriteFrext (HeaderSymbolWriteIf* pcWriteIf) const
 {
-    ROTRS( m_eProfileIdc != HIGH_PROFILE              &&
+    ROTRS (m_eProfileIdc != HIGH_PROFILE              &&
            m_eProfileIdc != HIGH_10_PROFILE           &&
            m_eProfileIdc != HIGH_422_PROFILE          &&
            m_eProfileIdc != HIGH_444_PROFILE          &&
            m_eProfileIdc != CAVLC_444_PROFILE         &&
            m_eProfileIdc != SCALABLE_BASELINE_PROFILE &&
-           m_eProfileIdc != SCALABLE_HIGH_PROFILE,      Err::m_nOK );
+           m_eProfileIdc != SCALABLE_HIGH_PROFILE,      Err::m_nOK);
 
-    pcWriteIf->writeUvlc( m_uiChromaFormatIdc, "SPS: chroma_format_idc");
-    if( m_uiChromaFormatIdc == 3 )
+    pcWriteIf->writeUvlc(m_uiChromaFormatIdc, "SPS: chroma_format_idc");
+    if(m_uiChromaFormatIdc == 3)
     {
-        pcWriteIf->writeFlag( m_bSeparateColourPlaneFlag,     "SPS: separate_colour_plane_flag");
+        pcWriteIf->writeFlag(m_bSeparateColourPlaneFlag,     "SPS: separate_colour_plane_flag");
     }
-    pcWriteIf->writeUvlc( m_uiBitDepthLumaMinus8,         "SPS: bit_depth_luma_minus8");
-    pcWriteIf->writeUvlc( m_uiBitDepthChromaMinus8,       "SPS: bit_depth_chroma_minus8");
-    pcWriteIf->writeFlag( m_bTransformBypassFlag,         "SPS: qpprime_y_zero_transform_bypass_flag");
-    pcWriteIf->writeFlag( m_bSeqScalingMatrixPresentFlag, "SPS: seq_scaling_matrix_present_flag");
-    ROFRS ( m_bSeqScalingMatrixPresentFlag, Err::m_nOK );
+    pcWriteIf->writeUvlc(m_uiBitDepthLumaMinus8,         "SPS: bit_depth_luma_minus8");
+    pcWriteIf->writeUvlc(m_uiBitDepthChromaMinus8,       "SPS: bit_depth_chroma_minus8");
+    pcWriteIf->writeFlag(m_bTransformBypassFlag,         "SPS: qpprime_y_zero_transform_bypass_flag");
+    pcWriteIf->writeFlag(m_bSeqScalingMatrixPresentFlag, "SPS: seq_scaling_matrix_present_flag");
+    ROFRS (m_bSeqScalingMatrixPresentFlag, Err::m_nOK);
     m_cSeqScalingMatrix.write(pcWriteIf, true);
 
     return Err::m_nOK;
 }
 
 
-ErrVal SequenceParameterSet::xReadFrext(HeaderSymbolReadIf* pcReadIf)
+ErrVal SequenceParameterSet::xReadFrext (HeaderSymbolReadIf* pcReadIf)
 {
-    ROTRS( m_eProfileIdc != HIGH_PROFILE              &&
+    ROTRS(m_eProfileIdc != HIGH_PROFILE              &&
            m_eProfileIdc != HIGH_10_PROFILE           &&
            m_eProfileIdc != HIGH_422_PROFILE          &&
            m_eProfileIdc != HIGH_444_PROFILE          &&
            m_eProfileIdc != CAVLC_444_PROFILE         &&
            m_eProfileIdc != SCALABLE_BASELINE_PROFILE &&
-           m_eProfileIdc != SCALABLE_HIGH_PROFILE,    Err::m_nOK );
+           m_eProfileIdc != SCALABLE_HIGH_PROFILE,    Err::m_nOK);
 
     pcReadIf->getUvlc(m_uiChromaFormatIdc,            "SPS: chroma_format_idc");
     if(m_uiChromaFormatIdc == 3)
@@ -761,50 +761,50 @@ ErrVal SequenceParameterSet::xReadFrext(HeaderSymbolReadIf* pcReadIf)
     pcReadIf->getFlag(m_bTransformBypassFlag,         "SPS: qpprime_y_zero_transform_bypass_flag");
     if(m_eProfileIdc == SCALABLE_BASELINE_PROFILE || m_eProfileIdc == SCALABLE_HIGH_PROFILE)
     {
-        ROF( m_uiChromaFormatIdc      == 1  );
-        ROF( m_uiBitDepthLumaMinus8   == 0  );
-        ROF( m_uiBitDepthChromaMinus8 == 0  );
-        ROT( m_bTransformBypassFlag         );
+        ROF(m_uiChromaFormatIdc      == 1 );
+        ROF(m_uiBitDepthLumaMinus8   == 0 );
+        ROF(m_uiBitDepthChromaMinus8 == 0 );
+        ROT(m_bTransformBypassFlag        );
     }
     else if(m_eProfileIdc == HIGH_PROFILE)
     {
-        ROF( m_uiChromaFormatIdc      <= 1  );
-        ROF( m_uiBitDepthLumaMinus8   == 0  );
-        ROF( m_uiBitDepthChromaMinus8 == 0  );
-        ROT( m_bTransformBypassFlag         );
+        ROF(m_uiChromaFormatIdc      <= 1 );
+        ROF(m_uiBitDepthLumaMinus8   == 0 );
+        ROF(m_uiBitDepthChromaMinus8 == 0 );
+        ROT(m_bTransformBypassFlag        );
     }
     else if(m_eProfileIdc == HIGH_10_PROFILE)
     {
-        ROF( m_uiChromaFormatIdc      <= 1  );
-        ROF( m_uiBitDepthLumaMinus8   <= 2  );
-        ROF( m_uiBitDepthChromaMinus8 <= 2  );
-        ROT( m_bTransformBypassFlag         );
+        ROF(m_uiChromaFormatIdc      <= 1 );
+        ROF(m_uiBitDepthLumaMinus8   <= 2 );
+        ROF(m_uiBitDepthChromaMinus8 <= 2 );
+        ROT(m_bTransformBypassFlag        );
     }
-    else if( m_eProfileIdc == HIGH_422_PROFILE )
+    else if(m_eProfileIdc == HIGH_422_PROFILE)
     {
-        ROF( m_uiChromaFormatIdc      <= 2  );
-        ROF( m_uiBitDepthLumaMinus8   <= 2  );
-        ROF( m_uiBitDepthChromaMinus8 <= 2  );
-        ROT( m_bTransformBypassFlag         );
+        ROF(m_uiChromaFormatIdc      <= 2 );
+        ROF(m_uiBitDepthLumaMinus8   <= 2 );
+        ROF(m_uiBitDepthChromaMinus8 <= 2 );
+        ROT(m_bTransformBypassFlag        );
     }
     else
     {
-        ROF( m_uiChromaFormatIdc      <= 3  );
-        ROF( m_uiBitDepthLumaMinus8   <= 6  );
-        ROF( m_uiBitDepthChromaMinus8 <= 6  );
+        ROF(m_uiChromaFormatIdc      <= 3 );
+        ROF(m_uiBitDepthLumaMinus8   <= 6 );
+        ROF(m_uiBitDepthChromaMinus8 <= 6 );
     }
 
     pcReadIf->getFlag(m_bSeqScalingMatrixPresentFlag,  "SPS: seq_scaling_matrix_present_flag");
-    ROFRS ( m_bSeqScalingMatrixPresentFlag, Err::m_nOK );
+    ROFRS (m_bSeqScalingMatrixPresentFlag, Err::m_nOK);
     m_cSeqScalingMatrix.read(pcReadIf, true);
 
     return Err::m_nOK;
 }
 
 
-Void SequenceParameterSet::setResizeParameters(const ResizeParameters& rcResizeParameters)
+Void SequenceParameterSet::setResizeParameters (const ResizeParameters& rcResizeParameters)
 {
-    Int iVer = ( m_bFrameMbsOnlyFlag ? 2 : 4 ); // m_bFrameMbsOnlyFlag must be set !!!!!
+    Int iVer = (m_bFrameMbsOnlyFlag ? 2 : 4); // m_bFrameMbsOnlyFlag must be set !!!!!
 
     m_uiExtendedSpatialScalability  = (UInt)rcResizeParameters.m_iExtendedSpatialScalability;
     m_uiChromaPhaseXPlus1           = (UInt)(rcResizeParameters.m_iChromaPhaseX + 1);
@@ -816,7 +816,7 @@ Void SequenceParameterSet::setResizeParameters(const ResizeParameters& rcResizeP
         m_uiBaseChromaPhaseYPlus1 = (UInt)(rcResizeParameters.m_iRefLayerChromaPhaseY+1);
         m_iScaledBaseLeftOffset   = rcResizeParameters.m_iLeftFrmOffset / 2;
         m_iScaledBaseTopOffset    = rcResizeParameters.m_iTopFrmOffset  / iVer;
-        m_iScaledBaseRightOffset  = (rcResizeParameters.m_iFrameWidth  - rcResizeParameters.m_iLeftFrmOffset - rcResizeParameters.m_iScaledRefFrmWidth ) / 2;
+        m_iScaledBaseRightOffset  = (rcResizeParameters.m_iFrameWidth  - rcResizeParameters.m_iLeftFrmOffset - rcResizeParameters.m_iScaledRefFrmWidth) / 2;
         m_iScaledBaseBottomOffset = (rcResizeParameters.m_iFrameHeight - rcResizeParameters.m_iTopFrmOffset  - rcResizeParameters.m_iScaledRefFrmHeight) / iVer;
     }
     else
@@ -831,12 +831,12 @@ Void SequenceParameterSet::setResizeParameters(const ResizeParameters& rcResizeP
 }
 
 
-ErrVal SequenceParameterSet::xReadPicOrderCntInfo( HeaderSymbolReadIf* pcReadIf )
+ErrVal SequenceParameterSet::xReadPicOrderCntInfo (HeaderSymbolReadIf* pcReadIf)
 {
     pcReadIf->getUvlc(m_uiPicOrderCntType, "SPS: pic_order_cnt_type");
-    ROT( m_uiPicOrderCntType>2 );
+    ROT(m_uiPicOrderCntType>2);
 
-    ROTRS( 2 == m_uiPicOrderCntType, Err::m_nOK );
+    ROTRS(2 == m_uiPicOrderCntType, Err::m_nOK);
 
     if(0 == m_uiPicOrderCntType)
     {
@@ -846,11 +846,11 @@ ErrVal SequenceParameterSet::xReadPicOrderCntInfo( HeaderSymbolReadIf* pcReadIf 
     }
     else if(1 == m_uiPicOrderCntType)
     {
-        pcReadIf->getFlag(m_bDeltaPicOrderAlwaysZeroFlag,     "SPS: delta_pic_order_always_zero_flag");
-        pcReadIf->getSvlc(m_iOffsetForNonRefPic,              "SPS: offset_for_non_ref_pic");
-        pcReadIf->getSvlc(m_iOffsetForTopToBottomField,       "SPS: offset_for_top_to_bottom_field");
-        pcReadIf->getUvlc(m_uiNumRefFramesInPicOrderCntCycle, "SPS: num_ref_frames_in_pic_order_cnt_cycle");
-        initOffsetForRefFrame( m_uiNumRefFramesInPicOrderCntCycle);
+        pcReadIf->getFlag (m_bDeltaPicOrderAlwaysZeroFlag,     "SPS: delta_pic_order_always_zero_flag");
+        pcReadIf->getSvlc (m_iOffsetForNonRefPic,              "SPS: offset_for_non_ref_pic");
+        pcReadIf->getSvlc (m_iOffsetForTopToBottomField,       "SPS: offset_for_top_to_bottom_field");
+        pcReadIf->getUvlc (m_uiNumRefFramesInPicOrderCntCycle, "SPS: num_ref_frames_in_pic_order_cnt_cycle");
+        initOffsetForRefFrame (m_uiNumRefFramesInPicOrderCntCycle);
 
         for(UInt i = 0; i < m_uiNumRefFramesInPicOrderCntCycle; i++)
         {

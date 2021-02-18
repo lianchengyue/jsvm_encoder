@@ -46,8 +46,8 @@ ErrVal H264AVCEncoderTest::create(H264AVCEncoderTest*& rpcH264AVCEncoderTest)
 ErrVal H264AVCEncoderTest::init(Int argc, Char** argv)
 {
     //===== create and read encoder parameters =====
-    EncoderCodingParameter::create(m_pcEncoderCodingParameter);
-    if(Err::m_nOK != m_pcEncoderCodingParameter->init(argc, argv, m_cEncoderIoParameter.cBitstreamFilename))
+    EncoderCodingParameter::create (m_pcEncoderCodingParameter);
+    if(Err::m_nOK != m_pcEncoderCodingParameter->init (argc, argv, m_cEncoderIoParameter.cBitstreamFilename))
     {
         m_pcEncoderCodingParameter->printHelp();
         return -3;
@@ -56,34 +56,36 @@ ErrVal H264AVCEncoderTest::init(Int argc, Char** argv)
 
 
     //===== init instances for reading and writing yuv data =====
+    //AVC模式, uiNumberOfLayers=1
     UInt uiNumberOfLayers = m_pcEncoderCodingParameter->getAVCmode() ? 1 : m_pcEncoderCodingParameter->getNumberOfLayers();
+
     for(UInt uiLayer = 0; uiLayer < uiNumberOfLayers; uiLayer++)
     {
         JSVM::LayerParameters&  rcLayer = m_pcEncoderCodingParameter->getLayerParameters(uiLayer);
 
-        WriteYuvToFile::create(m_apcWriteYuv[uiLayer]);
-        m_apcWriteYuv[uiLayer]->init(rcLayer.getOutputFilename());
-        ReadYuvFile::create(m_apcReadYuv[uiLayer]);
+        WriteYuvToFile::create (m_apcWriteYuv[uiLayer]);
+        m_apcWriteYuv[uiLayer]->init (rcLayer.getOutputFilename());
+        ReadYuvFile::create (m_apcReadYuv[uiLayer]);
 
         ReadYuvFile::FillMode eFillMode = (rcLayer.isInterlaced() ? ReadYuvFile::FILL_FIELD : ReadYuvFile::FILL_FRAME);
 #if DOLBY_ENCMUX_ENABLE
         if(m_pcEncoderCodingParameter->getMuxMethod() && uiNumberOfLayers>1)
         {
             JSVM::LayerParameters&  rcLayer0 = m_pcEncoderCodingParameter->getLayerParameters(0);
-            m_apcReadYuv[uiLayer]->init(rcLayer.getInputFilename(),
-                                        rcLayer0.getFrameHeightInSamples(),
-                                        rcLayer0.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
+            m_apcReadYuv[uiLayer]->init (rcLayer.getInputFilename(),
+                                         rcLayer0.getFrameHeightInSamples(),
+                                         rcLayer0.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
         }
         else
         {
-          m_apcReadYuv[uiLayer]->init(rcLayer.getInputFilename(),
-                                      rcLayer.getFrameHeightInSamples(),
-                                      rcLayer.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
+          m_apcReadYuv[uiLayer]->init (rcLayer.getInputFilename(),
+                                       rcLayer.getFrameHeightInSamples(),
+                                       rcLayer.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
         }
 #else
-        m_apcReadYuv[uiLayer]->init(rcLayer.getInputFilename(),
-                                    rcLayer.getFrameHeightInSamples(),
-                                    rcLayer.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
+        m_apcReadYuv[uiLayer]->init (rcLayer.getInputFilename(),
+                                     rcLayer.getFrameHeightInSamples(),
+                                     rcLayer.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
 #endif
     }
 
@@ -92,8 +94,8 @@ ErrVal H264AVCEncoderTest::init(Int argc, Char** argv)
     //AVC模式
     if(m_pcEncoderCodingParameter->getAVCmode())
     {
-        WriteBitstreamToFile::create(m_pcWriteBitstreamToFile);
-        m_pcWriteBitstreamToFile->init(m_cEncoderIoParameter.cBitstreamFilename);
+        WriteBitstreamToFile::create (m_pcWriteBitstreamToFile);
+        m_pcWriteBitstreamToFile->init (m_cEncoderIoParameter.cBitstreamFilename);
     }
     //SVC模式
     else
@@ -101,12 +103,12 @@ ErrVal H264AVCEncoderTest::init(Int argc, Char** argv)
         m_cWriteToBitFileTempName  = m_cEncoderIoParameter.cBitstreamFilename + ".temp";
         m_cWriteToBitFileName = m_cEncoderIoParameter.cBitstreamFilename;
         m_cEncoderIoParameter.cBitstreamFilename  = m_cWriteToBitFileTempName;
-        WriteBitstreamToFile::create(m_pcWriteBitstreamToFile);
-        m_pcWriteBitstreamToFile->init(m_cEncoderIoParameter.cBitstreamFilename);
+        WriteBitstreamToFile::create (m_pcWriteBitstreamToFile);
+        m_pcWriteBitstreamToFile->init (m_cEncoderIoParameter.cBitstreamFilename);
     }
 
     //===== create encoder instance =====
-    JSVM::CreaterH264AVCEncoder::create(m_pcH264AVCEncoder);
+    JSVM::CreaterH264AVCEncoder::create (m_pcH264AVCEncoder);
 
 
     //===== set start code =====
@@ -187,8 +189,8 @@ ErrVal H264AVCEncoderTest::xGetNewPicBuffer (PicBuffer*&  rpcPicBuffer,
 {
     if(m_acUnusedPicBufferList[uiLayer].empty())
     {
-        UChar* pcBuffer = new UChar[ uiSize ];
-        ::memset(pcBuffer,  0x00, uiSize*sizeof(UChar));
+        UChar* pcBuffer = new UChar[uiSize];
+        ::memset(pcBuffer, 0x00,  uiSize*sizeof(UChar));
         rpcPicBuffer = new PicBuffer(pcBuffer);
     }
     else
@@ -291,8 +293,11 @@ ErrVal H264AVCEncoderTest::go ()
     UInt                    auiMbY[MAX_LAYERS];
     UInt                    auiPicSize[MAX_LAYERS];
     PicBuffer*              apcOriginalPicBuffer[MAX_LAYERS];
+    //Reconstruct Pic Buffer
     PicBuffer*              apcReconstructPicBuffer[MAX_LAYERS];
+    //输出队列
     PicBufferList           acPicBufferOutputList[MAX_LAYERS];
+    //未使用队列
     PicBufferList           acPicBufferUnusedList[MAX_LAYERS];
     ExtBinDataAccessorList  cOutExtBinDataAccessorList;
     Bool                    bMoreSets;
@@ -300,23 +305,27 @@ ErrVal H264AVCEncoderTest::go ()
     PicBuffer*              apcMuxPicBuffer[MAX_LAYERS];
 #endif
   
+
+    //1: 初始化Encoder各个模块
     //===== initialization =====
     m_pcH264AVCEncoder->init(m_pcEncoderCodingParameter);
 
     // JVT-W043 {
     bRateControlEnable = (Bool)((m_pcH264AVCEncoder->getCodingParameter()->m_uiRateControlEnable) > 0 ? true : false);
 
-    //通过"比特率-失真优化(Rate–distortion optimization)" 实现 rate Control
+    //2: 通过"比特率-失真优化(Rate–distortion optimization)" 实现 rate Control
     if(bRateControlEnable)
     {
-        Int   iGOPSize     = m_pcEncoderCodingParameter->getGOPSize();
-        Int   iFullGOPs    = uiMaxFrame / iGOPSize;
+        Int   iGOPSize  = m_pcEncoderCodingParameter->getGOPSize();
+        Int   iFullGOPs = uiMaxFrame / iGOPSize;
         Double dMaximumFrameRate = m_pcEncoderCodingParameter->getMaximumFrameRate();
-        iGOPSize =  (Int)floor(0.5F + iGOPSize / (dMaximumFrameRate / (Float) (m_pcH264AVCEncoder->getCodingParameter()->getLayerParameters(0).m_dOutputFrameRate)));
+        iGOPSize = (Int)floor(0.5F + iGOPSize / (dMaximumFrameRate / (Float) (m_pcH264AVCEncoder->getCodingParameter()->getLayerParameters(0).m_dOutputFrameRate)));
         iGOPSize = gMax(iGOPSize, 1);
         Int uiLocalMaxFrame =  (Int)floor(0.5F + uiMaxFrame / (dMaximumFrameRate / (Float) (m_pcH264AVCEncoder->getCodingParameter()->getLayerParameters(0).m_dOutputFrameRate)));
         if (uiLocalMaxFrame % iGOPSize == 0)
-          iFullGOPs--;
+        {
+            iFullGOPs--;
+        }
         Int   iNb          = iFullGOPs * (iGOPSize - 1);
 
         pcJSVMParams  = new jsvm_parameters;
@@ -340,7 +349,7 @@ ErrVal H264AVCEncoderTest::go ()
         pcJSVMParams->successive_Bframe = iGOPSize - 1;
         pcJSVMParams->m_uiLayerId       = 0;
 
-        if(m_pcH264AVCEncoder->getCodingParameter()->m_uiAdaptInitialQP)
+        if (m_pcH264AVCEncoder->getCodingParameter()->m_uiAdaptInitialQP)
             pcGenericRC->adaptInitialQP();
 
         switch(iGOPSize)
@@ -376,23 +385,24 @@ ErrVal H264AVCEncoderTest::go ()
     }
     // JVT-W043 }
 
+    //3: 设置SPS，PPS
     //===== write parameter sets =====
-    for(bMoreSets = true; bMoreSets;)
+    for (bMoreSets = true; bMoreSets;)
     {
         UChar   aucParameterSetBuffer[1000];
         BinData cBinData;
-        cBinData.reset();
-        cBinData.set(aucParameterSetBuffer, 1000);
+        cBinData.reset ();
+        cBinData.set (aucParameterSetBuffer, 1000);
 
         ExtBinDataAccessor cExtBinDataAccessor;
-        cBinData.setMemAccessor(cExtBinDataAccessor);
+        cBinData.setMemAccessor (cExtBinDataAccessor);
 
         JSVM::SequenceParameterSet* pcAVCSPS = NULL;
-        m_pcH264AVCEncoder->writeParameterSets(&cExtBinDataAccessor, pcAVCSPS, bMoreSets);
-        if(m_pcH264AVCEncoder->getScalableSeiMessage())
+        m_pcH264AVCEncoder->writeParameterSets (&cExtBinDataAccessor, pcAVCSPS, bMoreSets);
+        if(m_pcH264AVCEncoder->getScalableSeiMessage ())
         {
-            m_pcWriteBitstreamToFile->writePacket(&m_cBinDataStartCode);
-            m_pcWriteBitstreamToFile->writePacket(&cExtBinDataAccessor);
+            m_pcWriteBitstreamToFile->writePacket (&m_cBinDataStartCode);
+            m_pcWriteBitstreamToFile->writePacket (&cExtBinDataAccessor);
 
             uiWrittenBytes += 4 + cExtBinDataAccessor.size();
         }
@@ -404,7 +414,7 @@ ErrVal H264AVCEncoderTest::go ()
             cBinData.set(aucParameterSetBuffer, 1000);
 
             ExtBinDataAccessor cExtBinDataAccessorl;
-            cBinData.setMemAccessor(cExtBinDataAccessorl);
+            cBinData.setMemAccessor (cExtBinDataAccessorl);
 
             m_pcH264AVCEncoder->writeAVCCompatibleHRDSEI (&cExtBinDataAccessorl, pcAVCSPS);
 
@@ -421,7 +431,7 @@ ErrVal H264AVCEncoderTest::go ()
     //===== determine parameters for required frame buffers =====
     UInt  uiAllocMbX = 0;
     UInt  uiAllocMbY = 0;
-    for(uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
+    for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
     {
         JSVM::LayerParameters& rcLayer  = m_pcEncoderCodingParameter->getLayerParameters(uiLayer);
         auiMbX[uiLayer]            = rcLayer.getFrameWidthInMbs ();
@@ -448,7 +458,7 @@ ErrVal H264AVCEncoderTest::go ()
         for(uiLayer=0; uiLayer<2; uiLayer++)
         {
             apcMuxPicBuffer[uiLayer] = NULL;
-            UChar* pcBuffer = new UChar[ auiPicSize[uiLayer] ];
+            UChar* pcBuffer = new UChar[auiPicSize[uiLayer]];
             ::memset(pcBuffer,  0x00, auiPicSize[uiLayer] *sizeof(UChar));
             apcMuxPicBuffer[uiLayer] = new PicBuffer(pcBuffer);
         }
@@ -465,15 +475,17 @@ ErrVal H264AVCEncoderTest::go ()
     // start time measurement
     clock_t start = clock();
 
+
+    //Step 2:开始循环编码, uiMaxFrame为待编码的帧总数, uiNumLayers为层数, FLQ
     //===== loop over frames =====
     for(uiFrame = 0; uiFrame < uiMaxFrame; uiFrame++)
     {
         //===== get picture buffers and read original pictures =====
-        for(uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
+        for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
         {
             UInt uiSkip = (1 << m_pcEncoderCodingParameter->getLayerParameters(uiLayer).getTemporalResolution());
 
-            if(uiFrame % uiSkip == 0)
+            if (uiFrame % uiSkip == 0)
             {
                 xGetNewPicBuffer (apcReconstructPicBuffer[uiLayer], uiLayer, auiPicSize[uiLayer]);
                 xGetNewPicBuffer (apcOriginalPicBuffer[uiLayer], uiLayer, auiPicSize[uiLayer]);
@@ -602,11 +614,11 @@ ErrVal H264AVCEncoderTest::go ()
 
         //===== write and release NAL unit buffers =====
         UInt uiBytesUsed = 0;
-        xWrite(cOutExtBinDataAccessorList, uiBytesUsed);
+        xWrite (cOutExtBinDataAccessorList, uiBytesUsed);
         uiWrittenBytes  += uiBytesUsed;
 
         //===== write and release reconstructed pictures =====
-        for(uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
+        for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
         {
             xWrite(acPicBufferOutputList[uiLayer], uiLayer);
             xRelease(acPicBufferUnusedList[uiLayer], uiLayer);
@@ -626,10 +638,10 @@ ErrVal H264AVCEncoderTest::go ()
                                 dHighestLayerOutputRate);
 
     //===== write and release NAL unit buffers =====
-    xWrite(cOutExtBinDataAccessorList, uiWrittenBytes);
+    xWrite (cOutExtBinDataAccessorList, uiWrittenBytes);
 
     //===== write and release reconstructed pictures =====
-    for(uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
+    for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
     {
         xWrite(acPicBufferOutputList[uiLayer], uiLayer);
         xRelease(acPicBufferUnusedList[uiLayer], uiLayer);
@@ -640,26 +652,26 @@ ErrVal H264AVCEncoderTest::go ()
     m_cEncoderIoParameter.nFrames = uiFrame;
     m_cEncoderIoParameter.nResult = 0;
 
-    if(!m_pcEncoderCodingParameter->getAVCmode())
+    if (!m_pcEncoderCodingParameter->getAVCmode())
     {
         UChar aucParameterSetBuffer[10000];
         BinData cBinData;
         cBinData.reset();
-        cBinData.set(aucParameterSetBuffer, 10000);
+        cBinData.set (aucParameterSetBuffer, 10000);
 
         ExtBinDataAccessor cExtBinDataAccessor;
         cBinData.setMemAccessor(cExtBinDataAccessor);
         m_pcH264AVCEncoder->SetVeryFirstCall();
 
         JSVM::SequenceParameterSet* pcAVCSPS = NULL;
-        m_pcH264AVCEncoder->writeParameterSets(&cExtBinDataAccessor, pcAVCSPS, bMoreSets);
-        m_pcWriteBitstreamToFile->writePacket(&m_cBinDataStartCode);
-        m_pcWriteBitstreamToFile->writePacket(&cExtBinDataAccessor);
+        m_pcH264AVCEncoder->writeParameterSets (&cExtBinDataAccessor, pcAVCSPS, bMoreSets);
+        m_pcWriteBitstreamToFile->writePacket (&m_cBinDataStartCode);
+        m_pcWriteBitstreamToFile->writePacket (&cExtBinDataAccessor);
         uiWrittenBytes += 4 + cExtBinDataAccessor.size();
         cBinData.reset();
     }
 
-    if(m_pcWriteBitstreamToFile)
+    if (m_pcWriteBitstreamToFile)
     {
         m_pcWriteBitstreamToFile->uninit();
         m_pcWriteBitstreamToFile->destroy();
@@ -699,8 +711,8 @@ ErrVal H264AVCEncoderTest::go ()
 
 ErrVal H264AVCEncoderTest::ScalableDealing()
 {
-    FILE *ftemp = fopen(m_cWriteToBitFileTempName.c_str(), "rb");
-    FILE *f     = fopen(m_cWriteToBitFileName.c_str    (), "wb");
+    FILE *ftemp = fopen(m_cWriteToBitFileTempName.c_str (), "rb");
+    FILE *f = fopen(m_cWriteToBitFileName.c_str (), "wb");
 
     UChar pvBuffer[4];
 
@@ -728,15 +740,15 @@ ErrVal H264AVCEncoderTest::ScalableDealing()
     fseek(ftemp, loffset, SEEK_END);
 
     UChar *pvChar = new UChar[lFileLength];
-    ROF(lpos == fread(pvChar, 1, lpos, ftemp));
+    ROF (lpos == fread(pvChar, 1, lpos, ftemp));
     fseek(ftemp, 0, SEEK_SET);
-    ROF(lFileLength-lpos == fread(pvChar+lpos, 1, lFileLength-lpos, ftemp));
-    fflush(ftemp);
-    fclose(ftemp);
-    ROF(lFileLength == fwrite(pvChar, 1, lFileLength, f));
+    ROF (lFileLength-lpos == fread(pvChar+lpos, 1, lFileLength-lpos, ftemp));
+    fflush (ftemp);
+    fclose (ftemp);
+    ROF (lFileLength == fwrite(pvChar, 1, lFileLength, f));
     delete[] pvChar;
-    fflush(f);
-    fclose(f);
+    fflush (f);
+    fclose (f);
     remove(m_cWriteToBitFileTempName.c_str());
 
     return Err::m_nOK;

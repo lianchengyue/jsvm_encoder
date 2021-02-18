@@ -32,11 +32,11 @@ public:
 
     BitCounter();
     virtual ~BitCounter();
-    ErrVal write(UInt uiBits, UInt uiNumberOfBits = 1)     { m_uiBitCounter += uiNumberOfBits; return Err::m_nOK; }
+    ErrVal write (UInt uiBits, UInt uiNumberOfBits = 1)     { m_uiBitCounter += uiNumberOfBits; return Err::m_nOK; }
 
-    ErrVal pcmSamples(const TCoeff* pCoeff, UInt uiNumberOfSamples) { m_uiBitCounter+=8*uiNumberOfSamples; return Err::m_nERR; }
+    ErrVal pcmSamples (const TCoeff* pCoeff, UInt uiNumberOfSamples) { m_uiBitCounter+=8*uiNumberOfSamples; return Err::m_nERR; }
 
-    UInt getNumberOfWrittenBits()   { return m_uiBitCounter; }
+    UInt getNumberOfWrittenBits ()  { return m_uiBitCounter; }
 
     Bool isByteAligned()            { return (0 == (m_uiBitCounter & 0x03)); }
     Bool isWordAligned()            { return (0 == (m_uiBitCounter & 0x1f)); }

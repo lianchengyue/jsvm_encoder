@@ -17,24 +17,24 @@ protected:
     virtual ~MbCoder();
 
 public:
-    static ErrVal create( MbCoder*& rpcMbCoder );
-    ErrVal destroy();
+    static ErrVal create (MbCoder*& rpcMbCoder);
+    ErrVal destroy ();
 
-    ErrVal initSlice( const SliceHeader& rcSH,
+    ErrVal initSlice (const SliceHeader& rcSH,
                       MbSymbolWriteIf* pcMbSymbolWriteIf,
-                      RateDistortionIf* pcRateDistortionIf );
+                      RateDistortionIf* pcRateDistortionIf);
 
 
     ErrVal uninit();
 
-    ErrVal  encode            ( MbDataAccess& rcMbDataAccess,
-                                MbDataAccess* pcMbDataAccessBase,
-                                Bool          bTerminateSlice ,
-                                Bool          bSendTerminateSlice);
-    UInt    getBitCount       ()  { return m_pcMbSymbolWriteIf->getNumberOfWrittenBits(); }
+    ErrVal  encode (MbDataAccess& rcMbDataAccess,
+                    MbDataAccess* pcMbDataAccessBase,
+                    Bool  bTerminateSlice ,
+                    Bool  bSendTerminateSlice);
+    UInt    getBitCount()  { return m_pcMbSymbolWriteIf->getNumberOfWrittenBits(); }
 
     //JVT-X046 {
-    UInt getBitsWritten(void) { return m_pcMbSymbolWriteIf->getBitsWritten(); }
+    UInt getBitsWritten (void) { return m_pcMbSymbolWriteIf->getBitsWritten(); }
 
     Bool bSliceCodedDone;
     UInt m_uiSliceMode;
@@ -42,30 +42,30 @@ public:
     //JVT-X046 }
 
 protected:
-    ErrVal xWriteIntraPredModes ( MbDataAccess& rcMbDataAccess );
-    ErrVal xWriteMotionPredFlags    ( MbDataAccess& rcMbDataAccess,
-                                      MbMode        eMbMode,
-                                      ListIdx       eLstIdx );
-    ErrVal xWriteReferenceFrames    ( MbDataAccess& rcMbDataAccess,
-                                      MbMode        eMbMode,
-                                      ListIdx       eLstIdx );
-    ErrVal xWriteMotionVectors      ( MbDataAccess& rcMbDataAccess,
-                                      MbMode        eMbMode,
-                                      ListIdx       eLstIdx );
+    ErrVal xWriteIntraPredModes  (MbDataAccess& rcMbDataAccess);
+    ErrVal xWriteMotionPredFlags (MbDataAccess& rcMbDataAccess,
+                                  MbMode        eMbMode,
+                                  ListIdx       eLstIdx);
+    ErrVal xWriteReferenceFrames (MbDataAccess& rcMbDataAccess,
+                                  MbMode        eMbMode,
+                                  ListIdx       eLstIdx);
+    ErrVal xWriteMotionVectors   (MbDataAccess& rcMbDataAccess,
+                                  MbMode        eMbMode,
+                                  ListIdx       eLstIdx);
 
 
     //-- JVT-R091
-    ErrVal xWriteTextureInfo    ( MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase, const MbTransformCoeffs& rcMbTCoeff, Bool bTrafo8x8Flag, UInt uiStart, UInt uiStop, UInt uiMGSFragment );
+    ErrVal xWriteTextureInfo    (MbDataAccess& rcMbDataAccess, MbDataAccess* pcMbDataAccessBase, const MbTransformCoeffs& rcMbTCoeff, Bool bTrafo8x8Flag, UInt uiStart, UInt uiStop, UInt uiMGSFragment);
     //--
-    ErrVal xWriteBlockMv        ( MbDataAccess& rcMbDataAccess, B8x8Idx c8x8Idx, ListIdx eLstIdx );
+    ErrVal xWriteBlockMv        (MbDataAccess& rcMbDataAccess, B8x8Idx c8x8Idx, ListIdx eLstIdx);
 
 
-    ErrVal xScanLumaIntra16x16  ( MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, Bool bAC, UInt uiStart = 0, UInt uiStop = 16 );
-    ErrVal xScanLumaBlock       ( MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, LumaIdx cIdx, UInt uiStart = 0, UInt uiStop = 16 );
-    ErrVal xScanChromaDc        ( MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiStart = 0, UInt uiStop = 16 );
-    ErrVal xScanChromaAcU       ( MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiStart = 0, UInt uiStop = 16 );
-    ErrVal xScanChromaAcV       ( MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiStart = 0, UInt uiStop = 16 );
-    ErrVal xScanChromaBlocks    ( MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiChromCbp, UInt uiStart = 0, UInt uiStop = 16 );
+    ErrVal xScanLumaIntra16x16  (MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, Bool bAC, UInt uiStart = 0, UInt uiStop = 16);
+    ErrVal xScanLumaBlock       (MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, LumaIdx cIdx, UInt uiStart = 0, UInt uiStop = 16);
+    ErrVal xScanChromaDc        (MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiStart = 0, UInt uiStop = 16);
+    ErrVal xScanChromaAcU       (MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiStart = 0, UInt uiStop = 16);
+    ErrVal xScanChromaAcV       (MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiStart = 0, UInt uiStop = 16);
+    ErrVal xScanChromaBlocks    (MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiChromCbp, UInt uiStart = 0, UInt uiStop = 16);
 
 protected:
     MbSymbolWriteIf* m_pcMbSymbolWriteIf;

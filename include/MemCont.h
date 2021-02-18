@@ -265,7 +265,10 @@ public:
     UInt byteSize() const { return sizeof(T ) * m_uiSize; }
     UInt usableByteSize() const { return sizeof(T ) * m_uiUsableSize; }
 
-    Void setMemAccessor(MemAccessor< T >& rcMemAccessor ) { rcMemAccessor.set(m_pcT, m_uiSize, m_pcOrigT, m_uiUsableSize ); }
+    Void setMemAccessor(MemAccessor< T >& rcMemAccessor )
+    {
+        rcMemAccessor.set(m_pcT, m_uiSize, m_pcOrigT, m_uiUsableSize );
+    }
 
 public:
     ErrVal increasePos(UInt uiPos)

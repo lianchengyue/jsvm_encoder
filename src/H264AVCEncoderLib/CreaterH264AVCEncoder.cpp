@@ -86,14 +86,20 @@ ErrVal CreaterH264AVCEncoder::writeParameterSets (ExtBinDataAccessor* pcExtBinDa
                                                   SequenceParameterSet*&  rpcAVCSPS,
                                                   Bool&  rbMoreSets)
 {
+    //AVC模式
     if(m_pcCodingParameter->getAVCmode())
     {
+        //初始化SPS与PPS的入口
         m_pcPicEncoder->writeAndInitParameterSets(pcExtBinDataAccessor, rbMoreSets);
         m_pcH264AVCEncoder->setScalableSEIMessage(); // due to Nokia's (Ye-Kui's) weird implementation
         return Err::m_nOK;
     }
-    m_pcH264AVCEncoder->writeParameterSets (pcExtBinDataAccessor, rpcAVCSPS, rbMoreSets);
-    return Err::m_nOK;
+    //SVC模式
+    else
+    {
+        m_pcH264AVCEncoder->writeParameterSets (pcExtBinDataAccessor, rpcAVCSPS, rbMoreSets);
+        return Err::m_nOK;
+    }
 }
 
 
@@ -103,9 +109,9 @@ ErrVal CreaterH264AVCEncoder::process (ExtBinDataAccessorList&  rcExtBinDataAcce
                                        PicBufferList*  apcPicBufferOutputList,
                                        PicBufferList*  apcPicBufferUnusedList)
 {
-    //Step2: 开始编码
+    //Step 3: 开始编码
     //AVC模式
-    if(m_pcCodingParameter->getAVCmode())
+    if (m_pcCodingParameter->getAVCmode())
     {
         apcPicBufferUnusedList->push_back (apcReconstructPicBuffer[0]);
         m_pcPicEncoder->process (apcOriginalPicBuffer[0],
@@ -350,7 +356,7 @@ ErrVal CreaterH264AVCEncoder::init (CodingParameter* pcCodingParameter)
                              // JVT-V068 }
                              );
 
-    for(UInt uiLayer = 0; uiLayer < m_pcCodingParameter->getNumberOfLayers(); uiLayer++)
+    for (UInt uiLayer = 0; uiLayer < m_pcCodingParameter->getNumberOfLayers(); uiLayer++)
     {
         m_apcLayerEncoder[uiLayer]->init (m_pcCodingParameter,
                                          &m_pcCodingParameter->getLayerParameters(uiLayer),
@@ -418,7 +424,7 @@ ErrVal CreaterH264AVCEncoder::uninit()
 
     for(UInt uiLayer = 0; uiLayer < m_pcCodingParameter->getNumberOfLayers(); uiLayer++)
     {
-        m_apcLayerEncoder        [uiLayer]->uninit();
+        m_apcLayerEncoder[uiLayer]->uninit();
         m_apcYuvFullPelBufferCtrl[uiLayer]->uninit();
         m_apcYuvHalfPelBufferCtrl[uiLayer]->uninit();
     }

@@ -177,9 +177,9 @@ ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAcc
 
         //===== write SPS =====
         UInt uiSPSBits = 0;
-        m_pcNalUnitEncoder->initNalUnit(pcExtBinDataAccessor);
-        m_pcNalUnitEncoder->write(*m_pcSPS);
-        m_pcNalUnitEncoder->closeNalUnit(uiSPSBits);
+        m_pcNalUnitEncoder->initNalUnit (pcExtBinDataAccessor);
+        m_pcNalUnitEncoder->write (*m_pcSPS);
+        m_pcNalUnitEncoder->closeNalUnit (uiSPSBits);
         m_uiWrittenBytes += ((uiSPSBits >> 3) + 4);
     }
     else if(! m_pcPPS)
@@ -190,8 +190,8 @@ ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAcc
         //===== write PPS =====
         UInt uiPPSBits = 0;
         m_pcNalUnitEncoder->initNalUnit(pcExtBinDataAccessor);
-        m_pcNalUnitEncoder->write(*m_pcPPS);
-        m_pcNalUnitEncoder->closeNalUnit(uiPPSBits);
+        m_pcNalUnitEncoder->write (*m_pcPPS);
+        m_pcNalUnitEncoder->closeNalUnit (uiPPSBits);
         m_uiWrittenBytes += ((uiPPSBits >> 3) + 4);
 
         //===== init pic encoder with parameter sets =====
@@ -221,32 +221,36 @@ ErrVal PicEncoder::process (PicBuffer*  pcInputPicBuffer,
         InputAccessUnit* pcInputAccessUnit = NULL;
 
         //----- get next frame specification and input access unit -----
-        if(!m_pcInputPicBuffer->empty())
+        if (!m_pcInputPicBuffer->empty())
         {
-            if(! m_cFrameSpecification.isInitialized())
+            if(!m_cFrameSpecification.isInitialized())
             {
+                //更新m_cFrameSpecification, 其中包含m_eSliceType: I_SLICE, B_SLICE, P_SLICE
                 m_cFrameSpecification = m_pcSequenceStructure->getNextFrameSpec();
             }
             pcInputAccessUnit = m_pcInputPicBuffer->remove (m_cFrameSpecification.getContFrameNumber());
         }
-        if(!pcInputAccessUnit)
+        if (!pcInputAccessUnit)
         {
             break;
         }
 
         //----- initialize picture -----
-        Double          dLambda         = 0;
-        UInt            uiPictureBits   = 0;
-        SliceHeader*    pcSliceHeader   = 0;
+        Double          dLambda = 0;
+        UInt            uiPictureBits = 0;
+        SliceHeader*    pcSliceHeader = 0;
         RecPicBufUnit*  pcRecPicBufUnit = 0;
         PicBuffer*      pcOrigPicBuffer = pcInputAccessUnit->getInputPicBuffer();
-        xInitSliceHeader(pcSliceHeader, m_cFrameSpecification, dLambda);
+        //Step 3: important, 初始化一帧图像的Slice Header中的的参数值
+        xInitSliceHeader (pcSliceHeader, m_cFrameSpecification, dLambda);
         m_pcRecPicBuffer->initCurrRecPicBufUnit(pcRecPicBufUnit, pcOrigPicBuffer, pcSliceHeader, rcOutputList, rcUnusedList);
 
+        //Step 4: 对一帧图像进行encode
         //----- encoding -----
         xEncodePicture (rcExtBinDataAccessorList, *pcRecPicBufUnit, *pcSliceHeader, dLambda, uiPictureBits);
         m_uiWrittenBytes += (uiPictureBits >> 3);
 
+        //Step 5: ???
         //----- store picture -----
         m_pcRecPicBuffer->store (pcRecPicBufUnit, pcSliceHeader, rcOutputList, rcUnusedList);
 
@@ -260,22 +264,23 @@ ErrVal PicEncoder::process (PicBuffer*  pcInputPicBuffer,
 }
 
 
-ErrVal PicEncoder::finish(PicBufferList&  rcOutputList,
-                    PicBufferList&  rcUnusedList)
+ErrVal PicEncoder::finish (PicBufferList&  rcOutputList,
+                           PicBufferList&  rcUnusedList)
 {
     m_pcRecPicBuffer->clear(rcOutputList, rcUnusedList);
 
     //===== output summary =====
-    printf("\n %5d frames encoded:  Y %7.4lf dB  U %7.4lf dB  V %7.4lf dB\n"
-           "\n     average bit rate:  %.4lf kbit/s  [%d byte for %.3lf sec]\n\n",
-           m_uiCodedFrames,
-           m_dSumYPSNR / (Double)m_uiCodedFrames,
-           m_dSumUPSNR / (Double)m_uiCodedFrames,
-           m_dSumVPSNR / (Double)m_uiCodedFrames,
-           0.008*(Double)m_uiWrittenBytes/(Double)m_uiCodedFrames*m_pcCodingParameter->getMaximumFrameRate(),
-           m_uiWrittenBytes,
-           (Double)m_uiCodedFrames/m_pcCodingParameter->getMaximumFrameRate()
-         );
+    printf ("\n\n PicEncoder::finish"
+            "\n %5d frames encoded:  Y %7.4lf dB  U %7.4lf dB  V %7.4lf dB\n"
+            "\n     average bit rate:  %.4lf kbit/s  [%d byte for %.3lf sec]\n\n",
+            m_uiCodedFrames,
+            m_dSumYPSNR / (Double)m_uiCodedFrames,
+            m_dSumUPSNR / (Double)m_uiCodedFrames,
+            m_dSumVPSNR / (Double)m_uiCodedFrames,
+            0.008*(Double)m_uiWrittenBytes/(Double)m_uiCodedFrames*m_pcCodingParameter->getMaximumFrameRate(),
+            m_uiWrittenBytes,
+            (Double)m_uiCodedFrames/m_pcCodingParameter->getMaximumFrameRate()
+            );
 
     return Err::m_nOK;
 }
@@ -299,27 +304,27 @@ ErrVal PicEncoder::xInitSPS()
     SequenceParameterSet::create(m_pcSPS);
 
     //===== set SPS parameters =====
-    m_pcSPS->setNalUnitType                           (NAL_UNIT_SPS);
+    m_pcSPS->setNalUnitType                    (NAL_UNIT_SPS);
     m_pcSPS->setAVCHeaderRewriteFlag(false);
-    m_pcSPS->setDependencyId                          (0);
-    m_pcSPS->setProfileIdc                            (HIGH_PROFILE);
-    m_pcSPS->setConstrainedSet0Flag                   (false);
-    m_pcSPS->setConstrainedSet1Flag                   (false);
-    m_pcSPS->setConstrainedSet2Flag                   (false);
-    m_pcSPS->setConstrainedSet3Flag                   (false);
-    m_pcSPS->setConvertedLevelIdc                     (uiLevelIdc);
-    m_pcSPS->setSeqParameterSetId                     (uiSPSId);
-    m_pcSPS->setSeqScalingMatrixPresentFlag           (m_pcCodingParameter->getScalingMatricesPresent() > 0);
-    m_pcSPS->setLog2MaxFrameNum                       (m_pcCodingParameter->getLog2MaxFrameNum());
-    m_pcSPS->setLog2MaxPicOrderCntLsb                 (m_pcCodingParameter->getLog2MaxPocLsb());
-    m_pcSPS->setNumRefFrames                          (m_pcCodingParameter->getNumDPBRefFrames());
-    m_pcSPS->setGapsInFrameNumValueAllowedFlag   (true);
-    m_pcSPS->setFrameWidthInMbs                       (uiMbX);
-    m_pcSPS->setFrameHeightInMbs                      (uiMbY);
-    m_pcSPS->setDirect8x8InferenceFlag                (true);
+    m_pcSPS->setDependencyId                   (0);
+    m_pcSPS->setProfileIdc                     (HIGH_PROFILE);  //TQQ, HIGH_PROFILE,    MAIN_PROFILE is wrong
+    m_pcSPS->setConstrainedSet0Flag            (false);
+    m_pcSPS->setConstrainedSet1Flag            (false);
+    m_pcSPS->setConstrainedSet2Flag            (false);
+    m_pcSPS->setConstrainedSet3Flag            (false);
+    m_pcSPS->setConvertedLevelIdc              (uiLevelIdc);
+    m_pcSPS->setSeqParameterSetId              (uiSPSId);
+    m_pcSPS->setSeqScalingMatrixPresentFlag    (m_pcCodingParameter->getScalingMatricesPresent() > 0);
+    m_pcSPS->setLog2MaxFrameNum                (m_pcCodingParameter->getLog2MaxFrameNum());
+    m_pcSPS->setLog2MaxPicOrderCntLsb          (m_pcCodingParameter->getLog2MaxPocLsb());
+    m_pcSPS->setNumRefFrames                   (m_pcCodingParameter->getNumDPBRefFrames());
+    m_pcSPS->setGapsInFrameNumValueAllowedFlag (true);
+    m_pcSPS->setFrameWidthInMbs                (uiMbX);
+    m_pcSPS->setFrameHeightInMbs               (uiMbY);
+    m_pcSPS->setDirect8x8InferenceFlag         (true);
 
 //JVT-V068 {
-    m_pcSPS->setVUI                                   (m_pcSPS);
+    m_pcSPS->setVUI                            (m_pcSPS);
 //JVT-V068 }
     return Err::m_nOK;
 }
@@ -373,26 +378,29 @@ ErrVal PicEncoder::xInitParameterSets()
     //===== init control manager =====
     m_pcSPS->setAllocFrameMbsX(m_pcSPS->getFrameWidthInMbs());
     m_pcSPS->setAllocFrameMbsY(m_pcSPS->getFrameHeightInMbs());
-    m_pcControlMng->initParameterSets(*m_pcSPS, *m_pcPPS);
+    //ControlMng中初始化SPS与PPS
+    m_pcControlMng->initParameterSets (*m_pcSPS, *m_pcPPS);
 
     //===== set fixed parameters =====
     m_uiFrameWidthInMb  = m_pcSPS->getFrameWidthInMbs();
     m_uiFrameHeightInMb = m_pcSPS->getFrameHeightInMbs();
-    m_uiMbNumber        = m_uiFrameWidthInMb * m_uiFrameHeightInMb;
+    m_uiMbNumber = m_uiFrameWidthInMb * m_uiFrameHeightInMb;
 
     //===== re-allocate dynamic memory =====
     xDeleteData();
     xCreateData();
 
     //===== init objects =====
-    m_pcRecPicBuffer->initSPS(*m_pcSPS);
-    m_pcSequenceStructure->init(m_pcCodingParameter->getSequenceFormatString(),
-                                m_pcCodingParameter->getTotalFrames());
+    m_pcRecPicBuffer->initSPS (*m_pcSPS);
+    m_pcSequenceStructure->init (//编码序列的String
+                                 m_pcCodingParameter->getSequenceFormatString(),
+                                 //待编码的总帧数
+                                 m_pcCodingParameter->getTotalFrames());
 
     //==== initialize variable parameters =====
-    m_uiFrameNum            = 0;
-    m_uiIdrPicId            = 0;
-    m_bInitParameterSets    = true;
+    m_uiFrameNum = 0;
+    m_uiIdrPicId = 0;
+    m_bInitParameterSets = true;
 
     return Err::m_nOK;
 }
@@ -401,9 +409,9 @@ ErrVal PicEncoder::xInitParameterSets()
 ErrVal PicEncoder::xCreateData()
 {
     //===== write buffer =====
-    UInt  uiNum4x4Blocks        = m_uiFrameWidthInMb * m_uiFrameHeightInMb * 4 * 4;
-    m_uiWriteBufferSize         = 3 * (uiNum4x4Blocks * 4 * 4);
-    ROFS((m_pucWriteBuffer   = new UChar [ m_uiWriteBufferSize ]));
+    UInt  uiNum4x4Blocks = m_uiFrameWidthInMb * m_uiFrameHeightInMb * 4 * 4;
+    m_uiWriteBufferSize  = 3 * (uiNum4x4Blocks * 4 * 4);
+    ROFS((m_pucWriteBuffer = new UChar [m_uiWriteBufferSize]));
 
     return Err::m_nOK;
 }
@@ -411,7 +419,7 @@ ErrVal PicEncoder::xCreateData()
 ErrVal PicEncoder::xDeleteData()
 {
     //===== write buffer =====
-    delete [] m_pucWriteBuffer;
+    delete[] m_pucWriteBuffer;
     m_pucWriteBuffer    = 0;
     m_uiWriteBufferSize = 0;
 
@@ -419,9 +427,9 @@ ErrVal PicEncoder::xDeleteData()
 }
 
 
-ErrVal PicEncoder::xInitSliceHeader(SliceHeader*&     rpcSliceHeader,
-                              const FrameSpec&  rcFrameSpec,
-                              Double&           rdLambda)
+ErrVal PicEncoder::xInitSliceHeader (SliceHeader*&  rpcSliceHeader,
+                                     const FrameSpec&  rcFrameSpec,
+                                     Double& rdLambda)
 {
     ROF(m_bInitParameterSets);
 
@@ -430,60 +438,62 @@ ErrVal PicEncoder::xInitSliceHeader(SliceHeader*&     rpcSliceHeader,
     ROF(rpcSliceHeader);
 
     //===== determine parameters =====
-    Double dQp      = m_pcCodingParameter->getBasisQp() + m_pcCodingParameter->getDeltaQpLayer(rcFrameSpec.getTemporalLayer());
-    Int    iQp      = gMin(51, gMax(0, (Int)dQp));
-    rdLambda        = 0.85 * pow(2.0, gMin(52.0, dQp) / 3.0 - 4.0);
-    UInt   uiSizeL0 = (rcFrameSpec.getSliceType() == I_SLICE ? 0 :
-                        rcFrameSpec.getSliceType() == P_SLICE ? m_pcCodingParameter->getMaxRefIdxActiveP  () :
-                        rcFrameSpec.getSliceType() == B_SLICE ? m_pcCodingParameter->getMaxRefIdxActiveBL0() : MSYS_UINT_MAX);
-    UInt   uiSizeL1 = (rcFrameSpec.getSliceType() == I_SLICE ? 0 :
-                        rcFrameSpec.getSliceType() == P_SLICE ? 0 :
-                        rcFrameSpec.getSliceType() == B_SLICE ? m_pcCodingParameter->getMaxRefIdxActiveBL1() : MSYS_UINT_MAX);
+    Double dQp = m_pcCodingParameter->getBasisQp () + m_pcCodingParameter->getDeltaQpLayer (rcFrameSpec.getTemporalLayer());
+    Int iQp = gMin(51, gMax(0, (Int)dQp));
+    rdLambda = 0.85 * pow(2.0, gMin(52.0, dQp) / 3.0 - 4.0);
+    UInt uiSizeL0 = (rcFrameSpec.getSliceType() == I_SLICE ? 0 :
+                     rcFrameSpec.getSliceType() == P_SLICE ? m_pcCodingParameter->getMaxRefIdxActiveP () :
+                     rcFrameSpec.getSliceType() == B_SLICE ? m_pcCodingParameter->getMaxRefIdxActiveBL0() : MSYS_UINT_MAX);
+    UInt uiSizeL1 = (rcFrameSpec.getSliceType() == I_SLICE ? 0 :
+                     rcFrameSpec.getSliceType() == P_SLICE ? 0 :
+                     rcFrameSpec.getSliceType() == B_SLICE ? m_pcCodingParameter->getMaxRefIdxActiveBL1() : MSYS_UINT_MAX);
 
     //===== set NAL unit header =====
-    rpcSliceHeader->setNalRefIdc                          (rcFrameSpec.getNalRefIdc    ());
-    rpcSliceHeader->setNalUnitType                        (rcFrameSpec.getNalUnitType  ());
-    rpcSliceHeader->setDependencyId                       (0);
-    rpcSliceHeader->setTemporalId                         (rcFrameSpec.getTemporalLayer());
-    rpcSliceHeader->setUseRefBasePicFlag                  (false);
-    rpcSliceHeader->setStoreRefBasePicFlag                (false);
-    rpcSliceHeader->setPriorityId                         (0);
-    rpcSliceHeader->setDiscardableFlag                    (false);
-    rpcSliceHeader->setQualityId                          (0);
-    rpcSliceHeader->setIdrFlag                            (rcFrameSpec.getNalUnitType  () == NAL_UNIT_CODED_SLICE_IDR);
+    rpcSliceHeader->setNalRefIdc           (rcFrameSpec.getNalRefIdc());
+    rpcSliceHeader->setNalUnitType         (rcFrameSpec.getNalUnitType());
+    rpcSliceHeader->setDependencyId        (0);
+    rpcSliceHeader->setTemporalId          (rcFrameSpec.getTemporalLayer());
+    rpcSliceHeader->setUseRefBasePicFlag   (false);
+    rpcSliceHeader->setStoreRefBasePicFlag (false);
+    rpcSliceHeader->setPriorityId          (0);
+    rpcSliceHeader->setDiscardableFlag     (false);
+    rpcSliceHeader->setQualityId           (0);
+    rpcSliceHeader->setIdrFlag             (rcFrameSpec.getNalUnitType  () == NAL_UNIT_CODED_SLICE_IDR);
 
 
     //===== set general parameters =====
-    rpcSliceHeader->setFirstMbInSlice                     (0);
-    rpcSliceHeader->setLastMbInSlice                      (m_uiMbNumber - 1);
-    rpcSliceHeader->setSliceType                          (rcFrameSpec.getSliceType    ());
-    rpcSliceHeader->setFrameNum                           (m_uiFrameNum);
-    rpcSliceHeader->setNumMbsInSlice                      (m_uiMbNumber);
-    rpcSliceHeader->setIdrPicId                           (m_uiIdrPicId);
-    rpcSliceHeader->setDirectSpatialMvPredFlag            (true);
-    rpcSliceHeader->setRefLayer                           (MSYS_UINT_MAX, 15);
-    rpcSliceHeader->setNoInterLayerPredFlag               (true);
-    rpcSliceHeader->setNoOutputOfPriorPicsFlag            (false);
-    rpcSliceHeader->setCabacInitIdc                       (0);
-    rpcSliceHeader->setSliceHeaderQp                      (iQp);
+    rpcSliceHeader->setFirstMbInSlice          (0);
+    rpcSliceHeader->setLastMbInSlice           (m_uiMbNumber - 1);
+    rpcSliceHeader->setSliceType               (rcFrameSpec.getSliceType());
+    rpcSliceHeader->setFrameNum                (m_uiFrameNum);
+    rpcSliceHeader->setNumMbsInSlice           (m_uiMbNumber);
+    rpcSliceHeader->setIdrPicId                (m_uiIdrPicId);
+    rpcSliceHeader->setDirectSpatialMvPredFlag (true);
+    rpcSliceHeader->setRefLayer                (MSYS_UINT_MAX, 15);
+    rpcSliceHeader->setNoInterLayerPredFlag    (true);
+    rpcSliceHeader->setNoOutputOfPriorPicsFlag (false);
+    rpcSliceHeader->setCabacInitIdc            (0);
+    rpcSliceHeader->setSliceHeaderQp           (iQp);
 
+    //Reference List0 与 List1
     //===== reference picture list ===== (init with default data, later updated)
-    rpcSliceHeader->setNumRefIdxActiveOverrideFlag        (false);
-    rpcSliceHeader->setNumRefIdxActive                    (LIST_0, uiSizeL0);
-    rpcSliceHeader->setNumRefIdxActive                    (LIST_1, uiSizeL1);
+    rpcSliceHeader->setNumRefIdxActiveOverrideFlag (false);
+    rpcSliceHeader->setNumRefIdxActive (LIST_0, uiSizeL0);
+    rpcSliceHeader->setNumRefIdxActive (LIST_1, uiSizeL1);
 
     //===== set deblocking filter parameters =====
     if(rpcSliceHeader->getPPS().getDeblockingFilterParametersPresentFlag())
     {
-        rpcSliceHeader->getDeblockingFilterParameter().setDisableDeblockingFilterIdc(  m_pcCodingParameter->getLoopFilterParams().getFilterIdc   ());
-        rpcSliceHeader->getDeblockingFilterParameter().setSliceAlphaC0Offset        (2*m_pcCodingParameter->getLoopFilterParams().getAlphaOffset ());
-        rpcSliceHeader->getDeblockingFilterParameter().setSliceBetaOffset           (2*m_pcCodingParameter->getLoopFilterParams().getBetaOffset  ());
+        rpcSliceHeader->getDeblockingFilterParameter().setDisableDeblockingFilterIdc (m_pcCodingParameter->getLoopFilterParams().getFilterIdc   ());
+        rpcSliceHeader->getDeblockingFilterParameter().setSliceAlphaC0Offset (2*m_pcCodingParameter->getLoopFilterParams().getAlphaOffset ());
+        rpcSliceHeader->getDeblockingFilterParameter().setSliceBetaOffset (2*m_pcCodingParameter->getLoopFilterParams().getBetaOffset  ());
     }
 
     //===== set picture order count =====
-    m_pcPocCalculator->setPoc(*rpcSliceHeader, rcFrameSpec.getContFrameNumber());
+    m_pcPocCalculator->setPoc (*rpcSliceHeader, rcFrameSpec.getContFrameNumber());
 
     //===== set MMCO commands =====
+    //MM: Marking MODE
     if(rcFrameSpec.getMmcoBuf())
     {
         rpcSliceHeader->getDecRefPicMarking().copy(*rcFrameSpec.getMmcoBuf());
@@ -500,6 +510,7 @@ ErrVal PicEncoder::xInitSliceHeader(SliceHeader*&     rpcSliceHeader,
         rpcSliceHeader->getRefPicListReordering(LIST_1).copy(*rcFrameSpec.getRplrBuf(LIST_1));
     }
 
+    //自定义FMO，使用6
     //===== flexible macroblock ordering =====
     rpcSliceHeader->setSliceGroupChangeCycle(1);
     rpcSliceHeader->FMOInit();
@@ -558,14 +569,14 @@ ErrVal PicEncoder::xInitExtBinDataAccessor(ExtBinDataAccessor& rcExtBinDataAcces
 }
 
 
-ErrVal PicEncoder::xAppendNewExtBinDataAccessor(ExtBinDataAccessorList& rcExtBinDataAccessorList,
-                                          ExtBinDataAccessor*     pcExtBinDataAccessor)
+ErrVal PicEncoder::xAppendNewExtBinDataAccessor (ExtBinDataAccessorList& rcExtBinDataAccessorList,
+                                                 ExtBinDataAccessor*  pcExtBinDataAccessor)
 {
     ROF(pcExtBinDataAccessor);
     ROF(pcExtBinDataAccessor->data());
 
-    UInt    uiNewSize     = pcExtBinDataAccessor->size();
-    UChar*  pucNewBuffer  = new UChar [ uiNewSize ];
+    UInt    uiNewSize    = pcExtBinDataAccessor->size();
+    UChar*  pucNewBuffer = new UChar [uiNewSize];
     ROF(pucNewBuffer);
     memcpy(pucNewBuffer, pcExtBinDataAccessor->data(), uiNewSize * sizeof(UChar));
 
@@ -586,10 +597,10 @@ ErrVal PicEncoder::xAppendNewExtBinDataAccessor(ExtBinDataAccessorList& rcExtBin
 
 
 ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorList,
-                                   RecPicBufUnit&          rcRecPicBufUnit,
-                                   SliceHeader&            rcSliceHeader,
-                                   Double                  dLambda,
-                                   UInt&                   ruiBits)
+                                   RecPicBufUnit&  rcRecPicBufUnit,
+                                   SliceHeader&    rcSliceHeader,
+                                   Double   dLambda,
+                                   UInt&    ruiBits)
 {
     UInt  uiBits = 0;
 
@@ -605,17 +616,21 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
     cRefListStruct.acRefFrameListMC[1].copy(cList1);
     cRefListStruct.acRefFrameListRC[1].copy(cList1);
     cRefListStruct.bMCandRClistsDiffer = false;
-    cRefListStruct.uiFrameIdCol        = MSYS_UINT_MAX;
+    cRefListStruct.uiFrameIdCol = MSYS_UINT_MAX;
 
 //TMM_WP
     if(rcSliceHeader.getSliceType() == P_SLICE)
+    {
         m_pcSliceEncoder->xSetPredWeights(rcSliceHeader,
                                           rcRecPicBufUnit.getRecFrame(),
                                           cRefListStruct);
+    }
     else if(rcSliceHeader.getSliceType() == B_SLICE)
-        m_pcSliceEncoder->xSetPredWeights(rcSliceHeader,
-                                          rcRecPicBufUnit.getRecFrame(),
-                                          cRefListStruct);
+    {
+        m_pcSliceEncoder->xSetPredWeights (rcSliceHeader,
+                                           rcRecPicBufUnit.getRecFrame(),
+                                           cRefListStruct);
+    }
 
 //TMM_WP
 
@@ -625,15 +640,15 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
         UInt  uiBitsSlice = 0;
 
         //----- init slice size -----
-        rcSliceHeader.setFirstMbInSlice(rcSliceHeader.getFMO()->getFirstMacroblockInSlice(iSliceGroupID));
-        rcSliceHeader.setLastMbInSlice(rcSliceHeader.getFMO()->getLastMBInSliceGroup(iSliceGroupID));
+        rcSliceHeader.setFirstMbInSlice (rcSliceHeader.getFMO()->getFirstMacroblockInSlice(iSliceGroupID));
+        rcSliceHeader.setLastMbInSlice (rcSliceHeader.getFMO()->getLastMBInSliceGroup(iSliceGroupID));
 
         //----- init NAL unit -----
-        xInitExtBinDataAccessor(m_cExtBinDataAccessor);
-        m_pcNalUnitEncoder->initNalUnit(&m_cExtBinDataAccessor);
+        xInitExtBinDataAccessor (m_cExtBinDataAccessor);
+        m_pcNalUnitEncoder->initNalUnit (&m_cExtBinDataAccessor);
 
         //----- write slice header -----
-        m_pcNalUnitEncoder->write(rcSliceHeader);
+        m_pcNalUnitEncoder->write (rcSliceHeader);
 
         //----- real coding -----
         m_pcSliceEncoder->encodeSlice (rcSliceHeader,
@@ -653,22 +668,22 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
 
 
     //===== finish =====
-    xFinishPicture(rcRecPicBufUnit, rcSliceHeader, cList0, cList1, uiBits);
+    xFinishPicture (rcRecPicBufUnit, rcSliceHeader, cList0, cList1, uiBits);
     ruiBits += uiBits;
 
     return Err::m_nOK;
 }
 
 
-ErrVal PicEncoder::xStartPicture(RecPicBufUnit& rcRecPicBufUnit,
-                           SliceHeader&   rcSliceHeader,
-                           RefFrameList&  rcList0,
-                           RefFrameList&  rcList1)
+ErrVal PicEncoder::xStartPicture (RecPicBufUnit& rcRecPicBufUnit,
+                                  SliceHeader&   rcSliceHeader,
+                                  RefFrameList&  rcList0,
+                                  RefFrameList&  rcList1)
 {
     //===== initialize reference picture lists and update slice header =====
-    m_pcRecPicBuffer->getRefLists(rcList0, rcList1, rcSliceHeader);
-    rcSliceHeader.setRefFrameList(&rcList0, FRAME, LIST_0);
-    rcSliceHeader.setRefFrameList(&rcList1, FRAME, LIST_1);
+    m_pcRecPicBuffer->getRefLists (rcList0, rcList1, rcSliceHeader);
+    rcSliceHeader.setRefFrameList (&rcList0, FRAME, LIST_0);
+    rcSliceHeader.setRefFrameList (&rcList1, FRAME, LIST_1);
 
     //===== init half-pel buffers =====
     UInt uiPos;
@@ -707,11 +722,11 @@ ErrVal PicEncoder::xStartPicture(RecPicBufUnit& rcRecPicBufUnit,
 }
 
 
-ErrVal PicEncoder::xFinishPicture(RecPicBufUnit&  rcRecPicBufUnit,
-                            SliceHeader&    rcSliceHeader,
-                            RefFrameList&   rcList0,
-                            RefFrameList&   rcList1,
-                            UInt            uiBits)
+ErrVal PicEncoder::xFinishPicture (RecPicBufUnit&  rcRecPicBufUnit,
+                                   SliceHeader&    rcSliceHeader,
+                                   RefFrameList&   rcList0,
+                                   RefFrameList&   rcList1,
+                                   UInt  uiBits)
 {
     //===== uninit half-pel data =====
     UInt uiPos;
@@ -741,14 +756,16 @@ ErrVal PicEncoder::xFinishPicture(RecPicBufUnit&  rcRecPicBufUnit,
     }
 
     //===== deblocking =====
-    m_pcLoopFilter->process(rcSliceHeader, rcRecPicBufUnit.getRecFrame(), NULL, rcRecPicBufUnit.getMbDataCtrl(), 0, false);
+    m_pcLoopFilter->process (rcSliceHeader, rcRecPicBufUnit.getRecFrame(), NULL, rcRecPicBufUnit.getMbDataCtrl(), 0, false);
 
     //===== get PSNR =====
     Double dPSNR[3];
-    xGetPSNR(rcRecPicBufUnit, dPSNR);
+    xGetPSNR (rcRecPicBufUnit, dPSNR);
 
     //===== output =====
-    printf("%4d %c %s %4d  QP%3d  Y %7.4lf dB  U %7.4lf dB  V %7.4lf dB   bits%8d\n",
+    printf ("PicEncoder::xFinishPicture, current_frame: %d\n"
+            "%4d %c %s %4d  QP%3d  Y %7.4lf dB  U %7.4lf dB  V %7.4lf dB   bits%8d\n",
+            m_uiFrameNum,
             m_uiCodedFrames,
             rcSliceHeader.getSliceType  ()==I_SLICE ? 'I' :
             rcSliceHeader.getSliceType  ()==P_SLICE ? 'P' : 'B',
@@ -760,7 +777,7 @@ ErrVal PicEncoder::xFinishPicture(RecPicBufUnit&  rcRecPicBufUnit,
             dPSNR[1],
             dPSNR[2],
             uiBits
-          );
+            );
 
     //===== update parameters =====
     m_uiCodedFrames++;
@@ -770,8 +787,8 @@ ErrVal PicEncoder::xFinishPicture(RecPicBufUnit&  rcRecPicBufUnit,
 }
 
 
-ErrVal PicEncoder::xGetPSNR(RecPicBufUnit&  rcRecPicBufUnit,
-                      Double*         adPSNR)
+ErrVal PicEncoder::xGetPSNR (RecPicBufUnit&  rcRecPicBufUnit,
+                             Double*  adPSNR)
 {
     //===== reset buffer control =====
     m_pcYuvBufferCtrlFullPel->initMb();
@@ -782,14 +799,14 @@ ErrVal PicEncoder::xGetPSNR(RecPicBufUnit&  rcRecPicBufUnit,
     PicBuffer* pcPicBuffer = rcRecPicBufUnit.getPicBuffer();
 
     //===== calculate PSNR =====
-    Pel*  pPelOrig  = pcPicBuffer->getBuffer() + cBufferParam.getMbLum();
-    XPel* pPelRec   = pcFrame->getFullPelYuvBuffer()->getMbLumAddr();
-    Int   iStride   = cBufferParam.getStride();
-    Int   iWidth    = cBufferParam.getWidth ();
-    Int   iHeight   = cBufferParam.getHeight();
-    UInt  uiSSDY    = 0;
-    UInt  uiSSDU    = 0;
-    UInt  uiSSDV    = 0;
+    Pel*  pPelOrig = pcPicBuffer->getBuffer() + cBufferParam.getMbLum();
+    XPel* pPelRec  = pcFrame->getFullPelYuvBuffer()->getMbLumAddr();
+    Int   iStride  = cBufferParam.getStride();
+    Int   iWidth   = cBufferParam.getWidth ();
+    Int   iHeight  = cBufferParam.getHeight();
+    UInt  uiSSDY = 0;
+    UInt  uiSSDU = 0;
+    UInt  uiSSDV = 0;
     Int   x, y;
 
     for(y = 0; y < iHeight; y++)
@@ -836,12 +853,12 @@ ErrVal PicEncoder::xGetPSNR(RecPicBufUnit&  rcRecPicBufUnit,
 
     Double fRefValueY = 255.0 * 255.0 * 16.0 * 16.0 * (Double)m_uiMbNumber;
     Double fRefValueC = fRefValueY / 4.0;
-    adPSNR[0]         = (uiSSDY ? 10.0 * log10(fRefValueY / (Double)uiSSDY) : 99.99);
-    adPSNR[1]         = (uiSSDU ? 10.0 * log10(fRefValueC / (Double)uiSSDU) : 99.99);
-    adPSNR[2]         = (uiSSDV ? 10.0 * log10(fRefValueC / (Double)uiSSDV) : 99.99);
-    m_dSumYPSNR      += adPSNR[0];
-    m_dSumUPSNR      += adPSNR[1];
-    m_dSumVPSNR      += adPSNR[2];
+    adPSNR[0]  = (uiSSDY ? 10.0 * log10(fRefValueY / (Double)uiSSDY) : 99.99);
+    adPSNR[1]  = (uiSSDU ? 10.0 * log10(fRefValueC / (Double)uiSSDU) : 99.99);
+    adPSNR[2]  = (uiSSDV ? 10.0 * log10(fRefValueC / (Double)uiSSDV) : 99.99);
+    m_dSumYPSNR += adPSNR[0];
+    m_dSumUPSNR += adPSNR[1];
+    m_dSumVPSNR += adPSNR[2];
 
     return Err::m_nOK;
 }

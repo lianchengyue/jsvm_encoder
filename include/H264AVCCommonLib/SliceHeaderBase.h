@@ -161,7 +161,7 @@ public:
     {
         return m_eMmco != rcMmcoCommand.m_eMmco || m_uiValue1 != rcMmcoCommand.m_uiValue1 || m_uiValue2 != rcMmcoCommand.m_uiValue2;
     }
-    const MmcoCommand&  operator = (const MmcoCommand& rcMmcoCommand )
+    const MmcoCommand&  operator = (const MmcoCommand& rcMmcoCommand)
     {
         copy(rcMmcoCommand);
         return *this;
@@ -192,7 +192,7 @@ public:
     Bool  getAdaptiveRefPicMarkingModeFlag () const   { return m_bAdaptiveRefPicMarkingModeFlag; }
 
     Void  setDecRefBasePicMarking (Bool  bDecRefBasePicMarking)                     { m_bDecRefBasePicMarking           = bDecRefBasePicMarking; }
-    Void  setAdaptiveRefPicMarkingModeFlag (Bool bAdaptiveRefPicMarkingModeFlag )   { m_bAdaptiveRefPicMarkingModeFlag  = bAdaptiveRefPicMarkingModeFlag; }
+    Void  setAdaptiveRefPicMarkingModeFlag (Bool bAdaptiveRefPicMarkingModeFlag)   { m_bAdaptiveRefPicMarkingModeFlag  = bAdaptiveRefPicMarkingModeFlag; }
 
     const DecRefPicMarking& operator = (const DecRefPicMarking& rcDecRefPicMarking)   { copy(rcDecRefPicMarking); return *this; }
 
@@ -312,7 +312,7 @@ public:
     Int     getSliceBetaOffsetDiv2 () const          { return m_iSliceBetaOffsetDiv2; }
     Int     getSliceBetaOffset () const              { return m_iSliceBetaOffsetDiv2 << 1; }
 
-    Void    setDisableDeblockingFilterIdc (UInt  uiDisableDeblockingFilterIdc )   { m_uiDisableDeblockingFilterIdc = uiDisableDeblockingFilterIdc; }
+    Void    setDisableDeblockingFilterIdc (UInt  uiDisableDeblockingFilterIdc)   { m_uiDisableDeblockingFilterIdc = uiDisableDeblockingFilterIdc; }
     Void    setSliceAlphaC0OffsetDiv2 (Int iSliceAlphaC0OffsetDiv2)               { m_iSliceAlphaC0OffsetDiv2 = iSliceAlphaC0OffsetDiv2; }
     Void    setSliceAlphaC0Offset (Int iSliceAlphaC0Offset)                       { m_iSliceAlphaC0OffsetDiv2 = iSliceAlphaC0Offset >> 1; }
     Void    setSliceBetaOffsetDiv2 (Int iSliceBetaOffsetDiv2)                     { m_iSliceBetaOffsetDiv2 = iSliceBetaOffsetDiv2; }
@@ -400,7 +400,7 @@ public:
 
     UInt    getPrimaryPicType () const                    { return m_uiPrimaryPicType;  }
 
-    Void    setPrimaryPicType (UInt  uiPrimaryPicType )   { m_uiPrimaryPicType  = uiPrimaryPicType; }
+    Void    setPrimaryPicType (UInt  uiPrimaryPicType)   { m_uiPrimaryPicType  = uiPrimaryPicType; }
 
 private:
     UInt    m_uiPrimaryPicType;
@@ -416,9 +416,9 @@ public:
     EndOfSequence(const EndOfSequence& rcEndOfSequence);
     virtual ~EndOfSequence();
 
-    Void    copy  (const EndOfSequence&  rcEndOfSequence,  Bool bInclusiveNALUnitHeader = true  );
-    ErrVal  write (HeaderSymbolWriteIf&  rcWriteIf,        Bool bInclusiveNALUnitHeader = true  ) const;
-    ErrVal  read  (HeaderSymbolReadIf&   rcReadIf,         Bool bInclusiveNALUnitHeader = false );
+    Void    copy  (const EndOfSequence&  rcEndOfSequence,  Bool bInclusiveNALUnitHeader = true );
+    ErrVal  write (HeaderSymbolWriteIf&  rcWriteIf,        Bool bInclusiveNALUnitHeader = true ) const;
+    ErrVal  read  (HeaderSymbolReadIf&   rcReadIf,         Bool bInclusiveNALUnitHeader = false);
 };
 
 
@@ -431,9 +431,9 @@ public:
     EndOfStream(const EndOfStream&   rcEndOfStream);
     virtual ~EndOfStream();
 
-    Void    copy  (const EndOfStream&    rcEndOfStream,    Bool bInclusiveNALUnitHeader = true  );
-    ErrVal  write (HeaderSymbolWriteIf&  rcWriteIf,        Bool bInclusiveNALUnitHeader = true  ) const;
-    ErrVal  read  (HeaderSymbolReadIf&   rcReadIf,         Bool bInclusiveNALUnitHeader = false );
+    Void    copy  (const EndOfStream&    rcEndOfStream,    Bool bInclusiveNALUnitHeader = true );
+    ErrVal  write (HeaderSymbolWriteIf&  rcWriteIf,        Bool bInclusiveNALUnitHeader = true ) const;
+    ErrVal  read  (HeaderSymbolReadIf&   rcReadIf,         Bool bInclusiveNALUnitHeader = false);
 };
 
 
@@ -446,9 +446,9 @@ public:
     FillerData(const FillerData&     rcFillerData);
     virtual ~FillerData();
 
-    Void    copy        (const FillerData&    rcFillerData,  Bool bInclusiveNalUnitHeader = true );
-    ErrVal  writePrefix (HeaderSymbolWriteIf& rcWriteIf,     Bool bInclusiveNalUnitHeader = true ) const;
-    ErrVal  write       (HeaderSymbolWriteIf& rcWriteIf,     Bool bInclusiveNalUnitHeader = true ) const;
+    Void    copy        (const FillerData&    rcFillerData,  Bool bInclusiveNalUnitHeader = true);
+    ErrVal  writePrefix (HeaderSymbolWriteIf& rcWriteIf,     Bool bInclusiveNalUnitHeader = true) const;
+    ErrVal  write       (HeaderSymbolWriteIf& rcWriteIf,     Bool bInclusiveNalUnitHeader = true) const;
     ErrVal  read        (HeaderSymbolReadIf&  rcReadIf,      Bool bInclusiveNalUnitHeader = false);
 
     UInt    getNumFFBytes() const             { return m_uiNumFFBytes; }
@@ -466,18 +466,18 @@ class PrefixHeader : public NalUnitHeader
 public:
     PrefixHeader();
     PrefixHeader(const NalUnitHeader& rcNalUnitHeader);
-    PrefixHeader(const PrefixHeader&  rcPrefixHeader );
+    PrefixHeader(const PrefixHeader&  rcPrefixHeader);
     virtual ~PrefixHeader();
 
     Void    copy (const PrefixHeader& rcPrefixHeader, Bool bInclusiveNALUnitHeader = true);
     ErrVal  write (HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveNALUnitHeader = true) const;
     ErrVal  read (HeaderSymbolReadIf& rcReadIf, Bool bInclusiveNALUnitHeader = false);
 
-    Bool  getStoreRefBasePicFlag () const                     { return m_bStoreRefBasePicFlag;  }
-    const DecRefPicMarking& getDecRefBasePicMarking () const  { return m_cDecRefBasePicMarking; }
-    DecRefPicMarking&  getDecRefBasePicMarking ()             { return m_cDecRefBasePicMarking; }
+    Bool  getStoreRefBasePicFlag () const                       { return m_bStoreRefBasePicFlag;  }
+    const DecRefPicMarking& getDecRefBasePicMarking () const    { return m_cDecRefBasePicMarking; }
+    DecRefPicMarking&  getDecRefBasePicMarking ()               { return m_cDecRefBasePicMarking; }
 
-    Void  setStoreRefBasePicFlag (Bool bStoreRefBasePicFlag)  { m_bStoreRefBasePicFlag  = bStoreRefBasePicFlag; }
+    Void  setStoreRefBasePicFlag (Bool bStoreRefBasePicFlag)    { m_bStoreRefBasePicFlag  = bStoreRefBasePicFlag; }
 
 protected:
     Bool              m_bStoreRefBasePicFlag;
@@ -492,18 +492,18 @@ class SliceHeaderSyntax : public PrefixHeader
 {
 public:
     SliceHeaderSyntax();
-    SliceHeaderSyntax(const NalUnitHeader&         rcNalUnitHeader);
-    SliceHeaderSyntax(const PrefixHeader&          rcPrefixHeader);
+    SliceHeaderSyntax(const NalUnitHeader&  rcNalUnitHeader);
+    SliceHeaderSyntax(const PrefixHeader&   rcPrefixHeader);
     SliceHeaderSyntax(const SliceHeaderSyntax&     rcSliceHeaderSyntax);
     SliceHeaderSyntax(const SequenceParameterSet&  rcSPS,
-                       const PictureParameterSet&   rcPPS);
+                       const PictureParameterSet&  rcPPS);
     virtual ~SliceHeaderSyntax();
 
     ErrVal  init(const SequenceParameterSet& rcSPS,
                  const PictureParameterSet& rcPPS);
     Void    copy (const SliceHeaderSyntax&  rcSliceHeaderSyntax, Bool bInclusiveNalUnitHeader = true);
     ErrVal  writePrefix (HeaderSymbolWriteIf&  rcWriteIf, Bool bInclusiveNalUnitHeader = true) const;
-    ErrVal  write (HeaderSymbolWriteIf&  rcWriteIf, Bool bInclusiveNalUnitHeader = true ) const;
+    ErrVal  write (HeaderSymbolWriteIf&  rcWriteIf, Bool bInclusiveNalUnitHeader = true) const;
     ErrVal  read (ParameterSetMng&  rcParameterSetMng,
                   HeaderSymbolReadIf&  rcReadIf, Bool bInclusiveNalUnitHeader = false);
 

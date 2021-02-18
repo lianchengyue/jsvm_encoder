@@ -15,16 +15,16 @@ public:
     FrameSpec();
     ~FrameSpec();
 
-    Void              uninit();
-    ErrVal            init(UChar ucType,
-                           UInt  uiContFrameNum,
-                           Bool  bAnchor,
-                           UInt  uiFramesSkipped,
-                           Bool  bUseBaseRep,
-                           UInt  uiLayer,
-                           DecRefPicMarking* pcMmcoBuf,
-                           RefPicListReOrdering* pcRplrBufL0,
-                           RefPicListReOrdering* pcRplrBufL1);
+    Void         uninit();
+    ErrVal       init (UChar ucType,
+                       UInt  uiContFrameNum,
+                       Bool  bAnchor,
+                       UInt  uiFramesSkipped,
+                       Bool  bUseBaseRep,
+                       UInt  uiLayer,
+                       DecRefPicMarking* pcMmcoBuf,
+                       RefPicListReOrdering* pcRplrBufL0,
+                       RefPicListReOrdering* pcRplrBufL1);
 
     Bool         isInitialized     () const;
     UInt         getContFrameNumber() const;
@@ -36,8 +36,8 @@ public:
     Bool         isAnchor          () const;
     UInt         getFramesSkipped  () const;
     UInt         getTemporalLayer  () const;
-    const DecRefPicMarking* getMmcoBuf()  const;
-    const RefPicListReOrdering* getRplrBuf(ListIdx eLstIdx)  const;
+    const  DecRefPicMarking* getMmcoBuf()  const;
+    const  RefPicListReOrdering* getRplrBuf(ListIdx eLstIdx)  const;
 
 private:
     Bool          m_bInit;

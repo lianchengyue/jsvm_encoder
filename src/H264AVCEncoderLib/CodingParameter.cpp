@@ -311,52 +311,55 @@ UInt CodingParameter::getLogFactor(Double r0, Double r1)
 
 ErrVal CodingParameter::check()
 {
-    if(!getAVCmode() && getNumberOfLayers() && getLayerParameters(0).getLowComplexMbEnable())
+    if (!getAVCmode()  //非AVC模式
+        && getNumberOfLayers()
+        && getLayerParameters(0).getLowComplexMbEnable())
     {
-        m_cMotionVectorSearchParams.setFullPelDFunc(0);
+        m_cMotionVectorSearchParams.setFullPelDFunc (0);
         m_cMotionVectorSearchParams.setSubPelDFunc (0);
     }
 
-    ROTS(m_cLoopFilterParams           .check());
-    ROTS(m_cInterLayerLoopFilterParams .check());
-    ROTS(m_cMotionVectorSearchParams   .check());
+    ROTS (m_cLoopFilterParams.check());
+    ROTS (m_cInterLayerLoopFilterParams.check());
+    ROTS (m_cMotionVectorSearchParams.check());
 
-    if(getAVCmode())
+    if (getAVCmode())
     {
+        //从MVC.cfg读取SequenceFormatString项
         Bool bStringNotOk = SequenceStructure::checkString(getSequenceFormatString());
 
         //===== coder is operated in MVC mode =====
-        ROTREPORT(getFrameWidth            () <= 0 ||
-                   getFrameWidth            ()  % 16,             "Frame Width  must be greater than 0 and a multiple of 16");
-        ROTREPORT(getFrameHeight           () <= 0 ||
-                   getFrameHeight           ()  % 16,             "Frame Height must be greater than 0 and a multiple of 16");
-        ROTREPORT(getMaximumFrameRate      () <= 0.0,            "Frame rate not supported");
-        ROTREPORT(getTotalFrames           () == 0,              "Total Number Of Frames must be greater than 0");
-        ROTREPORT(getSymbolMode            ()  > 1,              "Symbol mode not supported");
-        ROTREPORT(getEnable8x8Trafo        ()  > 1,              "The value for Enable8x8Transform is not supported");
-        ROTREPORT(getScalingMatricesPresent()  > 1,              "The value for ScalingMatricesPresent is not supported");
-        ROTREPORT(getBiPred8x8Disable      ()  > 1,              "The value for BiPredLT8x8Disable is not supported");
-        ROTREPORT(getMCBlks8x8Disable      ()  > 1,              "The value for MCBlocksLT8x8Disable is not supported");
-        ROTREPORT(getDPBSize               () == 0,              "DPBSize must be greater than 0");
-        ROTREPORT(getNumDPBRefFrames       () == 0 ||
-                   getNumDPBRefFrames       ()  > getDPBSize(),   "NumRefFrames must be greater than 0 and must not be greater than DPB size");
-        ROTREPORT(getLog2MaxFrameNum       ()  < 4 ||
-                   getLog2MaxFrameNum       ()  > 16,             "Log2MaxFrameNum must be in the range of [4..16]");
-        ROTREPORT(getLog2MaxPocLsb         ()  < 4 ||
-                   getLog2MaxPocLsb         ()  > 15,             "Log2MaxFrameNum must be in the range of [4..15]");
-        ROTREPORT(bStringNotOk,                              "Unvalid SequenceFormatString");
-        ROTREPORT(getMaxRefIdxActiveBL0    () <= 0 ||
-                   getMaxRefIdxActiveBL0    ()  > 15,             "Unvalid value for MaxRefIdxActiveBL0");
-        ROTREPORT(getMaxRefIdxActiveBL1    () <= 0 ||
-                   getMaxRefIdxActiveBL1    ()  > 15,             "Unvalid value for MaxRefIdxActiveBL1");
-        ROTREPORT(getMaxRefIdxActiveP      () <= 0 ||
-                   getMaxRefIdxActiveP      ()  > 15,             "Unvalid value for MaxRefIdxActiveP");
-        ROTREPORT(getConstrainedIntraPred  ()  > 1,              "Unvalid value for ConstrainedIntraPred");
+        ROTREPORT(getFrameWidth             () <= 0 ||
+                   getFrameWidth            ()  % 16,           "Frame Width  must be greater than 0 and a multiple of 16");
+//        ROTREPORT(getFrameHeight            () <= 0 ||
+//                   getFrameHeight           ()  % 16,           "Frame Height must be greater than 0 and a multiple of 16");
+        ROTREPORT(getMaximumFrameRate       () <= 0.0,          "Frame rate not supported");
+        ROTREPORT(getTotalFrames            () == 0,            "Total Number Of Frames must be greater than 0");
+        ROTREPORT(getSymbolMode             ()  > 1,            "Symbol mode not supported");
+        ROTREPORT(getEnable8x8Trafo         ()  > 1,            "The value for Enable8x8Transform is not supported");
+        ROTREPORT(getScalingMatricesPresent ()  > 1,            "The value for ScalingMatricesPresent is not supported");
+        ROTREPORT(getBiPred8x8Disable       ()  > 1,            "The value for BiPredLT8x8Disable is not supported");
+        ROTREPORT(getMCBlks8x8Disable       ()  > 1,            "The value for MCBlocksLT8x8Disable is not supported");
+        ROTREPORT(getDPBSize                () == 0,            "DPBSize must be greater than 0");
+        ROTREPORT(getNumDPBRefFrames        () == 0 ||
+                   getNumDPBRefFrames       ()  > getDPBSize(), "NumRefFrames must be greater than 0 and must not be greater than DPB size");
+        ROTREPORT(getLog2MaxFrameNum        ()  < 4 ||
+                   getLog2MaxFrameNum       ()  > 16,           "Log2MaxFrameNum must be in the range of [4..16]");
+        ROTREPORT(getLog2MaxPocLsb          ()  < 4 ||
+                   getLog2MaxPocLsb         ()  > 15,           "Log2MaxFrameNum must be in the range of [4..15]");
+        ROTREPORT(bStringNotOk,                                 "Unvalid SequenceFormatString");
+        ROTREPORT(getMaxRefIdxActiveBL0     () <= 0 ||
+                   getMaxRefIdxActiveBL0    ()  > 15,           "Unvalid value for MaxRefIdxActiveBL0");
+        ROTREPORT(getMaxRefIdxActiveBL1     () <= 0 ||
+                   getMaxRefIdxActiveBL1    ()  > 15,           "Unvalid value for MaxRefIdxActiveBL1");
+        ROTREPORT(getMaxRefIdxActiveP       () <= 0 ||
+                   getMaxRefIdxActiveP      ()  > 15,           "Unvalid value for MaxRefIdxActiveP");
+        ROTREPORT(getConstrainedIntraPred   ()  > 1,            "Unvalid value for ConstrainedIntraPred");
 
         return Err::m_nOK;
     }
 
-    ROTREPORT(getNumberOfLayers() == 0, "Number of layer must be greate than 0");
+    ROTREPORT(getNumberOfLayers  () == 0,                "Number of layer must be greate than 0");
     ROTREPORT(getMaximumFrameRate() <= 0.0,              "Maximum frame rate not supported");
     ROTREPORT(getMaximumDelay    ()  < 0.0,              "Maximum delay must be greater than or equal to 0");
     ROTREPORT(getTotalFrames     () == 0,                "Total Number Of Frames must be greater than 0");
@@ -367,8 +370,8 @@ ErrVal CodingParameter::check()
     ROTREPORT(uiDecStages == MSYS_UINT_MAX,              "GOP Size must be a power of 2");
     setDecompositionStages(uiDecStages);
 
-    ROTREPORT(getIntraPeriod     ()  <
-               getGOPSize         (),                     "Intra period must be greater or equal to GOP size");
+    ROTREPORT(getIntraPeriod      ()  <
+               getGOPSize         (),                    "Intra period must be greater or equal to GOP size");
     if(getIntraPeriod() == MSYS_UINT_MAX)
     {
         setIntraPeriodLowPass(MSYS_UINT_MAX);
@@ -376,12 +379,12 @@ ErrVal CodingParameter::check()
     else
     {
         UInt uiIntraPeriod = getIntraPeriod() / getGOPSize() - 1;
-        ROTREPORT(getIntraPeriod() % getGOPSize(),         "Intra period must be a power of 2 of GOP size (or -1)");
+        ROTREPORT(getIntraPeriod() % getGOPSize(),       "Intra period must be a power of 2 of GOP size (or -1)");
         setIntraPeriodLowPass(uiIntraPeriod);
     }
 
     ROTREPORT(getNumRefFrames    ()  < 1  ||
-               getNumRefFrames    ()  > 15,               "Number of reference frames not supported");
+               getNumRefFrames   ()  > 15,               "Number of reference frames not supported");
     ROTREPORT(getBaseLayerMode   ()  > 2,                "Base layer mode not supported");
     ROTREPORT(getNumberOfLayers  ()  > MAX_LAYERS,       "Number of layers not supported");
 
@@ -404,7 +407,7 @@ ErrVal CodingParameter::check()
     UInt    uiMaxFrameDelay = (UInt)floor(dMaxFrameDelay);
     Double  dMinUnrstrDelay = Double((1 << m_uiDecompositionStages) - 1) / m_dMaximumFrameRate * 1000.0;
 
-    for(UInt uiLayer = 0; uiLayer < getNumberOfLayers(); uiLayer++)
+    for (UInt uiLayer = 0; uiLayer < getNumberOfLayers(); uiLayer++)
     {
         LayerParameters*  pcLayer               = &m_acLayerParameters[uiLayer];
 
@@ -449,7 +452,7 @@ ErrVal CodingParameter::check()
         }
 
         Bool bMGSVectorUsed = pcLayer->getMGSVect(0) != 16;
-        if(bMGSVectorUsed)
+        if (bMGSVectorUsed)
         {
             ROTREPORT(!getCGSSNRRefinement(),    "MGS vectors are only supported in MGS.");
             ROTREPORT(!pcBaseLayer,              "MGS vectors are not allowed in the base layer.");
@@ -462,7 +465,7 @@ ErrVal CodingParameter::check()
         ROTREPORT(pcLayer->getUseLongTerm() && ! pcLayer->getMMCOEnable(),
           "UseLongTerm cannot be equal to 1 when MMCOEnable is equal to 0");
 
-        if(pcBaseLayer)
+        if (pcBaseLayer)
         {
             Bool bResolutionChange = pcLayer->getFrameWidthInSamples () != pcBaseLayer->getFrameWidthInSamples () ||
                                      pcLayer->getFrameHeightInSamples() != pcBaseLayer->getFrameHeightInSamples();
@@ -502,7 +505,7 @@ ErrVal CodingParameter::check()
             }
 
             ResizeParameters& rcRP = pcLayer->getResizeParameters();
-            if(rcRP.m_iExtendedSpatialScalability == ESS_SEQ)
+            if (rcRP.m_iExtendedSpatialScalability == ESS_SEQ)
             {
                 ROTREPORT(rcRP.m_iScaledRefFrmWidth  < rcRP.m_iRefLayerFrmWidth,  "Scaled frame width  less than base layer frame width");
                 ROTREPORT(rcRP.m_iScaledRefFrmHeight < rcRP.m_iRefLayerFrmHeight, "Scaled frame height less than base layer frame height");
@@ -576,7 +579,7 @@ ErrVal LayerParameters::setAndCheckProfile(CodingParameter* pcCodingParameter)
         }
         if(pcCodingParameter->getLayerParameters(uiTestLayer).getProfileIdc() == SCALABLE_HIGH_PROFILE)
         {
-            bScalHighRequired     = true;
+            bScalHighRequired = true;
         }
     }
 
@@ -589,10 +592,10 @@ ErrVal LayerParameters::setAndCheckProfile(CodingParameter* pcCodingParameter)
                    m_uiProfileIdc != HIGH_PROFILE     &&
                    m_uiProfileIdc != 0, "Unsupported ProfileIdc in base layer");
         //----- try to force compatibility when required -----
-        Bool  bForceBaseline    = (m_uiProfileIdc == BASELINE_PROFILE || bScalBaselineRequired);
-        Bool  bForceMain        = (m_uiProfileIdc == MAIN_PROFILE     || bScalBaselineRequired);
-        Bool  bForceExtended    = (m_uiProfileIdc == EXTENDED_PROFILE || bScalBaselineRequired);
-        Bool  bForceHigh        = (m_uiProfileIdc == HIGH_PROFILE     || bSVCLayersPresent    );
+        Bool  bForceBaseline  = (m_uiProfileIdc == BASELINE_PROFILE || bScalBaselineRequired);
+        Bool  bForceMain      = (m_uiProfileIdc == MAIN_PROFILE     || bScalBaselineRequired);
+        Bool  bForceExtended  = (m_uiProfileIdc == EXTENDED_PROFILE || bScalBaselineRequired);
+        Bool  bForceHigh      = (m_uiProfileIdc == HIGH_PROFILE     || bSVCLayersPresent);
         if(bForceBaseline)
             xForceBaselineProfile(pcCodingParameter);
 
@@ -636,7 +639,7 @@ ErrVal LayerParameters::setAndCheckProfile(CodingParameter* pcCodingParameter)
     }
 
     //===== ENHANCEMENT LAYER =====
-    ROTREPORT(m_uiProfileIdc != SCALABLE_BASELINE_PROFILE &&
+    ROTREPORT (m_uiProfileIdc != SCALABLE_BASELINE_PROFILE &&
                m_uiProfileIdc != SCALABLE_HIGH_PROFILE     &&
                m_uiProfileIdc != 0, "Unsupported ProfileIdc in enhancement layer");
     //----- try to force compatibility when required -----
@@ -648,9 +651,9 @@ ErrVal LayerParameters::setAndCheckProfile(CodingParameter* pcCodingParameter)
     if(bForceScalHigh)
         xForceScalableHighProfile(pcCodingParameter);
     //----- check compatibility -----
-    Bool bScalBase         = xIsScalableBaselineProfile        (pcCodingParameter);
-    Bool bScalHigh         = xIsScalableHighProfile            (pcCodingParameter);
-    Bool bIntraOnly        = xIsIntraOnly                      (pcCodingParameter);
+    Bool bScalBase         = xIsScalableBaselineProfile (pcCodingParameter);
+    Bool bScalHigh         = xIsScalableHighProfile     (pcCodingParameter);
+    Bool bIntraOnly        = xIsIntraOnly               (pcCodingParameter);
     ROT(bForceScalBase  && !bScalBase);
     ROT(bForceScalHigh  && !bScalHigh);
     //----- set parameters -----
@@ -960,16 +963,16 @@ Bool LayerParameters::xIsScalableHighProfile(CodingParameter* pcCodingParameter)
     LayerParameters& rcBase = pcCodingParameter->getLayerParameters(m_uiBaseLayerId);
     if(m_uiBaseLayerId == 0)
     {
-        ROTRS(rcBase.m_uiProfileIdc == HIGH_PROFILE,             true );
-        ROFRS(rcBase.m_bConstrainedSetFlag1,                     false);
-        ROFRS(rcBase.m_uiProfileIdc == BASELINE_PROFILE ||
+        ROTRS (rcBase.m_uiProfileIdc == HIGH_PROFILE,             true );
+        ROFRS (rcBase.m_bConstrainedSetFlag1,                     false);
+        ROFRS (rcBase.m_uiProfileIdc == BASELINE_PROFILE ||
                rcBase.m_uiProfileIdc == MAIN_PROFILE     ||
                rcBase.m_uiProfileIdc == EXTENDED_PROFILE,         false);
         return true;
     }
 
-    ROTRS(rcBase.m_uiProfileIdc == SCALABLE_HIGH_PROFILE,      true );
-    ROTRS(rcBase.m_bConstrainedSetFlag1,                       true );
+    ROTRS (rcBase.m_uiProfileIdc == SCALABLE_HIGH_PROFILE,      true );
+    ROTRS (rcBase.m_bConstrainedSetFlag1,                       true );
     return false;
 }
 
