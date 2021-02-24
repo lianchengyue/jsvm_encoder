@@ -744,10 +744,10 @@ ErrVal EncoderCodingParameter::xReadFromFile (std::string& rcFilename, std::stri
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("SearchFuncSubPel",        &(m_cMotionVectorSearchParams.m_uiSubPelDFunc),        0);
 
 //TMM_WP
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("WeightedPrediction",         &m_uiIPMode,                                     0);
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("WeightedBiprediction",       &m_uiBMode,                                      0);
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("WeightedPrediction",      &m_uiIPMode,                                     0);
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("WeightedBiprediction",    &m_uiBMode,                                      0);
 //TMM_WP
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("NonRequiredEnable",            &m_bNonRequiredEnable,                             0);  //NonRequired JVT-Q066
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("NonRequiredEnable",        &m_bNonRequiredEnable,                             0);  //NonRequired JVT-Q066
     std::string cInputFile, cReconFile;
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("AVCMode",                 &m_uiAVCmode,                                          0);
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineStr ("InputFile",               &cInputFile,                                           "in.yuv");
@@ -778,8 +778,8 @@ ErrVal EncoderCodingParameter::xReadFromFile (std::string& rcFilename, std::stri
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("LARDO",                   &m_uiLARDOEnable,                                      0);
     //JVT-R057 LA-RDO}
 
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("RPEncCheck",                             &m_uiEssRPChkEnable,                                                                                    0 );
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("MVDiffThreshold",                 &m_uiMVThres,                                                                                    20);
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("RPEncCheck",              &m_uiEssRPChkEnable,                                                                                    0 );
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("MVDiffThreshold",         &m_uiMVThres,                                                                                    20);
 
     //JVT-T073 {
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("NestingSEI",              &m_uiNestingSEIEnable,                                 0);
@@ -787,7 +787,7 @@ ErrVal EncoderCodingParameter::xReadFromFile (std::string& rcFilename, std::stri
     //JVT-T073 }
 
     //JVT-W052
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("IntegrityCheckSEI",          &m_uiIntegrityCheckSEIEnable,                          false); // Disabled due to buggy behaviour. mwi 070803, bug_fixed
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("IntegrityCheckSEI",       &m_uiIntegrityCheckSEIEnable,                          false); // Disabled due to buggy behaviour. mwi 070803, bug_fixed
     //JVT-W052
 
 //JVT-S036 lsj start  //bug-fix suffix{{
@@ -796,7 +796,7 @@ ErrVal EncoderCodingParameter::xReadFromFile (std::string& rcFilename, std::stri
 //JVT-S036 lsj end //bug-fix suffix}}
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("CgsSnrRefinement",        &m_uiCGSSNRRefinementFlag,                             0);  //JVT-T054
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("TLNestingFlag",           &m_uiTlevelNestingFlag,                                0);  //JVT-U085
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("TL0DepRepIdxSeiEnable",    &m_uiTl0DepRepIdxSeiEnable,                           0);  //JVT-U116,JVT-W062
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("TL0DepRepIdxSeiEnable",   &m_uiTl0DepRepIdxSeiEnable,                           0);  //JVT-U116,JVT-W062
 
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("EncodeKeyPictures",       &m_uiEncodeKeyPictures,                                0);
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("MGSControl",              &m_uiMGSKeyPictureControl,                             0);
@@ -827,10 +827,10 @@ ErrVal EncoderCodingParameter::xReadFromFile (std::string& rcFilename, std::stri
     m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineUInt("MultiLayerLambdaSel",     &m_uiMultiLayerLambda,                                 0);
     //JVT-AD021 }
 #if DOLBY_ENCMUX_ENABLE
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("MuxMethod",     &m_iMuxMethod,                                 0);
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("MuxFilter",     &m_iMuxFilter,                                 0);
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("MuxOffset0",    &(m_iMuxOffset[0]),                              0);
-    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("MuxOffset1",    &(m_iMuxOffset[1]),                              0);
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("MuxMethod",  &m_iMuxMethod,      0);
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("MuxFilter",  &m_iMuxFilter,      0);
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("MuxOffset0", &(m_iMuxOffset[0]), 0);
+    m_pEncoderLines[uiParLnCount++] = new EncoderConfigLineInt("MuxOffset1", &(m_iMuxOffset[1]), 0);
 #endif
     m_pEncoderLines[uiParLnCount] = NULL;
 

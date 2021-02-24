@@ -18,7 +18,7 @@ ErrVal ParameterSetMng::create(ParameterSetMng*& rpcParameterSetMng)
 {
     rpcParameterSetMng = new ParameterSetMng;
 
-    ROT( NULL == rpcParameterSetMng );
+    ROT(NULL == rpcParameterSetMng);
 
     return Err::m_nOK;
 }
@@ -44,14 +44,14 @@ ErrVal ParameterSetMng::uninit()
     }
 
     std::list<SequenceParameterSet*>::iterator ppcSPS = m_cSPSList.begin();
-    for( ; ppcSPS != m_cSPSList.end(); ppcSPS++ )
+    for(; ppcSPS != m_cSPSList.end(); ppcSPS++)
     {
         (*ppcSPS)->destroy();
     }
     m_cSPSList.clear();
 
     std::list<PictureParameterSet*>::iterator ppcPPS = m_cPPSList.begin();
-    for( ; ppcPPS != m_cPPSList.end(); ppcPPS++ )
+    for(; ppcPPS != m_cPPSList.end(); ppcPPS++)
     {
         (*ppcPPS)->destroy();
     }
@@ -70,7 +70,7 @@ ErrVal ParameterSetMng::get(SequenceParameterSet*& rpcSPS, UInt uiSPSId, Bool bS
 
     m_cSPSBuf.get(rpcSPS, uiSPSId);
 
-    ROT( NULL == rpcSPS);
+    ROT(NULL == rpcSPS);
     return Err::m_nOK;
 }
 
@@ -78,7 +78,7 @@ ErrVal ParameterSetMng::get(SequenceParameterSet*& rpcSPS, UInt uiSPSId, Bool bS
 
 ErrVal ParameterSetMng::store(SequenceParameterSet* pcSPS)
 {
-    ROT( NULL == pcSPS );
+    ROT(NULL == pcSPS);
 
     UInt uiSPSId = pcSPS->getSeqParameterSetId();
     if(pcSPS->isSubSetSPS())
@@ -86,7 +86,7 @@ ErrVal ParameterSetMng::store(SequenceParameterSet* pcSPS)
         uiSPSId += NUM_SPS_IDS;
     }
 
-    ROF( m_cSPSBuf.isValidOffset(uiSPSId) )
+    ROF(m_cSPSBuf.isValidOffset(uiSPSId))
 
     xDestroySPS(uiSPSId);
 
@@ -98,7 +98,7 @@ ErrVal ParameterSetMng::store(SequenceParameterSet* pcSPS)
 
 ErrVal ParameterSetMng::xDestroySPS(UInt uiSPSId)
 {
-    ROF( m_cSPSBuf.isValidOffset(uiSPSId) )
+    ROF(m_cSPSBuf.isValidOffset(uiSPSId))
 
     SequenceParameterSet* pcSPS = m_cSPSBuf.get(uiSPSId);
     if(pcSPS)
@@ -106,7 +106,7 @@ ErrVal ParameterSetMng::xDestroySPS(UInt uiSPSId)
         m_cSPSList.push_back(pcSPS);
     }
 
-    m_cSPSBuf.set( uiSPSId, NULL );
+    m_cSPSBuf.set(uiSPSId, NULL);
 
     return Err::m_nOK;
 }
@@ -117,15 +117,15 @@ ErrVal ParameterSetMng::get(PictureParameterSet*& rpcPPS, UInt uiPPSId)
 {
     m_cPPSBuf.get(rpcPPS, uiPPSId);
 
-    ROT( NULL == rpcPPS );
+    ROT(NULL == rpcPPS);
     return Err::m_nOK;
 }
 
 ErrVal ParameterSetMng::store(PictureParameterSet* pcPPS)
 {
-    ROT( NULL == pcPPS );
+    ROT(NULL == pcPPS);
     UInt uiPPSId = pcPPS->getPicParameterSetId();
-    ROF( m_cPPSBuf.isValidOffset(uiPPSId) )
+    ROF(m_cPPSBuf.isValidOffset(uiPPSId))
 
     xDestroyPPS(uiPPSId);
 
@@ -141,7 +141,7 @@ ErrVal ParameterSetMng::xDestroyPPS(UInt uiPPSId)
 
     m_cPPSBuf.get(pcPPS, uiPPSId);
 
-    ROTRS( NULL == pcPPS, Err::m_nOK );
+    ROTRS(NULL == pcPPS, Err::m_nOK);
 
     if(pcPPS)
     {
@@ -173,9 +173,9 @@ ErrVal ParameterSetMng::setParamterSetList(std::list<SequenceParameterSet*>& rcS
         const UInt uiMaxIndex = m_cPPSBuf.size();
         for(UInt uiIndex = 0; uiIndex < uiMaxIndex; uiIndex++)
         {
-            if( NULL != m_cPPSBuf.get(uiIndex))
+            if(NULL != m_cPPSBuf.get(uiIndex))
             {
-                rcPPSList.push_back( m_cPPSBuf.get(uiIndex));
+                rcPPSList.push_back(m_cPPSBuf.get(uiIndex));
             }
         }
     }
@@ -185,11 +185,11 @@ ErrVal ParameterSetMng::setParamterSetList(std::list<SequenceParameterSet*>& rcS
 // JVT-V068 HRD {
 ErrVal ParameterSetMng::getActiveSPS(SequenceParameterSet *& rpcSPS, UInt uiDQId)
 {
-    ROF( uiDQId < 16*8 );
+    ROF(uiDQId < 16*8);
     rpcSPS = NULL;
-    RNOKS( m_cSPSBuf.get(rpcSPS, m_auiActiveSPSId[uiDQId]));
+    RNOKS(m_cSPSBuf.get(rpcSPS, m_auiActiveSPSId[uiDQId]));
 
-    ROTS( NULL == rpcSPS);
+    ROTS(NULL == rpcSPS);
     return Err::m_nOK;
 }
 // JVT-V068 HRD }
@@ -199,7 +199,7 @@ ErrVal ParameterSetMng::getActiveSPSDQ0(SequenceParameterSet *& rpcSPS)
     rpcSPS = NULL;
     if(m_auiActiveSPSId[0] != MSYS_UINT_MAX)
     {
-        rpcSPS = m_cSPSBuf.get( m_auiActiveSPSId[0] );
+        rpcSPS = m_cSPSBuf.get(m_auiActiveSPSId[0]);
     }
     if(!rpcSPS)
     {
@@ -209,12 +209,12 @@ ErrVal ParameterSetMng::getActiveSPSDQ0(SequenceParameterSet *& rpcSPS)
         {
             if(m_cSPSBuf.get(uiIndex) && ! m_cSPSBuf.get(uiIndex)->isSubSetSPS())
             {
-                rpcSPS = m_cSPSBuf.get( uiIndex );
+                rpcSPS = m_cSPSBuf.get(uiIndex);
                 break;
             }
         }
     }
-    ROT( NULL == rpcSPS);
+    ROT(NULL == rpcSPS);
     return Err::m_nOK;
 }
 

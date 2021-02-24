@@ -38,6 +38,7 @@ namespace JSVM {
 
 CreaterH264AVCEncoder::CreaterH264AVCEncoder():
     m_pcH264AVCEncoder  (NULL),
+    m_pcPicEncoder      (NULL),
     m_pcSliceEncoder    (NULL),
     m_pcControlMng      (NULL),
     m_pcBitWriteBuffer  (NULL),
@@ -56,7 +57,6 @@ CreaterH264AVCEncoder::CreaterH264AVCEncoder():
     m_pcMotionEstimation(NULL),
     m_pcRateDistortion  (NULL),
     m_pcHistory         (NULL),
-    m_pcPicEncoder      (NULL),
     m_bTraceEnable      (true)
 {
     ::memset(m_apcYuvFullPelBufferCtrl, 0x00, MAX_LAYERS*sizeof(Void*));
@@ -97,6 +97,7 @@ ErrVal CreaterH264AVCEncoder::writeParameterSets (ExtBinDataAccessor* pcExtBinDa
     //SVC模式
     else
     {
+        //初始化SPS与PPS的入口
         m_pcH264AVCEncoder->writeParameterSets (pcExtBinDataAccessor, rpcAVCSPS, rbMoreSets);
         return Err::m_nOK;
     }
@@ -175,28 +176,47 @@ ErrVal CreaterH264AVCEncoder::create(CreaterH264AVCEncoder*& rpcCreaterH264AVCEn
 
 ErrVal CreaterH264AVCEncoder::xCreateEncoder()
 {
+    //参数设置
     ParameterSetMng             ::create(m_pcParameterSetMng);
+    //重定向输出结果
     BitWriteBuffer              ::create(m_pcBitWriteBuffer);
     BitCounter                  ::create(m_pcBitCounter);
+    //NALU
     NalUnitEncoder              ::create(m_pcNalUnitEncoder);
+    //Slice
     SliceEncoder                ::create(m_pcSliceEncoder);
     UvlcWriter                  ::create(m_pcUvlcWriter);
     UvlcWriter                  ::create(m_pcUvlcTester, false);
     CabacWriter                 ::create(m_pcCabacWriter);
+    //MB
     MbCoder                     ::create(m_pcMbCoder);
     MbEncoder                   ::create(m_pcMbEncoder);
+    //De-block
     LoopFilter                  ::create(m_pcLoopFilter);
+    //帧内预测
     IntraPredictionSearch       ::create(m_pcIntraPrediction);
+    //亚像素级运动估计
     MotionEstimationQuarterPel  ::create(m_pcMotionEstimation);
+
+    //SVC编码器实例
     H264AVCEncoder              ::create(m_pcH264AVCEncoder);
-    ControlMngH264AVCEncoder    ::create(m_pcControlMng);
-    ReconstructionBypass        ::create(m_pcReconstructionBypass);
-    QuarterPelFilter            ::create(m_pcQuarterPelFilter);
-    Transform                   ::create(m_pcTransform);
-    SampleWeighting             ::create(m_pcSampleWeighting);
-    XDistortion                 ::create(m_pcXDistortion);
+    //AVC编码器实例
     PicEncoder                  ::create(m_pcPicEncoder);
 
+    //encoder控制管理
+    ControlMngH264AVCEncoder    ::create(m_pcControlMng);
+    //bypass 重建
+    ReconstructionBypass        ::create(m_pcReconstructionBypass);
+    //1/4像素级Filter
+    QuarterPelFilter            ::create(m_pcQuarterPelFilter);
+    //transform
+    Transform                   ::create(m_pcTransform);
+    //权重
+    SampleWeighting             ::create(m_pcSampleWeighting);
+    //率失真
+    XDistortion                 ::create(m_pcXDistortion);
+
+    //SVC相关, 共8层
     for(UInt uiLayer = 0; uiLayer < MAX_LAYERS; uiLayer++)
     {
         LayerEncoder  ::create(m_apcLayerEncoder[uiLayer]);
@@ -291,7 +311,7 @@ ErrVal CreaterH264AVCEncoder::init (CodingParameter* pcCodingParameter)
                             m_pcCodingParameter,
                             m_apcPocCalculator[0],
                             m_pcTransform);
-    m_pcReconstructionBypass    ->init();
+    m_pcReconstructionBypass ->init();
 
     ErrVal cRet = m_pcLoopFilter->init(m_pcControlMng, m_pcReconstructionBypass, true);
     RNOK(cRet);
@@ -359,18 +379,18 @@ ErrVal CreaterH264AVCEncoder::init (CodingParameter* pcCodingParameter)
     for (UInt uiLayer = 0; uiLayer < m_pcCodingParameter->getNumberOfLayers(); uiLayer++)
     {
         m_apcLayerEncoder[uiLayer]->init (m_pcCodingParameter,
-                                         &m_pcCodingParameter->getLayerParameters(uiLayer),
-                                         m_pcH264AVCEncoder,
-                                         m_pcSliceEncoder,
-                                         m_pcLoopFilter,
-                                         m_apcPocCalculator[uiLayer],
-                                         m_pcNalUnitEncoder,
-                                         m_apcYuvFullPelBufferCtrl[uiLayer],
-                                         m_apcYuvHalfPelBufferCtrl[uiLayer],
-                                         m_pcQuarterPelFilter,
-                                         m_pcMotionEstimation,
-                                         m_pcReconstructionBypass,
-                                         &m_apcScheduler);
+                                          &m_pcCodingParameter->getLayerParameters(uiLayer),
+                                          m_pcH264AVCEncoder,
+                                          m_pcSliceEncoder,
+                                          m_pcLoopFilter,
+                                          m_apcPocCalculator[uiLayer],
+                                          m_pcNalUnitEncoder,
+                                          m_apcYuvFullPelBufferCtrl[uiLayer],
+                                          m_apcYuvHalfPelBufferCtrl[uiLayer],
+                                          m_pcQuarterPelFilter,
+                                          m_pcMotionEstimation,
+                                          m_pcReconstructionBypass,
+                                          &m_apcScheduler);
     }
 
     //Bug_Fix JVT-R057{

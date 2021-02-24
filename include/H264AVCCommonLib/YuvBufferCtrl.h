@@ -1,6 +1,8 @@
 #ifndef _YUVBUFFERCTRL_
 #define _YUVBUFFERCTRL_
 
+#include "Typedefs.h"
+
 namespace JSVM {
 
 class YuvBufferCtrl
@@ -9,7 +11,10 @@ public:
   class YuvBufferParameter
   {
   public:
-      YuvBufferParameter() {}
+      YuvBufferParameter()
+      {
+      }
+
       const UInt getMbLum() const              { return m_uiLumOffset; }
       const UInt getMbCb() const               { return m_uiCbOffset; }
       const UInt getMbCr() const               { return m_uiCrOffset; }
@@ -22,13 +27,14 @@ public:
       const UInt getUBlk(LumaIdx cIdx) const   { return m_uiCbOffset  +  ((cIdx.y() * m_iStride + (cIdx.x()<<1)) << m_iResolution); }
       const UInt getVBlk(LumaIdx cIdx) const   { return m_uiCrOffset  +  ((cIdx.y() * m_iStride + (cIdx.x()<<1)) << m_iResolution); }
 
+      //成员
       UInt m_uiLumOffset;
       UInt m_uiCbOffset;
       UInt m_uiCrOffset;
-      Int m_iStride;
-      Int m_iResolution;
-      Int m_iHeight;
-      Int m_iWidth;
+      Int  m_iStride;
+      Int  m_iResolution;
+      Int  m_iHeight;
+      Int  m_iWidth;
   };
 
 protected:
@@ -54,7 +60,7 @@ public:
 
         if(bMbAff)
         {
-          uiMbY >>= 1;
+            uiMbY >>= 1;
         }
         UInt uiYPosFld  = (uiMbY<<4) << m_iResolution;
         UInt uiTopOff = m_uiLumBaseOffset + uiXPos + uiYPosFld * m_acBufferParam[FRAME].m_iStride * 2;
@@ -131,14 +137,22 @@ public:
                                                            + m_uiChromaSize + ((ePicType == BOT_FIELD) ? m_acBufferParam[FRAME].m_iStride/2 : 0); }
 
 protected:
-    YuvBufferParameter m_acBufferParam[ MAX_FRAME_TYPE ];
+    //YuvBufferParameter的成员变量
+    //UInt m_uiLumOffset;
+    //UInt m_uiCbOffset;
+    //UInt m_uiCrOffset;
+    //Int  m_iStride;
+    //Int  m_iResolution;
+    //Int  m_iHeight;
+    //Int  m_iWidth;
+    YuvBufferParameter m_acBufferParam[MAX_FRAME_TYPE];
     UInt  m_uiLumBaseOffset;
     UInt  m_uiCbBaseOffset;
     UInt  m_uiChromaSize;
     Int   m_iResolution;
-    UInt m_uiXMargin;
-    UInt m_uiYMargin;
-    Bool m_bInitDone;
+    UInt  m_uiXMargin;
+    UInt  m_uiYMargin;
+    Bool  m_bInitDone;
 };
 
 

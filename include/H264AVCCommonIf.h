@@ -2,11 +2,11 @@
 #define _H264AVCCOMMONIF_H_
 
 
-#if defined( _DEBUG ) || defined( DEBUG )
-# if !defined( _DEBUG )
+#if defined(_DEBUG) || defined(DEBUG)
+# if !defined(_DEBUG)
 #   define _DEBUG
 # endif
-# if !defined( DEBUG )
+# if !defined(DEBUG)
 #   define DEBUG
 # endif
 #endif
@@ -33,8 +33,8 @@ public:
 #include "MemList.h"
 #include <vector>
 
-typedef MemCont< UChar > BinData;
-typedef MemAccessor< UChar > BinDataAccessor;
+typedef MemCont<UChar> BinData;
+typedef MemAccessor<UChar> BinDataAccessor;
 
 #include <list>
 #include <algorithm>
@@ -49,23 +49,30 @@ typedef Int     XXPel;
 class TCoeff
 {
 public:
-    TCoeff( Int iVal = 0 ) : m_iCoeffValue( iVal ), m_iLevelValue ( iVal ), m_sPred( 0 ) {}
-    ~TCoeff()                                                                            {}
+    TCoeff(Int iVal = 0):
+        m_iCoeffValue(iVal),
+        m_iLevelValue(iVal),
+        m_sPred(0)
+    {
+    }
+    ~TCoeff()
+    {
+    }
 
     operator Int() const { return m_iCoeffValue; }
 
-    TCoeff &operator=  ( const Int iVal )      { m_iCoeffValue =  iVal; return *this; }
-    TCoeff &operator+= ( const Int iVal )      { m_iCoeffValue += iVal; return *this; }
-    TCoeff &operator-= ( const Int iVal )      { m_iCoeffValue -= iVal; return *this; }
-    TCoeff &operator*= ( const Int iVal )      { m_iCoeffValue *= iVal; return *this; }
-    TCoeff &operator/= ( const Int iVal )      { m_iCoeffValue /= iVal; return *this; }
+    TCoeff &operator=  (const Int iVal)      { m_iCoeffValue =  iVal; return *this; }
+    TCoeff &operator+= (const Int iVal)      { m_iCoeffValue += iVal; return *this; }
+    TCoeff &operator-= (const Int iVal)      { m_iCoeffValue -= iVal; return *this; }
+    TCoeff &operator*= (const Int iVal)      { m_iCoeffValue *= iVal; return *this; }
+    TCoeff &operator/= (const Int iVal)      { m_iCoeffValue /= iVal; return *this; }
 
-    Int   getLevel () const          { return m_iLevelValue; }
-    Int   getCoeff () const          { return m_iCoeffValue; }
-    Short getSPred () const          { return m_sPred;       }
-    Void  setLevel (Int  iVal)                { m_iLevelValue = iVal; }
-    Void  setCoeff (Int  iVal)                { m_iCoeffValue = iVal; }
-    Void  setSPred (XPel sVal)                { m_sPred       = sVal; }
+    Int   getLevel () const                  { return m_iLevelValue; }
+    Int   getCoeff () const                  { return m_iCoeffValue; }
+    Short getSPred () const                  { return m_sPred;       }
+    Void  setLevel (Int  iVal)               { m_iLevelValue = iVal; }
+    Void  setCoeff (Int  iVal)               { m_iCoeffValue = iVal; }
+    Void  setSPred (XPel sVal)               { m_sPred       = sVal; }
 
 private:
     Int   m_iCoeffValue; // more than 16 bit required for chroma DC
@@ -78,21 +85,27 @@ template<class T> class MyList : public std::list<T>
 public:
     typedef typename std::list<T>::iterator MyIterator;
 
-    MyList& operator += ( const MyList& rcMyList) { if( ! rcMyList.empty() ) { this->insert( this->end(), rcMyList.begin(), rcMyList.end());} return *this; } // leszek
-    T popBack()                           { T cT = this->back(); this->pop_back(); return cT;  }
-    T popFront()                          { T cT = this->front(); this->pop_front(); return cT; }
-    Void pushBack (const T& rcT )         { if( sizeof(T) == sizeof(void*) ) { if( rcT != NULL ){ this->push_back( rcT);} } }
-    Void pushFront (const T& rcT )        { if( sizeof(T) == sizeof(void*) ) { if( rcT != NULL ){ this->push_front( rcT);} } }
-    MyIterator find (const T& rcT ) {  return std::find( this->begin(), this->end(), rcT ); } // leszek
+    MyList& operator += (const MyList& rcMyList) { if(! rcMyList.empty()) { this->insert(this->end(), rcMyList.begin(), rcMyList.end());} return *this; } // leszek
+    T popBack()                                  { T cT = this->back(); this->pop_back(); return cT;  }
+    T popFront()                                 { T cT = this->front(); this->pop_front(); return cT; }
+    Void pushBack (const T& rcT)                 { if(sizeof(T) == sizeof(void*)) { if(rcT != NULL){ this->push_back(rcT);} } }
+    Void pushFront (const T& rcT)                { if(sizeof(T) == sizeof(void*)) { if(rcT != NULL){ this->push_front(rcT);} } }
+    MyIterator find (const T& rcT)               { return std::find(this->begin(), this->end(), rcT); } // leszek
 };
 
 class ExtBinDataAccessor : public BinDataAccessor
 {
 public:
-    ExtBinDataAccessor() : BinDataAccessor() , m_pcMediaPacket (NULL ){}
-    ExtBinDataAccessor( BinDataAccessor& rcAccessor, Void* pcMediaPacket = NULL )
-      : BinDataAccessor( rcAccessor )
-      , m_pcMediaPacket (pcMediaPacket ){}
+    ExtBinDataAccessor():
+        BinDataAccessor(),
+        m_pcMediaPacket (NULL)
+    {
+    }
+    ExtBinDataAccessor(BinDataAccessor& rcAccessor, Void* pcMediaPacket = NULL):
+        BinDataAccessor(rcAccessor),
+        m_pcMediaPacket (pcMediaPacket)
+    {
+    }
 
     Void* getMediaPacket() { return m_pcMediaPacket; }
 private:
@@ -100,8 +113,8 @@ private:
 };
 
 
-typedef MyList< ExtBinDataAccessor* > ExtBinDataAccessorList;
-typedef MyList< ExtBinDataAccessorList* > ExtBinDataAccessorListList;
+typedef MyList<ExtBinDataAccessor*> ExtBinDataAccessorList;
+typedef MyList<ExtBinDataAccessorList*> ExtBinDataAccessorListList;
 
 enum PicStruct
 {
@@ -120,21 +133,26 @@ enum PicStruct
 class PicBuffer
 {
 public:
-    PicBuffer( Pel* pcBuffer = NULL, Void* pcMediaPacket  = NULL, Int64 i64Cts = 0)
-      : m_pcMediaPacket( pcMediaPacket )
-      , m_pcBuffer     ( pcBuffer )
-      , m_iInUseCout   ( 0 )
-      , m_i64Cts       ( i64Cts )
-      , m_ePicStruct   ( PS_NOT_SPECIFIED )
-      , m_iTopPoc      ( 0 )
-      , m_iBotPoc      ( 0 )
-      , m_iFramePoc    ( 0 )
-      , m_uiIdrPicId   ( 0 )
-      , m_bFieldCoded  ( false )
+    PicBuffer(Pel* pcBuffer = NULL, Void* pcMediaPacket  = NULL, Int64 i64Cts = 0):
+        m_pcMediaPacket(pcMediaPacket),
+        m_pcBuffer     (pcBuffer),
+        m_iInUseCout   (0),
+        m_i64Cts       (i64Cts),
+        m_ePicStruct   (PS_NOT_SPECIFIED),
+        m_iTopPoc      (0),
+        m_iBotPoc      (0),
+        m_iFramePoc    (0),
+        m_uiIdrPicId   (0),
+        m_bFieldCoded  (false)
     {
     }
 
-    Pel*  switchBuffer( Pel* pcBuffer ) { Pel* pcTmp = m_pcBuffer; m_pcBuffer = pcBuffer; return pcTmp; }
+    Pel* switchBuffer(Pel* pcBuffer)
+    {
+        Pel* pcTmp = m_pcBuffer;
+        m_pcBuffer = pcBuffer;
+        return pcTmp;
+    }
 
     Void setUnused() { m_iInUseCout--; }
     Void setUsed()   { m_iInUseCout++; }
@@ -143,7 +161,7 @@ public:
     operator Pel*()  { return m_pcBuffer; }
     Void* getMediaPacket() { return m_pcMediaPacket; }
     Int64& getCts()            { return m_i64Cts; }
-    Void setCts( Int64 i64 )   { m_i64Cts = i64; } // HS: decoder robustness
+    Void setCts(Int64 i64)   { m_i64Cts = i64; } // HS: decoder robustness
 
     Void setPicStruct (PicStruct e)  { m_ePicStruct  = e;  }
     Void setFieldCoding (Bool b)     { m_bFieldCoded = b;  }
@@ -161,6 +179,7 @@ public:
 
 private:
     Void*     m_pcMediaPacket;
+    //获取到的一帧YUV图像
     Pel*      m_pcBuffer;
     Int       m_iInUseCout;
     Int64     m_i64Cts;
@@ -172,8 +191,8 @@ private:
     Bool      m_bFieldCoded;
 };
 
-typedef MyList< PicBuffer* > PicBufferList;
-typedef MyList< BinData*   > BinDataList;
+typedef MyList<PicBuffer*> PicBufferList;
+typedef MyList<BinData*  > BinDataList;
 
 
 #endif //_H264AVCCOMMONIF_H_

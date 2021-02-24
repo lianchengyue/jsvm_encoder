@@ -20,7 +20,7 @@ protected:
 
 public:
     static ErrVal create(ReadYuvFile*& rpcReadYuvFile);
-    ErrVal init(const std::string& rcFileName, UInt uiLumPicHeight, UInt uiLumPicWidth, UInt uiStartLine = 0, UInt uiEndLine = MSYS_UINT_MAX, FillMode eFillMode = FILL_CLEAR );
+    ErrVal init(const std::string& rcFileName, UInt uiLumPicHeight, UInt uiLumPicWidth, UInt uiStartLine = 0, UInt uiEndLine = MSYS_UINT_MAX, FillMode eFillMode = FILL_CLEAR);
     ErrVal uninit();
     ErrVal destroy();
 

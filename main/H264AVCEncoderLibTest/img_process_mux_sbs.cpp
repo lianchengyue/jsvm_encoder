@@ -62,7 +62,7 @@ ImgProcessFilter1D * create_img_process_filter_1D(int filter_type)
     int idx;
     ImgProcessFilter1D * ptr;
 
-    ptr = (ImgProcessFilter1D *)malloc(sizeof( ImgProcessFilter1D));
+    ptr = (ImgProcessFilter1D *)malloc(sizeof(ImgProcessFilter1D));
     if(ptr == NULL)
     {
         fprintf(stderr, "Cannot allocate memory for RPUFilter1D structure.\n");
@@ -145,7 +145,7 @@ static inline imgpel filter_unsafe_right_positions(const ImgProcessFilter1D *flt
     {
         val += *p1 * *(c_coef++);
     }
-    return (imgpel)iClip1( flt->max_pel_value, shift_off_sf( val, flt->c_offset, flt->c_normal1 ) );
+    return (imgpel)iClip1(flt->max_pel_value, shift_off_sf(val, flt->c_offset, flt->c_normal1));
 }
 
 static inline imgpel filter_even_unsafe_right_positions(const ImgProcessFilter1D *flt, const imgpel *p_in, int right_samples)
@@ -165,7 +165,7 @@ static inline imgpel filter_even_unsafe_right_positions(const ImgProcessFilter1D
     {
         val += *p1 * *(c_coef++);
     }
-    return (imgpel)iClip1( flt->max_pel_value, shift_off_sf(val, flt->c_offset, flt->c_normal1));
+    return (imgpel)iClip1(flt->max_pel_value, shift_off_sf(val, flt->c_offset, flt->c_normal1));
 }
 
 static void img_process_filter_even_hor_line(const ImgProcessFilter1D *flt,
@@ -188,7 +188,7 @@ static void img_process_filter_even_hor_line(const ImgProcessFilter1D *flt,
     //center columns
     for(/*i = center_start_x*/; i < center_end_x; i += step)
     {
-        *(p_out++) = filter_safe_positions( flt, p_in);
+        *(p_out++) = filter_safe_positions(flt, p_in);
         p_in += step;
     }
     //right columns
@@ -281,8 +281,8 @@ void H264AVCEncoderTest::sbsMux(UChar *output,
         ImgProcessFilter1D *flt = create_img_process_filter_1D(iFilterIdx);
         for(j = 0; j < height; j++)
         {
-            img_process_filter_even_hor_line( flt, input0+j*iStrideIn +offset0, output+j*iStrideOut,        offset0, width + offset0, flt->c_taps_div2, width - flt->c_taps_div2 + offset0, 2 );
-            img_process_filter_even_hor_line( flt, input1+j*iStrideIn +offset1, output+j*iStrideOut+hwidth, offset1, width + offset1, flt->c_taps_div2, width - flt->c_taps_div2 + offset1, 2 );
+            img_process_filter_even_hor_line(flt, input0+j*iStrideIn +offset0, output+j*iStrideOut,        offset0, width + offset0, flt->c_taps_div2, width - flt->c_taps_div2 + offset0, 2);
+            img_process_filter_even_hor_line(flt, input1+j*iStrideIn +offset1, output+j*iStrideOut+hwidth, offset1, width + offset1, flt->c_taps_div2, width - flt->c_taps_div2 + offset1, 2);
         }
         destroy_img_process_filter_1D(flt);
     }
@@ -348,7 +348,7 @@ Int H264AVCEncoderTest::padBuf(UChar *output, Int iStrideOut, Int width, Int hei
               pDst += iStrideOut;
           }
       }
-      else if(FILL_FRAME == fillMode )
+      else if(FILL_FRAME == fillMode)
       {
           pDst = output +height*iStrideOut;
           for(j=height; j<height_out; j++)
@@ -359,7 +359,7 @@ Int H264AVCEncoderTest::padBuf(UChar *output, Int iStrideOut, Int width, Int hei
       }
       else if(FILL_FIELD == fillMode)
       {
-          ROT( (height_out - height) & 1 );
+          ROT((height_out - height) & 1);
           pDst = output +height*iStrideOut;
           for(j=height; j<height_out; j+=2)
           {

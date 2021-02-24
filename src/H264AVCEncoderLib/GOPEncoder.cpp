@@ -741,12 +741,12 @@ ErrVal LayerEncoder::xCreateData(const SequenceParameterSet& rcSPS)
     for(uiIndex = 0; uiIndex <= m_uiMaxGOPSize; uiIndex++)
     {
       MbDataCtrl*  pcMbDataCtrl                = 0;
-      ROFS ((  pcMbDataCtrl                = new MbDataCtrl()));
+      ROFS ((pcMbDataCtrl                = new MbDataCtrl()));
       pcMbDataCtrl->init(rcSPS);
       m_pacControlData[uiIndex].setMbDataCtrl   (pcMbDataCtrl);
 
       SliceHeader*  pcSliceHeader               = 0;
-      ROFS ((  pcSliceHeader               = new SliceHeader (*m_pcSPS, *m_pcPPS)));
+      ROFS ((pcSliceHeader               = new SliceHeader (*m_pcSPS, *m_pcPPS)));
       m_pacControlData[uiIndex].setSliceHeader(pcSliceHeader, FRAME);
 
       if(m_pcLayerParameters->getPAff())
@@ -756,27 +756,27 @@ ErrVal LayerEncoder::xCreateData(const SequenceParameterSet& rcSPS)
       }
     }
 
-    ROFS   ((m_pcBaseLayerCtrl = new MbDataCtrl()));
+    ROFS ((m_pcBaseLayerCtrl = new MbDataCtrl()));
     m_pcBaseLayerCtrl->init(rcSPS);
 
-    ROFS   ((m_pcBaseLayerCtrlField = new MbDataCtrl()));
+    ROFS ((m_pcBaseLayerCtrlField = new MbDataCtrl()));
     m_pcBaseLayerCtrlField ->init(rcSPS);
 
 //  RPIC bug fix
-    ROFS ((  m_pcRedundantCtrl                = new MbDataCtrl  ()));
+    ROFS ((m_pcRedundantCtrl = new MbDataCtrl  ()));
     m_pcRedundantCtrl->init(rcSPS);
 //  RPIC bug fix
 
     //========== CREATE UPDATE WEIGHTS ARRAY and WRITE BUFFER ==========
     UInt  uiNum4x4Blocks      = m_uiFrameWidthInMb * m_uiFrameHeightInMb * 4 * 4;
     m_uiWriteBufferSize       = 3 * (uiNum4x4Blocks * 4 * 4);
-    ROFS((m_pucWriteBuffer  = new UChar [m_uiWriteBufferSize]));
+    ROFS ((m_pucWriteBuffer  = new UChar [m_uiWriteBufferSize]));
     UInt uiDCAllocX = rcSPS.getAllocFrameMbsX() << 4;
     UInt uiDCAllocY = rcSPS.getAllocFrameMbsY() << 4;
     ROT (m_cDownConvert.init(uiDCAllocX, uiDCAllocY, 16));
 
     //S051{
-    ROFRS(m_auiFrameBits    =    new UInt[m_uiTotalFrame], Err::m_nERR);
+    ROFRS (m_auiFrameBits    =    new UInt[m_uiTotalFrame], Err::m_nERR);
     memset(m_auiFrameBits,0,sizeof(UInt)*m_uiTotalFrame);
     if(m_bEncSIP)
     {
@@ -3570,7 +3570,7 @@ ErrVal LayerEncoder::process(UInt             uiAUIndex,
     UInt   uiTemporalId    = m_auiFrameIdToTemporalId [uiFrameIdInGOP];
     UInt   uiSliceMode     = m_uiSliceMode;
     UInt   uiSliceArgument = m_uiSliceArgument;
-    if( uiSliceMode != 2)
+    if(uiSliceMode != 2)
     {
         UInt uiMaxSliceSize  = m_pcH264AVCEncoder->getMaxSliceSize(m_uiDependencyId, uiAUIndex);
         if(uiMaxSliceSize  < m_uiSliceArgument)

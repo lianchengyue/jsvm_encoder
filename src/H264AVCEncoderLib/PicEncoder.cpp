@@ -170,7 +170,7 @@ ErrVal PicEncoder::uninit()
 ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAccessor,
                                               Bool&               rbMoreSets)
 {
-    if(! m_pcSPS)
+    if(!m_pcSPS)
     {
         //===== create SPS =====
         xInitSPS();
@@ -178,11 +178,12 @@ ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAcc
         //===== write SPS =====
         UInt uiSPSBits = 0;
         m_pcNalUnitEncoder->initNalUnit (pcExtBinDataAccessor);
+        ///写SPS到 TraceEncoder_DQId000.txt
         m_pcNalUnitEncoder->write (*m_pcSPS);
         m_pcNalUnitEncoder->closeNalUnit (uiSPSBits);
         m_uiWrittenBytes += ((uiSPSBits >> 3) + 4);
     }
-    else if(! m_pcPPS)
+    else if(!m_pcPPS)
     {
         //===== create PPS =====
         xInitPPS();
@@ -190,6 +191,7 @@ ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAcc
         //===== write PPS =====
         UInt uiPPSBits = 0;
         m_pcNalUnitEncoder->initNalUnit(pcExtBinDataAccessor);
+        ///写PPS到 TraceEncoder_DQId000.txt
         m_pcNalUnitEncoder->write (*m_pcPPS);
         m_pcNalUnitEncoder->closeNalUnit (uiPPSBits);
         m_uiWrittenBytes += ((uiPPSBits >> 3) + 4);
@@ -199,7 +201,7 @@ ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAcc
     }
 
     //===== set status =====
-    rbMoreSets = ! m_bInitParameterSets;
+    rbMoreSets = !m_bInitParameterSets;
 
     return Err::m_nOK;
 }
@@ -223,13 +225,15 @@ ErrVal PicEncoder::process (PicBuffer*  pcInputPicBuffer,
         //----- get next frame specification and input access unit -----
         if (!m_pcInputPicBuffer->empty())
         {
-            if(!m_cFrameSpecification.isInitialized())
+            if (!m_cFrameSpecification.isInitialized())
             {
                 //更新m_cFrameSpecification, 其中包含m_eSliceType: I_SLICE, B_SLICE, P_SLICE
                 m_cFrameSpecification = m_pcSequenceStructure->getNextFrameSpec();
             }
             pcInputAccessUnit = m_pcInputPicBuffer->remove (m_cFrameSpecification.getContFrameNumber());
         }
+
+        //输入结束，退出循环
         if (!pcInputAccessUnit)
         {
             break;
@@ -241,17 +245,29 @@ ErrVal PicEncoder::process (PicBuffer*  pcInputPicBuffer,
         SliceHeader*    pcSliceHeader = 0;
         RecPicBufUnit*  pcRecPicBufUnit = 0;
         PicBuffer*      pcOrigPicBuffer = pcInputAccessUnit->getInputPicBuffer();
-        //Step 3: important, 初始化一帧图像的Slice Header中的的参数值
+
+        ///Step 3: important, 初始化一帧图像的Slice Header中的的参数值
+        /***********************/
+        /***初始化slice header***/
+        /***********************/
         xInitSliceHeader (pcSliceHeader, m_cFrameSpecification, dLambda);
+        //
         m_pcRecPicBuffer->initCurrRecPicBufUnit(pcRecPicBufUnit, pcOrigPicBuffer, pcSliceHeader, rcOutputList, rcUnusedList);
 
-        //Step 4: 对一帧图像进行encode
+
+
+        ///Step 4: 对一帧图像进行encode
+        /***********************/
+        /***对一帧图像进行encode**/
+        /***********************/
         //----- encoding -----
         xEncodePicture (rcExtBinDataAccessorList, *pcRecPicBufUnit, *pcSliceHeader, dLambda, uiPictureBits);
         m_uiWrittenBytes += (uiPictureBits >> 3);
 
-        //Step 5: ???
-        //----- store picture -----
+
+
+        ///Step 5: 保存输出后的h264文件
+        ///----- store picture -----
         m_pcRecPicBuffer->store (pcRecPicBufUnit, pcSliceHeader, rcOutputList, rcUnusedList);
 
         //----- reset -----
@@ -277,7 +293,7 @@ ErrVal PicEncoder::finish (PicBufferList&  rcOutputList,
             m_dSumYPSNR / (Double)m_uiCodedFrames,
             m_dSumUPSNR / (Double)m_uiCodedFrames,
             m_dSumVPSNR / (Double)m_uiCodedFrames,
-            0.008*(Double)m_uiWrittenBytes/(Double)m_uiCodedFrames*m_pcCodingParameter->getMaximumFrameRate(),
+            0.008 * (Double)m_uiWrittenBytes/(Double)m_uiCodedFrames*m_pcCodingParameter->getMaximumFrameRate(),
             m_uiWrittenBytes,
             (Double)m_uiCodedFrames/m_pcCodingParameter->getMaximumFrameRate()
             );
@@ -286,6 +302,7 @@ ErrVal PicEncoder::finish (PicBufferList&  rcOutputList,
 }
 
 
+//为SPS赋值
 ErrVal PicEncoder::xInitSPS()
 {
     ROF(m_bInit);
@@ -324,12 +341,13 @@ ErrVal PicEncoder::xInitSPS()
     m_pcSPS->setDirect8x8InferenceFlag         (true);
 
 //JVT-V068 {
-    m_pcSPS->setVUI                            (m_pcSPS);
+    m_pcSPS->setVUI (m_pcSPS);
 //JVT-V068 }
     return Err::m_nOK;
 }
 
 
+//为PPS赋值
 ErrVal PicEncoder::xInitPPS()
 {
     ROF(m_bInit);
@@ -352,7 +370,7 @@ ErrVal PicEncoder::xInitPPS()
     m_pcPPS->setNumRefIdxActive                       (LIST_1, m_pcCodingParameter->getMaxRefIdxActiveBL1());
     m_pcPPS->setPicInitQp                             (gMin(51, gMax(0, (Int)m_pcCodingParameter->getBasisQp())));
     m_pcPPS->setChromaQpIndexOffset                   (0);
-    m_pcPPS->setDeblockingFilterParametersPresentFlag (! m_pcCodingParameter->getLoopFilterParams().isDefault());
+    m_pcPPS->setDeblockingFilterParametersPresentFlag (!m_pcCodingParameter->getLoopFilterParams().isDefault());
     m_pcPPS->setConstrainedIntraPredFlag              (m_pcCodingParameter->getConstrainedIntraPred() > 0);
     m_pcPPS->setRedundantPicCntPresentFlag            (false);  //JVT-Q054 Red. Picture
     m_pcPPS->setTransform8x8ModeFlag                  (m_pcCodingParameter->getEnable8x8Trafo() > 0);
@@ -378,7 +396,7 @@ ErrVal PicEncoder::xInitParameterSets()
     //===== init control manager =====
     m_pcSPS->setAllocFrameMbsX(m_pcSPS->getFrameWidthInMbs());
     m_pcSPS->setAllocFrameMbsY(m_pcSPS->getFrameHeightInMbs());
-    //ControlMng中初始化SPS与PPS
+    //在ControlMng中初始化SPS与PPS
     m_pcControlMng->initParameterSets (*m_pcSPS, *m_pcPPS);
 
     //===== set fixed parameters =====
@@ -441,9 +459,11 @@ ErrVal PicEncoder::xInitSliceHeader (SliceHeader*&  rpcSliceHeader,
     Double dQp = m_pcCodingParameter->getBasisQp () + m_pcCodingParameter->getDeltaQpLayer (rcFrameSpec.getTemporalLayer());
     Int iQp = gMin(51, gMax(0, (Int)dQp));
     rdLambda = 0.85 * pow(2.0, gMin(52.0, dQp) / 3.0 - 4.0);
+    //uiSizeL0: 1
     UInt uiSizeL0 = (rcFrameSpec.getSliceType() == I_SLICE ? 0 :
                      rcFrameSpec.getSliceType() == P_SLICE ? m_pcCodingParameter->getMaxRefIdxActiveP () :
                      rcFrameSpec.getSliceType() == B_SLICE ? m_pcCodingParameter->getMaxRefIdxActiveBL0() : MSYS_UINT_MAX);
+    //uiSizeL1: 0
     UInt uiSizeL1 = (rcFrameSpec.getSliceType() == I_SLICE ? 0 :
                      rcFrameSpec.getSliceType() == P_SLICE ? 0 :
                      rcFrameSpec.getSliceType() == B_SLICE ? m_pcCodingParameter->getMaxRefIdxActiveBL1() : MSYS_UINT_MAX);
@@ -510,7 +530,9 @@ ErrVal PicEncoder::xInitSliceHeader (SliceHeader*&  rpcSliceHeader,
         rpcSliceHeader->getRefPicListReordering(LIST_1).copy(*rcFrameSpec.getRplrBuf(LIST_1));
     }
 
-    //自定义FMO，使用6
+    //************************/
+    //*****自定义FMO，使用6*****/
+    //************************/
     //===== flexible macroblock ordering =====
     rpcSliceHeader->setSliceGroupChangeCycle(1);
     rpcSliceHeader->FMOInit();
@@ -595,7 +617,7 @@ ErrVal PicEncoder::xAppendNewExtBinDataAccessor (ExtBinDataAccessorList& rcExtBi
 }
 
 
-
+//编码一帧NV21图像
 ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorList,
                                    RecPicBufUnit&  rcRecPicBufUnit,
                                    SliceHeader&    rcSliceHeader,
@@ -605,7 +627,9 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
     UInt  uiBits = 0;
 
     //===== start picture =====
+    //每一帧更新一次 已编码帧列表list0, list1
     RefFrameList  cList0, cList1;
+    //Step1: 初始化list0, list1
     xStartPicture(rcRecPicBufUnit, rcSliceHeader, cList0, cList1);
 
     RefListStruct cRefListStruct;
@@ -618,11 +642,11 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
     cRefListStruct.bMCandRClistsDiffer = false;
     cRefListStruct.uiFrameIdCol = MSYS_UINT_MAX;
 
-//TMM_WP
+    //TMM_WP
     if(rcSliceHeader.getSliceType() == P_SLICE)
     {
         m_pcSliceEncoder->xSetPredWeights(rcSliceHeader,
-                                          rcRecPicBufUnit.getRecFrame(),
+                                          rcRecPicBufUnit.getRecFrame(),  //返回m_pcReconstructedFrame
                                           cRefListStruct);
     }
     else if(rcSliceHeader.getSliceType() == B_SLICE)
@@ -631,11 +655,10 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
                                            rcRecPicBufUnit.getRecFrame(),
                                            cRefListStruct);
     }
-
-//TMM_WP
+    //TMM_WP
 
     //===== encoding of slice groups =====
-    for(Int iSliceGroupID = rcSliceHeader.getFMO()->getFirstSliceGroupId(); ! rcSliceHeader.getFMO()->SliceGroupCompletelyCoded(iSliceGroupID); iSliceGroupID = rcSliceHeader.getFMO()->getNextSliceGroupId(iSliceGroupID))
+    for(Int iSliceGroupID = rcSliceHeader.getFMO()->getFirstSliceGroupId(); !rcSliceHeader.getFMO()->SliceGroupCompletelyCoded(iSliceGroupID); iSliceGroupID = rcSliceHeader.getFMO()->getNextSliceGroupId(iSliceGroupID))
     {
         UInt  uiBitsSlice = 0;
 
@@ -651,6 +674,7 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
         m_pcNalUnitEncoder->write (rcSliceHeader);
 
         //----- real coding -----
+        //逐个对Slice进行编码
         m_pcSliceEncoder->encodeSlice (rcSliceHeader,
                                        rcRecPicBufUnit.getRecFrame  (),
                                        rcRecPicBufUnit.getMbDataCtrl(),
@@ -668,13 +692,14 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
 
 
     //===== finish =====
+    ///~在此处做环路滤波
     xFinishPicture (rcRecPicBufUnit, rcSliceHeader, cList0, cList1, uiBits);
     ruiBits += uiBits;
 
     return Err::m_nOK;
 }
 
-
+//list0与list1
 ErrVal PicEncoder::xStartPicture (RecPicBufUnit& rcRecPicBufUnit,
                                   SliceHeader&   rcSliceHeader,
                                   RefFrameList&  rcList0,
@@ -756,7 +781,8 @@ ErrVal PicEncoder::xFinishPicture (RecPicBufUnit&  rcRecPicBufUnit,
     }
 
     //===== deblocking =====
-    m_pcLoopFilter->process (rcSliceHeader, rcRecPicBufUnit.getRecFrame(), NULL, rcRecPicBufUnit.getMbDataCtrl(), 0, false);
+    ///~环路滤波
+    ///m_pcLoopFilter->process (rcSliceHeader, rcRecPicBufUnit.getRecFrame(), NULL, rcRecPicBufUnit.getMbDataCtrl(), 0, false);
 
     //===== get PSNR =====
     Double dPSNR[3];

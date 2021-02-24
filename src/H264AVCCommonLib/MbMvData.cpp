@@ -6,18 +6,18 @@
 
 namespace JSVM {
 
-const UInt MbMotionData::m_auiBlk2Part [16 ]  = { 0, 0, 1, 1,
-                                                  0, 0, 1, 1,
-                                                  2, 2, 3, 3,
-                                                  2, 2, 3, 3 };  // XDIRECT
+const UInt MbMotionData::m_auiBlk2Part [16]  = { 0, 0, 1, 1,
+                                                 0, 0, 1, 1,
+                                                 2, 2, 3, 3,
+                                                 2, 2, 3, 3 };  // XDIRECT
 
 
 ErrVal MbMvData::save(FILE* pFile)
 {
-    ROF( pFile );
+    ROF(pFile);
 
     UInt uiSave = (UInt)::fwrite(&m_acMv[0], sizeof(Mv), 16, pFile);
-    ROF( uiSave == 16 );
+    ROF(uiSave == 16);
 
     return Err::m_nOK;
 }
@@ -25,10 +25,10 @@ ErrVal MbMvData::save(FILE* pFile)
 
 ErrVal MbMvData::load(FILE* pFile)
 {
-    ROF( pFile );
+    ROF(pFile);
 
     UInt uiRead = (UInt)::fread(&m_acMv[0], sizeof(Mv), 16, pFile);
-    ROF( uiRead == 16 );
+    ROF(uiRead == 16);
 
     return Err::m_nOK;
 }
@@ -36,14 +36,14 @@ ErrVal MbMvData::load(FILE* pFile)
 
 ErrVal MbMotionData::save(FILE* pFile)
 {
-    ROF( pFile );
+    ROF(pFile);
 
     MbMvData::save(pFile);
 
     UInt uiSave  = (UInt)::fwrite(&m_ascRefIdx[0],   sizeof(SChar),  4, pFile);
     uiSave      += (UInt)::fwrite(&m_usMotPredFlags, sizeof(UShort), 1, pFile);
 
-    ROF( uiSave == ( 4 + 1 ) );
+    ROF(uiSave == (4 + 1));
 
     return Err::m_nOK;
 }
@@ -51,14 +51,14 @@ ErrVal MbMotionData::save(FILE* pFile)
 
 ErrVal MbMotionData::load(FILE* pFile)
 {
-    ROF( pFile );
+    ROF(pFile);
 
     MbMvData::load(pFile);
 
-    UInt uiRead  = (UInt)::fread( &m_ascRefIdx[0],   sizeof(SChar),  4, pFile);
-    uiRead      += (UInt)::fread( &m_usMotPredFlags, sizeof(UShort), 1, pFile);
+    UInt uiRead  = (UInt)::fread(&m_ascRefIdx[0],   sizeof(SChar),  4, pFile);
+    uiRead      += (UInt)::fread(&m_usMotPredFlags, sizeof(UShort), 1, pFile);
 
-    ROF( uiRead == ( 4 + 1 ) );
+    ROF(uiRead == (4 + 1));
 
     return Err::m_nOK;
 }
@@ -97,7 +97,7 @@ Void RefPicIdc::set(const Frame* pcFrame)
         m_iPoc      = pcFrame->getPoc();
         m_ePicType  = pcFrame->getPicType();
         m_pcFrame   = pcFrame->getFrame();
-        AOF( m_pcFrame );
+        AOF(m_pcFrame);
         return;
     }
     m_iPoc      = 0;
@@ -107,16 +107,16 @@ Void RefPicIdc::set(const Frame* pcFrame)
 
 Bool RefPicIdc::isValid() const
 {
-    ROTRS( m_ePicType == NOT_SPECIFIED, false );
-    const Frame* pcFrame = m_pcFrame->getPic( m_ePicType );
-    AOF  ( pcFrame );
-    ROFRS( pcFrame->getPoc() == m_iPoc, false );
+    ROTRS(m_ePicType == NOT_SPECIFIED, false);
+    const Frame* pcFrame = m_pcFrame->getPic(m_ePicType);
+    AOF  (pcFrame);
+    ROFRS(pcFrame->getPoc() == m_iPoc, false);
     return true;
 }
 
 const Frame* RefPicIdc::getPic() const
 {
-    return m_pcFrame->getPic( m_ePicType );
+    return m_pcFrame->getPic(m_ePicType);
 }
 
 ErrVal MbMotionData::setRefPicIdcs(RefFrameList* pcRefFrameList)
@@ -127,10 +127,10 @@ ErrVal MbMotionData::setRefPicIdcs(RefFrameList* pcRefFrameList)
         SChar     scRefIdx = m_ascRefIdx[ui];
         if(scRefIdx > 0)
         {
-            ROF( pcRefFrameList );
-            ROF( scRefIdx <= (Int)pcRefFrameList->getActive() );
+            ROF(pcRefFrameList);
+            ROF(scRefIdx <= (Int)pcRefFrameList->getActive());
             const Frame* pcFrame = (*pcRefFrameList)[scRefIdx];
-            ROF( pcFrame );
+            ROF(pcFrame);
             cRefPicIdc.set(pcFrame);
         }
         m_acRefPicIdc[ui] = cRefPicIdc;
@@ -148,25 +148,25 @@ BlkMode MbMotionData::getBlkMode(const ParIdx8x8 eParIdx, BlkMode eBlkMode)
 
     if(!bC1 || !bC2)
     {
-       eBlkMode = ( eBlkMode == BLK_8x8 ) ? BLK_8x4 : BLK_4x4;
+       eBlkMode = (eBlkMode == BLK_8x8) ? BLK_8x4 : BLK_4x4;
     }
     if(!bR1 || !bR2)
     {
-        eBlkMode = ( eBlkMode == BLK_8x8 ) ? BLK_4x8  : BLK_4x4;
+        eBlkMode = (eBlkMode == BLK_8x8) ? BLK_4x8  : BLK_4x4;
     }
 
     return eBlkMode;
 }
 
 
-Void  MbMotionData::copyFrom( const MbMotionData& rcMbMotionData )
+Void  MbMotionData::copyFrom(const MbMotionData& rcMbMotionData)
 {
-    memcpy( m_ascRefIdx,  rcMbMotionData.m_ascRefIdx, 4 * sizeof(SChar) );
-    memcpy( m_acRefPicIdc, rcMbMotionData.m_acRefPicIdc, 4 * sizeof(RefPicIdc) );
+    memcpy(m_ascRefIdx,  rcMbMotionData.m_ascRefIdx, 4 * sizeof(SChar));
+    memcpy(m_acRefPicIdc, rcMbMotionData.m_acRefPicIdc, 4 * sizeof(RefPicIdc));
     m_usMotPredFlags = rcMbMotionData.m_usMotPredFlags;
 
     m_bFieldFlag = rcMbMotionData.m_bFieldFlag;
-    MbMvData::copyFrom( rcMbMotionData );
+    MbMvData::copyFrom(rcMbMotionData);
 }
 
 

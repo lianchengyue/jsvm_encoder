@@ -418,7 +418,7 @@ Void YuvMbBuffer::loadChroma(const YuvMbBuffer& rcSrcBuffer)
     }
 }
 
-
+//加载4x4 Luma
 Void YuvMbBuffer::loadLuma(const YuvMbBuffer& rcSrcBuffer, LumaIdx c4x4Idx)
 {
     const Int   iStride = getLStride();
@@ -434,6 +434,7 @@ Void YuvMbBuffer::loadLuma(const YuvMbBuffer& rcSrcBuffer, LumaIdx c4x4Idx)
 }
 
 
+//加载8x8 Luma
 Void YuvMbBuffer::loadLuma(const YuvMbBuffer& rcSrcBuffer, B8x8Idx c8x8Idx)
 {
     const Int   iStride = getLStride();
@@ -448,19 +449,19 @@ Void YuvMbBuffer::loadLuma(const YuvMbBuffer& rcSrcBuffer, B8x8Idx c8x8Idx)
     }
 }
 
-
+//加载16x16 Luma
 Void YuvMbBuffer::loadLuma(const YuvMbBuffer& rcSrcBuffer)
 {
-  const Int   iStride = getLStride();
-  XPel*       pDes    = getMbLumAddr();
-  const XPel* pSrc    = rcSrcBuffer.getMbLumAddr();
+    const Int   iStride = getLStride();
+    XPel*       pDes    = getMbLumAddr();
+    const XPel* pSrc    = rcSrcBuffer.getMbLumAddr();
 
-  for(Int y = 0; y < 16; y++)
-  {
-    memcpy(pDes, pSrc, 16 * sizeof(XPel));
-    pDes += iStride;
-    pSrc += iStride;
-  }
+    for(Int y = 0; y < 16; y++)
+    {
+        memcpy(pDes, pSrc, 16 * sizeof(XPel));
+        pDes += iStride;
+        pSrc += iStride;
+    }
 }
 
 
@@ -695,9 +696,9 @@ Void YuvMbBufferExtension::xMerge(Int xDir, Int yDir, Int iSize, XPel* puc, Int 
 
 Void YuvMbBufferExtension::mergeFromLeftAbove (LumaIdx cIdx, Bool bCornerMbPresent, Bool bHalfYSize)
 {
-    xMerge( 1,  1, 8, getYBlk(cIdx), getLStride(), bCornerMbPresent, bHalfYSize);
-    xMerge( 1,  1, 4, getUBlk(cIdx), getCStride(), bCornerMbPresent, bHalfYSize);
-    xMerge( 1,  1, 4, getVBlk(cIdx), getCStride(), bCornerMbPresent, bHalfYSize);
+    xMerge(1,  1, 8, getYBlk(cIdx), getLStride(), bCornerMbPresent, bHalfYSize);
+    xMerge(1,  1, 4, getUBlk(cIdx), getCStride(), bCornerMbPresent, bHalfYSize);
+    xMerge(1,  1, 4, getVBlk(cIdx), getCStride(), bCornerMbPresent, bHalfYSize);
 }
 
 Void YuvMbBufferExtension::mergeFromRightBelow(LumaIdx cIdx, Bool bCornerMbPresent, Bool bHalfYSize)

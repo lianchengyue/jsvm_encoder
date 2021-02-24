@@ -40,31 +40,31 @@ protected:
     virtual ~ControlMngH264AVCEncoder();
 
 public:
-    static ErrVal create( ControlMngH264AVCEncoder*& rpcControlMngH264AVCEncoder);
-    ErrVal init(  LayerEncoder*           apcLayerEncoder         [MAX_LAYERS],
-                  SliceEncoder*           pcSliceEncoder,
-                  ControlMngH264AVCEncoder*  pcControlMng,
-                  BitWriteBuffer*         pcBitWriteBuffer,
-                  BitCounter*             pcBitCounter,
-                  NalUnitEncoder*         pcNalUnitEncoder,
-                  UvlcWriter*             pcUvlcWriter,
-                  UvlcWriter*             pcUvlcTester,
-                  MbCoder*                pcMbCoder,
-                  LoopFilter*             pcLoopFilter,
-                  MbEncoder*              pcMbEncoder,
-                  Transform*              pcTransform,
-                  IntraPredictionSearch*  pcIntraPrediction,
-                  YuvBufferCtrl*          apcYuvFullPelBufferCtrl [MAX_LAYERS],
-                  YuvBufferCtrl*          apcYuvHalfPelBufferCtrl [MAX_LAYERS],
-                  QuarterPelFilter*       pcQuarterPelFilter,
-                  CodingParameter*        pcCodingParameter,
-                  ParameterSetMng*        pcParameterSetMng,
-                  PocCalculator*          apcPocCalculator        [MAX_LAYERS],
-                  SampleWeighting*        pcSampleWeighting,
-                  CabacWriter*            pcCabacWriter,
-                  XDistortion*            pcXDistortion,
-                  MotionEstimation*       pcMotionEstimation,
-                  RateDistortion*         pcRateDistortion);
+    static ErrVal create(ControlMngH264AVCEncoder*& rpcControlMngH264AVCEncoder);
+    ErrVal init (LayerEncoder*           apcLayerEncoder[MAX_LAYERS],
+                 SliceEncoder*           pcSliceEncoder,
+                 ControlMngH264AVCEncoder*  pcControlMng,
+                 BitWriteBuffer*         pcBitWriteBuffer,
+                 BitCounter*             pcBitCounter,
+                 NalUnitEncoder*         pcNalUnitEncoder,
+                 UvlcWriter*             pcUvlcWriter,
+                 UvlcWriter*             pcUvlcTester,
+                 MbCoder*                pcMbCoder,
+                 LoopFilter*             pcLoopFilter,
+                 MbEncoder*              pcMbEncoder,
+                 Transform*              pcTransform,
+                 IntraPredictionSearch*  pcIntraPrediction,
+                 YuvBufferCtrl*          apcYuvFullPelBufferCtrl[MAX_LAYERS],
+                 YuvBufferCtrl*          apcYuvHalfPelBufferCtrl[MAX_LAYERS],
+                 QuarterPelFilter*       pcQuarterPelFilter,
+                 CodingParameter*        pcCodingParameter,
+                 ParameterSetMng*        pcParameterSetMng,
+                 PocCalculator*          apcPocCalculator[MAX_LAYERS],
+                 SampleWeighting*        pcSampleWeighting,
+                 CabacWriter*            pcCabacWriter,
+                 XDistortion*            pcXDistortion,
+                 MotionEstimation*       pcMotionEstimation,
+                 RateDistortion*         pcRateDistortion);
 
     ErrVal uninit();
     ErrVal destroy();
@@ -85,16 +85,16 @@ public:
     ErrVal initMbForParsing  (MbDataAccess*& rpcMbDataAccess, UInt uiMbIndex ) { return Err::m_nERR; }
     ErrVal initMbForDecoding (MbDataAccess*& rpcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff) { return Err::m_nERR; }
 
-    ErrVal initSliceForCoding ( const SliceHeader& rcSH);
-    ErrVal initSliceForReading ( const SliceHeader& rcSH ) { return Err::m_nERR; }
-    ErrVal initSliceForDecoding ( const SliceHeader& rcSH ) { return Err::m_nERR; }
-    ErrVal initSliceForFiltering ( const SliceHeader& rcSH);
+    ErrVal initSliceForCoding (const SliceHeader& rcSH);
+    ErrVal initSliceForReading (const SliceHeader& rcSH ) { return Err::m_nERR; }
+    ErrVal initSliceForDecoding (const SliceHeader& rcSH ) { return Err::m_nERR; }
+    ErrVal initSliceForFiltering (const SliceHeader& rcSH);
 
-    ErrVal initMbForCoding      ( MbDataAccess& rcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff, Bool bFieldFlag);
-    ErrVal initMbForDecoding    ( MbDataAccess& rcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff ) { return Err::m_nERR; }
+    ErrVal initMbForCoding      (MbDataAccess& rcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff, Bool bFieldFlag);
+    ErrVal initMbForDecoding    (MbDataAccess& rcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff ) { return Err::m_nERR; }
 
-    ErrVal initMbForFiltering( MbDataAccess& rcMbDataAccess,   UInt uiMbY, UInt uiMbX, Bool bMbAff);
-    ErrVal initMbForFiltering( MbDataAccess*& rpcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff);
+    ErrVal initMbForFiltering (MbDataAccess& rcMbDataAccess,   UInt uiMbY, UInt uiMbX, Bool bMbAff);
+    ErrVal initMbForFiltering (MbDataAccess*& rpcMbDataAccess, UInt uiMbY, UInt uiMbX, Bool bMbAff);
 
     UvlcWriter*  getUvlcWriter()  { return m_pcUvlcWriter;  }
     CabacWriter* getCabacWriter() { return m_pcCabacWriter; }
@@ -108,11 +108,11 @@ public:
 
     MbDataCtrl* getMbDataCtrl() { return m_pcMbDataCtrl;} //JVT-T054
     //--TM 0109.2006
-    const FMO* getFMO() const {return m_pcFMO;}
-    Void setFMO(const FMO* fmo){m_pcFMO = fmo;}
+    const FMO* getFMO() const   {return m_pcFMO;}
+    Void setFMO(const FMO* fmo) {m_pcFMO = fmo;}
 
 protected:
-    LayerEncoder*           m_apcLayerEncoder         [MAX_LAYERS];
+    LayerEncoder*           m_apcLayerEncoder[MAX_LAYERS];
     SliceEncoder*           m_pcSliceEncoder;
     ControlMngH264AVCEncoder*  m_pcControlMng;
     BitWriteBuffer*         m_pcBitWriteBuffer;
@@ -125,12 +125,12 @@ protected:
     MbEncoder*              m_pcMbEncoder;
     Transform*              m_pcTransform;
     IntraPredictionSearch*  m_pcIntraPrediction;
-    YuvBufferCtrl*          m_apcYuvFullPelBufferCtrl [MAX_LAYERS];
-    YuvBufferCtrl*          m_apcYuvHalfPelBufferCtrl [MAX_LAYERS];
+    YuvBufferCtrl*          m_apcYuvFullPelBufferCtrl[MAX_LAYERS];
+    YuvBufferCtrl*          m_apcYuvHalfPelBufferCtrl[MAX_LAYERS];
     QuarterPelFilter*       m_pcQuarterPelFilter;
     CodingParameter*        m_pcCodingParameter;
     ParameterSetMng*        m_pcParameterSetMng;
-    PocCalculator*          m_apcPocCalculator        [MAX_LAYERS];
+    PocCalculator*          m_apcPocCalculator[MAX_LAYERS];
     SampleWeighting*        m_pcSampleWeighting;
     CabacWriter*            m_pcCabacWriter;
     XDistortion*            m_pcXDistortion;

@@ -29,7 +29,9 @@ protected:
 
 protected:
     UInt m_uiBestMode;
+    //Half??
     XPel m_aXHPelSearch[17*X1*4];
+    //Quarter??
     XPel m_aXQPelSearch[16*16*9];
     XPel *m_apXHPelSearch[9];
     XPel *m_apXQPelSearch[9];

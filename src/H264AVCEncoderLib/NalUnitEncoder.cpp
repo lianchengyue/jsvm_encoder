@@ -29,7 +29,7 @@ NalUnitEncoder::~NalUnitEncoder()
 }
 
 
-ErrVal NalUnitEncoder::create(NalUnitEncoder*& rpcNalUnitEncoder)
+ErrVal NalUnitEncoder::create (NalUnitEncoder*& rpcNalUnitEncoder)
 {
     rpcNalUnitEncoder = new NalUnitEncoder;
     ROT(NULL == rpcNalUnitEncoder);
@@ -37,9 +37,9 @@ ErrVal NalUnitEncoder::create(NalUnitEncoder*& rpcNalUnitEncoder)
 }
 
 
-ErrVal NalUnitEncoder::init(BitWriteBuffer*       pcBitWriteBuffer,
-                      HeaderSymbolWriteIf*  pcHeaderSymbolWriteIf,
-                      HeaderSymbolWriteIf*  pcHeaderSymbolTestIf)
+ErrVal NalUnitEncoder::init (BitWriteBuffer*  pcBitWriteBuffer,
+                             HeaderSymbolWriteIf*  pcHeaderSymbolWriteIf,
+                             HeaderSymbolWriteIf*  pcHeaderSymbolTestIf)
 {
     ROT(NULL == pcBitWriteBuffer);
     ROT(NULL == pcHeaderSymbolWriteIf);
@@ -88,7 +88,7 @@ ErrVal NalUnitEncoder::destroy()
 }
 
 
-ErrVal NalUnitEncoder::initNalUnit(BinDataAccessor* pcBinDataAccessor)
+ErrVal NalUnitEncoder::initNalUnit (BinDataAccessor* pcBinDataAccessor)
 {
     ROT(m_bIsUnitActive);
     ROF(pcBinDataAccessor);
@@ -114,7 +114,7 @@ ErrVal NalUnitEncoder::initNalUnit(BinDataAccessor* pcBinDataAccessor)
 
 
 
-ErrVal NalUnitEncoder::closeAndAppendNalUnits(UInt                    *pauiBits,
+ErrVal NalUnitEncoder::closeAndAppendNalUnits (UInt                    *pauiBits,
                                                ExtBinDataAccessorList  &rcExtBinDataAccessorList,
                                                ExtBinDataAccessor      *pcExtBinDataAccessor,
                                                BinData                 &rcBinData,
@@ -183,10 +183,11 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits(UInt                    *pauiBits,
                       uicrcVal = (((uicrcVal<<1) + BitVal) & 0xffff)^(uicrcMsb*0x1021);
                     }
                     pcH264AVCEncoder->m_uicrcVal[uiLayerCGSSNR] = uicrcVal;
-                    if(pcH264AVCEncoder->m_uiNumofCGS[uiLayerCGSSNR] == uiQualityLevelCGSSNR + uiFragment)
+
+                    if (pcH264AVCEncoder->m_uiNumofCGS[uiLayerCGSSNR] == uiQualityLevelCGSSNR + uiFragment)
                     {
                         ROT(pcCurrentWriteBuffer->nextBitWriteBufferActive());
-                        for(UInt uiBitIdx = 0; uiBitIdx< 16; uiBitIdx++)
+                        for (UInt uiBitIdx = 0; uiBitIdx< 16; uiBitIdx++)
                         {
                             uicrcMsb = (uicrcVal >> 15) & 1;
                             BitVal = 0;
@@ -248,7 +249,7 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits(UInt                    *pauiBits,
 
 
 
-ErrVal NalUnitEncoder::closeNalUnit(UInt& ruiBits)
+ErrVal NalUnitEncoder::closeNalUnit (UInt& ruiBits)
 {
     ROF(m_bIsUnitActive);
 
@@ -283,11 +284,11 @@ ErrVal NalUnitEncoder::closeNalUnit(UInt& ruiBits)
     return Err::m_nOK;
 }
 
-ErrVal NalUnitEncoder::convertRBSPToPayload(UInt         &ruiBytesWritten,
-                                             UInt          uiHeaderBytes,
-                                             UChar        *pcPayload,
+ErrVal NalUnitEncoder::convertRBSPToPayload (UInt   &ruiBytesWritten,
+                                             UInt   uiHeaderBytes,
+                                             UChar  *pcPayload,
                                              const UChar  *pcRBSP,
-                                             UInt          uiPayloadBufferSize)
+                                             UInt   uiPayloadBufferSize)
 {
     UInt uiZeroCount    = 0;
     UInt uiReadOffset   = uiHeaderBytes;
@@ -349,7 +350,9 @@ ErrVal NalUnitEncoder::xWriteTrailingBits()
 
 ErrVal NalUnitEncoder::write(const SequenceParameterSet& rcSPS)
 {
+    //写SPS信息到.txt
     rcSPS.write(m_pcHeaderSymbolWriteIf);
+
     m_eNalUnitType  = rcSPS.getNalUnitType();
     m_eNalRefIdc    = NAL_REF_IDC_PRIORITY_HIGHEST;
     return Err::m_nOK;
@@ -358,6 +361,7 @@ ErrVal NalUnitEncoder::write(const SequenceParameterSet& rcSPS)
 
 ErrVal NalUnitEncoder::write(const PictureParameterSet& rcPPS)
 {
+    //写PPS信息到.txt
     rcPPS.write(m_pcHeaderSymbolWriteIf);
 
     m_eNalUnitType  = rcPPS.getNalUnitType();
@@ -369,6 +373,7 @@ ErrVal NalUnitEncoder::write(const PictureParameterSet& rcPPS)
 ErrVal NalUnitEncoder::writePrefix(const SliceHeader& rcSH)
 {
     rcSH.writePrefix(*m_pcHeaderSymbolWriteIf);
+
     m_eNalUnitType = NAL_UNIT_PREFIX;
     m_eNalRefIdc = rcSH.getNalRefIdc();
     return Err::m_nOK;

@@ -19,7 +19,7 @@ ErrVal CoeffLevelPred::ScaleCoeffLevels(TCoeff* piCoeff, TCoeff* piRefCoeff, UIn
     // DETERMINE THE SCALING FACTOR
     const Int aiScaleFactor[6]  = { 8, 9, 10, 11, 13, 14 };
     Int       iDeltaQp          = uiRefQp - uiQp + 54;
-    Int       iScale            = aiScaleFactor[ iDeltaQp % 6 ];
+    Int       iScale            = aiScaleFactor[iDeltaQp % 6];
     Int       iShift            = iDeltaQp / 6;
     // PREDICT THE COEFFICIENTS
     for(UInt n = 0; n < uiNumCoeffs; n++)
@@ -312,7 +312,7 @@ Void Transform::invTransformChromaDc(TCoeff* piCoeff)
     tmp1 = d00 + d11;
     tmp2 = d10 + d01;
 
-    piCoeff[ 0] = (tmp1 + tmp2) >> 5;
+    piCoeff[0] = (tmp1 + tmp2) >> 5;
     piCoeff[48] = (tmp1 - tmp2) >> 5;
 
     tmp1 = d00 - d11;
@@ -335,7 +335,7 @@ Void Transform::xForTransformChromaDc(TCoeff* piCoeff)
     tmp1 = d00 + d11;
     tmp2 = d10 + d01;
 
-    piCoeff[ 0] = (tmp1 + tmp2);
+    piCoeff[0] = (tmp1 + tmp2);
     piCoeff[48] = (tmp1 - tmp2);
 
     tmp1 = d00 - d11;
@@ -425,7 +425,7 @@ Void Transform::xQuantDequantNonUniformChroma (TCoeff* piQCoeff,
         Int   iLevel  = piCoeff[0];
         UInt  uiSign  = ((UInt)iLevel)>>31;
 
-        iLevel = (abs(iLevel) * g_aaiQuantCoef[ rcQp.rem() ][0]);
+        iLevel = (abs(iLevel) * g_aaiQuantCoef[rcQp.rem()][0]);
         if(pucScale)
         {
             iLevel = (iLevel << 4) / pucScale[0];
@@ -509,7 +509,7 @@ Void Transform::xQuantDequantUniform4x4 (TCoeff*  piQCoeff,
         if (0 != iLevel)
         {
             iSign >>= 31;
-            Int iDeScale = g_aaiDequantCoef[ rcQp.rem() ][ n ];
+            Int iDeScale = g_aaiDequantCoef[rcQp.rem()][n];
             ruiAbsSum += iLevel;
             iLevel    ^= iSign;
             iLevel    -= iSign;
@@ -969,13 +969,16 @@ ErrVal Transform::transformMb16x16(YuvMbBuffer* pcOrgData, YuvMbBuffer* pcPelDat
         {
             UInt uiBlk = x+n;
             Int iOffsetBlk = iOffset + (x << 2);
+            //4x4块的变换
             xForTransform4x4Blk(pucOrg + iOffsetBlk, pucRec + iOffsetBlk, iStride, &aiCoeff[uiBlk<<4]);
         }
         iOffset += iStride << 2;
     }
 
+    //亮度直流分量Luma DC
     xForTransformLumaDc(aiCoeff);
 
+    //量化？？
     for(n = 0; n < 16; n ++)
     {
         xQuantDequantNonUniformLuma(&piCoeff[n<<4], &aiCoeff[n<<4], m_cLumaQp, pucScale, ruiDcAbs, ruiAcAbs);
@@ -992,6 +995,7 @@ ErrVal Transform::transformMb16x16(YuvMbBuffer* pcOrgData, YuvMbBuffer* pcPelDat
         iQpScale = (iQpScale * pucScale[0]) >> 4;
     }
 
+    //逆变换
     invTransformDcCoeff(aiCoeff, iQpScale);
 
     iOffset = 0;
@@ -1014,7 +1018,7 @@ ErrVal Transform::transformMb16x16(YuvMbBuffer* pcOrgData, YuvMbBuffer* pcPelDat
     return Err::m_nOK;
 }
 
-ErrVal Transform::transformChromaBlocks(XPel*          pucOrg,
+ErrVal Transform::transformChromaBlocks (XPel*          pucOrg,
                                          XPel*          pucRec,
                                          const CIdx     cCIdx,
                                          Int            iStride,
@@ -1053,16 +1057,16 @@ ErrVal Transform::transformChromaBlocks(XPel*          pucOrg,
     return Err::m_nOK;
 }
 
-ErrVal Transform::transformChromaBlocksCGS(XPel*       pucOrg,
-                                         XPel*          pucRec,
-                                         const CIdx     cCIdx,
-                                         Int            iStride,
-                                         TCoeff*        piCoeff,
-                                         TCoeff*        piQuantCoeff,
-                                         TCoeff*        piCoeffBase,
-                                         const UChar*   pucScale,
-                                         UInt&          ruiDcAbs,
-                                         UInt&          ruiAcAbs)
+ErrVal Transform::transformChromaBlocksCGS (XPel*  pucOrg,
+                                            XPel*  pucRec,
+                                            const CIdx    cCIdx,
+                                            Int           iStride,
+                                            TCoeff*       piCoeff,
+                                            TCoeff*       piQuantCoeff,
+                                            TCoeff*       piCoeffBase,
+                                            const UChar*  pucScale,
+                                            UInt&  ruiDcAbs,
+                                            UInt&  ruiAcAbs)
 {
     Int iOffset = 0;
     Int normAdjust[] = { 4, 5, 4, 5};
@@ -1096,7 +1100,9 @@ ErrVal Transform::transformChromaBlocksCGS(XPel*       pucOrg,
     {
         piQuantCoeff[ui] = piCoeffBase[ui].getLevel() + piQuantCoeff[ui].getCoeff();
         if(m_storeCoeffFlag)
+        {
             piCoeff[ui].setLevel(piQuantCoeff[ui].getCoeff());
+        }
     }
 
     return Err::m_nOK;
@@ -1137,8 +1143,17 @@ ErrVal Transform::transform8x8Blk(YuvMbBuffer* pcOrgData,
     XPel*  pRec    = pcPelData->getLumBlk();
     Int    iStride = pcPelData->getLStride();
 
-    xForTransform8x8Blk     (pOrg, pRec, iStride, aiTemp);
-    xQuantDequantUniform8x8 (piCoeff, aiTemp, m_cLumaQp, pucScale, ruiAbsSum);
+    xForTransform8x8Blk (pOrg,
+                         pRec,
+                         iStride,
+                         aiTemp);
+    //量化:quantity
+    //8X8 Blocl的量化与反量化
+    xQuantDequantUniform8x8 (piCoeff,
+                             aiTemp,
+                             m_cLumaQp,
+                             pucScale,
+                             ruiAbsSum);
 
     if(m_storeCoeffFlag)
     {
@@ -1153,9 +1168,9 @@ ErrVal Transform::transform8x8Blk(YuvMbBuffer* pcOrgData,
 
 
 
-ErrVal Transform::invTransform8x8Blk(XPel*    puc,
-                               Int      iStride,
-                               TCoeff*  piCoeff)
+ErrVal Transform::invTransform8x8Blk(XPel*  puc,
+                                     Int    iStride,
+                                     TCoeff*  piCoeff)
 {
     Int aai[8][8];
     Int n;
@@ -1239,10 +1254,10 @@ ErrVal Transform::invTransform8x8Blk(XPel*    puc,
 }
 
 
-Void Transform::x4x4DequantChroma(TCoeff*             piQCoeff,
-                              TCoeff*             piCoeff,
-                              const QpParameter&  rcQp,
-                              const UChar*        pucScale)
+Void Transform::x4x4DequantChroma(TCoeff*  piQCoeff,
+                                  TCoeff*  piCoeff,
+                                  const QpParameter&  rcQp,
+                                  const UChar*        pucScale)
 {
     Int iAdd = ((1 << 3) >> rcQp.per()) << rcQp.per();
 
@@ -1335,12 +1350,12 @@ Void Transform::xForTransform8x8Blk(XPel* pucOrg, XPel* pucRec, Int iStride, TCo
         ai2[6] = ai1[4] + ai1[7] - ((ai1[5]>>1) + ai1[5]);
         ai2[7] = ai1[5] - ai1[6] + ((ai1[7]>>1) + ai1[7]);
 
-        piPredCoeff[ 0] =  ai2[0]     +  ai2[1];
+        piPredCoeff[0] =  ai2[0]     +  ai2[1];
         piPredCoeff[16] =  ai2[2]     + (ai2[3]>>1);
         piPredCoeff[32] =  ai2[0]     -  ai2[1];
         piPredCoeff[48] = (ai2[2]>>1) -  ai2[3];
 
-        piPredCoeff[ 8] =  ai2[4]     + (ai2[7]>>2);
+        piPredCoeff[8] =  ai2[4]     + (ai2[7]>>2);
         piPredCoeff[24] =  ai2[5]     + (ai2[6]>>2);
         piPredCoeff[40] =  ai2[6]     - (ai2[5]>>2);
         piPredCoeff[56] = (ai2[4]>>2) -  ai2[7];
@@ -1349,53 +1364,53 @@ Void Transform::xForTransform8x8Blk(XPel* pucOrg, XPel* pucRec, Int iStride, TCo
 
 
 
-Void Transform::xQuantDequantUniform8x8(TCoeff*             piQCoeff,
-                                         TCoeff*             piCoeff,
+Void Transform::xQuantDequantUniform8x8 (TCoeff*  piQCoeff,
+                                         TCoeff*  piCoeff,
                                          const QpParameter&  rcQp,
-                                         const UChar*        pucScale,
-                                         UInt&               ruiAbsSum)
+                                         const UChar*  pucScale,
+                                         UInt&         ruiAbsSum)
 {
     UInt  uiAbsSum  = 0;
     Int   iAdd      = (1 << 5) >> rcQp.per();
 
     for(Int n = 0; n < 64; n++)
     {
-      Int iLevel  = piCoeff[n];
-      Int iSign   = iLevel;
+        Int iLevel  = piCoeff[n];
+        Int iSign   = iLevel;
 
-      iLevel      = abs(iLevel) * g_aaiQuantCoef64[ rcQp.rem() ][ n ];
-      if(pucScale)
-      {
-        iLevel    = (iLevel << 4) / pucScale[ n ];
-      }
-      iLevel      = (iLevel + 2*rcQp.add()) >> (rcQp.bits() + 1);
-
-      if(0 != iLevel)
-      {
-        iSign      >>= 31;
-        Int iDeScale = g_aaiDequantCoef64[ rcQp.rem() ][ n ];
-        uiAbsSum    += iLevel;
-        iLevel      ^= iSign;
-        iLevel      -= iSign;
-        piQCoeff[n]  = iLevel;
-
+        iLevel = abs(iLevel) * g_aaiQuantCoef64[rcQp.rem()][n];
         if(pucScale)
         {
-          piCoeff[n]   = ((iLevel*iDeScale*pucScale[n] + iAdd) << rcQp.per()) >> 6;
+            iLevel = (iLevel << 4) / pucScale[n];
+        }
+        iLevel = (iLevel + 2*rcQp.add()) >> (rcQp.bits() + 1);
+
+        if(0 != iLevel)
+        {
+            iSign      >>= 31;
+            Int iDeScale = g_aaiDequantCoef64[rcQp.rem()][n];
+            uiAbsSum    += iLevel;
+            iLevel      ^= iSign;
+            iLevel      -= iSign;
+            piQCoeff[n]  = iLevel;
+
+            if(pucScale)
+            {
+                piCoeff[n]   = ((iLevel*iDeScale*pucScale[n] + iAdd) << rcQp.per()) >> 6;
+            }
+            else
+            {
+                piCoeff[n]   = ((iLevel*iDeScale*16          + iAdd) << rcQp.per()) >> 6;
+            }
         }
         else
         {
-          piCoeff[n]   = ((iLevel*iDeScale*16          + iAdd) << rcQp.per()) >> 6;
+            piQCoeff[n] = 0;
+            piCoeff [n] = 0;
         }
-      }
-      else
-      {
-        piQCoeff[n] = 0;
-        piCoeff [n] = 0;
-      }
     }
 
-    ruiAbsSum   = uiAbsSum;
+    ruiAbsSum = uiAbsSum;
 }
 
 

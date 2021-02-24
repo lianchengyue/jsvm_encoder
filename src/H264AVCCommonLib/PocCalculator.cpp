@@ -9,15 +9,15 @@ namespace JSVM {
 
 
 PocCalculator::PocCalculator()
-  : m_iLastIdrFieldNum    ( 0 )
-  , m_iBitsLsb            ( 0 )
-  , m_iTop2BotOffset      ( 0 )
-  , m_iPrevRefPocMsb      ( 0 )
-  , m_iPrevRefPocLsb      ( -1) //--ICU/ETRI FMO Implementation
-  , m_iMaxPocLsb          ( 0 )
-  , m_iFrameNumOffset     ( 0 )
-  , m_iRefOffsetSum       ( 0 )
-  , m_iPrevFrameNum       ( 0 )
+  : m_iLastIdrFieldNum    (0)
+  , m_iBitsLsb            (0)
+  , m_iTop2BotOffset      (0)
+  , m_iPrevRefPocMsb      (0)
+  , m_iPrevRefPocLsb      (-1) //--ICU/ETRI FMO Implementation
+  , m_iMaxPocLsb          (0)
+  , m_iFrameNumOffset     (0)
+  , m_iRefOffsetSum       (0)
+  , m_iPrevFrameNum       (0)
 {
 }
 
@@ -26,7 +26,7 @@ ErrVal PocCalculator::create(PocCalculator*& rpcPocCalculator)
 {
     rpcPocCalculator = new PocCalculator;
 
-    ROT( NULL == rpcPocCalculator );
+    ROT (NULL == rpcPocCalculator);
 
     return Err::m_nOK;
 }
@@ -36,7 +36,7 @@ ErrVal PocCalculator::copy(PocCalculator*& rpcPocCalculator)
 {
     rpcPocCalculator = new PocCalculator;
 
-    ROT( NULL == rpcPocCalculator );
+    ROT (NULL == rpcPocCalculator);
 
     rpcPocCalculator->m_iLastIdrFieldNum = m_iLastIdrFieldNum;
     rpcPocCalculator->m_iBitsLsb         = m_iBitsLsb;
@@ -63,7 +63,7 @@ ErrVal PocCalculator::calculatePoc(SliceHeader& rcSliceHeader)
 {
     if(rcSliceHeader.getIdrFlag())
     {
-        xInitSPS( rcSliceHeader.getSPS());
+        xInitSPS(rcSliceHeader.getSPS());
     }
 
     switch(rcSliceHeader.getSPS().getPicOrderCntType())
@@ -105,7 +105,7 @@ ErrVal PocCalculator::calculatePoc(SliceHeader& rcSliceHeader)
                   }
                   else
                   {
-                      rcSliceHeader.setBotFieldPoc( iCurrPocMsb + iCurrPocLsb );
+                      rcSliceHeader.setBotFieldPoc(iCurrPocMsb + iCurrPocLsb);
                   }
         }
         break;
@@ -116,7 +116,7 @@ ErrVal PocCalculator::calculatePoc(SliceHeader& rcSliceHeader)
             UInt  uiAbsFrameNum  = 0;
 
             //----- update parameters, set AbsFrameNum -----
-            if( rcSliceHeader.getIdrFlag() )
+            if(rcSliceHeader.getIdrFlag())
             {
                 m_iFrameNumOffset  = 0;
             }
@@ -141,9 +141,9 @@ ErrVal PocCalculator::calculatePoc(SliceHeader& rcSliceHeader)
                 Int iFrameNumCycle  = (uiAbsFrameNum - 1) % rcSliceHeader.getSPS().getNumRefFramesInPicOrderCntCycle();
                 iExpectedPoc        = iPocCycleCount * m_iRefOffsetSum;
 
-                for( Int iIndex = 0; iIndex <= iFrameNumCycle; iIndex++ )
+                for(Int iIndex = 0; iIndex <= iFrameNumCycle; iIndex++)
                 {
-                    iExpectedPoc     += rcSliceHeader.getSPS().getOffsetForRefFrame( iIndex );
+                    iExpectedPoc     += rcSliceHeader.getSPS().getOffsetForRefFrame(iIndex);
                 }
             }
             else
@@ -156,18 +156,18 @@ ErrVal PocCalculator::calculatePoc(SliceHeader& rcSliceHeader)
             }
 
             //----- set Poc -----
-            if( rcSliceHeader.getPicType() & TOP_FIELD )
+            if(rcSliceHeader.getPicType() & TOP_FIELD)
             {
-                rcSliceHeader.setTopFieldPoc( iExpectedPoc + rcSliceHeader.getDeltaPicOrderCnt0() );
+                rcSliceHeader.setTopFieldPoc(iExpectedPoc + rcSliceHeader.getDeltaPicOrderCnt0());
 
-                if( rcSliceHeader.getPicType() == FRAME )
+                if(rcSliceHeader.getPicType() == FRAME)
                 {
-                    rcSliceHeader.setBotFieldPoc( rcSliceHeader.getTopFieldPoc() + rcSliceHeader.getDeltaPicOrderCnt1() + rcSliceHeader.getSPS().getOffsetForTopToBottomField() );
+                    rcSliceHeader.setBotFieldPoc(rcSliceHeader.getTopFieldPoc() + rcSliceHeader.getDeltaPicOrderCnt1() + rcSliceHeader.getSPS().getOffsetForTopToBottomField());
                 }
             }
             else
             {
-                rcSliceHeader.setBotFieldPoc( iExpectedPoc + rcSliceHeader.getDeltaPicOrderCnt0() + rcSliceHeader.getSPS().getOffsetForTopToBottomField() );
+                rcSliceHeader.setBotFieldPoc(iExpectedPoc + rcSliceHeader.getDeltaPicOrderCnt0() + rcSliceHeader.getSPS().getOffsetForTopToBottomField());
             }
         }
         break;
@@ -175,7 +175,7 @@ ErrVal PocCalculator::calculatePoc(SliceHeader& rcSliceHeader)
         {
             //===== POC mode 2 =====
             Int iCurrPoc;
-            if( rcSliceHeader.getIdrFlag() )
+            if(rcSliceHeader.getIdrFlag())
             {
                 m_iFrameNumOffset  = 0;
                 iCurrPoc           = 0;
@@ -186,7 +186,7 @@ ErrVal PocCalculator::calculatePoc(SliceHeader& rcSliceHeader)
                 {
                     m_iFrameNumOffset += (1 << rcSliceHeader.getSPS().getLog2MaxFrameNum());
                 }
-                if( rcSliceHeader.getNalRefIdc())
+                if(rcSliceHeader.getNalRefIdc())
                 {
                     iCurrPoc = 2 * (m_iFrameNumOffset + rcSliceHeader.getFrameNum());
                 }
@@ -197,18 +197,18 @@ ErrVal PocCalculator::calculatePoc(SliceHeader& rcSliceHeader)
             }
             m_iPrevFrameNum = rcSliceHeader.getFrameNum();
 
-            if( rcSliceHeader.getPicType() == FRAME )
+            if(rcSliceHeader.getPicType() == FRAME)
             {
-                rcSliceHeader.setTopFieldPoc( iCurrPoc );
-                rcSliceHeader.setBotFieldPoc( iCurrPoc );
+                rcSliceHeader.setTopFieldPoc(iCurrPoc);
+                rcSliceHeader.setBotFieldPoc(iCurrPoc);
             }
-            else if ( rcSliceHeader.getPicType() == TOP_FIELD )
+            else if (rcSliceHeader.getPicType() == TOP_FIELD)
             {
-                rcSliceHeader.setTopFieldPoc( iCurrPoc );
+                rcSliceHeader.setTopFieldPoc(iCurrPoc);
             }
             else
             {
-                rcSliceHeader.setBotFieldPoc( iCurrPoc );
+                rcSliceHeader.setBotFieldPoc(iCurrPoc);
             }
         }
         break;
@@ -220,26 +220,26 @@ ErrVal PocCalculator::calculatePoc(SliceHeader& rcSliceHeader)
     return Err::m_nOK;
 }
 
-ErrVal PocCalculator::resetMMCO5( SliceHeader& rcSliceHeader )
+ErrVal PocCalculator::resetMMCO5(SliceHeader& rcSliceHeader)
 {
     PicType ePicType    = rcSliceHeader.getPicType();
     Int     iTempPOC    = (ePicType == TOP_FIELD ? rcSliceHeader.getTopFieldPoc() :
                            ePicType == BOT_FIELD ? rcSliceHeader.getBotFieldPoc() :
-                           gMin( rcSliceHeader.getTopFieldPoc(), rcSliceHeader.getBotFieldPoc() ) );
+                           gMin(rcSliceHeader.getTopFieldPoc(), rcSliceHeader.getBotFieldPoc()));
     Int     iTopFldPoc  = rcSliceHeader.getTopFieldPoc() - iTempPOC;
     Int     iBotFldPoc  = rcSliceHeader.getBotFieldPoc() - iTempPOC;
     m_iPrevRefPocMsb    = 0;
-    m_iPrevRefPocLsb    = ( ePicType == BOT_FIELD ? iTopFldPoc : 0 );
+    m_iPrevRefPocLsb    = (ePicType == BOT_FIELD ? iTopFldPoc : 0);
     m_iFrameNumOffset   = 0;
     m_iPrevFrameNum     = 0;
-    rcSliceHeader.setTopFieldPoc( iTopFldPoc );
-    rcSliceHeader.setBotFieldPoc( iBotFldPoc );
+    rcSliceHeader.setTopFieldPoc(iTopFldPoc);
+    rcSliceHeader.setBotFieldPoc(iBotFldPoc);
     return Err::m_nOK;
 }
 
 ErrVal PocCalculator::xInitSPS(const SequenceParameterSet& rcSPS)
 {
-    switch( rcSPS.getPicOrderCntType() )
+    switch(rcSPS.getPicOrderCntType())
     {
         case 0:
           {
@@ -254,7 +254,7 @@ ErrVal PocCalculator::xInitSPS(const SequenceParameterSet& rcSPS)
             m_iRefOffsetSum   = 0;
             for(UInt uiIndex = 0; uiIndex < rcSPS.getNumRefFramesInPicOrderCntCycle(); uiIndex++)
             {
-                m_iRefOffsetSum+= rcSPS.getOffsetForRefFrame( uiIndex );
+                m_iRefOffsetSum+= rcSPS.getOffsetForRefFrame(uiIndex);
             }
           }
           break;
@@ -274,7 +274,7 @@ ErrVal PocCalculator::xInitSPS(const SequenceParameterSet& rcSPS)
 ErrVal PocCalculator::setPoc(SliceHeader&  rcSliceHeader,
                              Int           iContNumber)
 {
-    ROTRS( iContNumber > ( INT_MAX - 1 ), Err::m_nERR );
+    ROTRS(iContNumber > (INT_MAX - 1), Err::m_nERR);
 
     if(rcSliceHeader.getIdrFlag())
     {
@@ -290,8 +290,8 @@ ErrVal PocCalculator::setPoc(SliceHeader&  rcSliceHeader,
 
         if(rcSliceHeader.getPicType() == FRAME)
 		{
-			rcSliceHeader.setBotFieldPoc( rcSliceHeader.getTopFieldPoc() + ( rcSliceHeader.getPPS().getPicOrderPresentFlag() ? m_iTop2BotOffset : 0 ) );
-			rcSliceHeader.setDeltaPicOrderCntBottom ( rcSliceHeader.getBotFieldPoc() - rcSliceHeader.getTopFieldPoc() );
+            rcSliceHeader.setBotFieldPoc(rcSliceHeader.getTopFieldPoc() + (rcSliceHeader.getPPS().getPicOrderPresentFlag() ? m_iTop2BotOffset : 0));
+            rcSliceHeader.setDeltaPicOrderCntBottom (rcSliceHeader.getBotFieldPoc() - rcSliceHeader.getTopFieldPoc());
 		}
 	}
 	else

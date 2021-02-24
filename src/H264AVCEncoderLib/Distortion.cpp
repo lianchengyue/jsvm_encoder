@@ -214,6 +214,11 @@ UInt XDistortion::getLum4x4(XPel *pPel, Int iStride, DFunc eDFunc)
 }
 
 
+//DFunc的枚举
+//DF_SAD      = 0,
+//DF_SSD      = 1,
+//DF_HADAMARD = 2,
+//DF_YUV_SAD  = 3
 UInt XDistortion::getLum16x16 (XPel *pPel, Int iStride, DFunc eDFunc)
 {
     XDistSearchStruct cDSS;
@@ -814,12 +819,16 @@ UInt XDistortion::xGetHAD16x (XDistSearchStruct* pcDSS)
 
     for(; iRows != 0; iRows--)
     {
-       uiSum += xCalcHadamard4x4 (pucOrg+0x0, pucCur+0x0, iStride);
-       uiSum += xCalcHadamard4x4 (pucOrg+0x4, pucCur+0x4, iStride);
-       uiSum += xCalcHadamard4x4 (pucOrg+0x8, pucCur+0x8, iStride);
-       uiSum += xCalcHadamard4x4 (pucOrg+0xc, pucCur+0xc, iStride);
-       pucOrg += 4*MB_BUFFER_WIDTH;
-       pucCur += 4*iStride;
+        //Hadamard:  哈达玛变换
+        //https://www.cnblogs.com/bhlsheji/p/4082402.html
+        //假设宏块被编码为16×16帧内模式，则每一个4×4残差块首先用前面叙述的变换进行变换，
+        //然后对于每一个4×4的变换后的直流（DC）系数进行4×4的二次变换，采用Hadamard变换。
+        uiSum += xCalcHadamard4x4 (pucOrg+0x0, pucCur+0x0, iStride);
+        uiSum += xCalcHadamard4x4 (pucOrg+0x4, pucCur+0x4, iStride);
+        uiSum += xCalcHadamard4x4 (pucOrg+0x8, pucCur+0x8, iStride);
+        uiSum += xCalcHadamard4x4 (pucOrg+0xc, pucCur+0xc, iStride);
+        pucOrg += 4*MB_BUFFER_WIDTH;
+        pucCur += 4*iStride;
     }
     return uiSum;
 }
@@ -1281,6 +1290,10 @@ UInt XDistortion::xGetBiHAD16x (XDistSearchStruct* pcDSS)
 
     for(; iRows != 0; iRows--)
     {
+        //Hadamard:  哈达玛变换
+        //https://www.cnblogs.com/bhlsheji/p/4082402.html
+        //假设宏块被编码为16×16帧内模式，则每一个4×4残差块首先用前面叙述的变换进行变换，
+        //然后对于每一个4×4的变换后的直流（DC）系数进行4×4的二次变换，采用Hadamard变换。
         uiSum += xCalcBiHadamard4x4(pucOrg+0x0, pucFix+0x0, pucCur+0x0, iStride);
         uiSum += xCalcBiHadamard4x4(pucOrg+0x4, pucFix+0x4, pucCur+0x4, iStride);
         uiSum += xCalcBiHadamard4x4(pucOrg+0x8, pucFix+0x8, pucCur+0x8, iStride);
@@ -1305,6 +1318,10 @@ UInt XDistortion::xGetBiHAD8x (XDistSearchStruct* pcDSS)
 
     for(; iRows != 0; iRows--)
     {
+        //Hadamard:  哈达玛变换
+        //https://www.cnblogs.com/bhlsheji/p/4082402.html
+        //假设宏块被编码为16×16帧内模式，则每一个4×4残差块首先用前面叙述的变换进行变换，
+        //然后对于每一个4×4的变换后的直流（DC）系数进行4×4的二次变换，采用Hadamard变换。
         uiSum += xCalcBiHadamard4x4(pucOrg+0x0, pucFix+0x0, pucCur+0x0, iStride);
         uiSum += xCalcBiHadamard4x4(pucOrg+0x4, pucFix+0x4, pucCur+0x4, iStride);
         pucOrg += 4*MB_BUFFER_WIDTH;
@@ -1326,6 +1343,10 @@ UInt XDistortion::xGetBiHAD4x  (XDistSearchStruct* pcDSS)
 
     for(; iRows != 0; iRows--)
     {
+        //Hadamard:  哈达玛变换
+        //https://www.cnblogs.com/bhlsheji/p/4082402.html
+        //假设宏块被编码为16×16帧内模式，则每一个4×4残差块首先用前面叙述的变换进行变换，
+        //然后对于每一个4×4的变换后的直流（DC）系数进行4×4的二次变换，采用Hadamard变换。
         uiSum += xCalcBiHadamard4x4(pucOrg+0x0, pucFix+0x0, pucCur+0x0, iStride);
         pucOrg += 4*MB_BUFFER_WIDTH;
         pucCur += 4*iStride;

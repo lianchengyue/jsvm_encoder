@@ -21,7 +21,7 @@ ErrVal QuarterPelFilter::create(QuarterPelFilter*& rpcQuarterPelFilter)
 
     rpcQuarterPelFilter = pcQuarterPelFilter;
 
-    ROT( NULL == rpcQuarterPelFilter );
+    ROT (NULL == rpcQuarterPelFilter);
 
     return Err::m_nOK;
 }
@@ -53,14 +53,14 @@ ErrVal QuarterPelFilter::uninit()
     return Err::m_nOK;
 }
 
-
-const Int g_aiTapCoeff[6] = { 1, -5,20,20,-5, 1};
+///TQQ, 亮度1/2像素内插的滤波系数
+const Int g_aiTapCoeff[6] = { 1, -5, 20, 20, -5, 1};
 
 
 ErrVal QuarterPelFilter::filterFrame(YuvPicBuffer *pcPelBuffer, YuvPicBuffer *pcHalfPelBuffer)
 {
-    ROT( NULL == pcPelBuffer );
-    ROT( NULL == pcHalfPelBuffer );
+    ROT (NULL == pcPelBuffer);
+    ROT (NULL == pcHalfPelBuffer);
 
     XPel*   pucSrc      = pcPelBuffer->getMbLumAddr ();
     Int     iHeight     = pcPelBuffer->getLHeight   ();
@@ -73,15 +73,15 @@ ErrVal QuarterPelFilter::filterFrame(YuvPicBuffer *pcPelBuffer, YuvPicBuffer *pc
     Int     x, y;
 
     XXPel*  psTemp      = new XXPel[iTmpXSize * iTmpYSize];
-    ::memset( psTemp, 0x00, (iTmpXSize * iTmpYSize)*sizeof(XXPel) );
+    ::memset(psTemp, 0x00, (iTmpXSize * iTmpYSize)*sizeof(XXPel));
 
-    ROT( NULL == psTemp )
+    ROT(NULL == psTemp)
 
     XXPel* ps = &psTemp[ iMargin * iTmpXSize + 2*iMargin]; // fix provided by Shijun Sun
 
     for(y = 0; y < iHeight; y++)
     {
-        for( x = -iMarginNew; x < iWidth+iMarginNew; x++ )
+        for(x = -iMarginNew; x < iWidth+iMarginNew; x++)
         {
             Int iTemp;
             iTemp  = pucSrc[x - 0];
@@ -104,14 +104,14 @@ ErrVal QuarterPelFilter::filterFrame(YuvPicBuffer *pcPelBuffer, YuvPicBuffer *pc
     ps -= iMargin*2;               // fix provided by Shijun Sun
     for(y = 0; y < iMargin; y++) // fix provided by Shijun Sun
     {
-        ::memcpy( &ps[y*iTmpXSize], &ps[(y-1)*iTmpXSize], iTmpXSize*sizeof(XXPel) );
+        ::memcpy(&ps[y*iTmpXSize], &ps[(y-1)*iTmpXSize], iTmpXSize*sizeof(XXPel));
     }
 
     //top
     ps = &psTemp[ iMargin * iTmpXSize ]; // fix provided by Shijun Sun
-    for( y = 0; y < iMargin; y++ )        // fix provided by Shijun Sun
+    for(y = 0; y < iMargin; y++)        // fix provided by Shijun Sun
     {
-        ::memcpy( &ps[-(y+1)*iTmpXSize], &ps[-y*iTmpXSize], iTmpXSize*sizeof(XXPel) );
+        ::memcpy(&ps[-(y+1)*iTmpXSize], &ps[-y*iTmpXSize], iTmpXSize*sizeof(XXPel));
     }
 
     ps = &psTemp[ 4*iTmpXSize + 2*iMargin ]; // fix provided by Shijun Sun
@@ -135,8 +135,8 @@ ErrVal QuarterPelFilter::filterFrame(YuvPicBuffer *pcPelBuffer, YuvPicBuffer *pc
             iTemp += ps[x - 2*iStride];
             iTemp += ps[x + 3*iStride];
 
-            pucDesHP[x]              = gClip( ( ps[x] + 16) / 32);
-            pucDesHP[x+iDesStrideHP] = gClip( ( iTemp + 512) / 1024);
+            pucDesHP[x]              = gClip((ps[x] + 16) / 32);
+            pucDesHP[x+iDesStrideHP] = gClip((iTemp + 512) / 1024);
         }
         pucDesHP += iDesStrideHP<<1;
         ps     += iStride;
@@ -208,9 +208,9 @@ Void QuarterPelFilter::xXFilter3(XPel* pDes, XPel* pSrc, Int iSrcStride, UInt ui
 {
     UInt y, x;
 
-    for( y = 0; y < uiYSize; y++ )
+    for(y = 0; y < uiYSize; y++)
     {
-        for( x = 0; x < uiXSize; x++ )
+        for(x = 0; x < uiXSize; x++)
         {
             Int o = pSrc[0];
 
@@ -230,13 +230,13 @@ Void QuarterPelFilter::xXFilter3(XPel* pDes, XPel* pSrc, Int iSrcStride, UInt ui
     }
 }
 
-Void QuarterPelFilter::xXFilter4( XPel* pDes, XPel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize )
+Void QuarterPelFilter::xXFilter4(XPel* pDes, XPel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize)
 {
     UInt y, x;
 
-    for( y = 0; y < uiYSize; y++ )
+    for(y = 0; y < uiYSize; y++)
     {
-        for( x = 0; x < uiXSize; x++ )
+        for(x = 0; x < uiXSize; x++)
         {
             Int a = pSrc[-1];
             Int b = pSrc[-iSrcStride];
@@ -262,10 +262,10 @@ Void QuarterPelFilter::xXFilter4( XPel* pDes, XPel* pSrc, Int iSrcStride, UInt u
 
 
 
-Void QuarterPelFilter::predBlk( YuvMbBuffer* pcDesBuffer, YuvPicBuffer* pcSrcBuffer, LumaIdx cIdx, Mv cMv, Int iSizeY, Int iSizeX)
+Void QuarterPelFilter::predBlk(YuvMbBuffer* pcDesBuffer, YuvPicBuffer* pcSrcBuffer, LumaIdx cIdx, Mv cMv, Int iSizeY, Int iSizeX)
 {
-    XPel* pucDes    = pcDesBuffer->getYBlk( cIdx );
-    XPel* pucSrc    = pcSrcBuffer->getYBlk( cIdx );
+    XPel* pucDes    = pcDesBuffer->getYBlk(cIdx);
+    XPel* pucSrc    = pcSrcBuffer->getYBlk(cIdx);
     Int iDesStride  = pcDesBuffer->getLStride();
     Int iSrcStride  = pcSrcBuffer->getLStride();
     Int iOffset     = (cMv.getHor() >> 2) + (cMv.getVer() >> 2) * iSrcStride;
@@ -274,13 +274,13 @@ Void QuarterPelFilter::predBlk( YuvMbBuffer* pcDesBuffer, YuvPicBuffer* pcSrcBuf
 
     Int iDx = cMv.getHor() & 3;
     Int iDy = cMv.getVer() & 3;
-    if( iDy == 0)
+    if(iDy == 0)
     {
-        if( iDx == 0 )
+        if(iDx == 0)
         {
-            for( Int y = 0; y < iSizeY; y++)
+            for(Int y = 0; y < iSizeY; y++)
             {
-                for( Int x = 0; x < iSizeX; x++ )
+                for(Int x = 0; x < iSizeX; x++)
                 {
                     pucDes[x] = pucSrc[x];
                 }
@@ -291,68 +291,68 @@ Void QuarterPelFilter::predBlk( YuvMbBuffer* pcDesBuffer, YuvPicBuffer* pcSrcBuf
         }
 
 
-        if( iDx == 2 )
+        if(iDx == 2)
         {
-            xPredDy0Dx2( pucDes, pucSrc, iDesStride, iSrcStride, iSizeY, iSizeX );
+            xPredDy0Dx2(pucDes, pucSrc, iDesStride, iSrcStride, iSizeY, iSizeX);
             return;
         }
 
-        // if( iDx == 1 || iDx == 3)
-        xPredDy0Dx13( pucDes, pucSrc, iDesStride, iSrcStride, iDx, iSizeY, iSizeX );
+        // if(iDx == 1 || iDx == 3)
+        xPredDy0Dx13(pucDes, pucSrc, iDesStride, iSrcStride, iDx, iSizeY, iSizeX);
         return;
     }
 
 
-    if( iDx == 0)
+    if(iDx == 0)
     {
-        if( iDy == 2 )
+        if(iDy == 2)
         {
-            xPredDx0Dy2( pucDes, pucSrc, iDesStride, iSrcStride, iSizeY, iSizeX );
+            xPredDx0Dy2(pucDes, pucSrc, iDesStride, iSrcStride, iSizeY, iSizeX);
             return;
         }
 
-        // if( iDx == 1 || iDx == 3)
-        xPredDx0Dy13( pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX );
+        // if(iDx == 1 || iDx == 3)
+        xPredDx0Dy13(pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX);
         return;
     }
 
 
-    if( iDx == 2)
+    if(iDx == 2)
     {
-        if( iDy == 2 )
+        if(iDy == 2)
         {
-            xPredDx2Dy2( pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX );
+            xPredDx2Dy2(pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX);
             return;
         }
 
-        // if( iDy == 1 || iDy == 3 )
-        xPredDx2Dy13( pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX );
+        // if(iDy == 1 || iDy == 3)
+        xPredDx2Dy13(pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX);
         return;
     }
 
 
 
-    if( iDy == 2)
+    if(iDy == 2)
     {
-        // if( iDx == 2 ) is already done
-        // if( iDx == 1 || iDx == 3 )
-        xPredDy2Dx13( pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX );
+        // if(iDx == 2) is already done
+        // if(iDx == 1 || iDx == 3)
+        xPredDy2Dx13(pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX);
         return;
     }
 
 
-    xPredElse( pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX );
+    xPredElse(pucDes, pucSrc, iDesStride, iSrcStride, iDx, iDy, iSizeY, iSizeX);
     return;
 }
 
 
 
 
-Void QuarterPelFilter::xPredDy0Dx2( XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride,  UInt uiSizeY, UInt uiSizeX )
+Void QuarterPelFilter::xPredDy0Dx2(XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride,  UInt uiSizeY, UInt uiSizeX)
 {
-    for( Int y = 0; y < (Int)uiSizeY; y++)
+    for(Int y = 0; y < (Int)uiSizeY; y++)
     {
-        for( Int x = 0; x < (Int)uiSizeX; x++)
+        for(Int x = 0; x < (Int)uiSizeX; x++)
         {
             Int iTemp;
             iTemp  = pucSrc[x - 0];
@@ -363,7 +363,7 @@ Void QuarterPelFilter::xPredDy0Dx2( XPel* pucDest, XPel* pucSrc, Int iDestStride
             iTemp += iTemp << 2;
             iTemp += pucSrc[x - 2];
             iTemp += pucSrc[x + 3];
-            pucDest[x] = gClip( (iTemp + 16) / 32 );
+            pucDest[x] = gClip((iTemp + 16) / 32);
         }
         pucDest += iDestStride;
         pucSrc  += iSrcStride;
@@ -371,12 +371,12 @@ Void QuarterPelFilter::xPredDy0Dx2( XPel* pucDest, XPel* pucSrc, Int iDestStride
 }
 
 
-Void QuarterPelFilter::xPredDy0Dx13( XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, UInt uiSizeY, UInt uiSizeX )
+Void QuarterPelFilter::xPredDy0Dx13(XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, UInt uiSizeY, UInt uiSizeX)
 {
     iDx >>= 1;
-    for( Int y = 0; y < (Int)uiSizeY; y++)
+    for(Int y = 0; y < (Int)uiSizeY; y++)
     {
-        for( Int x = 0; x < (Int)uiSizeX; x++)
+        for(Int x = 0; x < (Int)uiSizeX; x++)
         {
             Int iTemp;
             iTemp  = pucSrc[x - 0];
@@ -387,7 +387,7 @@ Void QuarterPelFilter::xPredDy0Dx13( XPel* pucDest, XPel* pucSrc, Int iDestStrid
             iTemp += iTemp << 2;
             iTemp += pucSrc[x - 2];
             iTemp += pucSrc[x + 3];
-            iTemp = gClip( (iTemp + 16) / 32 );
+            iTemp = gClip((iTemp + 16) / 32);
             pucDest[x] = (iTemp + pucSrc[ x + iDx] + 1) / 2;
         }
         pucDest += iDestStride;
@@ -396,11 +396,11 @@ Void QuarterPelFilter::xPredDy0Dx13( XPel* pucDest, XPel* pucSrc, Int iDestStrid
 }
 
 
-Void QuarterPelFilter::xPredDx0Dy2( XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, UInt uiSizeY, UInt uiSizeX )
+Void QuarterPelFilter::xPredDx0Dy2(XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, UInt uiSizeY, UInt uiSizeX)
 {
-    for( Int y = 0; y < (Int)uiSizeY; y++)
+    for(Int y = 0; y < (Int)uiSizeY; y++)
     {
-        for( Int x = 0; x < (Int)uiSizeX; x++)
+        for(Int x = 0; x < (Int)uiSizeX; x++)
         {
             Int iTemp;
             iTemp  = pucSrc[x - 0*iSrcStride];
@@ -411,7 +411,7 @@ Void QuarterPelFilter::xPredDx0Dy2( XPel* pucDest, XPel* pucSrc, Int iDestStride
             iTemp += iTemp << 2;
             iTemp += pucSrc[x - 2*iSrcStride];
             iTemp += pucSrc[x + 3*iSrcStride];
-            pucDest[x] = gClip( (iTemp + 16) / 32 );
+            pucDest[x] = gClip((iTemp + 16) / 32);
         }
         pucDest += iDestStride;
         pucSrc  += iSrcStride;
@@ -419,17 +419,17 @@ Void QuarterPelFilter::xPredDx0Dy2( XPel* pucDest, XPel* pucSrc, Int iDestStride
 }
 
 
-Void QuarterPelFilter::xPredDx0Dy13( XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX )
+Void QuarterPelFilter::xPredDx0Dy13(XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX)
 {
     iDy = (iDy>>1) * iSrcStride;
 #if 0
-    for( UInt y = 0; y < uiSizeY; y++)
+    for(UInt y = 0; y < uiSizeY; y++)
     {
-      for( UInt x = 0; x < uiSizeX; x++)
+      for(UInt x = 0; x < uiSizeX; x++)
 #else
-    for( Int y = 0; y < (Int)uiSizeY; y++)
+    for(Int y = 0; y < (Int)uiSizeY; y++)
     {
-        for( Int x = 0; x < (Int)uiSizeX; x++)
+        for(Int x = 0; x < (Int)uiSizeX; x++)
 #endif
         {
             Int iTemp;
@@ -441,7 +441,7 @@ Void QuarterPelFilter::xPredDx0Dy13( XPel* pucDest, XPel* pucSrc, Int iDestStrid
             iTemp += iTemp << 2;
             iTemp += pucSrc[x - 2*iSrcStride];
             iTemp += pucSrc[x + 3*iSrcStride];
-            iTemp = gClip( (iTemp + 16) / 32 );
+            iTemp = gClip((iTemp + 16) / 32);
             pucDest[x] = (iTemp + pucSrc[ x + iDy] + 1)/2;
         }
         pucDest += iDestStride;
@@ -451,13 +451,13 @@ Void QuarterPelFilter::xPredDx0Dy13( XPel* pucDest, XPel* pucSrc, Int iDestStrid
 
 
 
-Void QuarterPelFilter::xPredDx2( XXPel*  psDest, XPel*  pucSrc, Int iSrcStride, UInt uiSizeY, UInt uiSizeX )
+Void QuarterPelFilter::xPredDx2(XXPel*  psDest, XPel*  pucSrc, Int iSrcStride, UInt uiSizeY, UInt uiSizeX)
 {
     pucSrc -= 2*iSrcStride;
 
-    for( UInt y = 0; y < uiSizeY + 5; y++)
+    for(UInt y = 0; y < uiSizeY + 5; y++)
     {
-        for( UInt x = 0; x < uiSizeX; x++)
+        for(UInt x = 0; x < uiSizeX; x++)
         {
             XPel* puc = pucSrc + x;
             Int iTemp;
@@ -479,15 +479,15 @@ Void QuarterPelFilter::xPredDx2( XXPel*  psDest, XPel*  pucSrc, Int iSrcStride, 
 
 
 
-Void QuarterPelFilter::xPredDx2Dy2( XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX )
+Void QuarterPelFilter::xPredDx2Dy2(XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX)
 {
     XXPel   asTemp[16*(16+6)];
     XXPel*  psTemp = asTemp;
-    xPredDx2( asTemp, pucSrc, iSrcStride, uiSizeY, uiSizeX );
+    xPredDx2(asTemp, pucSrc, iSrcStride, uiSizeY, uiSizeX);
 
-    for( UInt y = 0; y < uiSizeY; y++)
+    for(UInt y = 0; y < uiSizeY; y++)
     {
-        for( UInt x = 0; x < uiSizeX; x++)
+        for(UInt x = 0; x < uiSizeX; x++)
         {
             Int iIndex = x + 0x20;
             Int iTemp;
@@ -499,7 +499,7 @@ Void QuarterPelFilter::xPredDx2Dy2( XPel* pucDest, XPel* pucSrc, Int iDestStride
             iTemp += iTemp << 2;
             iTemp += psTemp[-0x20 + iIndex];
             iTemp += psTemp[ 0x30 + iIndex];
-            pucDest[x] = gClip( (iTemp + 512) / 1024 );
+            pucDest[x] = gClip((iTemp + 512) / 1024);
         }
         psTemp  += 0x10;
         pucDest += iDestStride;
@@ -508,17 +508,17 @@ Void QuarterPelFilter::xPredDx2Dy2( XPel* pucDest, XPel* pucSrc, Int iDestStride
 }
 
 
-Void QuarterPelFilter::xPredDx2Dy13( XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX )
+Void QuarterPelFilter::xPredDx2Dy13(XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX)
 {
     XXPel   asTemp[16*(16+6)];
     XXPel*  psTemp = asTemp;
-    xPredDx2( asTemp, pucSrc, iSrcStride, uiSizeY, uiSizeX );
+    xPredDx2(asTemp, pucSrc, iSrcStride, uiSizeY, uiSizeX);
 
     iDy = (iDy == 1) ? 0 : 0x10;
 
-    for( UInt y = 0; y < uiSizeY; y++)
+    for(UInt y = 0; y < uiSizeY; y++)
     {
-        for( UInt x = 0; x < uiSizeX; x++)
+        for(UInt x = 0; x < uiSizeX; x++)
         {
             Int iIndex = x + 0x20;
             Int iTemp;
@@ -530,8 +530,8 @@ Void QuarterPelFilter::xPredDx2Dy13( XPel* pucDest, XPel* pucSrc, Int iDestStrid
             iTemp += iTemp << 2;
             iTemp += psTemp[-0x20 + iIndex];
             iTemp += psTemp[ 0x30 + iIndex];
-            iTemp = gClip( (iTemp + 512) / 1024 );
-            pucDest[x] = (iTemp + gClip( (psTemp[iDy + iIndex] + 16) / 32 ) + 1) / 2;
+            iTemp = gClip((iTemp + 512) / 1024);
+            pucDest[x] = (iTemp + gClip((psTemp[iDy + iIndex] + 16) / 32) + 1) / 2;
         }
         psTemp  += 0x10;
         pucDest += iDestStride;
@@ -539,13 +539,13 @@ Void QuarterPelFilter::xPredDx2Dy13( XPel* pucDest, XPel* pucSrc, Int iDestStrid
 }
 
 
-Void QuarterPelFilter::xPredDy2Dx13( XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX )
+Void QuarterPelFilter::xPredDy2Dx13(XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX)
 {
     iDx = (iDx == 1) ? 2 : 3;
-    for( UInt y = 0; y < uiSizeY; y++)
+    for(UInt y = 0; y < uiSizeY; y++)
     {
         Int aiTemp[6+16];
-        for( UInt n = 0; n < 6+uiSizeX; n++)
+        for(UInt n = 0; n < 6+uiSizeX; n++)
         {
             XPel* puc = pucSrc + n - 2;
             aiTemp[n]  = puc[ 0*iSrcStride];
@@ -558,15 +558,16 @@ Void QuarterPelFilter::xPredDy2Dx13( XPel* pucDest, XPel* pucSrc, Int iDestStrid
             aiTemp[n] += puc[ 3*iSrcStride];
         }
 
-        for( UInt x = 0; x < uiSizeX; x++)
+        for(UInt x = 0; x < uiSizeX; x++)
         {
             Int iTemp = 0;
-            for( Int n = 0; n < 6; n++ )
+            for(Int n = 0; n < 6; n++)
             {
+                //进行(亮度的)1/2像素内插
                 iTemp += aiTemp[n+x]*g_aiTapCoeff[n];
             }
-            iTemp = gClip( (iTemp + 512) / 1024 );
-            pucDest[x] = (iTemp + gClip( (aiTemp[x+iDx] + 16) / 32 ) + 1) / 2;
+            iTemp = gClip((iTemp + 512) / 1024);
+            pucDest[x] = (iTemp + gClip((aiTemp[x+iDx] + 16) / 32) + 1) / 2;
         }
         pucDest += iDestStride;
         pucSrc  += iSrcStride;
@@ -575,7 +576,7 @@ Void QuarterPelFilter::xPredDy2Dx13( XPel* pucDest, XPel* pucSrc, Int iDestStrid
 
 
 
-Void QuarterPelFilter::xPredElse( XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX )
+Void QuarterPelFilter::xPredElse(XPel* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy, UInt uiSizeY, UInt uiSizeX)
 {
     XPel* pucSrcX = pucSrc;
     XPel* pucSrcY = pucSrc;
@@ -583,9 +584,9 @@ Void QuarterPelFilter::xPredElse( XPel* pucDest, XPel* pucSrc, Int iDestStride, 
     pucSrcY += (iDx == 1) ? 0 : 1;
     pucSrcX += (iDy == 1) ? 0 : iSrcStride;
 
-    for( Int y = 0; y < (Int)uiSizeY; y++)
+    for(Int y = 0; y < (Int)uiSizeY; y++)
     {
-        for( Int x = 0; x < (Int)uiSizeX; x++)
+        for(Int x = 0; x < (Int)uiSizeX; x++)
         {
             Int iTempX;
             iTempX  = pucSrcX[x - 0];
@@ -596,7 +597,7 @@ Void QuarterPelFilter::xPredElse( XPel* pucDest, XPel* pucSrc, Int iDestStride, 
             iTempX += iTempX << 2;
             iTempX += pucSrcX[x - 2];
             iTempX += pucSrcX[x + 3];
-            iTempX = gClip( (iTempX + 16) / 32 );
+            iTempX = gClip((iTempX + 16) / 32);
 
             Int iTempY;
             iTempY  = pucSrcY[x - 0*iSrcStride];
@@ -607,7 +608,7 @@ Void QuarterPelFilter::xPredElse( XPel* pucDest, XPel* pucSrc, Int iDestStride, 
             iTempY += iTempY << 2;
             iTempY += pucSrcY[x - 2*iSrcStride];
             iTempY += pucSrcY[x + 3*iSrcStride];
-            iTempY = gClip( (iTempY + 16) / 32 );
+            iTempY = gClip((iTempY + 16) / 32);
             pucDest[x] = (iTempX + iTempY + 1) >> 1;
         }
         pucDest += iDestStride;
@@ -618,7 +619,7 @@ Void QuarterPelFilter::xPredElse( XPel* pucDest, XPel* pucSrc, Int iDestStride, 
 
 
 Void QuarterPelFilter::xUpdInterpBlnr(Int* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy,
-                                    Int iSizeY, Int iSizeX )
+                                    Int iSizeY, Int iSizeX)
 {
     static int f2tap[4][2] = {
         { 4,  0},
@@ -627,9 +628,9 @@ Void QuarterPelFilter::xUpdInterpBlnr(Int* pucDest, XPel* pucSrc, Int iDestStrid
         { 1,  3}
     };
     int sx1, sx2, sy1, sy2;
-    for( Int y = 0; y < iSizeY + 1; y++)
+    for(Int y = 0; y < iSizeY + 1; y++)
     {
-        for( Int x = 0; x < iSizeX + 1; x++)
+        for(Int x = 0; x < iSizeX + 1; x++)
         {
             Int iTemp1[2], iTemp2;
             int i, j;
@@ -642,7 +643,7 @@ Void QuarterPelFilter::xUpdInterpBlnr(Int* pucDest, XPel* pucSrc, Int iDestStrid
             {
                 iTemp1[i] = 0;
 
-                for(j = sx1; j < sx2; j++ )
+                for(j = sx1; j < sx2; j++)
                     iTemp1[i] += pucSrc[x - i*iSrcStride - j] * f2tap[iDx][j];
             }
 
@@ -659,7 +660,7 @@ Void QuarterPelFilter::xUpdInterpBlnr(Int* pucDest, XPel* pucSrc, Int iDestStrid
 
 
 Void QuarterPelFilter::xUpdInterp4Tap(Int* pucDest, XPel* pucSrc, Int iDestStride, Int iSrcStride, Int iDx, Int iDy,
-                                    Int iSizeY, Int iSizeX )
+                                    Int iSizeY, Int iSizeX)
 {
     static int f4tap[4][4] = {
         { 0, 16,  0,  0},
@@ -669,9 +670,9 @@ Void QuarterPelFilter::xUpdInterp4Tap(Int* pucDest, XPel* pucSrc, Int iDestStrid
     };
 
     int sx1, sx2, sy1, sy2;
-    for( Int y = 0; y < iSizeY + 3; y++)
+    for(Int y = 0; y < iSizeY + 3; y++)
     {
-        for( Int x = 0; x < iSizeX + 3; x++)
+        for(Int x = 0; x < iSizeX + 3; x++)
         {
             Int iTemp1[4], iTemp2;
             int i, j;
@@ -684,13 +685,15 @@ Void QuarterPelFilter::xUpdInterp4Tap(Int* pucDest, XPel* pucSrc, Int iDestStrid
             {
                 iTemp1[i] = 0;
 
-                for(j = sx1; j < sx2; j++ )
+                for(j = sx1; j < sx2; j++)
                     iTemp1[i] += pucSrc[x - i*iSrcStride - j] * f4tap[iDx][j];
             }
 
             iTemp2 = 0;
             for(i = sy1; i < sy2; i++)
+            {
                 iTemp2 += iTemp1[i] * f4tap[iDy][i];
+            }
 
             pucDest[x] = iTemp2;
         }
@@ -699,7 +702,7 @@ Void QuarterPelFilter::xUpdInterp4Tap(Int* pucDest, XPel* pucSrc, Int iDestStrid
     }
 }
 
-Void QuarterPelFilter::xUpdInterpChroma( Int* pucDest, Int iDestStride, XPel* pucSrc, Int iSrcStride, Mv cMv, Int iSizeY, Int iSizeX )
+Void QuarterPelFilter::xUpdInterpChroma(Int* pucDest, Int iDestStride, XPel* pucSrc, Int iSrcStride, Mv cMv, Int iSizeY, Int iSizeX)
 {
     Int iDx = (cMv.getHor() & 0x7);
     Int iDy = (cMv.getVer() & 0x7);
@@ -715,9 +718,9 @@ Void QuarterPelFilter::xUpdInterpChroma( Int* pucDest, Int iDestStride, XPel* pu
         { 1,  7}
     };
     int sx1, sx2, sy1, sy2;
-    for( Int y = 0; y < iSizeY + 1; y++)
+    for(Int y = 0; y < iSizeY + 1; y++)
     {
-        for( Int x = 0; x < iSizeX + 1; x++)
+        for(Int x = 0; x < iSizeX + 1; x++)
         {
             Int iTemp1[2], iTemp2;
             int i, j;
@@ -730,7 +733,7 @@ Void QuarterPelFilter::xUpdInterpChroma( Int* pucDest, Int iDestStride, XPel* pu
             {
                 iTemp1[i] = 0;
 
-                for(j = sx1; j < sx2; j++ )
+                for(j = sx1; j < sx2; j++)
                     iTemp1[i] += pucSrc[x - i*iSrcStride - j] * f2tapC[iDx][j];
             }
 
@@ -750,22 +753,22 @@ Void QuarterPelFilter::weightOnEnergy(UShort *usWeight, XPel* pucSrc, Int iSrcSt
     Int iSSD = 0;
     int bitsShift = 8, i;
 
-    for( Int y = 0; y < iSizeY; y++)
+    for(Int y = 0; y < iSizeY; y++)
     {
-        for( Int x = 0; x < iSizeX; x++)
+        for(Int x = 0; x < iSizeX; x++)
         {
             Int iTemp;
-            iTemp  = gClip( pucSrc[iSrcStride*y + x]);
+            iTemp  = gClip(pucSrc[iSrcStride*y + x]);
             iSSD += iTemp*iTemp;
         }
     }
 
-    for( i = (iSizeY/4)*(iSizeX/4); i > 1; i >>= 1 ) {
+    for(i = (iSizeY/4)*(iSizeX/4); i > 1; i >>= 1) {
         bitsShift ++;
     }
 
-    iSSD      = ( iSSD + (1 << (bitsShift-1)) ) >> bitsShift;
-    *usWeight = (UShort) gMax( 0, gMin( 16, 20 - iSSD ) );
+    iSSD      = (iSSD + (1 << (bitsShift-1))) >> bitsShift;
+    *usWeight = (UShort) gMax(0, gMin(16, 20 - iSSD));
 }
 
 }  //namespace JSVM {

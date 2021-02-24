@@ -77,9 +77,16 @@ public:
     Bool getScalableSeiMessage (void);
     Void SetVeryFirstCall(void);
     //JVT-S080 LMI {
-    ErrVal xWriteScalableSEILayersNotPresent(ExtBinDataAccessor* pcExtBinDataAccessor, UInt uiInputLayers, UInt* m_layer_id);
-    ErrVal xWriteScalableSEIDependencyChange(ExtBinDataAccessor* pcExtBinDataAccessor, UInt uiNumLayers, UInt* uiLayerId, Bool* pbLayerDependencyInfoPresentFlag,
-                                             UInt* uiNumDirectDependentLayers, UInt** puiDirectDependentLayerIdDeltaMinus1, UInt* puiLayerDependencyInfoSrcLayerIdDeltaMinus1);
+    ErrVal xWriteScalableSEILayersNotPresent(ExtBinDataAccessor* pcExtBinDataAccessor,
+                                             UInt uiInputLayers,
+                                             UInt* m_layer_id);
+    ErrVal xWriteScalableSEIDependencyChange(ExtBinDataAccessor* pcExtBinDataAccessor,
+                                             UInt uiNumLayers,
+                                             UInt* uiLayerId,
+                                             Bool* pbLayerDependencyInfoPresentFlag,
+                                             UInt* uiNumDirectDependentLayers,
+                                             UInt** puiDirectDependentLayerIdDeltaMinus1,
+                                             UInt* puiLayerDependencyInfoSrcLayerIdDeltaMinus1);
     //JVT-S080 LMI }
     //JVT-W043
     CodingParameter* getCodingParameter(void);
@@ -88,7 +95,10 @@ protected:
     ErrVal xCreateEncoder();
 
 protected:
+    //SVC编码器实例
     H264AVCEncoder*           m_pcH264AVCEncoder;
+    //AVC编码器实例
+    PicEncoder*               m_pcPicEncoder;
 
     LayerEncoder*             m_apcLayerEncoder[MAX_LAYERS];
     SliceEncoder*             m_pcSliceEncoder;
@@ -117,7 +127,6 @@ protected:
     RateDistortion*           m_pcRateDistortion;
     History*                  m_pcHistory;
     ReconstructionBypass*     m_pcReconstructionBypass;
-    PicEncoder*               m_pcPicEncoder;
     Bool                      m_bTraceEnable;
     // JVT-V068 HRD {
     StatBuf<Scheduler*, MAX_SCALABLE_LAYERS> m_apcScheduler;

@@ -1,6 +1,7 @@
 #ifndef _INTYUVMBBUFFER_H_
 #define _INTYUVMBBUFFER_H_
 
+#include "H264AVCCommonLib/CommonDefs.h"
 
 namespace JSVM {
 

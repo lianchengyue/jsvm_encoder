@@ -27,7 +27,7 @@ public:
                       Bool&  rbUseDefaultScalingMatrixFlag);
         ErrVal  write (HeaderSymbolWriteIf*  pcWriteIf,
                        const UChar* pucScan,
-                       const Bool   bUseDefaultScalingMatrixFlag ) const;
+                       const Bool   bUseDefaultScalingMatrixFlag) const;
         Bool  isSame (const ScalingList<uiBufSize>& rcSL) const;
     };
 
@@ -160,9 +160,9 @@ template<UInt uiBufSize> Bool ScalingMatrix::ScalingList<uiBufSize>::isSame(cons
 }
 
 
-template<UInt uiBufSize> ScalingMatrix::SeqScaling<uiBufSize>::SeqScaling()
-: m_bScalingListPresentFlag       (false)
-, m_bUseDefaultScalingMatrixFlag  (true)
+template<UInt uiBufSize> ScalingMatrix::SeqScaling<uiBufSize>::SeqScaling() :
+    m_bScalingListPresentFlag       (false),
+    m_bUseDefaultScalingMatrixFlag  (true)
 {
 }
 
@@ -189,7 +189,7 @@ template<UInt uiBufSize> ErrVal ScalingMatrix::SeqScaling<uiBufSize>::init(const
     else
     {
         //--- fall-back is the default scaling matrix ---
-        m_bScalingListPresentFlag = ! m_bUseDefaultScalingMatrixFlag;
+        m_bScalingListPresentFlag = !m_bUseDefaultScalingMatrixFlag;
     }
 
     return Err::m_nOK;
@@ -216,10 +216,10 @@ ErrVal ScalingMatrix::SeqScaling<uiBufSize>::read(HeaderSymbolReadIf* pcReadIf,
 
 
 template<UInt uiBufSize> ErrVal  ScalingMatrix::SeqScaling<uiBufSize>::write(HeaderSymbolWriteIf* pcWriteIf,
-                                                                             const UChar*  pucScan ) const
+                                                                             const UChar*  pucScan) const
 {
     pcWriteIf->writeFlag(m_bScalingListPresentFlag,  "SCALING: scaling_list_present_flag");
-    ROTRS (! m_bScalingListPresentFlag, Err::m_nOK);
+    ROTRS (!m_bScalingListPresentFlag, Err::m_nOK);
     m_aiScalingList.write(pcWriteIf, pucScan, m_bUseDefaultScalingMatrixFlag);
 
     return Err::m_nOK;
@@ -228,11 +228,11 @@ template<UInt uiBufSize> ErrVal  ScalingMatrix::SeqScaling<uiBufSize>::write(Hea
 
 template<UInt uiBufSize> Bool ScalingMatrix::SeqScaling<uiBufSize>::isSame(const ScalingMatrix::SeqScaling<uiBufSize>& rcSS) const
 {
-    ROFRS(m_bScalingListPresentFlag == rcSS.m_bScalingListPresentFlag,      false);
-    ROFRS(m_bScalingListPresentFlag, true );
-    ROFRS(m_bUseDefaultScalingMatrixFlag == rcSS.m_bUseDefaultScalingMatrixFlag, false);
-    ROTRS(m_bUseDefaultScalingMatrixFlag,  true );
-    ROFRS(m_aiScalingList.isSame(rcSS.m_aiScalingList), false);
+    ROFRS (m_bScalingListPresentFlag == rcSS.m_bScalingListPresentFlag,      false);
+    ROFRS (m_bScalingListPresentFlag, true);
+    ROFRS (m_bUseDefaultScalingMatrixFlag == rcSS.m_bUseDefaultScalingMatrixFlag, false);
+    ROTRS (m_bUseDefaultScalingMatrixFlag,  true);
+    ROFRS (m_aiScalingList.isSame(rcSS.m_aiScalingList), false);
     return true;
 }
 

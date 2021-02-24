@@ -25,7 +25,7 @@ public:
     virtual ErrVal writePacket(BinDataAccessor* pcBinDataAccessor, Bool bNewAU = false);
     virtual ErrVal writePacket(BinData* pcBinData, Bool bNewAU = false);
 
-    virtual ErrVal writePacket(Void* pBuffer, UInt uiLength );
+    virtual ErrVal writePacket(Void* pBuffer, UInt uiLength);
 
 private:
     UInt m_uiNumber;

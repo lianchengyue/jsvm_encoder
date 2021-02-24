@@ -418,7 +418,7 @@ ErrVal UvlcWriter::setFirstBits(UChar ucByte,UInt uiLastBitPos)
     return Err::m_nOK;
 }
 //~FIX_FRAG_CAVLC
-ErrVal UvlcWriter::xWriteUvlcCode(UInt uiVal)
+ErrVal UvlcWriter::xWriteUvlcCode (UInt uiVal)
 {
     UInt uiLength = 1;
     UInt uiTemp = ++uiVal;
@@ -431,7 +431,7 @@ ErrVal UvlcWriter::xWriteUvlcCode(UInt uiVal)
         uiLength += 2;
     }
 
-    m_pcBitWriteBufferIf->write(uiVal, uiLength);
+    m_pcBitWriteBufferIf->write (uiVal, uiLength);
 
     ETRACE_TY("ue(v)");
     ETRACE_BITS(uiVal, uiLength);

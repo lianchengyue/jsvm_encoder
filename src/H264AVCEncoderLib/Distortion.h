@@ -3,6 +3,7 @@
 
 #include "DistortionIf.h"
 #include "H264AVCCommonLib/YuvMbBuffer.h"
+#include "H264AVCCommonLib/CommonDefs.h"
 
 #define Abs(x) abs(x)
 
@@ -38,7 +39,7 @@ public:
     UInt  getLum16x16RP(XPel *pPel, Int iStride, DFunc eDFunc = DF_SSD);
     UInt  checkLargeDistortion(XPel *pOrg, XPel *pPel, Int iStride);
 
-    Void  loadOrgMbPelData(const YuvPicBuffer* pcOrgYuvBuffer, YuvMbBuffer*& rpcOrgMbBuffer);
+    Void loadOrgMbPelData(const YuvPicBuffer* pcOrgYuvBuffer, YuvMbBuffer*& rpcOrgMbBuffer);
 
     Void set4x4Block(LumaIdx cIdx)
     {
@@ -52,11 +53,11 @@ public:
         rDistSearchStruct.pYOrg   = m_cOrgData.getLumBlk();
         rDistSearchStruct.pUOrg   = m_cOrgData.getCbBlk ();
         rDistSearchStruct.pVOrg   = m_cOrgData.getCrBlk ();
-        DO_DBG( rDistSearchStruct.pYSearch = NULL );
-        DO_DBG( rDistSearchStruct.iYStride = 0 );
-        DO_DBG( rDistSearchStruct.pUSearch = NULL );
-        DO_DBG( rDistSearchStruct.pVSearch = NULL );
-        DO_DBG( rDistSearchStruct.iCStride = 0 );
+        DO_DBG(rDistSearchStruct.pYSearch = NULL);
+        DO_DBG(rDistSearchStruct.iYStride = 0);
+        DO_DBG(rDistSearchStruct.pUSearch = NULL);
+        DO_DBG(rDistSearchStruct.pVSearch = NULL);
+        DO_DBG(rDistSearchStruct.iCStride = 0);
     }
 
 //TMM_WP
@@ -102,6 +103,7 @@ private:
     static UInt xGetBiYuvSAD8x (XDistSearchStruct* pcDSS);
     static UInt xGetBiYuvSAD4x (XDistSearchStruct* pcDSS);
 
+    //哈达玛矩阵
     static UInt xCalcHadamard4x4  (XPel *pucOrg, XPel *pPel, Int iStride);
     static UInt xCalcBiHadamard4x4(XPel *pucOrg, XPel *pPelFix, XPel *pPel, Int iStride);
 

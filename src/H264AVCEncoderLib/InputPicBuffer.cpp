@@ -6,9 +6,9 @@
 namespace JSVM {
 
 InputAccessUnit::InputAccessUnit(UInt uiContFrameNumber,
-                                 PicBuffer* pcInputPicBuffer)
-: m_uiContFrameNumber(uiContFrameNumber)
-, m_pcInputPicBuffer(pcInputPicBuffer)
+                                 PicBuffer* pcInputPicBuffer):
+    m_uiContFrameNumber(uiContFrameNumber),
+    m_pcInputPicBuffer(pcInputPicBuffer)
 {
 }
 
@@ -31,7 +31,7 @@ InputPicBuffer::~InputPicBuffer()
 ErrVal InputPicBuffer::create(InputPicBuffer*& rpcInputPicBuffer)
 {
     rpcInputPicBuffer = new InputPicBuffer;
-    ROF( rpcInputPicBuffer);
+    ROF(rpcInputPicBuffer);
     return Err::m_nOK;
 }
 
@@ -43,7 +43,7 @@ ErrVal InputPicBuffer::destroy()
 
 ErrVal InputPicBuffer::init()
 {
-    ROF( m_cInputUnitList.empty());
+    ROF(m_cInputUnitList.empty());
     m_uiContFrameNumber = 0;
     m_bInit             = true;
     return Err::m_nOK;
@@ -51,7 +51,7 @@ ErrVal InputPicBuffer::init()
 
 ErrVal InputPicBuffer::uninit()
 {
-    ROF( m_cInputUnitList.empty());
+    ROF(m_cInputUnitList.empty());
     m_bInit = false;
     return Err::m_nOK;
 }
@@ -61,9 +61,9 @@ Bool InputPicBuffer::empty()
     return m_cInputUnitList.empty();
 }
 
-ErrVal InputPicBuffer::add( PicBuffer* pcInputPicBuffer)
+ErrVal InputPicBuffer::add(PicBuffer* pcInputPicBuffer)
 {
-    ROF( m_bInit);
+    ROF(m_bInit);
 
     //===== add to list =====
     InputAccessUnit* pcInputAccessUnit = new InputAccessUnit(m_uiContFrameNumber++, pcInputPicBuffer);
@@ -78,7 +78,7 @@ InputAccessUnit* InputPicBuffer::remove(UInt  uiContFrameNumber)
     InputAccessUnit* pcIAU = NULL;
     std::list<InputAccessUnit*>::iterator iIter = m_cInputUnitList.begin();
     std::list<InputAccessUnit*>::iterator iEnd = m_cInputUnitList.end();
-    for( ; iIter != iEnd; iIter++)
+    for(; iIter != iEnd; iIter++)
     {
         if((*iIter)->getContFrameNumber() == uiContFrameNumber)
         {

@@ -82,8 +82,11 @@ protected:
   UInt           m_aauiCropping[MAX_LAYERS][4];
 
   UChar          m_aucStartCodeBuffer[5];
+  //0x00 0x00 0x00 0x01
   BinData        m_cBinDataStartCode;
+  //输出的h264文件名
   std::string    m_cWriteToBitFileName;
+  //输出的h264文件名 + .temp
   std::string    m_cWriteToBitFileTempName;
 };
 

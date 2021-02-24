@@ -43,7 +43,7 @@ namespace JSVM {
 class NALUnit
 {
 protected:
-    NALUnit() : m_pInstance( 0 )
+    NALUnit() : m_pInstance(0)
     {
     }
 public:
@@ -63,7 +63,7 @@ private:
 class NonVCLNALUnit : public NALUnit
 {
 public:
-    NonVCLNALUnit( BinData* pcBinData, Bool bSEI, Bool bScalableSEI, Bool bBufferingPeriod);
+    NonVCLNALUnit(BinData* pcBinData, Bool bSEI, Bool bScalableSEI, Bool bBufferingPeriod);
     virtual ~NonVCLNALUnit();
 
     Void        destroyNALOnly ();
@@ -102,7 +102,7 @@ public:
     Bool          getNoInterLayerPredFlag () const     { return m_bNoInterLayerPredFlag; }
     UInt          getDependencyId () const             { return m_uiDependencyId; }
     UInt          getQualityId () const                { return m_uiQualityId; }
-    UInt          getDQId () const                     { return m_uiQualityId + ( m_uiDependencyId << 4); }
+    UInt          getDQId () const                     { return m_uiQualityId + (m_uiDependencyId << 4); }
     UInt          getTemporalId () const               { return m_uiTemporalId; }
     Bool          getUseRefBasePicFlag () const        { return m_bUseRefBasePicFlag; }
     Bool          getDiscardableFlag () const          { return m_bDiscardableFlag; }
@@ -185,11 +185,11 @@ public:
     AccessUnit();
     virtual ~AccessUnit();
 
-    ErrVal  update( BinData* pcBinData, PrefixHeader& rcPrefixHeader);
-    ErrVal  update( BinData* pcBinData, SliceHeader&  rcSliceHeader);
-    ErrVal  update( BinData* pcBinData, Bool bSEI, Bool bScalableSEI, Bool bBufferingPeriod);
+    ErrVal  update(BinData* pcBinData, PrefixHeader& rcPrefixHeader);
+    ErrVal  update(BinData* pcBinData, SliceHeader&  rcSliceHeader);
+    ErrVal  update(BinData* pcBinData, Bool bSEI, Bool bScalableSEI, Bool bBufferingPeriod);
 
-    ErrVal  getAndRemoveNextNalUnit( NALUnit*& rpcNalUnit);
+    ErrVal  getAndRemoveNextNalUnit(NALUnit*& rpcNalUnit);
 
     Bool  isEndOfStream () const                         { return m_bEndOfStream; }
     Bool  isComplete () const                            { return m_bComplete; }

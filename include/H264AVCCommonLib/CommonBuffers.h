@@ -19,7 +19,7 @@ public:
     : m_uiBufferSize(0)
     , m_pT(0)
     {
-        ANOK( copy(rcDynBuf) );
+        ANOK(copy(rcDynBuf));
     }
 
     virtual ~DynBuf()
@@ -27,11 +27,11 @@ public:
         ANOK(uninit());
     }
 
-    ErrVal init( UInt uiBufferSize )
+    ErrVal init(UInt uiBufferSize)
     {
-        ROF( m_pT == 0 );
+        ROF(m_pT == 0);
         m_pT = new T[uiBufferSize];
-        ROT( m_pT == 0 );
+        ROT(m_pT == 0);
         m_uiBufferSize = uiBufferSize;
         return Err::m_nOK;
     }
@@ -39,8 +39,8 @@ public:
     ErrVal reinit(UInt uiAddBufferSize)
     {
         T* pT = new T[m_uiBufferSize + uiAddBufferSize];
-        ROF( pT );
-        for( UInt ui = 0; ui < m_uiBufferSize; ui++ )
+        ROF(pT);
+        for(UInt ui = 0; ui < m_uiBufferSize; ui++)
         {
             pT[ui] = m_pT[ui];
         }
@@ -77,19 +77,19 @@ public:
 
     const DynBuf<T>& operator = (const DynBuf<T>& rcDynBuf)
     {
-        ANOK( copy( rcDynBuf ) );
+        ANOK(copy(rcDynBuf));
         return *this;
     }
 
     T& get(UInt uiOffset) const
     {
-        AOT( uiOffset >= m_uiBufferSize );
+        AOT(uiOffset >= m_uiBufferSize);
         return m_pT[uiOffset];
     }
 
     Void set(UInt uiOffset, T t)
     {
-        AOT( uiOffset >= m_uiBufferSize );
+        AOT(uiOffset >= m_uiBufferSize);
         m_pT[uiOffset] = t;
     }
 
@@ -103,19 +103,19 @@ public:
 
     T& operator[] (const UInt uiOffset)
     {
-        AOT( uiOffset >= m_uiBufferSize );
+        AOT(uiOffset >= m_uiBufferSize);
         return m_pT[uiOffset];
     }
 
-    const T& operator[] ( const UInt uiOffset ) const
+    const T& operator[] (const UInt uiOffset) const
     {
-        AOT( uiOffset >= m_uiBufferSize );
+        AOT(uiOffset >= m_uiBufferSize);
         return m_pT[uiOffset];
     }
 
     Void clear()
     {
-        ::memset( m_pT, 0, sizeof(T) * m_uiBufferSize);
+        ::memset(m_pT, 0, sizeof(T) * m_uiBufferSize);
     }
 
     UInt size() const
@@ -273,7 +273,7 @@ template<class T>  Void XDataList<T>::copy(XDataList<T>& rcSrc)
 
 template<class T>  ErrVal XDataList<T>::add(T* pT)
 {
-    ROF( m_uiSize < X_DATA_LIST_SIZE );
+    ROF(m_uiSize < X_DATA_LIST_SIZE);
 
     m_apT[m_uiSize++] = pT;
     //bug-fix shenqiu EIDR{
@@ -314,17 +314,17 @@ template<class T>  UInt XDataList<T>::getActive() const
     return m_uiActive;
 }
 
-template<class T>  T* XDataList<T>::getEntry( UInt uiIndex ) const
+template<class T>  T* XDataList<T>::getEntry(UInt uiIndex) const
 {
     //bug-fix shenqiu EIDR{
-    //return ( uiIndex < m_uiActive ? m_apT[ uiIndex ] : 0 );
+    //return (uiIndex < m_uiActive ? m_apT[ uiIndex ] : 0);
     return (uiIndex < m_uiSize ? m_apT[ uiIndex ] : 0);
     //bug-fix shenqiu EIDR}
 }
 
 template<class T>  Void XDataList<T>::rightShift()
 {
-    ROTVS( m_uiSize < 2 );
+    ROTVS(m_uiSize < 2);
 
     T* pLast = m_apT[m_uiSize - 1];
     for(Int i = m_uiSize-1; i > 0; i--)
@@ -336,10 +336,10 @@ template<class T>  Void XDataList<T>::rightShift()
 
 template<class T>  Void XDataList<T>::leftShift()
 {
-    ROTVS( m_uiSize < 2 );
+    ROTVS(m_uiSize < 2);
 
     T* pFirst = m_apT[ 0 ];
-    for( Int i = 1; i < m_uiSize; i++ )
+    for(Int i = 1; i < m_uiSize; i++)
     {
         m_apT[i-1] = m_apT[i];
     }
@@ -355,14 +355,14 @@ template<class T>  Void XDataList<T>::switchFirst()
 }
 
 
-template<class T>  ErrVal XDataList<T>::setElementAndRemove( UInt uiIPos, UInt uiRPos, T* pEntry )
+template<class T>  ErrVal XDataList<T>::setElementAndRemove(UInt uiIPos, UInt uiRPos, T* pEntry)
 {
-    ROT( uiIPos >= X_DATA_LIST_SIZE );
-    ROT( uiIPos >= m_uiSize );
-    ROT( uiIPos >  uiRPos   );
+    ROT(uiIPos >= X_DATA_LIST_SIZE);
+    ROT(uiIPos >= m_uiSize);
+    ROT(uiIPos >  uiRPos  );
     if(uiIPos != uiRPos)
     {
-        if( uiRPos >= m_uiSize && m_uiSize < X_DATA_LIST_SIZE )
+        if(uiRPos >= m_uiSize && m_uiSize < X_DATA_LIST_SIZE)
         {
             m_uiSize++;
         }

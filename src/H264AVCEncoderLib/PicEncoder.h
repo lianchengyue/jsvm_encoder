@@ -107,8 +107,11 @@ private:
     LoopFilter*       m_pcLoopFilter;
     PocCalculator*    m_pcPocCalculator;
     NalUnitEncoder*   m_pcNalUnitEncoder;
+    //像素级别
     YuvBufferCtrl*    m_pcYuvBufferCtrlFullPel;
+    //1/2亚像素
     YuvBufferCtrl*    m_pcYuvBufferCtrlHalfPel;
+    //1/4亚像素
     QuarterPelFilter*  m_pcQuarterPelFilter;
     MotionEstimation*  m_pcMotionEstimation;
 

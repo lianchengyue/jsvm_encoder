@@ -209,6 +209,7 @@ ErrVal MbEncoder::xCheckInterMbMode8x8(IntMbTempData*&    rpcMbTempData,
         rpcMbTempData->rdCost()+=getEpRef();
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
     return Err::m_nOK;
 }
@@ -261,21 +262,22 @@ ErrVal MbEncoder::encodeMacroblock (MbDataAccess&  rcMbDataAccess,
                            rcMbDataAccess.getMbData().getQp());
     }
 
-    //帧间预测
+    ///xEstimate函数中变换的关键词 : m_pcTransform->transform
+    //帧间预测, B/P
     if (rcMbDataAccess.getSH().isPSlice() || rcMbDataAccess.getSH().isBSlice())
     {
         xEstimateMb16x16    (m_pcIntMbTempData, m_pcIntMbBestData, rcRefListStruct, uiQp, uiQp, uiMaxNumMv, uiNumMaxIter, uiIterSearchRange, NULL, false);
-        xEstimateMb16x8     (m_pcIntMbTempData, m_pcIntMbBestData, rcRefListStruct, uiQp, uiQp, uiMaxNumMv, uiNumMaxIter, uiIterSearchRange, NULL, false);
-        xEstimateMb8x16     (m_pcIntMbTempData, m_pcIntMbBestData, rcRefListStruct, uiQp, uiQp, uiMaxNumMv, uiNumMaxIter, uiIterSearchRange, NULL, false);
-        xEstimateMb8x8      (m_pcIntMbTempData, m_pcIntMbBestData, rcRefListStruct, uiQp, uiQp, uiMaxNumMv, uiNumMaxIter, uiIterSearchRange, NULL, false, bMCBlks8x8Disable, bBiPred8x8Disable);
-        xEstimateMb8x8Frext (m_pcIntMbTempData, m_pcIntMbBestData, rcRefListStruct, uiQp, uiQp, uiMaxNumMv, uiNumMaxIter, uiIterSearchRange, NULL, false);
+        //xEstimateMb16x8     (m_pcIntMbTempData, m_pcIntMbBestData, rcRefListStruct, uiQp, uiQp, uiMaxNumMv, uiNumMaxIter, uiIterSearchRange, NULL, false);
+        //xEstimateMb8x16     (m_pcIntMbTempData, m_pcIntMbBestData, rcRefListStruct, uiQp, uiQp, uiMaxNumMv, uiNumMaxIter, uiIterSearchRange, NULL, false);
+        //xEstimateMb8x8      (m_pcIntMbTempData, m_pcIntMbBestData, rcRefListStruct, uiQp, uiQp, uiMaxNumMv, uiNumMaxIter, uiIterSearchRange, NULL, false, bMCBlks8x8Disable, bBiPred8x8Disable);
+        //xEstimateMb8x8Frext (m_pcIntMbTempData, m_pcIntMbBestData, rcRefListStruct, uiQp, uiQp, uiMaxNumMv, uiNumMaxIter, uiIterSearchRange, NULL, false);
     }
+    //帧内预测, I
     else { //flq added extra else
-        //帧内预测
         xEstimateMbIntra16 (m_pcIntMbTempData, m_pcIntMbBestData, uiQp, rcMbDataAccess.getSH().isBSlice());
-        xEstimateMbIntra8  (m_pcIntMbTempData, m_pcIntMbBestData, uiQp, rcMbDataAccess.getSH().isBSlice());
-        xEstimateMbIntra4  (m_pcIntMbTempData, m_pcIntMbBestData, uiQp, rcMbDataAccess.getSH().isBSlice());
-        xEstimateMbPCM     (m_pcIntMbTempData, m_pcIntMbBestData,       rcMbDataAccess.getSH().isBSlice());
+        //xEstimateMbIntra8  (m_pcIntMbTempData, m_pcIntMbBestData, uiQp, rcMbDataAccess.getSH().isBSlice());
+        //xEstimateMbIntra4  (m_pcIntMbTempData, m_pcIntMbBestData, uiQp, rcMbDataAccess.getSH().isBSlice());
+        //xEstimateMbPCM     (m_pcIntMbTempData, m_pcIntMbBestData,       rcMbDataAccess.getSH().isBSlice());
     }
 
     //===== fix estimation =====
@@ -1004,7 +1006,7 @@ ErrVal MbEncoder::compensateUpdate(MbDataAccess&   rcMbDataAccess,
 
 
 
-
+////检查最佳估计
 ErrVal MbEncoder::xCheckBestEstimation (IntMbTempData*& rpcMbTempData,
                                         IntMbTempData*& rpcMbBestData)
 {
@@ -1022,6 +1024,7 @@ ErrVal MbEncoder::xCheckBestEstimation (IntMbTempData*& rpcMbTempData,
         {
             if((rpcMbBestData->getMbDataAccess().getMbData().getMbCbp() & 0x0F) == 0)
             {
+                //获取m_bTransformSize8x8
                 rpcMbBestData->getMbDataAccess().getMbData().setTransformSize8x8(false);
             }
         }
@@ -1227,6 +1230,7 @@ ErrVal MbEncoder::xEstimateMbIntraBL (IntMbTempData*&  rpcMbTempData,
     }
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation (rpcMbTempData, rpcMbBestData);
     xEstimateMbIntraBL8x8 (rpcMbTempData, pcMbDataAccessBase, rpcMbBestData, uiMinQP, uiMaxQP, pcBaseLayerRec, bBSlice, bBLSkip);
 
@@ -1352,6 +1356,7 @@ ErrVal MbEncoder::xEstimateMbIntraBL8x8 (IntMbTempData*&  rpcMbTempData,
     ROT(rpcMbTempData->getSH().getTCoeffLevelPredictionFlag());
     if(!rpcMbTempData->getMbDataAccess().isSCoeffPred())
     {
+        //检查最佳估计
         xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
     }
     else if(pcMbDataAccessBase->getMbData().isTransformSize8x8())
@@ -1371,9 +1376,9 @@ ErrVal MbEncoder::xEstimateMbIntra16 (IntMbTempData*&  rpcMbTempData,
                                       IntMbTempData*&  rpcMbBestData,
                                       UInt  uiQp,
                                       Bool  bBSlice,
-                                      Bool  bBLSkip)
+                                      Bool  bBLSkip)  //is skip block
 {
-    ROTRS(rpcMbTempData->getSH().getSliceSkipFlag() && !bBLSkip, Err::m_nOK);
+    ROTRS (rpcMbTempData->getSH().getSliceSkipFlag() && !bBLSkip, Err::m_nOK);
 
     rpcMbTempData->clear();
     rpcMbTempData->setBLSkipFlag (bBLSkip);
@@ -1397,10 +1402,14 @@ ErrVal MbEncoder::xEstimateMbIntra16 (IntMbTempData*&  rpcMbTempData,
     UInt          uiBestBits  = 0;
     UInt          uiDist, uiBits = 0, uiRd, uiCost;
 
+    //avcRewriteFlag: false
+    ///TQQ, Caution, AVC rewriting打开时uiPredMode必须是base layer
     // Make sure the uiPredMode is equal to the baselayer when AVC rewriting is enabled.
     Bool avcRewriteFlag = rpcMbTempData->getMbDataAccess().getSH().getTCoeffLevelPredictionFlag();
-    if(avcRewriteFlag && bBLSkip)
+    if (avcRewriteFlag && bBLSkip)
+    {
         uiPredMode = rpcMbTempData->getMbDataAccess().getMbDataAccessBase()->getMbData().intraPredMode();
+    }
 
     for(Int n = 0; n < 4; n++)
     {
@@ -1420,6 +1429,8 @@ ErrVal MbEncoder::xEstimateMbIntra16 (IntMbTempData*&  rpcMbTempData,
 
         UInt uiDcAbs = 0;
         UInt uiAcAbs = 0;
+
+        //bLowComplexMbEnable = false
         if(!bLowComplexMbEnable)
         {
             m_pcTransform->transformMb16x16(m_pcIntOrgMbPelData, rpcMbTempData, rpcMbTempData->get(B4x4Idx(0)), pucScale, uiDcAbs, uiAcAbs);
@@ -1443,7 +1454,9 @@ ErrVal MbEncoder::xEstimateMbIntra16 (IntMbTempData*&  rpcMbTempData,
             if(avcRewriteFlag && bBLSkip)
             {
                 for(B4x4Idx b4x4Idx; b4x4Idx.isLegal(); b4x4Idx++)
+                {
                     MbCoder::xScanLumaBlock(*rpcMbTempData, *rpcMbTempData, b4x4Idx);
+                }
             }
             else
             {
@@ -1475,10 +1488,10 @@ ErrVal MbEncoder::xEstimateMbIntra16 (IntMbTempData*&  rpcMbTempData,
 
     if (avcRewriteFlag && !bValid && bBLSkip)
     {
-      return Err::m_nOK;    // no valid mode is found
+        return Err::m_nOK;    // no valid mode is found
     }
 
-    rpcMbTempData->getTempYuvMbBuffer().loadLuma(*rpcMbTempData);
+    rpcMbTempData->getTempYuvMbBuffer().loadLuma (*rpcMbTempData);
 
     m_pcTransform->transformMb16x16(m_pcIntOrgMbPelData, rpcMbTempData, rpcMbTempData->get(B4x4Idx(0)), pucScale, uiDcAbs, uiAcAbs);
 
@@ -1553,6 +1566,8 @@ ErrVal MbEncoder::xEstimateMbIntra16 (IntMbTempData*&  rpcMbTempData,
     }
     else
     {
+        ///进入这里
+        //计算cbp
         rpcMbTempData->cbp() = xCalcMbCbp((uiAcAbs != 0 ? 0xFFFF : 0) + uiChromaCbp);
         rpcMbTempData->setMbMode (MbMode(uiMbType));
         rpcMbTempData->setBLSkipFlag (false);
@@ -1575,6 +1590,7 @@ ErrVal MbEncoder::xEstimateMbIntra16 (IntMbTempData*&  rpcMbTempData,
         rpcMbTempData->rdCost() = rpcMbBestData->rdCost();
     }
 
+    //检查最佳估计
     xCheckBestEstimation (rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -1725,6 +1741,7 @@ ErrVal MbEncoder::xEstimateMbIntra4(IntMbTempData*&  rpcMbTempData,
         rpcMbTempData->rdCost() = rpcMbBestData->rdCost();
     }
 
+    //检查最佳估计
     xCheckBestEstimation (rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -1804,6 +1821,7 @@ ErrVal MbEncoder::xEstimateMbIntra8 (IntMbTempData*& rpcMbTempData,
         rpcMbTempData->rdCost() = rpcMbBestData->rdCost();
     }
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -1894,6 +1912,7 @@ ErrVal MbEncoder::xEstimateMbPCM (IntMbTempData*&  rpcMbTempData,
     }
 
     //???是否是选择最好的估计???
+    //检查最佳估计
     xCheckBestEstimation (rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -1971,6 +1990,7 @@ ErrVal MbEncoder::xEstimateMbPCMRewrite (IntMbTempData*&  rpcMbTempData,
 
     rpcMbTempData->rdCost() = m_pcRateDistortionIf->getCost(uiMbBits, uiDist);
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -1978,7 +1998,9 @@ ErrVal MbEncoder::xEstimateMbPCMRewrite (IntMbTempData*&  rpcMbTempData,
 
 
 
-
+//cbp一共6bit
+//高2bit表示cbpc(2：cb、cr中至少一个4x4块的AC系数不全为0；1：cb、cr中至少一个2x2的DC系数不全为0；0：所有色度系数全0）
+//低4bit分别表示4个8x8亮度块，其中从最低一位开始的4位分别对应00，10，01，11位置的8*8亮度块。如果某位为1，表示该对应8*8块的4个4*4块中至少有一个的系数不全为0
 UInt MbEncoder::xCalcMbCbp(UInt uiExtCbp)
 {
     UInt uiMbCbp;
@@ -2016,10 +2038,21 @@ ErrVal MbEncoder::xEncode4x4InterBlock (IntMbTempData& rcMbTempData,
     if(rcMbTempData.getMbDataAccess().isSCoeffPred())
     {
         TCoeff* piCoeffBase = rcMbTempData.getMbDataAccess().getMbDataAccessBase()->getMbTCoeffs().get(cIdx);
-        m_pcTransform->transform4x4BlkCGS (m_pcIntOrgMbPelData, rcMbTempData, rcMbTempData.get(cIdx), piCoeffBase, pucScale, uiAbsSum);
+        m_pcTransform->transform4x4BlkCGS (m_pcIntOrgMbPelData,
+                                           rcMbTempData,
+                                           rcMbTempData.get(cIdx),
+                                           piCoeffBase,
+                                           pucScale,
+                                           uiAbsSum);
     }
     else
-        m_pcTransform->transform4x4Blk (m_pcIntOrgMbPelData, rcMbTempData, rcMbTempData.get(cIdx), pucScale, uiAbsSum);
+    {
+        m_pcTransform->transform4x4Blk (m_pcIntOrgMbPelData,
+                                        rcMbTempData,
+                                        rcMbTempData.get(cIdx),
+                                        pucScale,
+                                        uiAbsSum);
+    }
 
     if(rcMbTempData.getMbDataAccess().isTCoeffPred())
     {
@@ -4346,7 +4379,10 @@ ErrVal MbEncoder::xEstimateMbSkip (IntMbTempData*&  rpcMbTempData,
     rpcMbTempData->getMbMotionData(LIST_0).setMotPredFlag(false);
     rpcMbTempData->getMbMotionData(LIST_1).setMotPredFlag(false);
 
+    //当前为固定QP
     UInt  uiQP = rpcMbTempData->getMbDataAccess().getMbData().getQp();
+
+    //设置帧间率失真损失
     xSetRdCostInterMb(*rpcMbTempData, NULL, rcRefListStruct, uiQP, uiQP, bLowComplexMbEnable);
 
 
@@ -4404,6 +4440,7 @@ ErrVal MbEncoder::xEstimateMbSkip (IntMbTempData*&  rpcMbTempData,
     }
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -4459,7 +4496,7 @@ ErrVal MbEncoder::xEstimateMb16x16 (IntMbTempData*&  rpcMbTempData,
     if(pcMbDataAccessBase && m_bBaseMotionPredAllowed)
     {
         if(pcMbDataAccessBase->getMbMotionData(LIST_0).getRefIdx() > 0  &&
-            pcMbDataAccessBase->getMbMotionData(LIST_0).getRefIdx() <= (Int)rcRefFrameList0.getActive())
+           pcMbDataAccessBase->getMbMotionData(LIST_0).getRefIdx() <= (Int)rcRefFrameList0.getActive())
         {
             iBLRefIdx [0] = pcMbDataAccessBase->getMbMotionData(LIST_0).getRefIdx ();
             cBLMvPred [0] = pcMbDataAccessBase->getMbMotionData(LIST_0).getMv     ();
@@ -4824,6 +4861,7 @@ ErrVal MbEncoder::xEstimateMb16x16 (IntMbTempData*&  rpcMbTempData,
     }
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
 
     xCheckInterMbMode8x8(rpcMbTempData, rpcMbBestData, pcMbRefData, rcRefListStruct, uiMinQP, uiMaxQP, false, pcMbDataAccessBase);
@@ -4886,13 +4924,13 @@ ErrVal MbEncoder::xEstimateMb16x8 (IntMbTempData*&  rpcMbTempData,
         if(pcMbDataAccessBase && m_bBaseMotionPredAllowed)
         {
             if(pcMbDataAccessBase->getMbMotionData(LIST_0).getRefIdx(eParIdx) >  0                           &&
-                pcMbDataAccessBase->getMbMotionData(LIST_0).getRefIdx(eParIdx) <= (Int)rcRefFrameList0.getActive())
+               pcMbDataAccessBase->getMbMotionData(LIST_0).getRefIdx(eParIdx) <= (Int)rcRefFrameList0.getActive())
             {
                 iBLRefIdx [0] = pcMbDataAccessBase->getMbMotionData(LIST_0).getRefIdx (eParIdx);
                 cBLMvPred [0] = pcMbDataAccessBase->getMbMotionData(LIST_0).getMv     (eParIdx);
             }
             if(pcMbDataAccessBase->getMbMotionData(LIST_1).getRefIdx(eParIdx) >  0                           &&
-                pcMbDataAccessBase->getMbMotionData(LIST_1).getRefIdx(eParIdx) <= (Int)rcRefFrameList1.getActive())
+               pcMbDataAccessBase->getMbMotionData(LIST_1).getRefIdx(eParIdx) <= (Int)rcRefFrameList1.getActive())
             {
                 iBLRefIdx [1] = pcMbDataAccessBase->getMbMotionData(LIST_1).getRefIdx (eParIdx);
                 cBLMvPred [1] = pcMbDataAccessBase->getMbMotionData(LIST_1).getMv     (eParIdx);
@@ -5203,6 +5241,7 @@ ErrVal MbEncoder::xEstimateMb16x8 (IntMbTempData*&  rpcMbTempData,
 
     IntMbTempData* pcMbRefData = rpcMbTempData;
 
+    //设置Inter的率失真
     xSetRdCostInterMb(*rpcMbTempData, pcMbDataAccessBase, rcRefListStruct, uiMinQP, uiMaxQP, bLowComplexMbEnable);
 
 
@@ -5245,6 +5284,7 @@ ErrVal MbEncoder::xEstimateMb16x8 (IntMbTempData*&  rpcMbTempData,
     }
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
 
     xCheckInterMbMode8x8(rpcMbTempData, rpcMbBestData, pcMbRefData, rcRefListStruct, uiMinQP, uiMaxQP, false, pcMbDataAccessBase);
@@ -5613,7 +5653,14 @@ ErrVal MbEncoder::xEstimateMb8x16 (IntMbTempData*&  rpcMbTempData,
 
     IntMbTempData* pcMbRefData = rpcMbTempData;
 
-    xSetRdCostInterMb(*rpcMbTempData, pcMbDataAccessBase, rcRefListStruct, uiMinQP, uiMaxQP, bLowComplexMbEnable);
+    ///RDO: 率失真优化
+    ///RD cost:  率失真代价
+    xSetRdCostInterMb(*rpcMbTempData,
+                      pcMbDataAccessBase,
+                      rcRefListStruct,
+                      uiMinQP,
+                      uiMaxQP,
+                      bLowComplexMbEnable);
 
     //JVT-R057 LA-RDO{
     if(m_bLARDOEnable)
@@ -5654,6 +5701,7 @@ ErrVal MbEncoder::xEstimateMb8x16 (IntMbTempData*&  rpcMbTempData,
     }
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation (rpcMbTempData, rpcMbBestData);
 
     xCheckInterMbMode8x8 (rpcMbTempData, rpcMbBestData, pcMbRefData, rcRefListStruct, uiMinQP, uiMaxQP, false, pcMbDataAccessBase);
@@ -5709,15 +5757,42 @@ ErrVal MbEncoder::xEstimateMb8x8 (IntMbTempData*&  rpcMbTempData,
         xEstimateSubMb8x8 (ePar8x8, m_pcIntMbTemp8x8Data, m_pcIntMbBest8x8Data, rcRefListStruct, uiMaxBlkMvs, false, uiNumMaxIter, uiIterSearchRange, uiBits, pcMbDataAccessBase);
         if(!bMCBlks8x8Disable)
         {
-            xEstimateSubMb8x4 (ePar8x8, m_pcIntMbTemp8x8Data, m_pcIntMbBest8x8Data, rcRefListStruct, uiMaxBlkMvs, bBiPred8x8Disable, uiNumMaxIter, uiIterSearchRange, uiBits, pcMbDataAccessBase);
-            xEstimateSubMb4x8 (ePar8x8, m_pcIntMbTemp8x8Data, m_pcIntMbBest8x8Data, rcRefListStruct, uiMaxBlkMvs, bBiPred8x8Disable, uiNumMaxIter, uiIterSearchRange, uiBits, pcMbDataAccessBase);
-            xEstimateSubMb4x4 (ePar8x8, m_pcIntMbTemp8x8Data, m_pcIntMbBest8x8Data, rcRefListStruct, uiMaxBlkMvs, bBiPred8x8Disable, uiNumMaxIter, uiIterSearchRange, uiBits, pcMbDataAccessBase);
+            xEstimateSubMb8x4 (ePar8x8,
+                               m_pcIntMbTemp8x8Data,
+                               m_pcIntMbBest8x8Data,
+                               rcRefListStruct,
+                               uiMaxBlkMvs,
+                               bBiPred8x8Disable,
+                               uiNumMaxIter,
+                               uiIterSearchRange,
+                               uiBits,
+                               pcMbDataAccessBase);
+            xEstimateSubMb4x8 (ePar8x8,
+                               m_pcIntMbTemp8x8Data,
+                               m_pcIntMbBest8x8Data,
+                               rcRefListStruct,
+                               uiMaxBlkMvs,
+                               bBiPred8x8Disable,
+                               uiNumMaxIter,
+                               uiIterSearchRange,
+                               uiBits,
+                               pcMbDataAccessBase);
+            xEstimateSubMb4x4 (ePar8x8,
+                               m_pcIntMbTemp8x8Data,
+                               m_pcIntMbBest8x8Data,
+                               rcRefListStruct,
+                               uiMaxBlkMvs,
+                               bBiPred8x8Disable,
+                               uiNumMaxIter,
+                               uiIterSearchRange,
+                               uiBits,
+                               pcMbDataAccessBase);
         }
         ROTRS(m_pcIntMbBest8x8Data->rdCost() == DOUBLE_MAX, Err::m_nOK);
 
         //----- store parameters in MbTempData -----
-        rpcMbTempData->rdCost()  += m_pcIntMbBest8x8Data->rdCost ();
-        BlkMode eBlkMode          = m_pcIntMbBest8x8Data->getBlkMode (ePar8x8);
+        rpcMbTempData->rdCost() += m_pcIntMbBest8x8Data->rdCost ();
+        BlkMode eBlkMode = m_pcIntMbBest8x8Data->getBlkMode (ePar8x8);
         rpcMbTempData->setBlkMode (ePar8x8, eBlkMode);
 
         rpcMbTempData->getMbMotionData(LIST_0).copyFrom (m_pcIntMbBest8x8Data->getMbMotionData (LIST_0), eParIdx8x8);
@@ -5776,6 +5851,7 @@ ErrVal MbEncoder::xEstimateMb8x8 (IntMbTempData*&  rpcMbTempData,
 
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -5969,7 +6045,8 @@ ErrVal MbEncoder::xEstimateSubMbDirect (Par8x8            ePar8x8,
     }
     //JVT-R057 LA-RDO}
 
-    xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
+    //检查最佳估计
+    !(rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
 }
@@ -6040,8 +6117,10 @@ ErrVal MbEncoder::xEstimateSubMb8x8 (Par8x8  ePar8x8,
 
         if (!pcMbDataAccessBase || !rpcMbTempData->getMbDataAccess().getSH().getDefaultMotionPredictionFlag())
         {
-            rpcMbTempData->getMbDataAccess().getMvPredictor   (cMvPred[0][iRefIdxTest], iRefIdxTest,
-                                                                LIST_0, eParIdx8x8);
+            rpcMbTempData->getMbDataAccess().getMvPredictor(cMvPred[0][iRefIdxTest],
+                                                            iRefIdxTest,
+                                                            LIST_0,
+                                                            eParIdx8x8);
             uiBitsTest = (uiBasePredType == 0 ? 0 : uiBlkBits[0]) + getRefIdxBits(iRefIdxTest, rcRefFrameList0);
             cMvLastEst[0][iRefIdxTest] = cMvPred   [0][iRefIdxTest];
             if(m_pcMotionEstimation->getELSearch() && iRefIdxTest == iBLRefIdx[0])
@@ -6049,11 +6128,15 @@ ErrVal MbEncoder::xEstimateSubMb8x8 (Par8x8  ePar8x8,
                 cMvLastEst[0][iRefIdxTest] = cBLMvPred[0];
                 m_pcMotionEstimation->setEL(true);
             }
-            m_pcMotionEstimation->estimateBlockWithStart(*rpcMbTempData, *pcRefFrame,
+            m_pcMotionEstimation->estimateBlockWithStart(*rpcMbTempData,
+                                                         *pcRefFrame,
                                                          cMvLastEst[0][iRefIdxTest],
-                                                         cMvPred   [0][iRefIdxTest],
-                                                         uiBitsTest, uiCostTest,
-                                                         eParIdx8x8+SPART_8x8, BLK_8x8, 0,
+                                                         cMvPred[0][iRefIdxTest],
+                                                         uiBitsTest,
+                                                         uiCostTest,
+                                                         eParIdx8x8+SPART_8x8,
+                                                         BLK_8x8,
+                                                         0,
                                                          &rpcMbTempData->getMbDataAccess().getSH().getPredWeight(LIST_0, iRefIdxTest, rpcMbTempData->getFieldFlag()));
             if(uiCostTest < uiCost[0])
             {
@@ -6104,7 +6187,7 @@ ErrVal MbEncoder::xEstimateSubMb8x8 (Par8x8  ePar8x8,
         {
             rpcMbTempData->getMbDataAccess().getMvPredictor   (cMvPred[1][iRefIdxTest], iRefIdxTest,
                                                                 LIST_1, eParIdx8x8);
-            uiBitsTest                  = (uiBasePredType == 1 ? 0 : uiBlkBits[1]) + getRefIdxBits(iRefIdxTest, rcRefFrameList1);
+            uiBitsTest = (uiBasePredType == 1 ? 0 : uiBlkBits[1]) + getRefIdxBits(iRefIdxTest, rcRefFrameList1);
             cMvLastEst[1][iRefIdxTest]  = cMvPred   [1][iRefIdxTest];
             if(m_pcMotionEstimation->getELSearch() && iRefIdxTest == iBLRefIdx[1])
             {
@@ -6142,9 +6225,12 @@ ErrVal MbEncoder::xEstimateSubMb8x8 (Par8x8  ePar8x8,
             rpcMbTempData->getMbDataAccess().setMvPredictorsBL(cBLMvPred[1], LIST_1, eParIdx8x8);
             m_pcMotionEstimation->estimateBlockWithStart(*rpcMbTempData, *pcRefFrame,
                                                          cBLMvLastEst[1],
-                                                         cBLMvPred   [1],
-                                                         uiBitsTest, uiCostTest,
-                                                         eParIdx8x8+SPART_8x8, BLK_8x8, 0,
+                                                         cBLMvPred[1],
+                                                         uiBitsTest,
+                                                         uiCostTest,
+                                                         eParIdx8x8+SPART_8x8,
+                                                         BLK_8x8,
+                                                         0,
                                                          &rpcMbTempData->getMbDataAccess().getSH().getPredWeight(LIST_1, iRefIdxTest, rpcMbTempData->getFieldFlag()));
             if(uiCostTest < uiCost[1])
             {
@@ -6166,10 +6252,10 @@ ErrVal MbEncoder::xEstimateSubMb8x8 (Par8x8  ePar8x8,
     if (bBiPredOk && rcRefFrameList0.getActive() && rcRefFrameList1.getActive() && uiMaxNumMv >= 2)
     {
         //----- initialize with forward and backward estimation -----
-        iRefIdxBi[0]       = iRefIdx[0];
-        iRefIdxBi[1]       = iRefIdx[1];
-        bBLPredBi[0]       = bBLPred[0];
-        bBLPredBi[1]       = bBLPred[1];
+        iRefIdxBi[0]   = iRefIdx[0];
+        iRefIdxBi[1]   = iRefIdx[1];
+        bBLPredBi[0]   = bBLPred[0];
+        bBLPredBi[1]   = bBLPred[1];
         cMvBi[0]       = cMv[0];
         cMvBi[1]       = cMv[1];
         UInt  uiMotBits[2]  = { uiBits[0] - uiBlkBits[0], uiBits[1] - uiBlkBits[1] };
@@ -6373,6 +6459,7 @@ ErrVal MbEncoder::xEstimateSubMb8x8 (Par8x8  ePar8x8,
     }
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -6892,6 +6979,7 @@ ErrVal MbEncoder::xEstimateSubMb8x4(Par8x8            ePar8x8,
     }
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -7431,6 +7519,7 @@ ErrVal MbEncoder::xEstimateSubMb4x8(Par8x8            ePar8x8,
     }
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation(rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;
@@ -8026,6 +8115,7 @@ ErrVal MbEncoder::xEstimateSubMb4x4(Par8x8  ePar8x8,
     }
     //JVT-R057 LA-RDO}
 
+    //检查最佳估计
     xCheckBestEstimation (rpcMbTempData, rpcMbBestData);
 
     return Err::m_nOK;

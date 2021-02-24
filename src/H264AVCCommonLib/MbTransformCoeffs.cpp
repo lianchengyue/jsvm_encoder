@@ -9,11 +9,11 @@ namespace JSVM {
 
 ErrVal MbTransformCoeffs::save(FILE* pFile)
 {
-    ROF( pFile );
+    ROF(pFile);
 
     UInt uiSave  = (UInt)::fwrite(this, sizeof(MbTransformCoeffs), 1, pFile);
 
-    ROF( uiSave == 1 );
+    ROF(uiSave == 1);
 
     return Err::m_nOK;
 }
@@ -21,11 +21,11 @@ ErrVal MbTransformCoeffs::save(FILE* pFile)
 
 ErrVal MbTransformCoeffs::load(FILE* pFile)
 {
-    ROF( pFile );
+    ROF(pFile);
 
     UInt uiRead  = (UInt)::fread(this, sizeof(MbTransformCoeffs), 1, pFile);
 
-    ROF( uiRead == 1 );
+    ROF(uiRead == 1);
 
     return Err::m_nOK;
 }
@@ -40,7 +40,7 @@ Void MbTransformCoeffs::clear()
 
 Void MbTransformCoeffs::clearAcBlk(ChromaIdx cChromaIdx)
 {
-    ::memset( &m_aaiLevel[16+cChromaIdx][1], 0, sizeof( TCoeff) * 15 );
+    ::memset(&m_aaiLevel[16+cChromaIdx][1], 0, sizeof(TCoeff) * 15);
 }
 
 ErrVal MbTransformCoeffs::clearPrediction()
@@ -58,7 +58,7 @@ Bool MbTransformCoeffs::allCoeffsZero() const
     const TCoeff* pcDst = get(B4x4Idx(0));
     for(UInt ui = 0; ui < 384; ui++)
     {
-        ROTRS( pcDst[ui].getCoeff(), false );
+        ROTRS(pcDst[ui].getCoeff(), false);
     }
     return true;
 }
@@ -68,7 +68,7 @@ Bool MbTransformCoeffs::allLevelsZero() const
     const TCoeff* pcDst = get(B4x4Idx(0));
     for(UInt ui = 0; ui < 384; ui++)
     {
-        ROTRS( pcDst[ui].getLevel() , false );
+        ROTRS(pcDst[ui].getLevel() , false);
     }
     return true;
 }
@@ -76,9 +76,9 @@ Bool MbTransformCoeffs::allLevelsZero() const
 Bool MbTransformCoeffs::allLevelsAndPredictionsZero() const
 {
     const TCoeff* pcDst = get(B4x4Idx(0));
-    for( UInt ui = 0; ui < 384; ui++ )
+    for(UInt ui = 0; ui < 384; ui++)
     {
-        ROTRS( pcDst[ui].getLevel() || pcDst[ui].getSPred(), false );
+        ROTRS(pcDst[ui].getLevel() || pcDst[ui].getSPred(), false);
     }
     return true;
 }
@@ -102,7 +102,7 @@ ErrVal MbTransformCoeffs::copyPredictionFrom(YuvMbBuffer &rcPred)
 
     for(uiY = 0; uiY < 8; uiY++)
     {
-        for( uiX = 0; uiX < 8; uiX++ )
+        for(uiX = 0; uiX < 8; uiX++)
         {
             (pcDst++)->setSPred(pSrc[uiX]);
         }
@@ -124,13 +124,13 @@ ErrVal MbTransformCoeffs::copyPredictionFrom(YuvMbBuffer &rcPred)
 
 ErrVal MbTransformCoeffs::copyPredictionTo(YuvMbBuffer &rcPred)
 {
-    TCoeff *pcSrc = get( B4x4Idx(0) );
+    TCoeff *pcSrc = get(B4x4Idx(0));
     XPel   *pcDst = rcPred.getMbLumAddr();
     Int   iSrcStride = rcPred.getLStride();
     UInt uiY, uiX;
     for(uiY = 0; uiY < 16; uiY++)
     {
-        for( uiX = 0; uiX < 16; uiX++ )
+        for(uiX = 0; uiX < 16; uiX++)
         {
             pcDst[uiX] = (pcSrc++)->getSPred();
         }
@@ -152,7 +152,7 @@ ErrVal MbTransformCoeffs::copyPredictionTo(YuvMbBuffer &rcPred)
 
     for(uiY = 0; uiY < 8; uiY++)
     {
-        for( uiX = 0; uiX < 8; uiX++ )
+        for(uiX = 0; uiX < 8; uiX++)
         {
             pcDst[uiX] = (pcSrc++)->getSPred();
         }
@@ -181,15 +181,15 @@ Void MbTransformCoeffs::clearLumaLevels4x4(LumaIdx c4x4Idx)
 Void MbTransformCoeffs::clearLumaLevels8x8(B8x8Idx c8x8Idx)
 {
     UInt uiIndex = c8x8Idx.b8x8();
-    ::memset(&m_aaiLevel[uiIndex  ][0], 0, sizeof(TCoeff)*16 );
-    ::memset(&m_aaiLevel[uiIndex+1][0], 0, sizeof(TCoeff)*16 );
-    ::memset(&m_aaiLevel[uiIndex+4][0], 0, sizeof(TCoeff)*16 );
-    ::memset(&m_aaiLevel[uiIndex+5][0], 0, sizeof(TCoeff)*16 );
+    ::memset(&m_aaiLevel[uiIndex  ][0], 0, sizeof(TCoeff)*16);
+    ::memset(&m_aaiLevel[uiIndex+1][0], 0, sizeof(TCoeff)*16);
+    ::memset(&m_aaiLevel[uiIndex+4][0], 0, sizeof(TCoeff)*16);
+    ::memset(&m_aaiLevel[uiIndex+5][0], 0, sizeof(TCoeff)*16);
 }
 
 Void MbTransformCoeffs::clearLumaLevels8x8Block(B8x8Idx c8x8Idx)
 {
-    ::memset(get8x8( c8x8Idx ), 0, sizeof(TCoeff)*64);
+    ::memset(get8x8(c8x8Idx), 0, sizeof(TCoeff)*64);
 }
 
 
@@ -213,7 +213,7 @@ UInt MbTransformCoeffs::calcCoeffCount(LumaIdx cLumaIdx, Bool bIs8x8, Bool bInte
     else
     {
         const UChar *pucScan = bInterlaced ? g_aucFieldScan : g_aucFrameScan;
-        const TCoeff *piCoeff = get( cLumaIdx );
+        const TCoeff *piCoeff = get(cLumaIdx);
         for(UInt ui = uiStart; ui < uiStop; ui++)
         {
             if(piCoeff[pucScan[ui]])
@@ -247,7 +247,7 @@ Void MbTransformCoeffs::setAllCoeffCount(UChar ucCoeffCountValue)
 
 Void MbTransformCoeffs::copyFrom(const MbTransformCoeffs& rcMbTransformCoeffs)
 {
-    memcpy(m_aaiLevel, rcMbTransformCoeffs.m_aaiLevel, sizeof( m_aaiLevel));
+    memcpy(m_aaiLevel, rcMbTransformCoeffs.m_aaiLevel, sizeof(m_aaiLevel));
     memcpy(m_aaucCoeffCount, rcMbTransformCoeffs.m_aaucCoeffCount, sizeof(m_aaucCoeffCount));
 }
 
@@ -291,9 +291,9 @@ Void MbTransformCoeffs::clearNewLumaLevels8x8Block(B8x8Idx c8x8Idx, MbTransformC
 {
     TCoeff* piCoeff = get8x8(c8x8Idx);
     TCoeff* piCoeffBase = rcBaseMbTCoeffs.get8x8(c8x8Idx);
-    for( UInt ui = 0; ui < 64; ui++ )
+    for(UInt ui = 0; ui < 64; ui++)
     {
-        if( !piCoeffBase[ui] )
+        if(!piCoeffBase[ui])
         {
             piCoeff[ui] = 0;
         }
@@ -307,13 +307,13 @@ Void MbTransformCoeffs::dump(FILE* hFile) const
     return;
 #endif
 
-    for( unsigned char i=0; i<24; i++ )
+    for(unsigned char i=0; i<24; i++)
     {
-        for( unsigned char j=0; j<16; j++ )
+        for(unsigned char j=0; j<16; j++)
         {
-            ::fprintf( hFile, "[%2u][%2u]=%5d\t", i, j, (Int)(Short)m_aaiLevel[i][j] );
+            ::fprintf(hFile, "[%2u][%2u]=%5d\t", i, j, (Int)(Short)m_aaiLevel[i][j]);
         }
-        ::fprintf( hFile, "\n" );
+        ::fprintf(hFile, "\n");
     }
 }
 
@@ -325,15 +325,19 @@ Void MbTransformCoeffs::storeLevelData()
         //TCoeff* piCoeff = m_aaiLevel[bIdx];
         TCoeff* piCoeff = get(bIdx);
         for(UInt ui=0; ui<16; ui++)
+        {
             piCoeff[ui].setLevel(piCoeff[ui].getCoeff());
+        }
     }
 
     for(CIdx cIdx; cIdx.isLegal(); cIdx++)
     {
         //TCoeff* piCoeff = m_aaiLevel[cIdx];
-        TCoeff* piCoeff = get( cIdx );
+        TCoeff* piCoeff = get(cIdx);
         for(UInt ui=0; ui<16; ui++)
+        {
             piCoeff[ui].setLevel(piCoeff[ui].getCoeff());
+        }
     }
 
 }
@@ -379,7 +383,7 @@ Void MbTransformCoeffs::add(MbTransformCoeffs* pcCoeffs, Bool bLuma, Bool bChrom
             TCoeff* piCoeff = get(bIdx);
             TCoeff* piSrcCoeff = pcCoeffs->get(bIdx);
 
-            for( UInt ui=0; ui<16; ui++ )
+            for(UInt ui=0; ui<16; ui++)
             {
                 piCoeff[ui]+= piSrcCoeff[ui];
             }
@@ -388,12 +392,12 @@ Void MbTransformCoeffs::add(MbTransformCoeffs* pcCoeffs, Bool bLuma, Bool bChrom
 
     if(bChroma)
     {
-        for( CIdx cIdx; cIdx.isLegal(); cIdx++ )
+        for(CIdx cIdx; cIdx.isLegal(); cIdx++)
         {
-            TCoeff* piCoeff = get( cIdx );
-            TCoeff* piSrcCoeff = pcCoeffs->get( cIdx );
+            TCoeff* piCoeff = get(cIdx);
+            TCoeff* piSrcCoeff = pcCoeffs->get(cIdx);
 
-            for( UInt ui=0; ui<16; ui++ )
+            for(UInt ui=0; ui<16; ui++)
             {
                 piCoeff[ui] += piSrcCoeff[ui];
             }

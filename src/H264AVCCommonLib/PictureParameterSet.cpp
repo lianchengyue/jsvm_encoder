@@ -38,8 +38,8 @@ PictureParameterSet::PictureParameterSet()
     m_auiNumRefIdxActive[LIST_0] = 0;
     m_auiNumRefIdxActive[LIST_1] = 0;
 //TMM_FIX
-    ::memset( m_uiTopLeft,     0x00, MAXNumSliceGroupsMinus1*sizeof(UInt));
-    ::memset( m_uiBottomRight, 0x00, MAXNumSliceGroupsMinus1*sizeof(UInt));
+    ::memset(m_uiTopLeft,     0x00, MAXNumSliceGroupsMinus1*sizeof(UInt));
+    ::memset(m_uiBottomRight, 0x00, MAXNumSliceGroupsMinus1*sizeof(UInt));
 //TMM_FIX
 }
 
@@ -53,7 +53,7 @@ PictureParameterSet::~PictureParameterSet()
 ErrVal PictureParameterSet::create(PictureParameterSet*& rpcPPS)
 {
     rpcPPS = new PictureParameterSet;
-    ROT( NULL == rpcPPS );
+    ROT (NULL == rpcPPS);
     return Err::m_nOK;
 }
 
@@ -65,15 +65,16 @@ ErrVal PictureParameterSet::destroy()
 }
 
 
+//写SPS信息到.txt
 ErrVal PictureParameterSet::write(HeaderSymbolWriteIf* pcWriteIf) const
 {
     //===== NAL unit header =====
-    ETRACE_DECLARE( Bool m_bTraceEnable = true );
-    ETRACE_LAYER  ( 0 );
-    ETRACE_HEADER ( "PICTURE PARAMETER SET" );
-    pcWriteIf->writeFlag( 0, "NAL unit header: forbidden_zero_bit");
-    pcWriteIf->writeCode( 3, 2, "NAL unit header: nal_ref_idc");
-    pcWriteIf->writeCode( m_eNalUnitType, 5, "NAL unit header: nal_unit_type");
+    ETRACE_DECLARE(Bool m_bTraceEnable = true);
+    ETRACE_LAYER  (0);
+    ETRACE_HEADER ("PICTURE PARAMETER SET");
+    pcWriteIf->writeFlag(0, "NAL unit header: forbidden_zero_bit");
+    pcWriteIf->writeCode(3, 2, "NAL unit header: nal_ref_idc");
+    pcWriteIf->writeCode(m_eNalUnitType, 5, "NAL unit header: nal_unit_type");
 
     //===== NAL unit payload =====
     pcWriteIf->writeUvlc(getPicParameterSetId(), "PPS: pic_parameter_set_id");
@@ -87,7 +88,7 @@ ErrVal PictureParameterSet::write(HeaderSymbolWriteIf* pcWriteIf) const
 
     if(getNumSliceGroupsMinus1() > 0)
     {
-      pcWriteIf->writeUvlc( getSliceGroupMapType(), "PPS: slice_group_map_type");
+      pcWriteIf->writeUvlc(getSliceGroupMapType(), "PPS: slice_group_map_type");
       if(getSliceGroupMapType() ==0)
       {
           for(UInt iSliceGroup=0;iSliceGroup<=getNumSliceGroupsMinus1();iSliceGroup++)
@@ -99,8 +100,8 @@ ErrVal PictureParameterSet::write(HeaderSymbolWriteIf* pcWriteIf) const
       {
           for(UInt iSliceGroup=0;iSliceGroup<getNumSliceGroupsMinus1();iSliceGroup++)
           {
-              pcWriteIf->writeUvlc( getTopLeft(iSliceGroup), "PPS: top_left [iSliceGroup]");
-              pcWriteIf->writeUvlc( getBottomRight(iSliceGroup), "PPS: bottom_right [iSliceGroup]");
+              pcWriteIf->writeUvlc(getTopLeft(iSliceGroup), "PPS: top_left [iSliceGroup]");
+              pcWriteIf->writeUvlc(getBottomRight(iSliceGroup), "PPS: bottom_right [iSliceGroup]");
           }
       }
       else if(getSliceGroupMapType() ==3 ||
@@ -126,7 +127,7 @@ ErrVal PictureParameterSet::write(HeaderSymbolWriteIf* pcWriteIf) const
           }
           //! JVT-F078, exlicitly signal number of MBs in the map
           pcWriteIf->writeUvlc(getNumSliceGroupMapUnitsMinus1(), "PPS: num_slice_group_map_units_minus1");
-          ROF ( getNumSliceGroupMapUnitsMinus1() < m_uiSliceGroupIdArraySize );
+          ROF (getNumSliceGroupMapUnitsMinus1() < m_uiSliceGroupIdArraySize);
           for(UInt iSliceGroup=0; iSliceGroup<=getNumSliceGroupMapUnitsMinus1(); iSliceGroup++)
           {
               pcWriteIf->writeCode(getSliceGroupId(iSliceGroup), iNumberBitsPerSliceGroupId, "PPS: slice_group_id[iSliceGroup]");
@@ -157,10 +158,10 @@ ErrVal PictureParameterSet::write(HeaderSymbolWriteIf* pcWriteIf) const
 
 
 ErrVal PictureParameterSet::read(HeaderSymbolReadIf*  pcReadIf,
-                                 NalUnitType          eNalUnitType )
+                                 NalUnitType          eNalUnitType)
 {
     //===== NAL unit header =====
-    setNalUnitType    ( eNalUnitType );
+    setNalUnitType    (eNalUnitType);
 
     UInt  uiTmp;
     Int   iTmp;
@@ -169,16 +170,16 @@ ErrVal PictureParameterSet::read(HeaderSymbolReadIf*  pcReadIf,
     Int iNumberBitsPerSliceGroupId;
 
 
-    pcReadIf->getUvlc( m_uiPicParameterSetId, "PPS: pic_parameter_set_id");
-    ROT ( m_uiPicParameterSetId > 255 );
-    pcReadIf->getUvlc( m_uiSeqParameterSetId, "PPS: seq_parameter_set_id");
-    ROT ( m_uiSeqParameterSetId > 31 );
-    pcReadIf->getFlag( m_bEntropyCodingModeFlag, "PPS: entropy_coding_mode_flag");
-    pcReadIf->getFlag( m_bPicOrderPresentFlag, "PPS: pic_order_present_flag");
+    pcReadIf->getUvlc(m_uiPicParameterSetId, "PPS: pic_parameter_set_id");
+    ROT (m_uiPicParameterSetId > 255);
+    pcReadIf->getUvlc(m_uiSeqParameterSetId, "PPS: seq_parameter_set_id");
+    ROT (m_uiSeqParameterSetId > 31);
+    pcReadIf->getFlag(m_bEntropyCodingModeFlag, "PPS: entropy_coding_mode_flag");
+    pcReadIf->getFlag(m_bPicOrderPresentFlag, "PPS: pic_order_present_flag");
 
     //--ICU/ETRI FMO Implementation : FMO stuff start
-    pcReadIf->getUvlc( m_uiNumSliceGroupsMinus1,  "PPS: num_slice_groups_minus1");
-    ROT ( m_uiNumSliceGroupsMinus1 > MAXNumSliceGroupsMinus1);
+    pcReadIf->getUvlc(m_uiNumSliceGroupsMinus1,  "PPS: num_slice_groups_minus1");
+    ROT (m_uiNumSliceGroupsMinus1 > MAXNumSliceGroupsMinus1);
 
     if(m_uiNumSliceGroupsMinus1 > 0)
     {
@@ -214,7 +215,7 @@ ErrVal PictureParameterSet::read(HeaderSymbolReadIf*  pcReadIf,
             else
                 iNumberBitsPerSliceGroupId = 1;
             //! JVT-F078, exlicitly signal number of MBs in the map
-            pcReadIf->getUvlc( m_uiNumSliceGroupMapUnitsMinus1, "PPS: num_slice_group_map_units_minus1");
+            pcReadIf->getUvlc(m_uiNumSliceGroupMapUnitsMinus1, "PPS: num_slice_group_map_units_minus1");
             if(m_uiSliceGroupIdArraySize <= m_uiNumSliceGroupMapUnitsMinus1)
             {
                 delete[] m_pauiSliceGroupId;
@@ -223,7 +224,7 @@ ErrVal PictureParameterSet::read(HeaderSymbolReadIf*  pcReadIf,
             }
             for(UInt i=0; i<=m_uiNumSliceGroupMapUnitsMinus1; i++)
             {
-                pcReadIf->getCode( m_pauiSliceGroupId[i], iNumberBitsPerSliceGroupId, "PPS: slice_group_id[i]");
+                pcReadIf->getCode(m_pauiSliceGroupId[i], iNumberBitsPerSliceGroupId, "PPS: slice_group_id[i]");
             }
         }
 
@@ -238,16 +239,16 @@ ErrVal PictureParameterSet::read(HeaderSymbolReadIf*  pcReadIf,
     pcReadIf->getFlag(m_bWeightedPredFlag, "PPS: weighted_pred_flag");
     pcReadIf->getCode(m_uiWeightedBiPredIdc, 2,"PPS: weighted_bipred_idc");
     pcReadIf->getSvlc(iTmp, "PPS: pic_init_qp_minus26");
-    ROT ( iTmp < -26 || iTmp > 25 );
-    setPicInitQp( (UInt)( iTmp + 26 ) );
+    ROT (iTmp < -26 || iTmp > 25);
+    setPicInitQp((UInt)(iTmp + 26));
     pcReadIf->getSvlc(iTmp, "PPS: pic_init_qs_minus26");
     pcReadIf->getSvlc(iTmp, "PPS: chroma_qp_index_offset");
-    ROT ( iTmp < -12 || iTmp > 12 );
+    ROT (iTmp < -12 || iTmp > 12);
     setChromaQpIndexOffset(iTmp);
     set2ndChromaQpIndexOffset(iTmp); // default
-    pcReadIf->getFlag( m_bDeblockingFilterParametersPresentFlag, "PPS: deblocking_filter_control_present_flag"); //VB-JV 04/08
-    pcReadIf->getFlag( m_bConstrainedIntraPredFlag, "PPS: constrained_intra_pred_flag");
-    pcReadIf->getFlag( m_bRedundantPicCntPresentFlag, "PPS: redundant_pic_cnt_present_flag");  // JVT-Q054 Red. Picture
+    pcReadIf->getFlag(m_bDeblockingFilterParametersPresentFlag, "PPS: deblocking_filter_control_present_flag"); //VB-JV 04/08
+    pcReadIf->getFlag(m_bConstrainedIntraPredFlag, "PPS: constrained_intra_pred_flag");
+    pcReadIf->getFlag(m_bRedundantPicCntPresentFlag, "PPS: redundant_pic_cnt_present_flag");  // JVT-Q054 Red. Picture
     xReadFrext(pcReadIf);
 
     return Err::m_nOK;
@@ -258,11 +259,11 @@ ErrVal PictureParameterSet::xWriteFrext(HeaderSymbolWriteIf* pcWriteIf) const
 {
     pcWriteIf->writeFlag(m_bTransform8x8ModeFlag, "PPS: transform_8x8_mode_flag");
     pcWriteIf->writeFlag(m_bPicScalingMatrixPresentFlag, "PPS: pic_scaling_matrix_present_flag");
-    if( m_bPicScalingMatrixPresentFlag )
+    if(m_bPicScalingMatrixPresentFlag)
     {
-        m_cPicScalingMatrix.write( pcWriteIf, m_bTransform8x8ModeFlag);
+        m_cPicScalingMatrix.write(pcWriteIf, m_bTransform8x8ModeFlag);
     }
-    pcWriteIf->writeSvlc( m_iSecondChromaQpIndexOffset,  "PPS: second_chroma_qp_index_offset");
+    pcWriteIf->writeSvlc(m_iSecondChromaQpIndexOffset,  "PPS: second_chroma_qp_index_offset");
 
     return Err::m_nOK;
 }
@@ -270,7 +271,7 @@ ErrVal PictureParameterSet::xWriteFrext(HeaderSymbolWriteIf* pcWriteIf) const
 
 ErrVal PictureParameterSet::xReadFrext(HeaderSymbolReadIf* pcReadIf)
 {
-    ROTRS( ! pcReadIf->moreRBSPData(), Err::m_nOK );
+    ROTRS(! pcReadIf->moreRBSPData(), Err::m_nOK);
 
     pcReadIf->getFlag(m_bTransform8x8ModeFlag, "PPS: transform_8x8_mode_flag");
     pcReadIf->getFlag(m_bPicScalingMatrixPresentFlag, "PPS: pic_scaling_matrix_present_flag");
@@ -279,7 +280,7 @@ ErrVal PictureParameterSet::xReadFrext(HeaderSymbolReadIf* pcReadIf)
         m_cPicScalingMatrix.read(pcReadIf, m_bTransform8x8ModeFlag);
     }
     pcReadIf->getSvlc(m_iSecondChromaQpIndexOffset, "PPS: second_chroma_qp_index_offset");
-    ROT   ( m_iSecondChromaQpIndexOffset < -12 || m_iSecondChromaQpIndexOffset > 12 );
+    ROT   (m_iSecondChromaQpIndexOffset < -12 || m_iSecondChromaQpIndexOffset > 12);
 
     return Err::m_nOK;
 }

@@ -2,6 +2,7 @@
 #include "H264AVCCommonLib/Tables.h"
 #include "H264AVCCommonLib/ContextTables.h"
 #include "H264AVCCommonLib/TraceFile.h"
+#include "H264AVCCommonLib/ContextTables.h"
 
 #include "CabaEncoder.h"
 #include "CabacWriter.h"
@@ -788,7 +789,7 @@ ErrVal CabacWriter::intraPredModeChroma(MbDataAccess& rcMbDataAccess)
     {
         CabaEncoder::writeSymbol(1, m_cChromaPredCCModel.get(0, uiCtx));
 
-        CabaEncoder::writeUnaryMaxSymbol(uiIntraPredModeChroma - 1,
+        CabaEncoder::writeUnaryMaxSymbol (uiIntraPredModeChroma - 1,
                                           m_cChromaPredCCModel.get(0) + 3,
                                           0,
                                           2);
@@ -988,6 +989,7 @@ ErrVal CabacWriter::xWriteBCbp(MbDataAccess& rcMbDataAccess,
     UInt uiCtx = rcMbDataAccess.getCtxCodedBlockBit(uiBitPos, uiStart, uiStop, true);
     UInt uiBit = uiNumSig ? 1 : 0;
 
+    //type2ctx1[] = { 0,  1,  4,  5,  6,  4,  5,  6 }
     CabaEncoder::writeSymbol(uiBit, m_cBCbpCCModel.get(type2ctx1[ eResidualMode ], uiCtx));
 
     rcMbDataAccess.getMbData().setBCBP(uiBitPos, uiBit);
@@ -1021,6 +1023,7 @@ ErrVal CabacWriter::xWriteBCbp (MbDataAccess& rcMbDataAccess,
     UInt uiCtx = rcMbDataAccess.getCtxCodedBlockBit(uiBitPos, uiStart, uiStop, true);
     UInt uiBit = uiNumSig ? 1 : 0;
 
+    //type2ctx1[] = { 0,  1,  4,  5,  6,  4,  5,  6 }
     CabaEncoder::writeSymbol(uiBit, m_cBCbpCCModel.get(type2ctx1[ eResidualMode ], uiCtx));
 
     rcMbDataAccess.getMbData().setBCBP(uiBitPos, uiBit);
@@ -1115,12 +1118,14 @@ ErrVal CabacWriter::xWriteCoeff (UInt     uiNumSig,
     for (ui = uiStart; ui < uiStop; ui++) // if last coeff is reached, it has to be significant
     {
         UInt uiSig = piCoeff[pucScan[ui]] ? 1 : 0;
-        CabaEncoder::writeSymbol(uiSig, rcMapCCModel.get(type2ctx2 [eResidualMode], ui));
+        //type2ctx2[] = { 0,  1,  5,  6,  7,  5,  6,  7 }
+        CabaEncoder::writeSymbol(uiSig, rcMapCCModel.get(type2ctx2[eResidualMode], ui));
 
         if (uiSig)
         {
             UInt uiLast = (++uiCodedSig == uiNumSig ? 1 : 0);
 
+            //type2ctx2[] = { 0,  1,  5,  6,  7,  5,  6,  7 }
             CabaEncoder::writeSymbol(uiLast, rcLastCCModel.get(type2ctx2[eResidualMode], ui));
 
             if(uiLast)
@@ -1154,6 +1159,7 @@ ErrVal CabacWriter::xWriteCoeff (UInt     uiNumSig,
 
             UInt uiCtx    = gMin (c1, 4);
             UInt uiSymbol = uiAbs > 1 ? 1 : 0;
+            //type2ctx1[] = { 0,  1,  4,  5,  6,  4,  5,  6 }
             CabaEncoder::writeSymbol(uiSymbol, m_cOneCCModel.get(type2ctx1 [eResidualMode], uiCtx));
 
             if(uiSymbol)
@@ -1162,6 +1168,7 @@ ErrVal CabacWriter::xWriteCoeff (UInt     uiNumSig,
                 uiAbs -= 2;
                 c1     = 0;
                 c2++;
+                //type2ctx1[] = { 0,  1,  4,  5,  6,  4,  5,  6 }
                 CabaEncoder::writeExGolombLevel(uiAbs, m_cAbsCCModel.get(type2ctx1 [eResidualMode], uiCtx));
             }
             else if(c1)

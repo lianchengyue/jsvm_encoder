@@ -34,10 +34,10 @@ RecPicBufUnit::~RecPicBufUnit()
 }
 
 
-ErrVal RecPicBufUnit::create(RecPicBufUnit*&              rpcRecPicBufUnit,
-                             YuvBufferCtrl&               rcYuvBufferCtrlFullPel,
-                             YuvBufferCtrl&               rcYuvBufferCtrlHalfPel,
-                             const SequenceParameterSet&  rcSPS)
+ErrVal RecPicBufUnit::create (RecPicBufUnit*&  rpcRecPicBufUnit,
+                              YuvBufferCtrl&   rcYuvBufferCtrlFullPel,
+                              YuvBufferCtrl&   rcYuvBufferCtrlHalfPel,
+                              const SequenceParameterSet&  rcSPS)
 {
     rpcRecPicBufUnit = new RecPicBufUnit();
     ROF(rpcRecPicBufUnit);
@@ -189,7 +189,9 @@ ErrVal RecPicBuffer::initSPS(const SequenceParameterSet& rcSPS)
 {
     ROF(m_bInitDone);
 
-    UInt uiMaxFramesInDPB = rcSPS.getMaxDPBSize();
+    //https://zhuanlan.zhihu.com/p/100298666
+    //DPB 全称 decoded picture buffer，即解码图片缓存区
+    UInt uiMaxFramesInDPB = rcSPS.getMaxDPBSize();  //MVC.cfg中, DPBSize=13
     xCreateData(uiMaxFramesInDPB, rcSPS);
     m_uiNumRefFrames = rcSPS.getNumRefFrames();
     m_uiMaxFrameNum = (1 << (rcSPS.getLog2MaxFrameNum()));
@@ -291,6 +293,7 @@ ErrVal RecPicBuffer::getRefLists(RefFrameList&  rcList0,
     rcList1.reset();
     ROTRS(rcSliceHeader.isIntraSlice(), Err::m_nOK);
 
+    //如果是P帧
     if(rcSliceHeader.isPSlice())
     {
         xInitRefListPSlice(rcList0);
@@ -298,6 +301,7 @@ ErrVal RecPicBuffer::getRefLists(RefFrameList&  rcList0,
         xAdaptListSize    (rcList0, LIST_0, rcSliceHeader);
         xDumpRefList      (rcList0, LIST_0);
     }
+    //如果是B帧
     else // rcSliceHeader.isBSlice()
     {
         xInitRefListsBSlice(rcList0, rcList1);

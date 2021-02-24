@@ -6,25 +6,25 @@ namespace JSVM {
 
 
 ControlMngH264AVCEncoder::ControlMngH264AVCEncoder():
-  m_pcSliceEncoder        (NULL),
-  m_pcControlMng          (NULL),
-  m_pcBitWriteBuffer      (NULL),
-  m_pcNalUnitEncoder      (NULL),
-  m_pcUvlcWriter          (NULL),
-  m_pcUvlcTester          (NULL),
-  m_pcMbCoder             (NULL),
-  m_pcLoopFilter          (NULL),
-  m_pcMbEncoder           (NULL),
-  m_pcQuarterPelFilter    (NULL),
-  m_pcCodingParameter     (NULL),
-  m_pcParameterSetMng     (NULL),
-  m_pcSampleWeighting     (NULL),
-  m_pcCabacWriter         (NULL),
-  m_pcXDistortion         (NULL),
-  m_pcMotionEstimation    (NULL),
-  m_pcRateDistortion      (NULL),
-  m_pcMbDataCtrl          (NULL),
-  m_pcMbSymbolWriteIf     (NULL)
+    m_pcSliceEncoder        (NULL),
+    m_pcControlMng          (NULL),
+    m_pcBitWriteBuffer      (NULL),
+    m_pcNalUnitEncoder      (NULL),
+    m_pcUvlcWriter          (NULL),
+    m_pcUvlcTester          (NULL),
+    m_pcMbCoder             (NULL),
+    m_pcLoopFilter          (NULL),
+    m_pcMbEncoder           (NULL),
+    m_pcQuarterPelFilter    (NULL),
+    m_pcCodingParameter     (NULL),
+    m_pcParameterSetMng     (NULL),
+    m_pcSampleWeighting     (NULL),
+    m_pcCabacWriter         (NULL),
+    m_pcXDistortion         (NULL),
+    m_pcMotionEstimation    (NULL),
+    m_pcRateDistortion      (NULL),
+    m_pcMbDataCtrl          (NULL),
+    m_pcMbSymbolWriteIf     (NULL)
 {
     ::memset(m_apcYuvFullPelBufferCtrl, 0x00, MAX_LAYERS*sizeof(Void*));
     ::memset(m_apcYuvHalfPelBufferCtrl, 0x00, MAX_LAYERS*sizeof(Void*));
@@ -42,17 +42,27 @@ ControlMngH264AVCEncoder::~ControlMngH264AVCEncoder()
 ErrVal ControlMngH264AVCEncoder::initParameterSets(const SequenceParameterSet&  rcSPS,
                                                    const PictureParameterSet&  rcPPS)
 {
+    //uiLayer: 0
     UInt  uiLayer  = rcSPS.getDependencyId ();
+    //uiMbX: 120
     UInt  uiMbX    = rcSPS.getFrameWidthInMbs ();
+    //uiMbY: 68
     UInt  uiMbY    = rcSPS.getFrameHeightInMbs ();
     m_auiMbXinFrame[uiLayer] = uiMbX;
     m_auiMbYinFrame[uiLayer] = uiMbY;
 
     //===== initialize buffer controls and LayerEncoder =====
+    //uiAllocX: 1920
     UInt uiAllocX = rcSPS.getAllocFrameMbsX() << 4;
+    //uiAllocy: 1088
     UInt uiAllocY = rcSPS.getAllocFrameMbsY() << 4;
-    m_apcYuvFullPelBufferCtrl[uiLayer]->initSPS(uiAllocY, uiAllocX, YUV_Y_MARGIN, YUV_X_MARGIN);
-    m_apcYuvHalfPelBufferCtrl[uiLayer]->initSPS(uiAllocY, uiAllocX, YUV_Y_MARGIN, YUV_X_MARGIN, 1);
+
+    //YUV_X_MARGIN:  32
+    //YUV_Y_MARGIN:  64
+    //全像素buffer
+    m_apcYuvFullPelBufferCtrl[uiLayer]->initSPS (uiAllocY, uiAllocX, YUV_Y_MARGIN, YUV_X_MARGIN);
+    //半像素buffer
+    m_apcYuvHalfPelBufferCtrl[uiLayer]->initSPS (uiAllocY, uiAllocX, YUV_Y_MARGIN, YUV_X_MARGIN, 1);
 
     if(!m_bAVCMode)
     {
@@ -140,26 +150,26 @@ ErrVal ControlMngH264AVCEncoder::init(LayerEncoder*              apcLayerEncoder
                                       MotionEstimation*          pcMotionEstimation,
                                       RateDistortion*            pcRateDistortion)
 {
-    ROT(NULL == pcSliceEncoder);
-    ROT(NULL == pcControlMng);
-    ROT(NULL == pcBitWriteBuffer);
-    ROT(NULL == pcBitCounter);
-    ROT(NULL == pcNalUnitEncoder);
-    ROT(NULL == pcUvlcWriter);
-    ROT(NULL == pcUvlcTester);
-    ROT(NULL == pcMbCoder);
-    ROT(NULL == pcLoopFilter);
-    ROT(NULL == pcMbEncoder);
-    ROT(NULL == pcTransform);
-    ROT(NULL == pcIntraPrediction);
-    ROT(NULL == pcQuarterPelFilter);
-    ROT(NULL == pcCodingParameter);
-    ROT(NULL == pcParameterSetMng);
-    ROT(NULL == pcSampleWeighting);
-    ROT(NULL == pcCabacWriter);
-    ROT(NULL == pcXDistortion);
-    ROT(NULL == pcMotionEstimation);
-    ROT(NULL == pcRateDistortion);
+    ROT (NULL == pcSliceEncoder);
+    ROT (NULL == pcControlMng);
+    ROT (NULL == pcBitWriteBuffer);
+    ROT (NULL == pcBitCounter);
+    ROT (NULL == pcNalUnitEncoder);
+    ROT (NULL == pcUvlcWriter);
+    ROT (NULL == pcUvlcTester);
+    ROT (NULL == pcMbCoder);
+    ROT (NULL == pcLoopFilter);
+    ROT (NULL == pcMbEncoder);
+    ROT (NULL == pcTransform);
+    ROT (NULL == pcIntraPrediction);
+    ROT (NULL == pcQuarterPelFilter);
+    ROT (NULL == pcCodingParameter);
+    ROT (NULL == pcParameterSetMng);
+    ROT (NULL == pcSampleWeighting);
+    ROT (NULL == pcCabacWriter);
+    ROT (NULL == pcXDistortion);
+    ROT (NULL == pcMotionEstimation);
+    ROT (NULL == pcRateDistortion);
 
 
     m_pcSliceEncoder      = pcSliceEncoder;
@@ -273,7 +283,7 @@ ErrVal ControlMngH264AVCEncoder::initMbForCoding (MbDataAccess& rcMbDataAccess,
                                                   Bool bMbAff,
                                                   Bool bFieldFlag)
 {
-    ROF(m_uiCurrLayer < MAX_LAYERS);
+    ROF (m_uiCurrLayer < MAX_LAYERS);
 
     if (bMbAff)
     {
@@ -285,8 +295,9 @@ ErrVal ControlMngH264AVCEncoder::initMbForCoding (MbDataAccess& rcMbDataAccess,
         rcMbDataAccess.getMbMotionData(LIST_1).setFieldMode(false);
     }
 
-    m_apcYuvFullPelBufferCtrl[m_uiCurrLayer]->initMb(uiMbY, uiMbX, bMbAff);
-    m_apcYuvHalfPelBufferCtrl[m_uiCurrLayer]->initMb(uiMbY, uiMbX, bMbAff);
+    //Full Pel & Half Pel
+    m_apcYuvFullPelBufferCtrl[m_uiCurrLayer]->initMb (uiMbY, uiMbX, bMbAff);  //purple
+    m_apcYuvHalfPelBufferCtrl[m_uiCurrLayer]->initMb (uiMbY, uiMbX, bMbAff);
 
     m_pcMotionEstimation->initMb(uiMbY, uiMbX, rcMbDataAccess);
 
@@ -303,7 +314,7 @@ ErrVal ControlMngH264AVCEncoder::initMbForFiltering (MbDataAccess*&
 
     m_pcMbDataCtrl->initMb(rpcMbDataAccess, uiMbY, uiMbX);
 
-    m_apcYuvFullPelBufferCtrl[m_uiCurrLayer]->initMb(uiMbY, uiMbX, bMbAff);
+    m_apcYuvFullPelBufferCtrl[m_uiCurrLayer]->initMb (uiMbY, uiMbX, bMbAff);
 
     return Err::m_nOK;
 }
@@ -315,7 +326,7 @@ ErrVal ControlMngH264AVCEncoder::initMbForFiltering (MbDataAccess& rcMbDataAcces
 {
     ROF(m_uiCurrLayer < MAX_LAYERS);
 
-    m_apcYuvFullPelBufferCtrl[m_uiCurrLayer]->initMb(uiMbY, uiMbX, bMbAff);
+    m_apcYuvFullPelBufferCtrl[m_uiCurrLayer]->initMb (uiMbY, uiMbX, bMbAff);
 
     return Err::m_nOK;
 }
@@ -323,7 +334,7 @@ ErrVal ControlMngH264AVCEncoder::initMbForFiltering (MbDataAccess& rcMbDataAcces
 
 ErrVal ControlMngH264AVCEncoder::initSliceForWeighting (const SliceHeader& rcSH)
 {
-     return m_pcSampleWeighting->initSlice(rcSH);
+     return m_pcSampleWeighting->initSlice (rcSH);
 }
 
 

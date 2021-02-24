@@ -56,7 +56,7 @@ public:
     PicBuffer* getPicBuffer()   { return m_pcPicBuffer; }
 
     Int getPicNum(UInt uiCurrFrameNum,
-                  UInt uiMaxFrameNum )  const
+                  UInt uiMaxFrameNum) const
     {
         if(m_uiFrameNum > uiCurrFrameNum)
         {
@@ -67,11 +67,11 @@ public:
 
 
 private:
-    Int           m_iPoc;
-    UInt          m_uiFrameNum;
-    Bool          m_bExisting;
-    Bool          m_bNeededForReference;
-    Bool          m_bOutputted;
+    Int    m_iPoc;
+    UInt   m_uiFrameNum;
+    Bool   m_bExisting;
+    Bool   m_bNeededForReference;
+    Bool   m_bOutputted;
     Frame*     m_pcReconstructedFrame;
     MbDataCtrl*   m_pcMbDataCtrl;
     PicBuffer*    m_pcPicBuffer;

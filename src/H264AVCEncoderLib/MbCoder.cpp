@@ -112,8 +112,8 @@ ErrVal MbCoder::encode (MbDataAccess& rcMbDataAccess,
     // JVT-W043 {
     if(bRateControlEnable)
     {
-      pcGenericRC->m_iRCTotalBits = getBitCount();
-      pcGenericRC->m_iRCTextureBits = 0;
+        pcGenericRC->m_iRCTotalBits = getBitCount();
+        pcGenericRC->m_iRCTextureBits = 0;
     }
     // JVT-W043 }
 
@@ -135,8 +135,9 @@ ErrVal MbCoder::encode (MbDataAccess& rcMbDataAccess,
             pcCurrentWriter->fieldFlag(rcMbDataAccess);
         }
     }
-    ETRACE_LAYER(iDQIdBase);
+    ETRACE_LAYER (iDQIdBase);
 
+    //非skip MB
     if(bIsCoded)
     {
         Bool bFieldFlagCoded = true;
@@ -152,14 +153,14 @@ ErrVal MbCoder::encode (MbDataAccess& rcMbDataAccess,
         {
             if(pcMbDataAccessBase->getMbData().getInCropWindowFlag() == true)// TMM_ESS
             {
-                      if(rcMbDataAccess.getSH().getAdaptiveBaseModeFlag())
-                      {
-                          m_pcMbSymbolWriteIf->BLSkipFlag(rcMbDataAccess);
-                      }
+                if(rcMbDataAccess.getSH().getAdaptiveBaseModeFlag())
+                {
+                    m_pcMbSymbolWriteIf->BLSkipFlag(rcMbDataAccess);
+                }
             }
             else
             {
-                ROT  (rcMbDataAccess.getMbData().getBLSkipFlag ());
+                ROT (rcMbDataAccess.getMbData().getBLSkipFlag());
             }
         }
         else

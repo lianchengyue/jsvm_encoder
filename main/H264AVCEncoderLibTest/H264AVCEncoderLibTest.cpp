@@ -22,6 +22,7 @@ int main( int argc, char** argv)
     H264AVCEncoderTest* pcH264AVCEncoderTest = NULL;
     H264AVCEncoderTest::create(pcH264AVCEncoderTest);
 
+    //H264AVCEncoderTest的初始化
     pcH264AVCEncoderTest->init (argc, argv);
     pcH264AVCEncoderTest->go ();
     pcH264AVCEncoderTest->destroy ();

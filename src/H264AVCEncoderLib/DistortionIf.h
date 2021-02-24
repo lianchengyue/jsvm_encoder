@@ -47,11 +47,11 @@ public:
     virtual UInt  getLum8x8  (XPel *pPel, Int iStride, DFunc eDFunc = DF_SSD) = 0;
     virtual UInt  getLum4x4  (XPel *pPel, Int iStride, DFunc eDFunc = DF_SSD) = 0;
 //TMM_WP
-    ErrVal getLumaWeight( YuvPicBuffer* pcOrgPicBuffer, YuvPicBuffer* pcRefPicBuffer, Double& rfWeight, UInt uiLumaLog2WeightDenom);
-    ErrVal getChromaWeight( YuvPicBuffer* pcOrgPicBuffer, YuvPicBuffer* pcRefPicBuffer, Double& rfWeight, UInt uiChromaLog2WeightDenom, Bool bCb);
+    ErrVal getLumaWeight   (YuvPicBuffer* pcOrgPicBuffer, YuvPicBuffer* pcRefPicBuffer, Double& rfWeight, UInt uiLumaLog2WeightDenom);
+    ErrVal getChromaWeight (YuvPicBuffer* pcOrgPicBuffer, YuvPicBuffer* pcRefPicBuffer, Double& rfWeight, UInt uiChromaLog2WeightDenom, Bool bCb);
 
-    ErrVal getLumaOffsets( YuvPicBuffer* pcOrgPicBuffer, YuvPicBuffer* pcRefPicBuffer, Double& rfOffset);
-    ErrVal getChromaOffsets( YuvPicBuffer* pcOrgPicBuffer, YuvPicBuffer* pcRefPicBuffer, Double& rfOffset, Bool bCb);
+    ErrVal getLumaOffsets  (YuvPicBuffer* pcOrgPicBuffer, YuvPicBuffer* pcRefPicBuffer, Double& rfOffset);
+    ErrVal getChromaOffsets(YuvPicBuffer* pcOrgPicBuffer, YuvPicBuffer* pcRefPicBuffer, Double& rfOffset, Bool bCb);
 //TMM_WP
 };
 

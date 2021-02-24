@@ -173,7 +173,7 @@ public:
 
     ErrVal uninit ();
     ErrVal reset ();
-    ErrVal resetData ()                                        { return xResetData(); }
+    ErrVal resetData ()                                       { return xResetData(); }
     ErrVal initSliceLF (SliceHeader& rcSH, const MbStatus* apcMbStatus);
     ErrVal initSlice (SliceHeader& rcSH, ProcessingState eProcessingState, Bool bDecoder, MbDataCtrl* pcMbDataCtrl);
     ErrVal initUsedField(SliceHeader& rcSH, RefFrameList&  rcRefFrameList1); //TMM
@@ -191,10 +191,10 @@ public:
         return *pcDBFPars;
     }
 
-    const MbData& getMbData (UInt uiIndex) const      { AOT_DBG( uiIndex >= m_uiSize);  return m_pcMbData[uiIndex]; }
-    const Bool isPicCodedField () const               { return m_bPicCodedField; }
+    const MbData& getMbData (UInt uiIndex) const     { AOT_DBG( uiIndex >= m_uiSize);  return m_pcMbData[uiIndex]; }
+    const Bool isPicCodedField () const              { return m_bPicCodedField; }
 
-    MbData& getMbDataByIndex(UInt uiIndex)            { AOT_DBG( uiIndex >= m_uiSize);  return m_pcMbData[uiIndex]; }
+    MbData& getMbDataByIndex (UInt uiIndex)          { AOT_DBG( uiIndex >= m_uiSize);  return m_pcMbData[uiIndex]; }
 
     ErrVal clear() { return xResetData(); }
 
@@ -220,10 +220,10 @@ public:
     UInt getSliceId() const { return m_uiSliceId;}
 
     //JVT-X046 {
-    MbData* xGetMbData (UInt uiMbAddress) { return &m_pcMbData[uiMbAddress]; }
+    MbData* xGetMbData (UInt uiMbAddress)          { return &m_pcMbData[uiMbAddress]; }
 
 protected:
-    const MbData& xGetOutMbData()            const { return m_pcMbData[m_uiSize]; }
+    const MbData& xGetOutMbData() const            { return m_pcMbData[m_uiSize]; }
     const MbData& xGetRefMbData(UInt uiSliceId, Int uiCurrSliceID, Int iMbY, Int iMbX, Bool bLoopFilter);
     const MbData& xGetColMbData(UInt uiIndex);
 
@@ -306,16 +306,16 @@ public:
 
     Frame*        getBaseLayerRec ()                                      { return  m_pcBaseLayerRec; }
     Frame*        getBaseLayerSbb ()                                      { return  m_pcBaseLayerSbb; }
-    MbDataCtrl*   getBaseLayerCtrl ()                                     { return  m_pcBaseLayerCtrl; }
+    MbDataCtrl*   getBaseLayerCtrl ()                                     { return  m_pcBaseLayerCtrl;}
     MbDataCtrl*   getMbDataCtrl0L1 ()                                     { return m_pcMbDataCtrl0L1; }
     Void          setMbDataCtrl0L1 (MbDataCtrl* p)                        { m_pcMbDataCtrl0L1 = p; }
-    MbDataCtrl*   getBaseLayerCtrlField ()                                { return  m_pcBaseLayerCtrlField;    }
-    UInt          getUseBLMotion ()                                       { return  m_uiUseBLMotion;      }
-    Void          setBaseLayerRec (Frame* pcBaseLayerRec)                 { m_pcBaseLayerRec    = pcBaseLayerRec;   }
-    Void          setBaseLayerSbb (Frame* pcBaseLayerSbb)                 { m_pcBaseLayerSbb    = pcBaseLayerSbb;   }
-    Void          setBaseLayerCtrl (MbDataCtrl* pcBaseLayerCtrl)          { m_pcBaseLayerCtrl   = pcBaseLayerCtrl;  }
-    Void          setBaseLayerCtrlField (MbDataCtrl* pcBaseLayerCtrl)     { m_pcBaseLayerCtrlField = pcBaseLayerCtrl;  }
-    Void          setUseBLMotion (UInt uiUseBLMotion)                     { m_uiUseBLMotion     = uiUseBLMotion;    }
+    MbDataCtrl*   getBaseLayerCtrlField ()                                { return  m_pcBaseLayerCtrlField;}
+    UInt          getUseBLMotion ()                                       { return  m_uiUseBLMotion;       }
+    Void          setBaseLayerRec (Frame* pcBaseLayerRec)                 { m_pcBaseLayerRec    = pcBaseLayerRec;    }
+    Void          setBaseLayerSbb (Frame* pcBaseLayerSbb)                 { m_pcBaseLayerSbb    = pcBaseLayerSbb;    }
+    Void          setBaseLayerCtrl (MbDataCtrl* pcBaseLayerCtrl)          { m_pcBaseLayerCtrl   = pcBaseLayerCtrl;   }
+    Void          setBaseLayerCtrlField (MbDataCtrl* pcBaseLayerCtrl)     { m_pcBaseLayerCtrlField = pcBaseLayerCtrl;}
+    Void          setUseBLMotion (UInt uiUseBLMotion)                     { m_uiUseBLMotion     = uiUseBLMotion;     }
 
     Void          setLambda (Double d)                                    { m_dLambda = d; }
 

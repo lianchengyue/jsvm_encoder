@@ -10,11 +10,17 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 DEFINES += \
-    MSYS_LINUX \
-    MSYS_UNIX_LARGEFILE \
+    _DEBUG \
+     NO_DEBUG \
+#    PRUEF_PUNKT \
+#   MSYS_WIN32 \
+     MSYS_LINUX \
+     MSYS_UNIX_LARGEFILE \
 #    PROPOSED_DEBLOCKING_APRIL2010 \
 #追踪
     ENCODER_TRACE \
+#deblocking according to the proposal in April 2010 (cp. VCEG_AN10_r3)
+    PROPOSED_DEBLOCKING_APRIL2010 \
 
 HEADERS += \
 #Include

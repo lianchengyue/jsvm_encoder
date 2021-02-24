@@ -72,6 +72,7 @@ ErrVal CabaEncoder::start()
     m_uiByte = 0;
     m_uiBitsLeft = 9;
 
+    //BitWriteBuffer::
     m_pcBitWriteBufferIf->writeAlignOne();
     return Err::m_nOK;
 }
@@ -231,7 +232,7 @@ ErrVal CabaEncoder::finish()
     return Err::m_nOK;
 }
 
-
+//writeSymbol写的内容:     46  0x0152    2    0  -    1
 ErrVal CabaEncoder::writeSymbol(UInt uiSymbol, CabacContextModel& rcCCModel)
 {
     ETRACE_SC;

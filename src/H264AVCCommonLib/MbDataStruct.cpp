@@ -12,11 +12,11 @@ namespace JSVM {
 
 ErrVal MbDataStruct::save(FILE* pFile)
 {
-    ROF( pFile );
+    ROF (pFile);
 
     UInt uiSave  = (UInt)::fwrite(this, sizeof(MbDataStruct), 1, pFile);
 
-    ROF( uiSave == 1 );
+    ROF (uiSave == 1);
 
     return Err::m_nOK;
 }
@@ -24,11 +24,11 @@ ErrVal MbDataStruct::save(FILE* pFile)
 
 ErrVal MbDataStruct::load(FILE* pFile)
 {
-    ROF( pFile );
+    ROF (pFile);
 
-    UInt uiRead  = (UInt) ::fread( this, sizeof(MbDataStruct), 1, pFile );
+    UInt uiRead  = (UInt) ::fread(this, sizeof(MbDataStruct), 1, pFile);
 
-    ROF( uiRead == 1 );
+    ROF (uiRead == 1);
 
     return Err::m_nOK;
 }
@@ -41,31 +41,30 @@ const UChar MbDataStruct::m_aucACTab[7] =
     0,1,2,0,1,2,2
 };
 
-MbDataStruct::MbDataStruct()
-: m_uiSliceId           (0)
-, m_uiMbAddr            (MSYS_UINT_MAX)
-, m_uiMapUnit           (MSYS_UINT_MAX)
-, m_eSliceType          (NOT_SPECIFIED_SLICE)
-, m_bBLSkipFlag         (false )
-, m_eMbMode             (MODE_SKIP )
-, m_uiMbCbp             (0)
-, m_uiBCBP              (0)
-, m_usFwdBwd            (0)
-, m_ucChromaPredMode    (0)
-, m_ucQp                (0)
-, m_ucQp4LF             (0)
-, m_bResidualPredFlag   (false)
-, m_bTransformSize8x8   (false)
-, m_bSkipFlag           (true)
-, m_bInCropWindowFlag   (false) //TMM_ESS
-, m_bFieldFlag          (0 )
-, m_uiMbCbpResidual     (0 )
-, m_uiMbCbpDQId0        (0 )
-, m_uiMbCbpLevelsLF     (0 )
-, m_uiSliceIdcLF        (0 )
-, m_bRPSafe							(true)
+MbDataStruct::MbDataStruct() :
+    m_uiSliceId           (0),
+    m_uiMbAddr            (MSYS_UINT_MAX),
+    m_uiMapUnit           (MSYS_UINT_MAX),
+    m_eSliceType          (NOT_SPECIFIED_SLICE),
+    m_bBLSkipFlag         (false),
+    m_eMbMode             (MODE_SKIP),
+    m_uiMbCbp             (0),
+    m_uiBCBP              (0),
+    m_usFwdBwd            (0),
+    m_ucChromaPredMode    (0),
+    m_ucQp                (0),
+    m_ucQp4LF             (0),
+    m_bResidualPredFlag   (false),
+    m_bTransformSize8x8   (false),
+    m_bSkipFlag           (true),
+    m_bInCropWindowFlag   (false), //TMM_ESS
+    m_bFieldFlag          (0),
+    m_uiMbCbpResidual     (0),
+    m_uiMbCbpDQId0        (0),
+    m_uiMbCbpLevelsLF     (0),
+    m_uiSliceIdcLF        (0), m_bRPSafe                            (true)
 {
-    DO_DBG( clearIntraPredictionModes(true));//TMM_INTERLACE
+    DO_DBG(clearIntraPredictionModes(true));//TMM_INTERLACE
     m_aBlkMode[0] = m_aBlkMode[1] = m_aBlkMode[2] = m_aBlkMode[3] = BLK_8x8;  //TMM_ESS
 }
 
@@ -87,9 +86,9 @@ Void MbDataStruct::reset()
     m_bResidualPredFlag   = false;
     m_bTransformSize8x8   = false;
     m_bInCropWindowFlag   = false; //TMM_ESS
-    DO_DBG( clearIntraPredictionModes( true ) );//TMM_INTERLACE
+    DO_DBG(clearIntraPredictionModes(true));//TMM_INTERLACE
     m_aBlkMode[0] = m_aBlkMode[1] = m_aBlkMode[2] = m_aBlkMode[3] = BLK_8x8;  //TMM_ESS
-	m_bFieldFlag          = 0;
+    m_bFieldFlag          = 0;
 }
 
 
@@ -104,22 +103,22 @@ Void MbDataStruct::clear()
     m_bResidualPredFlag   = false;
     m_bTransformSize8x8   = false;
     m_bInCropWindowFlag   = false; //TMM_ESS
-    clearIntraPredictionModes( true );
+    clearIntraPredictionModes(true);
     m_aBlkMode[0] = m_aBlkMode[1] = m_aBlkMode[2] = m_aBlkMode[3] = BLK_8x8;  //TMM_ESS
-    //m_bSkipFlag						= false; TMM_JV_DEBUG
+    //m_bSkipFlag         = false; TMM_JV_DEBUG
 }
 
 
-Void MbDataStruct::clearIntraPredictionModes( Bool bAll )
+Void MbDataStruct::clearIntraPredictionModes(Bool bAll)
 {
-    ::memset( m_ascIPredMode, DC_PRED, sizeof(UChar)* 16 );
-    ROFVS( bAll );
+    ::memset(m_ascIPredMode, DC_PRED, sizeof(UChar)* 16);
+    ROFVS(bAll);
     m_ucChromaPredMode = 0;
 }
 
 
 
-Void MbDataStruct::setMbCbp( UInt uiCbp )
+Void MbDataStruct::setMbCbp(UInt uiCbp)
 {
     UInt uiExtMbCbp = 0;
     UInt uiMbCbpTmp = uiCbp;
@@ -136,7 +135,7 @@ Void MbDataStruct::setMbCbp( UInt uiCbp )
 
 
 
-Void MbDataStruct::setAndConvertMbExtCbp( UInt uiExtCbp )
+Void MbDataStruct::setAndConvertMbExtCbp(UInt uiExtCbp)
 {
     UInt uiMbCbp;
     {
@@ -153,14 +152,14 @@ Void MbDataStruct::setAndConvertMbExtCbp( UInt uiExtCbp )
 }
 
 
-Void MbDataStruct::copy( const MbDataStruct& rcMbDataStruct )
+Void MbDataStruct::copy(const MbDataStruct& rcMbDataStruct)
 {
     copyFrom(rcMbDataStruct);
     m_bSkipFlag = rcMbDataStruct.m_bSkipFlag;
     m_bInCropWindowFlag  = rcMbDataStruct.m_bInCropWindowFlag;
 }
 
-Void MbDataStruct::copyFrom( const MbDataStruct& rcMbDataStruct )
+Void MbDataStruct::copyFrom(const MbDataStruct& rcMbDataStruct)
 {
     m_usFwdBwd            = rcMbDataStruct.m_usFwdBwd;
     m_uiSliceId           = rcMbDataStruct.m_uiSliceId;
@@ -185,20 +184,20 @@ Void MbDataStruct::copyFrom( const MbDataStruct& rcMbDataStruct )
 
 Bool MbDataStruct::is8x8TrafoFlagPresent(Bool bDirect8x8Inference) const
 {
-    ROTRS( m_eMbMode == INTRA_BL,   true  );
-    ROTRS( m_eMbMode > INTRA_4X4,   false );
+    ROTRS (m_eMbMode == INTRA_BL,   true );
+    ROTRS (m_eMbMode > INTRA_4X4,   false);
 
-    ROTRS( MODE_SKIP == m_eMbMode,  bDirect8x8Inference );
+    ROTRS (MODE_SKIP == m_eMbMode,  bDirect8x8Inference);
 
-    if((MODE_8x8 == m_eMbMode ) || (MODE_8x8ref0 == m_eMbMode))
+    if((MODE_8x8 == m_eMbMode) || (MODE_8x8ref0 == m_eMbMode))
     {
-        for( UInt n = 0; n < 4; n++ )
+        for(UInt n = 0; n < 4; n++)
         {
-            if( BLK_8x8 != m_aBlkMode[n] && BLK_SKIP != m_aBlkMode[n] )
+            if(BLK_8x8 != m_aBlkMode[n] && BLK_SKIP != m_aBlkMode[n])
             {
                 return false;
             }
-            if( BLK_SKIP == m_aBlkMode[n] && !bDirect8x8Inference )
+            if(BLK_SKIP == m_aBlkMode[n] && !bDirect8x8Inference)
             {
                 return false;
             }

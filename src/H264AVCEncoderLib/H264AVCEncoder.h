@@ -22,179 +22,184 @@ class LayerEncoder;
 class MotionVectorCalculation;
 
 
-#if defined( WIN32 )
-# pragma warning( disable: 4251 )
-#endif
-
-
-
 
 class H264AVCEncoder
 {
 protected:
-	H264AVCEncoder();
-	virtual ~H264AVCEncoder();
+    H264AVCEncoder();
+    virtual ~H264AVCEncoder();
 
 public:
-  static  ErrVal create ( H264AVCEncoder*&  rpcH264AVCEncoder );
-  virtual ErrVal destroy();
-  virtual ErrVal init   ( LayerEncoder*     apcLayerEncoder[MAX_LAYERS],
-                          ParameterSetMng*  pcParameterSetMng,
-                          PocCalculator*    pcPocCalculator,
-                          NalUnitEncoder*   pcNalUnitEncoder,
-                          ControlMngIf*     pcControlMng,
-                          CodingParameter*  pcCodingParameter,
-                          // JVT-V068 {
-                          StatBuf<Scheduler*, MAX_SCALABLE_LAYERS>* apcScheduler
-                          // JVT-V068 }
-                        );
-  virtual ErrVal uninit ();
+    static  ErrVal create (H264AVCEncoder*&  rpcH264AVCEncoder);
+    virtual ErrVal destroy();
+    virtual ErrVal init   (LayerEncoder*     apcLayerEncoder[MAX_LAYERS],
+                            ParameterSetMng*  pcParameterSetMng,
+                            PocCalculator*    pcPocCalculator,
+                            NalUnitEncoder*   pcNalUnitEncoder,
+                            ControlMngIf*     pcControlMng,
+                            CodingParameter*  pcCodingParameter,
+                            // JVT-V068 {
+                            StatBuf<Scheduler*, MAX_SCALABLE_LAYERS>* apcScheduler
+                            // JVT-V068 }
+                         );
+    virtual ErrVal uninit ();
 
-  ErrVal writeParameterSets ( ExtBinDataAccessor*       pcExtBinDataAccessor,
-                              SequenceParameterSet*&    rpcAVCSPS,
-                              Bool&                     rbMoreSets );
-  ErrVal process            ( ExtBinDataAccessorList&   rcExtBinDataAccessorList,
-                              PicBuffer*                apcOriginalPicBuffer   [MAX_LAYERS],
-                              PicBuffer*                apcReconstructPicBuffer[MAX_LAYERS],
-                              PicBufferList*            apcPicBufferOutputList,
-                              PicBufferList*            apcPicBufferUnusedList );
-  ErrVal finish             ( ExtBinDataAccessorList&   rcExtBinDataAccessorList,
-                              PicBufferList*            apcPicBufferOutputList,
-                              PicBufferList*            apcPicBufferUnusedList,
-                              UInt&                     ruiNumCodedFrames,
-                              Double&                   rdHighestLayerOutputRate );
+    ErrVal writeParameterSets (ExtBinDataAccessor*       pcExtBinDataAccessor,
+                               SequenceParameterSet*&    rpcAVCSPS,
+                               Bool&                     rbMoreSets);
+    ErrVal process            (ExtBinDataAccessorList&   rcExtBinDataAccessorList,
+                               PicBuffer*                apcOriginalPicBuffer[MAX_LAYERS],
+                               PicBuffer*                apcReconstructPicBuffer[MAX_LAYERS],
+                               PicBufferList*            apcPicBufferOutputList,
+                               PicBufferList*            apcPicBufferUnusedList);
+    ErrVal finish             (ExtBinDataAccessorList&   rcExtBinDataAccessorList,
+                               PicBufferList*            apcPicBufferOutputList,
+                               PicBufferList*            apcPicBufferUnusedList,
+                               UInt&                     ruiNumCodedFrames,
+                               Double&                   rdHighestLayerOutputRate);
 
-  UInt    getPicCodingType    ( UInt          uiBaseLayerId,
-                                UInt          uiTemporalId,
-                                UInt          uiFrameIdInTLayer );
-  UInt    getMaxSliceSize     ( UInt          uiLayerId,
-                                UInt          uiAUIndex );
-  ErrVal  getBaseLayerStatus  ( UInt&         ruiBaseLayerId,
-																UInt          uiLayerId,
-																PicType       ePicType,
-																UInt					uiTemporalId );
-  Bool    hasMGSEnhancementLayer( UInt        uiLayerId,
-                                  UInt&       ruiMaxLevelIdc );
-  ErrVal getBaseLayerLevelIdc ( UInt          uiBaseLayerId,
-                                UInt&         uiLevelIdc,
-                                Bool&         bBiPred8x8Disable,
-                                Bool&         bMCBlks8x8Disable );
+    UInt    getPicCodingType    (UInt          uiBaseLayerId,
+                                 UInt          uiTemporalId,
+                                 UInt          uiFrameIdInTLayer);
+    UInt    getMaxSliceSize     (UInt          uiLayerId,
+                                 UInt          uiAUIndex);
+    ErrVal  getBaseLayerStatus  (UInt&         ruiBaseLayerId,
+                                 UInt          uiLayerId,
+                                 PicType       ePicType,
+                                 UInt          uiTemporalId);
+    Bool    hasMGSEnhancementLayer(UInt        uiLayerId,
+                                   UInt&       ruiMaxLevelIdc);
+    ErrVal getBaseLayerLevelIdc (UInt          uiBaseLayerId,
+                                 UInt&         uiLevelIdc,
+                                 Bool&         bBiPred8x8Disable,
+                                 Bool&         bMCBlks8x8Disable);
 
-  ErrVal  getBaseLayerDataAvlb( Frame*&       pcFrame,
-																Frame*&       pcResidual,
-																MbDataCtrl*&  pcMbDataCtrl,
-																UInt          uiBaseLayerId,
-																Bool&         bBaseDataAvailable,
-																PicType       ePicType,
-																UInt					uiTemporalId );
+    ErrVal  getBaseLayerDataAvlb(Frame*&       pcFrame,
+                                 Frame*&       pcResidual,
+                                 MbDataCtrl*&  pcMbDataCtrl,
+                                 UInt          uiBaseLayerId,
+                                 Bool&         bBaseDataAvailable,
+                                 PicType       ePicType,
+                                 UInt          uiTemporalId);
 
-	ErrVal  getBaseLayerData    ( SliceHeader&  rcELSH,
-                                Frame*&       pcFrame,
-																Frame*&       pcResidual,
-																MbDataCtrl*&  pcMbDataCtrl,
-																Bool          bSpatialScalability,
-																UInt          uiBaseLayerId,
-																PicType       ePicType,
-																UInt					uiTemporalId );
+    ErrVal  getBaseLayerData    (SliceHeader&  rcELSH,
+                                 Frame*&       pcFrame,
+                                 Frame*&       pcResidual,
+                                 MbDataCtrl*&  pcMbDataCtrl,
+                                 Bool          bSpatialScalability,
+                                 UInt          uiBaseLayerId,
+                                 PicType       ePicType,
+                                 UInt          uiTemporalId);
 
-	ErrVal getBaseLayerResidual( Frame*&      pcResidual, UInt            uiBaseLayerId);
+    ErrVal getBaseLayerResidual(Frame*&        pcResidual,
+                                UInt           uiBaseLayerId);
 
-	UInt    getNewBits          ( UInt          uiBaseLayerId );
+    UInt   getNewBits          (UInt           uiBaseLayerId);
 
-  Frame* getLowPassRec     ( UInt uiLayerId, UInt uiLowPassIndex );
-  Frame* getELRefPic       ( UInt uiLayerId, UInt uiTemporalId, UInt uiFrameIdInTId );
+    Frame* getLowPassRec       (UInt uiLayerId,
+                                UInt uiLowPassIndex);
+    Frame* getELRefPic         (UInt uiLayerId,
+                                UInt uiTemporalId,
+                                UInt uiFrameIdInTId);
 
-  Void setScalableSEIMessage  ()       { m_bScalableSeiMessage = true; }
+    Void setScalableSEIMessage  ()       { m_bScalableSeiMessage = true; }
 // JVT-V068 HRD {
-  Void setBufferPeriodSEIMessage()     { m_bWriteBufferingPeriodSEI = true; }
-  ErrVal writeAVCCompatibleHRDSEI( ExtBinDataAccessor* pcExtBinDataAccessor, SequenceParameterSet& rcSPS );
+    Void setBufferPeriodSEIMessage()     { m_bWriteBufferingPeriodSEI = true; }
+    ErrVal writeAVCCompatibleHRDSEI(ExtBinDataAccessor* pcExtBinDataAccessor, SequenceParameterSet& rcSPS);
 // JVT-V068 HRD }
-	Bool bGetScalableSeiMessage	() const { return m_bScalableSeiMessage; }
-	Void SetVeryFirstCall				()			 { m_bVeryFirstCall = true; }
+    Bool bGetScalableSeiMessage    () const { return m_bScalableSeiMessage; }
+    Void SetVeryFirstCall          ()             { m_bVeryFirstCall = true; }
 
-	UInt   getScalableLayerId( UInt uiLayer, UInt uiTempLevel, UInt uiFGS ) const { return m_aaauiScalableLayerId[uiLayer][uiTempLevel][uiFGS]; }
-  Void   setBitrateRep( UInt uiLayer, UInt uiTL, UInt uiQL, Double dVal ) { m_aaadLayerBitrateRep[uiLayer][uiTL][uiQL] = dVal; }
-  Double getBitrateRep( UInt uiLayer, UInt uiTL, UInt uiQL ) const { return m_aaadLayerBitrateRep[uiLayer][uiTL][uiQL]; }
+    UInt   getScalableLayerId(UInt uiLayer, UInt uiTempLevel, UInt uiFGS) const { return m_aaauiScalableLayerId[uiLayer][uiTempLevel][uiFGS]; }
+    Void   setBitrateRep(UInt uiLayer, UInt uiTL, UInt uiQL, Double dVal) { m_aaadLayerBitrateRep[uiLayer][uiTL][uiQL] = dVal; }
+    Double getBitrateRep(UInt uiLayer, UInt uiTL, UInt uiQL) const { return m_aaadLayerBitrateRep[uiLayer][uiTL][uiQL]; }
 
-	//JVT-W052
-	CodingParameter*  getCodingParameter()  { return m_pcCodingParameter;}
-	SEI::IntegrityCheckSEI * getIntegrityCheckSEI() {return m_pcIntegrityCheckSEI; }
-	//JVT-W052
+    //JVT-W052
+    CodingParameter*  getCodingParameter()  { return m_pcCodingParameter;}
+    SEI::IntegrityCheckSEI * getIntegrityCheckSEI() {return m_pcIntegrityCheckSEI; }
+    //JVT-W052
 
 // JVT-S080 LMI {
-  ErrVal xWriteScalableSEILayersNotPresent( ExtBinDataAccessor* pcExtBinDataAccessor, UInt uiInputLayers, UInt* m_layer_id);
-  ErrVal xWriteScalableSEIDependencyChange( ExtBinDataAccessor* pcExtBinDataAccessor, UInt uiNumLayers, UInt* uiLayerId, Bool* pbLayerDependencyInfoPresentFlag,
-												  UInt* uiNumDirectDependentLayers, UInt** puiDirectDependentLayerIdDeltaMinus1, UInt* puiLayerDependencyInfoSrcLayerIdDeltaMinus1);
+    ErrVal xWriteScalableSEILayersNotPresent(ExtBinDataAccessor* pcExtBinDataAccessor,
+                                             UInt uiInputLayers,
+                                             UInt* m_layer_id);
+    ErrVal xWriteScalableSEIDependencyChange(ExtBinDataAccessor* pcExtBinDataAccessor,
+                                             UInt uiNumLayers,
+                                             UInt* uiLayerId,
+                                             Bool* pbLayerDependencyInfoPresentFlag,
+                                             UInt* uiNumDirectDependentLayers,
+                                             UInt** puiDirectDependentLayerIdDeltaMinus1,
+                                             UInt* puiLayerDependencyInfoSrcLayerIdDeltaMinus1);
 // JVT-S080 LMI }
 
-  // JVT-AD021 {
-  ErrVal getBaseLayerQpPredData ( UInt uiBaseLayerId , Double & dQpPredData , Int & uiPOC , UInt & uiFrameSizeInMB );
-  // JVT-AD021 }
+    // JVT-AD021 {
+    ErrVal getBaseLayerQpPredData (UInt uiBaseLayerId , Double & dQpPredData , Int & uiPOC , UInt & uiFrameSizeInMB);
+    // JVT-AD021 }
 
 protected:
-  ErrVal xInitParameterSets ();
+    ErrVal xInitParameterSets ();
 // JVT-V068 HRD {
-	ErrVal xInitLayerInfoForHrd(SequenceParameterSet* pcSPS, UInt uiLayer );
+    ErrVal xInitLayerInfoForHrd(SequenceParameterSet* pcSPS, UInt uiLayer);
 // JVT-V068 HRD }
-  ErrVal xWriteScalableSEI  ( ExtBinDataAccessor*       pcExtBinDataAccessor );
-	ErrVal xWriteSubPicSEI		( ExtBinDataAccessor*				pcExtBinDataAccessor );
-	ErrVal xWriteSubPicSEI( ExtBinDataAccessor* pcExtBinDataAccessor, UInt layer_id ) ;
-	ErrVal xWriteMotionSEI( ExtBinDataAccessor* pcExtBinDataAccessor, UInt sg_id ) ;
+    ErrVal xWriteScalableSEI(ExtBinDataAccessor*  pcExtBinDataAccessor);
+    ErrVal xWriteSubPicSEI  (ExtBinDataAccessor*  pcExtBinDataAccessor);
+    ErrVal xWriteSubPicSEI  (ExtBinDataAccessor*  pcExtBinDataAccessor, UInt layer_id) ;
+    ErrVal xWriteMotionSEI  (ExtBinDataAccessor*  pcExtBinDataAccessor, UInt sg_id) ;
 // JVT-V068 HRD {
-  ErrVal xWriteBufferingPeriodSEI ( ExtBinDataAccessor*  pcExtBinDataAccessor );
+    ErrVal xWriteBufferingPeriodSEI (ExtBinDataAccessor*  pcExtBinDataAccessor);
 // JVT-V068 HRD }
 
-  ErrVal xProcessGOP        ( PicBufferList*            apcPicBufferOutputList,
-                              PicBufferList*            apcPicBufferUnusedList );
+    ErrVal xProcessGOP      (PicBufferList*       apcPicBufferOutputList,
+                             PicBufferList*       apcPicBufferUnusedList);
 
 protected:
-  std::list<SequenceParameterSet*>  m_cUnWrittenSPS;
-  std::list<PictureParameterSet*>   m_cUnWrittenPPS;
-  PicBufferList                     m_acOrgPicBufferList[MAX_LAYERS];
-  PicBufferList                     m_acRecPicBufferList[MAX_LAYERS];
-  ParameterSetMng*                  m_pcParameterSetMng;
-  PocCalculator*                    m_pcPocCalculator;
-  NalUnitEncoder*                   m_pcNalUnitEncoder;
-  ControlMngIf*                     m_pcControlMng;
-  CodingParameter*                  m_pcCodingParameter;
-  Bool                              m_bVeryFirstCall;
-  Bool                              m_bInitDone;
-  Bool                              m_bTraceEnable;
+    std::list<SequenceParameterSet*>  m_cUnWrittenSPS;
+    std::list<PictureParameterSet*>   m_cUnWrittenPPS;
+    PicBufferList                     m_acOrgPicBufferList[MAX_LAYERS];
+    PicBufferList                     m_acRecPicBufferList[MAX_LAYERS];
+    ParameterSetMng*                  m_pcParameterSetMng;
+    PocCalculator*                    m_pcPocCalculator;
+    NalUnitEncoder*                   m_pcNalUnitEncoder;
+    ControlMngIf*                     m_pcControlMng;
+    CodingParameter*                  m_pcCodingParameter;
+    Bool                              m_bVeryFirstCall;
+    Bool                              m_bInitDone;
+    Bool                              m_bTraceEnable;
 
-	Bool															m_bScalableSeiMessage;
+    Bool                              m_bScalableSeiMessage;
 public:
-	Double														m_aaadFinalFramerate[MAX_LAYERS][MAX_TEMP_LEVELS][MAX_QUALITY_LEVELS];
-  Double                            m_aaadSeqBits[MAX_LAYERS][MAX_TEMP_LEVELS][MAX_QUALITY_LEVELS];
+    Double                            m_aaadFinalFramerate[MAX_LAYERS][MAX_TEMP_LEVELS][MAX_QUALITY_LEVELS];
+    Double                            m_aaadSeqBits[MAX_LAYERS][MAX_TEMP_LEVELS][MAX_QUALITY_LEVELS];
 protected:
-  LayerEncoder*                     m_apcLayerEncoder   [MAX_LAYERS];
-  AccessUnitDataList                m_cAccessUnitDataList;
+    LayerEncoder*                     m_apcLayerEncoder   [MAX_LAYERS];
+    AccessUnitDataList                m_cAccessUnitDataList;
 
-  // ICU / ETRI ROI
-  Bool    m_bWrteROISEI;
+    // ICU / ETRI ROI
+    Bool    m_bWrteROISEI;
 // JVT-V068 HRD {
-  Bool    m_bWriteBufferingPeriodSEI;
-  StatBuf<Scheduler*, MAX_SCALABLE_LAYERS>* m_apcScheduler;
+    Bool    m_bWriteBufferingPeriodSEI;
+    StatBuf<Scheduler*, MAX_SCALABLE_LAYERS>* m_apcScheduler;
 // JVT-V068 HRD }
-  UInt    m_loop_roi_sei;
-	//JVT-W051 {
-	UInt		m_uiProfileIdc[MAX_LAYERS];
-	UInt		m_uiLevelIdc[MAX_LAYERS];
-	Bool		m_bConstraint0Flag[MAX_LAYERS];
-	Bool		m_bConstraint1Flag[MAX_LAYERS];
-	Bool		m_bConstraint2Flag[MAX_LAYERS];
-	Bool		m_bConstraint3Flag[MAX_LAYERS];
-	Bool		m_bIsFirstGOP;
-	//JVT-W051 }
+    UInt    m_loop_roi_sei;
+    //JVT-W051 {
+    UInt        m_uiProfileIdc[MAX_LAYERS];
+    UInt        m_uiLevelIdc[MAX_LAYERS];
+    Bool        m_bConstraint0Flag[MAX_LAYERS];
+    Bool        m_bConstraint1Flag[MAX_LAYERS];
+    Bool        m_bConstraint2Flag[MAX_LAYERS];
+    Bool        m_bConstraint3Flag[MAX_LAYERS];
+    Bool        m_bIsFirstGOP;
+    //JVT-W051 }
 
-  Double m_aaadLayerBitrateRep [MAX_LAYERS][MAX_TEMP_LEVELS][MAX_QUALITY_LEVELS];
-	UInt   m_aaauiScalableLayerId[MAX_LAYERS][MAX_TEMP_LEVELS][MAX_QUALITY_LEVELS];
+    Double m_aaadLayerBitrateRep [MAX_LAYERS][MAX_TEMP_LEVELS][MAX_QUALITY_LEVELS];
+    UInt   m_aaauiScalableLayerId[MAX_LAYERS][MAX_TEMP_LEVELS][MAX_QUALITY_LEVELS];
 
-	//JVT-W052
+    //JVT-W052
 public:
-	UInt    m_uicrcVal[MAX_LAYERS];
-	UInt    m_uiNumofCGS[MAX_LAYERS];
-	SEI::IntegrityCheckSEI * m_pcIntegrityCheckSEI;
-	//JVT-W052
+    UInt    m_uicrcVal[MAX_LAYERS];
+    UInt    m_uiNumofCGS[MAX_LAYERS];
+    SEI::IntegrityCheckSEI * m_pcIntegrityCheckSEI;
+    //JVT-W052
 };
 
 
@@ -208,34 +213,34 @@ protected:
   virtual ~RewriteEncoder();
 
 public:
-  static ErrVal   create            ( RewriteEncoder*&            rpcRewriteEncoder );
+  static ErrVal   create            (RewriteEncoder*&            rpcRewriteEncoder);
   ErrVal          destroy           ();
   ErrVal          init              ();
   ErrVal          uninit            ();
 
-  ErrVal          startPicture      ( const SequenceParameterSet& rcSPS );
-  ErrVal          finishPicture     ( BinDataList&                rcBinDataList );
-  ErrVal          rewriteMb         ( MbDataAccess&               rcMbDataAccessSource,
-                                      Bool                        bSendEOS );
+  ErrVal          startPicture      (const SequenceParameterSet& rcSPS);
+  ErrVal          finishPicture     (BinDataList&                rcBinDataList);
+  ErrVal          rewriteMb         (MbDataAccess&               rcMbDataAccessSource,
+                                      Bool                        bSendEOS);
 
 private:
   ErrVal          xCreate           ();
 
-  ErrVal          xStartSlice       ( MbDataAccess&               rcMbDataAccessSource );
+  ErrVal          xStartSlice       (MbDataAccess&               rcMbDataAccessSource);
   ErrVal          xFinishSlice      ();
   ErrVal          xInitNALUnit      ();
   ErrVal          xCloseNALUnit     ();
-  Bool            xIsRewritten      ( const Void*                 pParameterSet );
-  ErrVal          xRewriteSPS       ( const SequenceParameterSet& rcSPS );
-  ErrVal          xRewritePPS       ( const PictureParameterSet&  rcPPS );
+  Bool            xIsRewritten      (const Void*                 pParameterSet);
+  ErrVal          xRewriteSPS       (const SequenceParameterSet& rcSPS);
+  ErrVal          xRewritePPS       (const PictureParameterSet&  rcPPS);
 
-  ErrVal          xInitMb           ( MbDataAccess*&              rpcMbDataAccessRewrite,
-                                      MbDataAccess&               rcMbDataAccessSource );
-  ErrVal          xAdjustMb         ( MbDataAccess&               rcMbDataAccessRewrite,
-                                      Bool                        bBaseLayer );
-  ErrVal          xEncodeMb         ( MbDataAccess&               rcMbDataAccessRewrite,
+  ErrVal          xInitMb           (MbDataAccess*&              rpcMbDataAccessRewrite,
+                                      MbDataAccess&               rcMbDataAccessSource);
+  ErrVal          xAdjustMb         (MbDataAccess&               rcMbDataAccessRewrite,
+                                      Bool                        bBaseLayer);
+  ErrVal          xEncodeMb         (MbDataAccess&               rcMbDataAccessRewrite,
                                       Bool                        bLastMbInSlice,
-                                      Bool                        bSendEOS );
+                                      Bool                        bSendEOS);
 
 private:
   Bool                      m_bInitialized;

@@ -412,8 +412,8 @@ UInt SequenceParameterSet::getLevelIdc(UInt uiMbY,
         if(Err::m_nOK == xGetLevelLimit(pcLevelLimit, uiLevel))
         {
             UInt  uiMbPerLine  = (UInt)sqrt((Double)pcLevelLimit->uiMaxFrameSize * 8);
-            if((uiMbPerLine                   >= uiMbX     ) &&
-               (uiMbPerLine                   >= uiMbY     ) &&
+            if((uiMbPerLine                   >= uiMbX    ) &&
+               (uiMbPerLine                   >= uiMbY    ) &&
                (pcLevelLimit->uiMaxMbPerSec   >= uiMbPerSec) &&
                (pcLevelLimit->uiMaxFrameSize  >= uiFrameSize) &&
                (pcLevelLimit->uiMaxDPBSizeX2  >= uiDPBSizeX2) &&
@@ -427,6 +427,7 @@ UInt SequenceParameterSet::getLevelIdc(UInt uiMbY,
 }
 
 
+//写SPS信息到.txt
 ErrVal SequenceParameterSet::write (HeaderSymbolWriteIf* pcWriteIf) const
 {
     //===== NAL unit header =====
@@ -495,10 +496,10 @@ ErrVal SequenceParameterSet::write (HeaderSymbolWriteIf* pcWriteIf) const
 
     if(m_uiFrameCropLeftOffset || m_uiFrameCropRightOffset || m_uiFrameCropTopOffset || m_uiFrameCropBottomOffset)
     {
-        pcWriteIf->writeFlag (true,                                     "SPS: frame_cropping_flag"    );
-        pcWriteIf->writeUvlc (m_uiFrameCropLeftOffset,                  "SPS: frame_crop_left_offset" );
+        pcWriteIf->writeFlag (true,                                     "SPS: frame_cropping_flag"   );
+        pcWriteIf->writeUvlc (m_uiFrameCropLeftOffset,                  "SPS: frame_crop_left_offset");
         pcWriteIf->writeUvlc (m_uiFrameCropRightOffset,                 "SPS: frame_crop_right_offset");
-        pcWriteIf->writeUvlc (m_uiFrameCropTopOffset,                   "SPS: frame_crop_top_offset"  );
+        pcWriteIf->writeUvlc (m_uiFrameCropTopOffset,                   "SPS: frame_crop_top_offset" );
         pcWriteIf->writeUvlc (m_uiFrameCropBottomOffset,                "SPS: frame_crop_bottom_offset");
     }
     else
@@ -628,12 +629,12 @@ ErrVal SequenceParameterSet::read (HeaderSymbolReadIf* pcReadIf,
     pcReadIf->getFlag(m_bDirect8x8InferenceFlag,                       "SPS: direct_8x8_inference_flag");
 
     Bool  bFrameCroppingFlag;
-    pcReadIf->getFlag(bFrameCroppingFlag,                              "SPS: frame_cropping_flag"     );
+    pcReadIf->getFlag(bFrameCroppingFlag,                              "SPS: frame_cropping_flag"    );
     if(bFrameCroppingFlag)
     {
-        pcReadIf->getUvlc(m_uiFrameCropLeftOffset,                     "SPS: frame_crop_left_offset" );
+        pcReadIf->getUvlc(m_uiFrameCropLeftOffset,                     "SPS: frame_crop_left_offset");
         pcReadIf->getUvlc(m_uiFrameCropRightOffset,                    "SPS: frame_crop_right_offset");
-        pcReadIf->getUvlc(m_uiFrameCropTopOffset,                      "SPS: frame_crop_top_offset"  );
+        pcReadIf->getUvlc(m_uiFrameCropTopOffset,                      "SPS: frame_crop_top_offset" );
         pcReadIf->getUvlc(m_uiFrameCropBottomOffset,                   "SPS: frame_crop_bottom_offset");
     }
     else
@@ -743,7 +744,7 @@ ErrVal SequenceParameterSet::xWriteFrext (HeaderSymbolWriteIf* pcWriteIf) const
 
 ErrVal SequenceParameterSet::xReadFrext (HeaderSymbolReadIf* pcReadIf)
 {
-    ROTRS(m_eProfileIdc != HIGH_PROFILE              &&
+    ROTRS (m_eProfileIdc != HIGH_PROFILE              &&
            m_eProfileIdc != HIGH_10_PROFILE           &&
            m_eProfileIdc != HIGH_422_PROFILE          &&
            m_eProfileIdc != HIGH_444_PROFILE          &&
@@ -761,37 +762,37 @@ ErrVal SequenceParameterSet::xReadFrext (HeaderSymbolReadIf* pcReadIf)
     pcReadIf->getFlag(m_bTransformBypassFlag,         "SPS: qpprime_y_zero_transform_bypass_flag");
     if(m_eProfileIdc == SCALABLE_BASELINE_PROFILE || m_eProfileIdc == SCALABLE_HIGH_PROFILE)
     {
-        ROF(m_uiChromaFormatIdc      == 1 );
-        ROF(m_uiBitDepthLumaMinus8   == 0 );
-        ROF(m_uiBitDepthChromaMinus8 == 0 );
-        ROT(m_bTransformBypassFlag        );
+        ROF(m_uiChromaFormatIdc      == 1);
+        ROF(m_uiBitDepthLumaMinus8   == 0);
+        ROF(m_uiBitDepthChromaMinus8 == 0);
+        ROT(m_bTransformBypassFlag       );
     }
     else if(m_eProfileIdc == HIGH_PROFILE)
     {
-        ROF(m_uiChromaFormatIdc      <= 1 );
-        ROF(m_uiBitDepthLumaMinus8   == 0 );
-        ROF(m_uiBitDepthChromaMinus8 == 0 );
-        ROT(m_bTransformBypassFlag        );
+        ROF(m_uiChromaFormatIdc      <= 1);
+        ROF(m_uiBitDepthLumaMinus8   == 0);
+        ROF(m_uiBitDepthChromaMinus8 == 0);
+        ROT(m_bTransformBypassFlag       );
     }
     else if(m_eProfileIdc == HIGH_10_PROFILE)
     {
-        ROF(m_uiChromaFormatIdc      <= 1 );
-        ROF(m_uiBitDepthLumaMinus8   <= 2 );
-        ROF(m_uiBitDepthChromaMinus8 <= 2 );
-        ROT(m_bTransformBypassFlag        );
+        ROF(m_uiChromaFormatIdc      <= 1);
+        ROF(m_uiBitDepthLumaMinus8   <= 2);
+        ROF(m_uiBitDepthChromaMinus8 <= 2);
+        ROT(m_bTransformBypassFlag       );
     }
     else if(m_eProfileIdc == HIGH_422_PROFILE)
     {
-        ROF(m_uiChromaFormatIdc      <= 2 );
-        ROF(m_uiBitDepthLumaMinus8   <= 2 );
-        ROF(m_uiBitDepthChromaMinus8 <= 2 );
-        ROT(m_bTransformBypassFlag        );
+        ROF(m_uiChromaFormatIdc      <= 2);
+        ROF(m_uiBitDepthLumaMinus8   <= 2);
+        ROF(m_uiBitDepthChromaMinus8 <= 2);
+        ROT(m_bTransformBypassFlag       );
     }
     else
     {
-        ROF(m_uiChromaFormatIdc      <= 3 );
-        ROF(m_uiBitDepthLumaMinus8   <= 6 );
-        ROF(m_uiBitDepthChromaMinus8 <= 6 );
+        ROF(m_uiChromaFormatIdc      <= 3);
+        ROF(m_uiBitDepthLumaMinus8   <= 6);
+        ROF(m_uiBitDepthChromaMinus8 <= 6);
     }
 
     pcReadIf->getFlag(m_bSeqScalingMatrixPresentFlag,  "SPS: seq_scaling_matrix_present_flag");

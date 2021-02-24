@@ -667,12 +667,16 @@ ErrVal SliceEncoder::encodeSlice (SliceHeader&  rcSliceHeader,
 
     //Step 5: 逐个对该slice中的宏块进行编码
     //===== loop over macroblocks =====
+    //rcSliceHeader.getLastMbInSlice():8159
+    //rcSliceHeader.getFMO()->getNextMBNr(uiMbAddress): 获取本FMO中下一个MB的idx
     for(UInt uiMbAddress = rcSliceHeader.getFirstMbInSlice(); uiMbAddress <= rcSliceHeader.getLastMbInSlice(); uiMbAddress = rcSliceHeader.getFMO()->getNextMBNr(uiMbAddress))
     {
+        //当前MB的行列位置
         UInt  uiMbY = uiMbAddress / uiMbInRow;
         UInt  uiMbX = uiMbAddress % uiMbInRow;
         MbDataAccess* pcMbDataAccess  = 0;
 
+        //包含一个宏块的YUV Bin
         pcMbDataCtrl->initMb (pcMbDataAccess, uiMbY, uiMbX);
         m_pcControlMng->initMbForCoding (*pcMbDataAccess,
                                          uiMbY,

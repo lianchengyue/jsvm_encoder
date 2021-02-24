@@ -239,8 +239,8 @@ enum ResidualMode
 #define YUV_X_MARGIN        32
 #define YUV_Y_MARGIN        64
 
-#define MAX_LAYERS          8
-#define MAX_TEMP_LEVELS     8
+#define MAX_LAYERS          1//8
+#define MAX_TEMP_LEVELS     1//8
 
 #define MAX_QUALITY_LEVELS  16
 
@@ -268,11 +268,11 @@ enum ResidualMode
 //TMM_EC {{
 typedef enum
 {
-    EC_NONE                                           =    100,
+    EC_NONE = 100,
     EC_BLSKIP,
     EC_FRAME_COPY,
     EC_TEMPORAL_DIRECT,
-    EC_INTRA_COPY                // =200
+    EC_INTRA_COPY  // =200
 } ERROR_CONCEAL;
 //TMM_EC }}
 

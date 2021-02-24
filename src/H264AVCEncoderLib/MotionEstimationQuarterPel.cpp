@@ -91,10 +91,10 @@ Void MotionEstimationQuarterPel::xInitBuffer()
 
 
 Void MotionEstimationQuarterPel::xSubPelSearch(YuvPicBuffer*  pcPelData,
-                                               Mv&            rcMv,
-                                               UInt&          ruiSAD,
-                                               UInt           uiBlk,
-                                               UInt           uiMode)
+                                               Mv&    rcMv,
+                                               UInt&  ruiSAD,
+                                               UInt   uiBlk,
+                                               UInt   uiMode)
 {
     Mv cMvBestMatch  = rcMv;
     UInt  uiBestSad    = MSYS_UINT_MAX;
@@ -106,7 +106,13 @@ Void MotionEstimationQuarterPel::xSubPelSearch(YuvPicBuffer*  pcPelData,
     UInt uiXSize = 0;
 
     xGetSizeFromMode(uiXSize, uiYSize, uiMode);
-    xCompensateBlocksHalf(m_aXHPelSearch, pcPelData, cMvBestMatch, uiMode, uiYSize, uiXSize) ;
+    //亚像素级块补偿
+    xCompensateBlocksHalf(m_aXHPelSearch,
+                          pcPelData,
+                          cMvBestMatch,
+                          uiMode,
+                          uiYSize,
+                          uiXSize) ;
     m_cXDSS.iYStride = X1;
 
     //compute SAD for 1/2 pel MV
@@ -257,8 +263,8 @@ Void MotionEstimationQuarterPel::xCompensateBlocksHalf(XPel *pPelDes, YuvPicBuff
 
 
 ErrVal MotionEstimationQuarterPel::compensateBlock(YuvMbBuffer* pcRecPelData,
-                                                   UInt            uiBlk,
-                                                   UInt            uiMode,
+                                                   UInt  uiBlk,
+                                                   UInt  uiMode,
                                                    YuvMbBuffer* pcRefPelData2)
 {
     pcRecPelData->set4x4Block(B4x4Idx(uiBlk));

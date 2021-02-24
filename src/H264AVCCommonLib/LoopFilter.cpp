@@ -174,8 +174,15 @@ ErrVal LoopFilter::process(SliceHeader&             rcSH,
             UInt          uiMbY, uiMbX;
             rcSH.getMbPositionFromAddress(uiMbY, uiMbX, uiMbAddress);
 
-            pcMbDataCtrl->initMb(pcMbDataAccess, uiMbY, uiMbX);
-            m_pcControlMngIf->initMbForFiltering(*pcMbDataAccess, uiMbY, uiMbX, rcSH.isMbaffFrame());
+            //initMB
+            pcMbDataCtrl->initMb(pcMbDataAccess,
+                                 uiMbY,
+                                 uiMbX);
+            m_pcControlMngIf->initMbForFiltering(*pcMbDataAccess,
+                                                 uiMbY,
+                                                 uiMbX,
+                                                 rcSH.isMbaffFrame());
+
             PicType             eMbPicType        = pcMbDataAccess->getMbPicType();
             YuvPicBuffer*       pcFrameBuffer     = apcFrame[ eMbPicType ]->getFullPelYuvBuffer();
             YuvPicBuffer*       pcResidualBuffer  = (pcResidual ? apcResidual[ eMbPicType ]->getFullPelYuvBuffer() : 0);

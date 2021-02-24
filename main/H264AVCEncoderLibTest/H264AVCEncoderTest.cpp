@@ -67,6 +67,7 @@ ErrVal H264AVCEncoderTest::init(Int argc, Char** argv)
         m_apcWriteYuv[uiLayer]->init (rcLayer.getOutputFilename());
         ReadYuvFile::create (m_apcReadYuv[uiLayer]);
 
+        //eFillMode: FILL_FRAME
         ReadYuvFile::FillMode eFillMode = (rcLayer.isInterlaced() ? ReadYuvFile::FILL_FIELD : ReadYuvFile::FILL_FRAME);
 #if DOLBY_ENCMUX_ENABLE
         if(m_pcEncoderCodingParameter->getMuxMethod() && uiNumberOfLayers>1)
@@ -78,11 +79,12 @@ ErrVal H264AVCEncoderTest::init(Int argc, Char** argv)
         }
         else
         {
-          m_apcReadYuv[uiLayer]->init (rcLayer.getInputFilename(),
-                                       rcLayer.getFrameHeightInSamples(),
-                                       rcLayer.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
+            m_apcReadYuv[uiLayer]->init (rcLayer.getInputFilename(),
+                                         rcLayer.getFrameHeightInSamples(),
+                                         rcLayer.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
         }
 #else
+        //打开源文件
         m_apcReadYuv[uiLayer]->init (rcLayer.getInputFilename(),
                                      rcLayer.getFrameHeightInSamples(),
                                      rcLayer.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
@@ -308,13 +310,14 @@ ErrVal H264AVCEncoderTest::go ()
 
     //1: 初始化Encoder各个模块
     //===== initialization =====
+    //CreaterH264AVCEncoder的初始化, create所有子模块
     m_pcH264AVCEncoder->init(m_pcEncoderCodingParameter);
 
     // JVT-W043 {
     bRateControlEnable = (Bool)((m_pcH264AVCEncoder->getCodingParameter()->m_uiRateControlEnable) > 0 ? true : false);
 
     //2: 通过"比特率-失真优化(Rate–distortion optimization)" 实现 rate Control
-    if(bRateControlEnable)
+    if(bRateControlEnable)  //false
     {
         Int   iGOPSize  = m_pcEncoderCodingParameter->getGOPSize();
         Int   iFullGOPs = uiMaxFrame / iGOPSize;
@@ -326,7 +329,7 @@ ErrVal H264AVCEncoderTest::go ()
         {
             iFullGOPs--;
         }
-        Int   iNb          = iFullGOPs * (iGOPSize - 1);
+        Int iNb = iFullGOPs * (iGOPSize - 1);
 
         pcJSVMParams  = new jsvm_parameters;
         pcGenericRC   = new rc_generic(pcJSVMParams);
@@ -394,10 +397,17 @@ ErrVal H264AVCEncoderTest::go ()
         cBinData.reset ();
         cBinData.set (aucParameterSetBuffer, 1000);
 
+        //ExtBinDataAccessor: MemAccessor.h中
+        //T* m_pcT;
+        //T* m_pcOrigT;
+        //UInt m_uiSize;
+        //UInt m_uiUsableSize;
         ExtBinDataAccessor cExtBinDataAccessor;
         cBinData.setMemAccessor (cExtBinDataAccessor);
 
         JSVM::SequenceParameterSet* pcAVCSPS = NULL;
+
+        ///初始化SPS与PPS
         m_pcH264AVCEncoder->writeParameterSets (&cExtBinDataAccessor, pcAVCSPS, bMoreSets);
         if(m_pcH264AVCEncoder->getScalableSeiMessage ())
         {
@@ -408,7 +418,7 @@ ErrVal H264AVCEncoderTest::go ()
         }
         cBinData.reset();
         // JVT-V068 {
-/*   luodan */
+        /*   luodan */
         if(pcAVCSPS)
         {
             cBinData.set(aucParameterSetBuffer, 1000);
@@ -424,7 +434,7 @@ ErrVal H264AVCEncoderTest::go ()
             uiWrittenBytes += 4 + cExtBinDataAccessorl.size();
             cBinData.reset();
         }
-/*   luodan */
+      /*   luodan */
       // JVT-V068 }
     }
 
@@ -453,7 +463,7 @@ ErrVal H264AVCEncoderTest::go ()
     }
 
 #if DOLBY_ENCMUX_ENABLE
-    if(m_pcEncoderCodingParameter->getMuxMethod() && uiNumLayers >1)
+    if(m_pcEncoderCodingParameter->getMuxMethod() && uiNumLayers > 1)
     {
         for(uiLayer=0; uiLayer<2; uiLayer++)
         {
@@ -502,7 +512,7 @@ ErrVal H264AVCEncoderTest::go ()
                 }
                 else
                 {
-                    m_apcReadYuv[uiLayer]->readFrame(*apcOriginalPicBuffer[uiLayer] + m_auiLumOffset[uiLayer],
+                    m_apcReadYuv[uiLayer]->readFrame (*apcOriginalPicBuffer[uiLayer] + m_auiLumOffset[uiLayer],
                                                       *apcOriginalPicBuffer[uiLayer] + m_auiCbOffset [uiLayer],
                                                       *apcOriginalPicBuffer[uiLayer] + m_auiCrOffset [uiLayer],
                                                       m_auiHeight[uiLayer],
@@ -510,12 +520,12 @@ ErrVal H264AVCEncoderTest::go ()
                                                       m_auiStride[uiLayer]);
                 }
 #else
-                m_apcReadYuv[uiLayer]->readFrame(*apcOriginalPicBuffer[uiLayer] + m_auiLumOffset[uiLayer],
-                                                  *apcOriginalPicBuffer[uiLayer] + m_auiCbOffset [uiLayer],
-                                                  *apcOriginalPicBuffer[uiLayer] + m_auiCrOffset [uiLayer],
-                                                  m_auiHeight [uiLayer],
-                                                  m_auiWidth  [uiLayer],
-                                                  m_auiStride [uiLayer]);
+                m_apcReadYuv[uiLayer]->readFrame (*apcOriginalPicBuffer[uiLayer] + m_auiLumOffset[uiLayer],  //Y
+                                                  *apcOriginalPicBuffer[uiLayer] + m_auiCbOffset [uiLayer],  //Cb
+                                                  *apcOriginalPicBuffer[uiLayer] + m_auiCrOffset [uiLayer],  //Cr
+                                                  m_auiHeight[uiLayer],
+                                                  m_auiWidth [uiLayer],
+                                                  m_auiStride[uiLayer]);
 #endif
             }
             else
@@ -725,7 +735,7 @@ ErrVal H264AVCEncoderTest::ScalableDealing()
     do
     {
         fseek(ftemp, loffset, SEEK_END);
-        ROF(4 == fread(pvBuffer, 1, 4, ftemp));
+        ROF (4 == fread(pvBuffer, 1, 4, ftemp));
         if(pvBuffer[0] == 0 && pvBuffer[1] == 0 && pvBuffer[2] == 0 && pvBuffer[3] == 1)
         {
             bMoreSets = false;

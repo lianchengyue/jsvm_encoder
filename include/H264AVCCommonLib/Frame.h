@@ -20,8 +20,8 @@ class Frame
 public:
     Frame(YuvBufferCtrl& rcYuvFullPelBufferCtrl,
           YuvBufferCtrl& rcYuvHalfPelBufferCtrl,
-          PicType        ePicType,
-          Frame*         pcFrame);
+          PicType  ePicType,
+          Frame*   pcFrame);
 
     virtual ~Frame();
 
@@ -59,17 +59,21 @@ public:
     Void setLongTerm (Bool b)
     {
         m_bLongTerm = b;
-        if(NULL != m_pcFrameTopField )
+        if(NULL != m_pcFrameTopField)
+        {
             m_pcFrameTopField->setLongTerm(m_bLongTerm);
-        if(NULL != m_pcFrameBotField )
+        }
+        if(NULL != m_pcFrameBotField)
+        {
             m_pcFrameBotField->setLongTerm(m_bLongTerm);
+        }
     }
 
     const PictureParameters& getPicParameters() const;
     const PictureParameters& getPicParameters(PicType ePicType)  const;
     ErrVal  setPicParameters (const ResizeParameters& rcRP, const SliceHeader* pcSH = 0);
-    ErrVal  setPicParameters (const PictureParameters& rcPP, PicType ePicType = FRAME );
-    ErrVal  copyPicParameters (const Frame&  rcFrame,  PicType  ePicType = FRAME );
+    ErrVal  setPicParameters (const PictureParameters& rcPP, PicType ePicType = FRAME);
+    ErrVal  copyPicParameters (const Frame&  rcFrame,  PicType  ePicType = FRAME);
 
     const Frame*  getFrame() const { return m_pcFrame; }
 
@@ -77,20 +81,22 @@ public:
     {
         m_pcDPBUnit = (DPBUnit*)(Void*)pcUnit;
     }
+
     RecPicBufUnit*  getRecPicBufUnit()
     {
         return (RecPicBufUnit*)(Void*)m_pcDPBUnit;
     }
+
     ErrVal clip()
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         getFullPelYuvBuffer()->clip();
         return Err::m_nOK;
     }
 
-    ErrVal prediction(Frame* pcMCPFrame, Frame* pcSrcFrame, PicType ePicType )
+    ErrVal prediction(Frame* pcMCPFrame, Frame* pcSrcFrame, PicType ePicType)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
 
         if(ePicType==FRAME)
         {
@@ -111,14 +117,14 @@ public:
 
     ErrVal update(Frame* pcMCPFrame, Frame* pcSrcFrame, UInt uiShift)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         getFullPelYuvBuffer()->update(pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame->getFullPelYuvBuffer(), uiShift);
         return Err::m_nOK;
     }
 
     ErrVal inverseUpdate(Frame* pcMCPFrame, Frame* pcSrcFrame, UInt uiShift)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         getFullPelYuvBuffer()->inverseUpdate(pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame->getFullPelYuvBuffer(), uiShift);
         return Err::m_nOK;
     }
@@ -126,14 +132,14 @@ public:
 
     ErrVal update(Frame* pcMCPFrame0, Frame* pcMCPFrame1, Frame* pcSrcFrame)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         getFullPelYuvBuffer()->update(pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame0->getFullPelYuvBuffer(), pcMCPFrame1->getFullPelYuvBuffer());
         return Err::m_nOK;
     }
 
     ErrVal inverseUpdate(Frame* pcMCPFrame0, Frame* pcMCPFrame1, Frame* pcSrcFrame)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         if (pcMCPFrame0 && pcMCPFrame1)
         {
             getFullPelYuvBuffer()->inverseUpdate(pcSrcFrame->getFullPelYuvBuffer(), pcMCPFrame0->getFullPelYuvBuffer(), pcMCPFrame1->getFullPelYuvBuffer());
@@ -151,7 +157,7 @@ public:
 
     ErrVal inversePrediction(Frame* pcMCPFrame,  Frame* pcSrcFrame, PicType ePicType)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
 
         if(ePicType==FRAME)
         {
@@ -171,9 +177,9 @@ public:
     }
 
 
-    ErrVal copyAll(Frame* pcSrcFrame )
+    ErrVal copyAll(Frame* pcSrcFrame)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         m_iPoc          = pcSrcFrame->m_iPoc;
         m_iTopFieldPoc  = pcSrcFrame->m_iTopFieldPoc;
         m_iBotFieldPoc  = pcSrcFrame->m_iBotFieldPoc;
@@ -184,7 +190,7 @@ public:
 
     ErrVal copy(Frame* pcSrcFrame, PicType ePicType)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         if(ePicType==FRAME)
         {
             getFullPelYuvBuffer()->copy(pcSrcFrame->getFullPelYuvBuffer());
@@ -198,7 +204,7 @@ public:
         return Err::m_nOK;
     }
 
-      //JVT-X046 {
+    //JVT-X046 {
     ErrVal predictionSlices(Frame* pcSrcFrame,Frame* pcMCPFrame, UInt uiMbY, UInt uiMbX)
     {
         getFullPelYuvBuffer()->predictionSlices(pcSrcFrame->getFullPelYuvBuffer(),
@@ -226,7 +232,7 @@ public:
     }
     ErrVal copySlice(Frame* pcSrcFrame, PicType ePicType, UInt uiFirstMB, UInt uiLastMB)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         if(ePicType==FRAME)
         {
             getFullPelYuvBuffer()->copySlice(pcSrcFrame->getFullPelYuvBuffer(),uiFirstMB,uiLastMB);
@@ -237,7 +243,7 @@ public:
 
     ErrVal subtract(Frame* pcSrcFrame0, Frame* pcSrcFrame1)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         getFullPelYuvBuffer()->subtract(pcSrcFrame0->getFullPelYuvBuffer(),
                                         pcSrcFrame1->getFullPelYuvBuffer());
         return Err::m_nOK;
@@ -245,7 +251,7 @@ public:
 
     ErrVal add(Frame* pcSrcFrame, PicType ePicType)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
 
         if(ePicType==FRAME)
         {
@@ -255,27 +261,27 @@ public:
         {
             addFieldBuffer(ePicType);
             pcSrcFrame->addFieldBuffer(ePicType);
-            getPic(ePicType )->getFullPelYuvBuffer()->add(pcSrcFrame->getPic(ePicType)->getFullPelYuvBuffer());
+            getPic(ePicType)->getFullPelYuvBuffer()->add(pcSrcFrame->getPic(ePicType)->getFullPelYuvBuffer());
         }
         return Err::m_nOK;
     }
 
     ErrVal setZero()
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         getFullPelYuvBuffer()->setZero();
         return Err::m_nOK;
     }
 
     ErrVal setNonZeroFlags(UShort* pusNonZeroFlags, UInt uiStride)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         return getFullPelYuvBuffer()->setNonZeroFlags(pusNonZeroFlags, uiStride);
     }
 
     ErrVal getSSD(Double& dSSDY, Double& dSSDU, Double& dSSDV, PicBuffer* pcOrgPicBuffer)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         m_cFullPelYuvBuffer.getSSD(dSSDY, dSSDU, dSSDV, pcOrgPicBuffer);
         return Err::m_nOK;
     }
@@ -310,7 +316,7 @@ public:
     ErrVal residualUpsampling(Frame*                pcBaseFrame,
                               DownConvert&          rcDownConvert,
                               ResizeParameters*     pcParameters,
-                              MbDataCtrl*           pcMbDataCtrlBase );
+                              MbDataCtrl*           pcMbDataCtrlBase);
 
     const YuvPicBuffer* getFullPelYuvBuffer () const    { return &m_cFullPelYuvBuffer; }
     YuvPicBuffer* getFullPelYuvBuffer ()                { return &m_cFullPelYuvBuffer; }
@@ -340,25 +346,25 @@ public:
     Void  setPoc(Int iPoc)                    { m_iPoc = iPoc; m_bPocIsSet = true; }
     Void  setPoc(const SliceHeader& rcSH)
     {
-        ASSERT( m_ePicType==FRAME );
+        ASSERT(m_ePicType==FRAME);
         const PicType ePicType = rcSH.getPicType();
 
         if(ePicType & TOP_FIELD)
         {
             m_iTopFieldPoc = rcSH.getTopFieldPoc();
-            if(m_pcFrameTopField && m_pcFrameBotField )
+            if(m_pcFrameTopField && m_pcFrameBotField)
             {
                 m_pcFrameTopField->setPoc(m_iTopFieldPoc);
-                setPoc(m_pcFrameBotField->isPocAvailable() ? gMax(m_pcFrameBotField->getPoc(), m_iTopFieldPoc ) : m_iTopFieldPoc );
+                setPoc(m_pcFrameBotField->isPocAvailable() ? gMax(m_pcFrameBotField->getPoc(), m_iTopFieldPoc) : m_iTopFieldPoc);
             }
         }
         if(ePicType & BOT_FIELD)
         {
             m_iBotFieldPoc = rcSH.getBotFieldPoc();
-            if(m_pcFrameTopField && m_pcFrameBotField )
+            if(m_pcFrameTopField && m_pcFrameBotField)
             {
-                m_pcFrameBotField->setPoc(m_iBotFieldPoc );
-                setPoc(m_pcFrameTopField->isPocAvailable() ? gMin(m_pcFrameTopField->getPoc(), m_iBotFieldPoc ) : m_iBotFieldPoc);
+                m_pcFrameBotField->setPoc(m_iBotFieldPoc);
+                setPoc(m_pcFrameTopField->isPocAvailable() ? gMin(m_pcFrameTopField->getPoc(), m_iBotFieldPoc) : m_iBotFieldPoc);
             }
         }
         if(!m_pcFrameTopField || !m_pcFrameBotField)
@@ -478,8 +484,8 @@ extern __inline ErrVal gSetFrameFieldArrays(Frame* apcFrame[4], Frame* pcFrame)
         pcFrame->addFrameFieldBuffer();
         apcFrame[0] = pcFrame->getPic(TOP_FIELD);
         apcFrame[1] = pcFrame->getPic(BOT_FIELD);
-        apcFrame[2] = pcFrame->getPic(FRAME    );
-        apcFrame[3] = pcFrame->getPic(FRAME    );
+        apcFrame[2] = pcFrame->getPic(FRAME   );
+        apcFrame[3] = pcFrame->getPic(FRAME   );
     }
     return Err::m_nOK;
 }

@@ -2,6 +2,7 @@
 #define _COMMONTYPES_H_
 
 #include "Typedefs.h"
+#include "CommonDefs.h"
 
 namespace JSVM {
 
@@ -14,20 +15,19 @@ public:
              UInt uiBits = 0,
              UInt uiYDist = 0,
              UInt uiUDist = 0,
-             UInt uiVDist = 0)
-        :  m_fRdCost(fRdCost),
-          m_uiAddBits(uiAddBits),
-          m_uiBits(uiBits),
-          m_uiYDist(uiYDist),
-          m_uiUDist(uiUDist),
-          m_uiVDist(uiVDist)
+             UInt uiVDist = 0):  m_fRdCost(fRdCost),
+        m_uiAddBits(uiAddBits),
+        m_uiBits(uiBits),
+        m_uiYDist(uiYDist),
+        m_uiUDist(uiUDist),
+        m_uiVDist(uiVDist)
     {
     }
     virtual ~CostData()
     {
     }
 
-    CostData( const CostData& rcCostData)
+    CostData(const CostData& rcCostData)
     {
         CostData(rcCostData.m_fRdCost,
                  rcCostData.m_uiBits,
@@ -36,7 +36,7 @@ public:
                  rcCostData.m_uiVDist);
     }
 
-    Void add( const CostData& rcCostData ) const
+    Void add(const CostData& rcCostData) const
     {
         const_cast<CostData*>(this)->m_uiYDist += rcCostData.m_uiYDist;
         const_cast<CostData*>(this)->m_uiUDist += rcCostData.m_uiUDist;
@@ -118,12 +118,14 @@ const UChar g_aucConvertTo4x4Idx[4]=
 class LumaIdx
 {
 protected:
-    LumaIdx(Int iIdx = 0)          : m_iIdx( iIdx )       {}
+    LumaIdx(Int iIdx = 0): m_iIdx(iIdx)
+    {
+    }
 
 public:
-    __inline LumaIdx   operator + (SParIdx4x4     eSParIdx)  const { return LumaIdx( m_iIdx + eSParIdx ); }
-    __inline LumaIdx   operator + (NeighbourBlock eBlock)    const { return LumaIdx( m_iIdx + eBlock ); }
-    __inline LumaIdx   operator + (ParIdx8x8      eParIdx)   const { return LumaIdx( m_iIdx + eParIdx ); }
+    __inline LumaIdx   operator + (SParIdx4x4     eSParIdx)  const { return LumaIdx(m_iIdx + eSParIdx); }
+    __inline LumaIdx   operator + (NeighbourBlock eBlock)    const { return LumaIdx(m_iIdx + eBlock);   }
+    __inline LumaIdx   operator + (ParIdx8x8      eParIdx)   const { return LumaIdx(m_iIdx + eParIdx);  }
 
     operator Int()          const { return m_iIdx;    }
     Int x()                 const { return m_iIdx&3;  }
@@ -156,9 +158,9 @@ protected:
 class B8x8Idx :public LumaIdx
 {
 public:
-    B8x8Idx( Par8x8 ePar8x8 ) : m_iSIdx( ePar8x8<<2 )       { convert(); }
-    B8x8Idx()  : m_iSIdx( 0 )                               { convert(); }
-    B8x8Idx  operator + (Int i)                       const { return B8x8Idx( (m_iSIdx>>2) + i ); }
+    B8x8Idx(Par8x8 ePar8x8) : m_iSIdx(ePar8x8<<2)           { convert(); }
+    B8x8Idx()  : m_iSIdx(0)                                 { convert(); }
+    B8x8Idx  operator + (Int i)                       const { return B8x8Idx((m_iSIdx>>2) + i); }
     B8x8Idx& operator +=(Int i)                             { m_iSIdx+=i<<2; convert(); return *this; }
     B8x8Idx& operator ++(Int)                               { m_iSIdx+=4;    convert(); return *this; }
     B8x8Idx& operator --(Int)                               { m_iSIdx-=4;    convert(); return *this; }
@@ -166,7 +168,7 @@ public:
     const Int xxxgetSIdx()                            const { return m_iSIdx; }
     ParIdx8x8 b8x8()                                  const { return ParIdx8x8(m_iIdx); }
     Par8x8    b8x8Index()                             const { return Par8x8(m_iSIdx>>2); }
-    B8x8Idx( LumaIdx cIdx )
+    B8x8Idx(LumaIdx cIdx)
     {
         UInt    uiB8x8  = (cIdx.y() / 2) * 2 + (cIdx.x() / 2);
         Par8x8  ePar8x8 = Par8x8(uiB8x8);
@@ -179,7 +181,7 @@ protected:
     {
         return m_iIdx = g_aucConvertBlockOrder[m_iSIdx];
     }
-    B8x8Idx(Int i) : m_iSIdx( i<<2 )
+    B8x8Idx(Int i) : m_iSIdx(i<<2)
     {
         convert();
     }
@@ -200,6 +202,7 @@ public:
 };
 
 
+//S: Sparse???
 class S4x4Idx : public LumaIdx
 {
 private:
@@ -209,11 +212,11 @@ private:
     }
 
 public:
-    S4x4Idx(const B8x8Idx& rcB8x8Idx ) : m_iSIdx(rcB8x8Idx.xxxgetSIdx())
+    S4x4Idx(const B8x8Idx& rcB8x8Idx) : m_iSIdx(rcB8x8Idx.xxxgetSIdx())
     {
         convert();
     }
-    S4x4Idx() : m_iSIdx( 0 )
+    S4x4Idx() : m_iSIdx(0)
     {
         convert();
     }
@@ -227,7 +230,7 @@ public:
     Bool isLegal () const                            { return m_iSIdx <16; }
     Bool isLegal (const B8x8Idx& rcB8x8Idx) const    { return m_iSIdx <(4+rcB8x8Idx.xxxgetSIdx()); }
 protected:
-    Void convert()                                                    { m_iIdx = g_aucConvertBlockOrder[m_iSIdx]; }
+    Void convert()                                   { m_iIdx = g_aucConvertBlockOrder[m_iSIdx]; }
 
 protected:
     Int m_iSIdx;
@@ -236,7 +239,7 @@ protected:
 class CPlaneIdx
 {
 public:
-    CPlaneIdx( UInt uiIdx = 0 ) : m_iIdx( uiIdx ) {}
+    CPlaneIdx(UInt uiIdx = 0) : m_iIdx(uiIdx) {}
     CPlaneIdx& operator ++(Int)    { m_iIdx++; return *this; }
     Bool       isLegal()     const { return m_iIdx < 2; }
     operator   Int()         const { return m_iIdx;     }
@@ -252,16 +255,16 @@ public:
     {
     }
 
-    CIdx(const CPlaneIdx &rcCPlIdx)                  : ChromaIdx( rcCPlIdx<<2 )             {}
-    CIdx(const CPlaneIdx &rcCPlIdx, Par8x8 ePar8x8 ) : ChromaIdx( (rcCPlIdx<<2) + ePar8x8 ) {}
+    CIdx(const CPlaneIdx &rcCPlIdx)                  : ChromaIdx(rcCPlIdx<<2)             {}
+    CIdx(const CPlaneIdx &rcCPlIdx, Par8x8 ePar8x8) : ChromaIdx((rcCPlIdx<<2) + ePar8x8) {}
 
-    CIdx  operator+ (UInt ui)                   const { return CIdx( m_iIdx + ui ); }
-    CIdx  operator+ (Int  i)                    const { return CIdx( m_iIdx + i  ); }
+    CIdx  operator+ (UInt ui)                   const { return CIdx(m_iIdx + ui); }
+    CIdx  operator+ (Int  i)                    const { return CIdx(m_iIdx + i ); }
 
     CIdx& operator ++(Int)                              { m_iIdx++; return *this; }
     Bool isLegal()                              const { return m_iIdx < 8; }
 
-    Bool isLegal(CPlaneIdx cCPlIdx)             const { return m_iIdx < ( ( cCPlIdx + 1 ) << 2 ); }
+    Bool isLegal(CPlaneIdx cCPlIdx)             const { return m_iIdx < ((cCPlIdx + 1) << 2); }
     Bool isLegal(Int i)                         const { return m_iIdx < i; }
 };
 

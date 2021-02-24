@@ -6,7 +6,7 @@
 #include "MotionEstimation.h"
 
 #include "H264AVCCommonLib/Transform.h"
-
+#include <iomanip>  //setw
 
 namespace JSVM {
 
@@ -131,9 +131,9 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
                                                  UInt&                ruiBits,
                                                  UInt&                ruiCost,
                                                  const UInt           uiBlk,
-                                                 const UInt           uiMode,
-                                                 const UInt           uiSearchRange,
-                                                 const PredWeight*    pcPW,
+                                                 const UInt           uiMode,         //PART_16x16
+                                                 const UInt           uiSearchRange,  //MODE_16x16
+                                                 const PredWeight*    pcPW,           //0
                                                  const MEBiSearchParameters*  pcBSP)
 {
     const LumaIdx cIdx                 = B4x4Idx(uiBlk);
@@ -240,11 +240,14 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
         else
         {
             //----- no weighting -----
-            pcWeightedYuvBuffer = m_pcXDistortion->getYuvMbBuffer();
+            pcWeightedYuvBuffer = m_pcXDistortion->getYuvMbBuffer();   //获取m_cOrgData
             fWeight = afCW[0] = afCW[1] = 1.0;
         }
     }
 
+    //****************************//
+    //***********像素级搜索*********//
+    //****************************//
     //===== FULL-PEL ESTIMATION ======
     if (bOriginalSearchModeIsYUVSAD &&(pcBSP /* bi-prediction */ || fWeight != afCW[0] || fWeight != afCW[1] /* different component weights */))
     {
@@ -252,6 +255,7 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
     }
     // <<< heiko.schwarz@hhi.fhg.de (fix for uninitialized memory with YUV_SAD and bi-directional search)
     xSetMEPars    (2,(1 != m_cParams.getFullPelDFunc()));
+    //设predict值
     xSetPredictor (rcMvPred);
     m_pcXDistortion ->getDistStruct(uiMode, m_cParams.getFullPelDFunc(), false, m_cXDSS);
     m_cXDSS.pYOrg   = pcWeightedYuvBuffer->getLumBlk ();
@@ -268,11 +272,13 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
         }
         else
         {
+            //亚像素级搜索
             xPelBlockSearch(pcRefPelData[0], cMv, uiMinSAD, uiSearchRange);
         }
     }
     else
     {
+        //m_uiSearchMode: SearchMode: 4
         switch(m_cParams.getSearchMode())
         {
         case BLOCK_SEARCH:
@@ -318,15 +324,18 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
     }
     // <<< heiko.schwarz@hhi.fhg.de (fix for uninitialized memory with YUV_SAD and bi-directional search)
 
-
+    //****************************//
+    //**********亚像素级搜索********//
+    //****************************//
     //===== SUB-PEL ESTIMATION =====
-    xSetMEPars(0,(1 !=(1 & m_cParams.getSubPelDFunc())));
+    xSetMEPars(0, (1 != (1 & m_cParams.getSubPelDFunc())));
     m_pcXDistortion->getDistStruct (uiMode,
                                     m_cParams.getSubPelDFunc(),
                                     false,
                                     m_cXDSS);
     m_cXDSS.pYOrg = pcWeightedYuvBuffer->getLumBlk();
 
+    //亚像素级搜索
     xSubPelSearch (pcRefPelData[1],
                    cMv,
                    uiMinSAD,
@@ -357,7 +366,7 @@ ErrVal MotionEstimation::initMb (UInt uiMbPosY, UInt uiMbPosX, MbDataAccess& rcM
 
 Void MotionEstimation::xPelBlockSearch (YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD, UInt uiSearchRange)
 {
-    if(! uiSearchRange)
+    if(!uiSearchRange)
     {
         uiSearchRange = m_cParams.getSearchRange();
     }
@@ -421,7 +430,7 @@ Void MotionEstimation::xPelBlockSearch (YuvPicBuffer *pcPelData, Mv& rcMv, UInt&
 
 Void MotionEstimation::xPelSpiralSearch (YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD, UInt uiSearchRange)
 {
-    if(! uiSearchRange)
+    if(!uiSearchRange)
     {
         uiSearchRange = m_cParams.getSearchRange();
     }
@@ -735,9 +744,14 @@ Void MotionEstimation::xPelLogSearch(YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ru
 
 
 
-__inline Void MotionEstimation::xTZCheckPoint(IntTZSearchStrukt& rcStrukt, const Int iSearchX, const Int iSearchY, const UChar ucPointNr, const UInt uiDistance)
+__inline Void MotionEstimation::xTZCheckPoint(IntTZSearchStrukt& rcStrukt,
+                                              const Int iSearchX,
+                                              const Int iSearchY,
+                                              const UChar ucPointNr,
+                                              const UInt uiDistance)
 {
-#if 0 //degug
+//debug
+#ifdef PRUEF_PUNKT
     std::cout << "Pruefpunkt           "
               << "  PX:"  << std::setw(4) << std::setfill(' ') << iSearchX
               << "  PY:"  << std::setw(4) << std::setfill(' ') << iSearchY
@@ -761,7 +775,8 @@ __inline Void MotionEstimation::xTZCheckPoint(IntTZSearchStrukt& rcStrukt, const
     }
 }
 
-__inline Void MotionEstimation::xTZ2PointSearch(IntTZSearchStrukt& rcStrukt, SearchRect rcSearchRect)
+__inline Void MotionEstimation::xTZ2PointSearch(IntTZSearchStrukt& rcStrukt,
+                                                SearchRect rcSearchRect)
 {
     // 2 point search,                   //   1 2 3
     // check only the 2 untested points  //   4 0 5
@@ -936,8 +951,11 @@ __inline Void MotionEstimation::xTZ8PointSquareSearch(IntTZSearchStrukt& rcStruk
     } // check bottom
 }
 
-__inline Void MotionEstimation::xTZ8PointDiamondSearch(IntTZSearchStrukt& rcStrukt, SearchRect rcSearchRect,
-                                        const Int iStartX, const Int iStartY, const Int iDist)
+__inline Void MotionEstimation::xTZ8PointDiamondSearch(IntTZSearchStrukt& rcStrukt,
+                                                       SearchRect rcSearchRect,
+                                                       const Int iStartX,
+                                                       const Int iStartY,
+                                                       const Int iDist)
 {
     // 8 point search,                   //   1 2 3
     // search around the start point     //   4 0 5
@@ -1056,19 +1074,19 @@ __inline Void MotionEstimation::xTZ8PointDiamondSearch(IntTZSearchStrukt& rcStru
             {
                 if(iTop >= -rcSearchRect.iNegVerLimit) // check top
                 {
-                  xTZCheckPoint(rcStrukt, iStartX, iTop, 0, iDist);
+                    xTZCheckPoint(rcStrukt, iStartX, iTop, 0, iDist);
                 }
                 if(iLeft >= -rcSearchRect.iNegHorLimit) // check left
                 {
-                  xTZCheckPoint(rcStrukt, iLeft, iStartY, 0, iDist);
+                    xTZCheckPoint(rcStrukt, iLeft, iStartY, 0, iDist);
                 }
                 if(iRight <= rcSearchRect.iPosHorLimit) // check right
                 {
-                  xTZCheckPoint(rcStrukt, iRight, iStartY, 0, iDist);
+                    xTZCheckPoint(rcStrukt, iRight, iStartY, 0, iDist);
                 }
                 if(iBottom <= rcSearchRect.iPosVerLimit) // check bottom
                 {
-                  xTZCheckPoint(rcStrukt, iStartX, iBottom, 0, iDist);
+                    xTZCheckPoint(rcStrukt, iStartX, iBottom, 0, iDist);
                 }
                 for(Int index = 1; index < 4; index++)
                 {
@@ -1079,25 +1097,25 @@ __inline Void MotionEstimation::xTZ8PointDiamondSearch(IntTZSearchStrukt& rcStru
 
                     if(iPosYT >= -rcSearchRect.iNegVerLimit) // check top
                     {
-                      if(iPosXL >= -rcSearchRect.iNegHorLimit) // check left
-                      {
-                        xTZCheckPoint(rcStrukt, iPosXL, iPosYT, 0, iDist);
-                      }
-                      if(iPosXR <= rcSearchRect.iPosHorLimit) // check right
-                      {
-                        xTZCheckPoint(rcStrukt, iPosXR, iPosYT, 0, iDist);
-                      }
+                        if(iPosXL >= -rcSearchRect.iNegHorLimit) // check left
+                        {
+                            xTZCheckPoint(rcStrukt, iPosXL, iPosYT, 0, iDist);
+                        }
+                        if(iPosXR <= rcSearchRect.iPosHorLimit) // check right
+                        {
+                            xTZCheckPoint(rcStrukt, iPosXR, iPosYT, 0, iDist);
+                        }
                     } // check top
                     if(iPosYB <= rcSearchRect.iPosVerLimit) // check bottom
                     {
-                      if(iPosXL >= -rcSearchRect.iNegHorLimit) // check left
-                      {
-                        xTZCheckPoint(rcStrukt, iPosXL, iPosYB, 0, iDist);
-                      }
-                      if(iPosXR <= rcSearchRect.iPosHorLimit) // check right
-                      {
-                        xTZCheckPoint(rcStrukt, iPosXR, iPosYB, 0, iDist);
-                      }
+                        if(iPosXL >= -rcSearchRect.iNegHorLimit) // check left
+                        {
+                            xTZCheckPoint(rcStrukt, iPosXL, iPosYB, 0, iDist);
+                        }
+                        if(iPosXR <= rcSearchRect.iPosHorLimit) // check right
+                        {
+                            xTZCheckPoint(rcStrukt, iPosXR, iPosYB, 0, iDist);
+                        }
                     } // check bottom
                 } // for ...
             } // check border
@@ -1111,7 +1129,7 @@ Void MotionEstimation::xTZSearch(YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD
     TZ_SEARCH_CONFIGURATION
 
     // limit search range
-    if(! iSearchRange)
+    if(!iSearchRange)
     {
         if(bEL)
             iSearchRange = m_cParams.getELSearchRange();
@@ -1121,7 +1139,10 @@ Void MotionEstimation::xTZSearch(YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD
     rcMv.limitComponents(MotionCompensation::m_cMin, MotionCompensation::m_cMax);
     SearchRect cSearchRect;
     rcMv >>= 2;
-    cSearchRect.init(iSearchRange, rcMv, MotionCompensation::m_cMin, MotionCompensation::m_cMax);
+    cSearchRect.init(iSearchRange,
+                     rcMv,
+                     MotionCompensation::m_cMin,
+                     MotionCompensation::m_cMax);
 
     // init TZSearchStrukt
     IntTZSearchStrukt cStrukt;
@@ -1296,10 +1317,3 @@ Void MotionEstimation::xTZSearch(YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD
 
 
 }  //namespace JSVM {
-
-
-
-
-
-
-

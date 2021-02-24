@@ -213,7 +213,7 @@ ErrVal LayerParameters::check()
             {
                 Bool bInside = (iY >= iY0 && iY <= iY1 && iX >= iX0 && iX <= iX1);
                 Bool bMatch  = (pauiROIMap[ iY * uiMapWidth + iX ] == uiROIId);
-                if((bInside && ! bMatch) || (!bInside && bMatch))
+                if((bInside && !bMatch) || (!bInside && bMatch))
                 {
                     bRectangular = false;
                 }
@@ -454,44 +454,44 @@ ErrVal CodingParameter::check()
         Bool bMGSVectorUsed = pcLayer->getMGSVect(0) != 16;
         if (bMGSVectorUsed)
         {
-            ROTREPORT(!getCGSSNRRefinement(),    "MGS vectors are only supported in MGS.");
-            ROTREPORT(!pcBaseLayer,              "MGS vectors are not allowed in the base layer.");
-            ROTREPORT(!pcLayer->getILPredMode(), "MGS vectors cannot be used with ILModePred = 0.");
+            ROTREPORT (!getCGSSNRRefinement(),    "MGS vectors are only supported in MGS.");
+            ROTREPORT (!pcBaseLayer,              "MGS vectors are not allowed in the base layer.");
+            ROTREPORT (!pcLayer->getILPredMode(), "MGS vectors cannot be used with ILModePred = 0.");
             pcLayer->setConstrainedIntraPred(1);
         }
 
-        ROTREPORT(! pcBaseLayer && pcLayer->getSliceSkip(), "Slice skip only supported in enhancement layers");
+        ROTREPORT (!pcBaseLayer && pcLayer->getSliceSkip(), "Slice skip only supported in enhancement layers");
 
-        ROTREPORT(pcLayer->getUseLongTerm() && ! pcLayer->getMMCOEnable(),
+        ROTREPORT (pcLayer->getUseLongTerm() && !pcLayer->getMMCOEnable(),
           "UseLongTerm cannot be equal to 1 when MMCOEnable is equal to 0");
 
         if (pcBaseLayer)
         {
             Bool bResolutionChange = pcLayer->getFrameWidthInSamples () != pcBaseLayer->getFrameWidthInSamples () ||
                                      pcLayer->getFrameHeightInSamples() != pcBaseLayer->getFrameHeightInSamples();
-            ROTREPORT(bResolutionChange && pcLayer->getMGSVect(0) != 16, "Base layer and current layer must have the same resolution when MGS vectors are used in the current layer.");
-            ROTREPORT(pcLayer->getInputFrameRate() < pcBaseLayer->getInputFrameRate(), "Input frame rate less than base layer output frame rate");
+            ROTREPORT (bResolutionChange && pcLayer->getMGSVect(0) != 16, "Base layer and current layer must have the same resolution when MGS vectors are used in the current layer.");
+            ROTREPORT (pcLayer->getInputFrameRate() < pcBaseLayer->getInputFrameRate(), "Input frame rate less than base layer output frame rate");
             UInt uiLogFactorRate = getLogFactor(pcBaseLayer->getInputFrameRate(), pcLayer->getInputFrameRate());
-            ROTREPORT(uiLogFactorRate == MSYS_UINT_MAX, "Input Frame rate must be a power of 2 from layer to layer");
+            ROTREPORT (uiLogFactorRate == MSYS_UINT_MAX, "Input Frame rate must be a power of 2 from layer to layer");
 
             if(bResolutionChange && m_uiCIUFlag)
             {
-                ROTREPORT(pcLayer->getILPredMode() == 1, "ILModePred == 1 not allowed in connection with ConstrainedIntraUps == 1 and resolution changes");
+                ROTREPORT (pcLayer->getILPredMode() == 1, "ILModePred == 1 not allowed in connection with ConstrainedIntraUps == 1 and resolution changes");
             }
 
-            ROTREPORT(m_uiCGSSNRRefinementFlag && !bResolutionChange && pcLayer->getPicCodingType() != pcBaseLayer->getPicCodingType(),
-              "DisableBSlices shall be the same in successive MGS layers");
+            ROTREPORT (m_uiCGSSNRRefinementFlag && !bResolutionChange && pcLayer->getPicCodingType() != pcBaseLayer->getPicCodingType(),
+                       "DisableBSlices shall be the same in successive MGS layers");
 
-            ROTREPORT(m_uiCGSSNRRefinementFlag && !bResolutionChange && pcLayer->getUseLongTerm() != pcBaseLayer->getUseLongTerm(),
-              "UseLongTerm shall be the same in successive MGS layers");
+            ROTREPORT (m_uiCGSSNRRefinementFlag && !bResolutionChange && pcLayer->getUseLongTerm() != pcBaseLayer->getUseLongTerm(),
+                       "UseLongTerm shall be the same in successive MGS layers");
 
-            ROTREPORT(m_uiCGSSNRRefinementFlag && !bResolutionChange && pcLayer->getMMCOEnable() != pcBaseLayer->getMMCOEnable(),
-              "MMCOEnable shall be the same in successive MGS layers");
+            ROTREPORT (m_uiCGSSNRRefinementFlag && !bResolutionChange && pcLayer->getMMCOEnable() != pcBaseLayer->getMMCOEnable(),
+                       "MMCOEnable shall be the same in successive MGS layers");
 
-            ROTREPORT(m_uiCGSSNRRefinementFlag && !bResolutionChange && pcLayer->getMMCOBaseEnable() != pcBaseLayer->getMMCOBaseEnable(),
-              "MMCOBaseEnable shall be the same in successive MGS layers");
+            ROTREPORT (m_uiCGSSNRRefinementFlag && !bResolutionChange && pcLayer->getMMCOBaseEnable() != pcBaseLayer->getMMCOBaseEnable(),
+                       "MMCOBaseEnable shall be the same in successive MGS layers");
 
-            ROTREPORT(m_uiCGSSNRRefinementFlag && !bResolutionChange && !pcLayer->getInterLayerPredictionMode(), "InterLayerPred must not be 0 in MGS enhancement layers");
+            ROTREPORT (m_uiCGSSNRRefinementFlag && !bResolutionChange && !pcLayer->getInterLayerPredictionMode(), "InterLayerPred must not be 0 in MGS enhancement layers");
 
             if(pcLayer->getILPredMode() == 1)
             {
@@ -586,11 +586,12 @@ ErrVal LayerParameters::setAndCheckProfile(CodingParameter* pcCodingParameter)
     //===== BASE LAYER =====
     if(m_uiLayerId == 0)
     {
-        ROTREPORT(m_uiProfileIdc != BASELINE_PROFILE &&
+        ROTREPORT (m_uiProfileIdc != BASELINE_PROFILE &&
                    m_uiProfileIdc != MAIN_PROFILE     &&
                    m_uiProfileIdc != EXTENDED_PROFILE &&
                    m_uiProfileIdc != HIGH_PROFILE     &&
                    m_uiProfileIdc != 0, "Unsupported ProfileIdc in base layer");
+
         //----- try to force compatibility when required -----
         Bool  bForceBaseline  = (m_uiProfileIdc == BASELINE_PROFILE || bScalBaselineRequired);
         Bool  bForceMain      = (m_uiProfileIdc == MAIN_PROFILE     || bScalBaselineRequired);
@@ -858,41 +859,41 @@ ErrVal LayerParameters::xForceExtendedProfile(CodingParameter* pcCodingParameter
 
 Bool LayerParameters::xIsHighProfile(CodingParameter* pcCodingParameter)
 {
-    ROFRS(m_uiLayerId                    == 0,               false);
-    ROFRS(m_uiBaseLayerId                == MSYS_UINT_MAX,   false);
-    ROFRS(m_uiNumSliceGroupsMinus1       == 0,               false);
-    ROFRS(m_uiUseRedundantSlice          == 0,               false);
-    ROFRS(m_uiUseRedundantKeySlice       == 0,               false);
+    ROFRS (m_uiLayerId                    == 0,               false);
+    ROFRS (m_uiBaseLayerId                == MSYS_UINT_MAX,   false);
+    ROFRS (m_uiNumSliceGroupsMinus1       == 0,               false);
+    ROFRS (m_uiUseRedundantSlice          == 0,               false);
+    ROFRS (m_uiUseRedundantKeySlice       == 0,               false);
     return true;
 }
 
 ErrVal LayerParameters::xForceHighProfile(CodingParameter* pcCodingParameter)
 {
-    ROT(m_uiLayerId);
-    ROF(m_uiBaseLayerId == MSYS_UINT_MAX);
-    SETREPORT(m_uiNumSliceGroupsMinus1,    0, "NumSliceGrpMns1 set to 0 for High profile compatibility");
-    SETREPORT(m_uiUseRedundantSlice,       0, "Redundant slices disabled for High profile compatibility");
-    SETREPORT(m_uiUseRedundantKeySlice,    0, "Redundant slices disabled for High profile compatibility");
+    ROT (m_uiLayerId);
+    ROF (m_uiBaseLayerId == MSYS_UINT_MAX);
+    SETREPORT (m_uiNumSliceGroupsMinus1,    0, "NumSliceGrpMns1 set to 0 for High profile compatibility");
+    SETREPORT (m_uiUseRedundantSlice,       0, "Redundant slices disabled for High profile compatibility");
+    SETREPORT (m_uiUseRedundantKeySlice,    0, "Redundant slices disabled for High profile compatibility");
     return Err::m_nOK;
 }
 
 Bool LayerParameters::xIsIntraOnly(CodingParameter* pcCodingParameter)
 {
-    ROTRS(m_uiUseLongTerm,                                                       false);
-    ROFRS(m_uiDecompositionStages        == m_uiNotCodedStages,                  false);
-    ROFRS(pcCodingParameter->m_uiGOPSize == pcCodingParameter->m_uiIntraPeriod ||
+    ROTRS (m_uiUseLongTerm,                                                       false);
+    ROFRS (m_uiDecompositionStages        == m_uiNotCodedStages,                  false);
+    ROFRS (pcCodingParameter->m_uiGOPSize == pcCodingParameter->m_uiIntraPeriod ||
            pcCodingParameter->m_uiGOPSize == (UInt)m_iIDRPeriod                 ||
            pcCodingParameter->m_uiGOPSize == (UInt)m_iLayerIntraPeriod,           false);
-    ROTRS(m_uiBaseLayerId                == MSYS_UINT_MAX,                       true );
+    ROTRS (m_uiBaseLayerId                == MSYS_UINT_MAX,                       true );
     return pcCodingParameter->getLayerParameters(m_uiBaseLayerId).isIntraOnly();
 }
 
 
 Bool LayerParameters::xHasRestrictedESS(CodingParameter* pcCodingParameter)
 {
-    ROTRS(m_uiBaseLayerId                            == MSYS_UINT_MAX, true );
-    ROFRS(m_cResizeParameters.m_iLeftFrmOffset % 16  == 0,             false);
-    ROFRS(m_cResizeParameters.m_iTopFrmOffset  % 16  == 0,             false);
+    ROTRS (m_uiBaseLayerId                            == MSYS_UINT_MAX, true );
+    ROFRS (m_cResizeParameters.m_iLeftFrmOffset % 16  == 0,             false);
+    ROFRS (m_cResizeParameters.m_iTopFrmOffset  % 16  == 0,             false);
     Bool   bHor11 = (    m_cResizeParameters.m_iScaledRefFrmWidth  ==     m_cResizeParameters.m_iRefLayerFrmWidth );
     Bool   bHor23 = (2 * m_cResizeParameters.m_iScaledRefFrmWidth  == 3 * m_cResizeParameters.m_iRefLayerFrmWidth );
     Bool   bHor12 = (    m_cResizeParameters.m_iScaledRefFrmWidth  == 2 * m_cResizeParameters.m_iRefLayerFrmWidth );
@@ -907,48 +908,48 @@ Bool LayerParameters::xHasRestrictedESS(CodingParameter* pcCodingParameter)
 
 Bool LayerParameters::xIsScalableBaselineProfile(CodingParameter* pcCodingParameter)
 {
-    ROFRS(m_uiLayerId               > 0,                       false);
-    ROFRS(m_uiMbAff                == 0,                       false);
-    ROFRS(m_uiPAff                 == 0,                       false);
-    ROFRS(m_uiNumSliceGroupsMinus1 <= 7,                       false);
+    ROFRS (m_uiLayerId               > 0,                       false);
+    ROFRS (m_uiMbAff                == 0,                       false);
+    ROFRS (m_uiPAff                 == 0,                       false);
+    ROFRS (m_uiNumSliceGroupsMinus1 <= 7,                       false);
     if(m_uiNumSliceGroupsMinus1)
     {
-        ROFRS(m_uiSliceGroupMapType  == 2,                     false);
+        ROFRS (m_uiSliceGroupMapType  == 2,                     false);
     }
-    ROFRS(m_uiBiPred8x8Disable     == 1,                       false);
-    ROTRS(m_uiBaseLayerId          == MSYS_UINT_MAX,           true );
+    ROFRS (m_uiBiPred8x8Disable     == 1,                       false);
+    ROTRS (m_uiBaseLayerId          == MSYS_UINT_MAX,           true );
 
-    ROFRS(xHasRestrictedESS(pcCodingParameter),              false);
+    ROFRS(xHasRestrictedESS(pcCodingParameter),                 false);
     LayerParameters& rcBase = pcCodingParameter->getLayerParameters(m_uiBaseLayerId);
     if(m_uiBaseLayerId == 0)
     {
-        ROFRS(rcBase.m_bConstrainedSetFlag0,                     false);
-        ROFRS(rcBase.m_bConstrainedSetFlag1,                     false);
-        ROFRS(rcBase.m_bConstrainedSetFlag2,                     false);
-        ROFRS(rcBase.m_uiProfileIdc == BASELINE_PROFILE ||
+        ROFRS (rcBase.m_bConstrainedSetFlag0,                   false);
+        ROFRS (rcBase.m_bConstrainedSetFlag1,                   false);
+        ROFRS (rcBase.m_bConstrainedSetFlag2,                   false);
+        ROFRS (rcBase.m_uiProfileIdc == BASELINE_PROFILE ||
                rcBase.m_uiProfileIdc == MAIN_PROFILE     ||
-               rcBase.m_uiProfileIdc == EXTENDED_PROFILE,         false);
+               rcBase.m_uiProfileIdc == EXTENDED_PROFILE,       false);
         return true;
     }
 
-    ROTRS(rcBase.m_uiProfileIdc == SCALABLE_BASELINE_PROFILE,  true );
-    ROTRS(rcBase.m_bConstrainedSetFlag0,                       true );
+    ROTRS(rcBase.m_uiProfileIdc == SCALABLE_BASELINE_PROFILE,   true );
+    ROTRS(rcBase.m_bConstrainedSetFlag0,                        true );
     return false;
 }
 
 ErrVal LayerParameters::xForceScalableBaselineProfile(CodingParameter* pcCodingParameter)
 {
-    ROF(m_uiLayerId);
-    ROTREPORT(m_uiNumSliceGroupsMinus1     > 7,          "NumSliceGrpMns1 must be less than 8 in Scalable Baseline profile compatibility mode");
+    ROF (m_uiLayerId);
+    ROTREPORT (m_uiNumSliceGroupsMinus1     > 7,          "NumSliceGrpMns1 must be less than 8 in Scalable Baseline profile compatibility mode");
     if(m_uiNumSliceGroupsMinus1)
     {
-      ROTREPORT(m_uiSliceGroupMapType     != 2,          "SliceGroupMapType must be equal to 2 in Scalable Baseline profile compatibility mode");
+        ROTREPORT (m_uiSliceGroupMapType     != 2,        "SliceGroupMapType must be equal to 2 in Scalable Baseline profile compatibility mode");
     }
-    SETREPORT(m_uiMbAff,                     0,          "MbAff disabled for Scalable Baseline profile compatibility");
-    SETREPORT(m_uiPAff,                      0,          "PAff disabled for Scalable Baseline profile compatibility");
-    SETREPORT(m_uiBiPred8x8Disable,          1,          "BiPred for blocks smaller than 8x8 disabled for Scalable Baseline profile compatibility");
-    ROTRS(m_uiBaseLayerId == MSYS_UINT_MAX,  Err::m_nOK );
-    ROTREPORT(! xHasRestrictedESS(pcCodingParameter),  "Spatial scalability parameters must be restricted for Scalable Baseline profile compatibility mode");
+    SETREPORT (m_uiMbAff,                     0,          "MbAff disabled for Scalable Baseline profile compatibility");
+    SETREPORT (m_uiPAff,                      0,          "PAff disabled for Scalable Baseline profile compatibility");
+    SETREPORT (m_uiBiPred8x8Disable,          1,          "BiPred for blocks smaller than 8x8 disabled for Scalable Baseline profile compatibility");
+    ROTRS (m_uiBaseLayerId == MSYS_UINT_MAX,  Err::m_nOK );
+    ROTREPORT (!xHasRestrictedESS(pcCodingParameter),  "Spatial scalability parameters must be restricted for Scalable Baseline profile compatibility mode");
     return Err::m_nOK;
 }
 
