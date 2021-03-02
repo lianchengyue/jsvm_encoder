@@ -46,7 +46,7 @@ ErrVal MotionVectorCalculation::uninit()
 }
 
 
-Void MotionVectorCalculation::xCalc16x16(MbDataAccess& rcMbDataAccess,
+Void MotionVectorCalculation::xCalc16x16 (MbDataAccess& rcMbDataAccess,
                                           MbDataAccess* pcMbDataAccessBase)
 {
     Mv cMv;
@@ -77,7 +77,7 @@ Void MotionVectorCalculation::xCalc16x16(MbDataAccess& rcMbDataAccess,
 }
 
 
-Void MotionVectorCalculation::xCalc16x8(MbDataAccess&  rcMbDataAccess,
+Void MotionVectorCalculation::xCalc16x8 (MbDataAccess&  rcMbDataAccess,
                                          MbDataAccess*  pcMbDataAccessBase)
 {
     Mv cMv;
@@ -123,8 +123,8 @@ Void MotionVectorCalculation::xCalc16x8(MbDataAccess&  rcMbDataAccess,
 }
 
 
-Void MotionVectorCalculation::xCalc8x16(MbDataAccess&  rcMbDataAccess,
-                                        MbDataAccess*  pcMbDataAccessBase)
+Void MotionVectorCalculation::xCalc8x16 (MbDataAccess&  rcMbDataAccess,
+                                         MbDataAccess*  pcMbDataAccessBase)
 {
     Mv cMv;
     SChar scRefPic;
@@ -431,9 +431,9 @@ ErrVal MotionVectorCalculation::calcMvMb(MbDataAccess& rcMbDataAccess, MbDataAcc
     return Err::m_nOK;
 }
 
-ErrVal MotionVectorCalculation::calcMvSubMb(B8x8Idx c8x8Idx,
-                                            MbDataAccess& rcMbDataAccess,
-                                            MbDataAccess* pcMbDataAccessBase)
+ErrVal MotionVectorCalculation::calcMvSubMb (B8x8Idx c8x8Idx,
+                                             MbDataAccess& rcMbDataAccess,
+                                             MbDataAccess* pcMbDataAccessBase)
 {
     xCalc8x8 (c8x8Idx,
               rcMbDataAccess,

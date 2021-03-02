@@ -71,10 +71,11 @@ public:
     }
 
 
+    //Luma Qp, Cb Qp与Cr Qp
     const QpParameter&  getCbQp() const                 { return m_cCbQp; }
     const QpParameter&  getCrQp() const                 { return m_cCrQp; }
     const QpParameter&  getChromaQp(UInt uiIdx) const   { AOT(uiIdx > 1); return (uiIdx ? getCrQp() : getCbQp()); }
-    const QpParameter&  getLumaQp() const               { return m_cLumaQp;   }
+    const QpParameter&  getLumaQp() const               { return m_cLumaQp; }
 
 protected:
     QpParameter m_cLumaQp;

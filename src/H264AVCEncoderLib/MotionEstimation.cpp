@@ -124,6 +124,8 @@ ErrVal MotionEstimation::uninit()
 }
 
 
+//m_pcXDistortion: 率失真
+//m_pcSampleWeighting: 计算权重
 ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAccess,
                                                  const Frame&         rcRefFrame,
                                                  Mv&                  rcMv, // start and result
@@ -136,8 +138,8 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
                                                  const PredWeight*    pcPW,           //0
                                                  const MEBiSearchParameters*  pcBSP)
 {
-    const LumaIdx cIdx                 = B4x4Idx(uiBlk);
-    YuvMbBuffer*  pcWeightedYuvBuffer  = 0;
+    const LumaIdx cIdx = B4x4Idx(uiBlk);
+    YuvMbBuffer*  pcWeightedYuvBuffer = 0;
     YuvPicBuffer* pcRefPelData[2];
     YuvMbBuffer   cWeightedYuvBuffer;
 
@@ -190,11 +192,13 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
                 acIPW[1].scaleL1Weight(iScale  );
                 acIPW[0].scaleL0Weight(acIPW[1]);
                 m_pcSampleWeighting->weightInverseLumaSamples (pcWeightedYuvBuffer,
-                                                                m_pcXDistortion->getYuvMbBuffer(),
-                                                                pcBSP->pcAltRefPelData,
-                                                                &acIPW[pcBSP->uiL1Search],
-                                                                &acIPW[1-pcBSP->uiL1Search],
-                                                                fWeight, iYSize, iXSize);
+                                                               m_pcXDistortion->getYuvMbBuffer(),
+                                                               pcBSP->pcAltRefPelData,
+                                                               &acIPW[pcBSP->uiL1Search],
+                                                               &acIPW[1-pcBSP->uiL1Search],
+                                                               fWeight,
+                                                               iYSize,
+                                                               iXSize);
             }
         }
         else if(pcBSP->apcWeight[LIST_0]->getLumaWeightFlag() ||
@@ -212,9 +216,9 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
         {
             //----- standard weighting -----
             m_pcSampleWeighting->inverseLumaSamples(pcWeightedYuvBuffer,
-                                                     m_pcXDistortion->getYuvMbBuffer(),
-                                                     pcBSP->pcAltRefPelData,
-                                                     iYSize, iXSize);
+                                                    m_pcXDistortion->getYuvMbBuffer(),
+                                                    pcBSP->pcAltRefPelData,
+                                                    iYSize, iXSize);
             fWeight = 0.5;
         }
     }
@@ -264,6 +268,7 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
 
     m_acMvCandList.clear();
 
+    //uiSearchRange: 0
     if(uiSearchRange)
     {
         if(m_cParams.getFastBiSearch())
@@ -303,10 +308,12 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
             xPelLogSearch  (pcRefPelData[0], cMv, uiMinSAD, true,(pcBSP ? 1 : 2));
           }
           break;
+        //.cfg中配置为TZ搜索模式
         case TZ_SEARCH:
           {
             m_acMvCandList.push_back(rcMvPred);
             rcMbDataAccess.addMvPredictors(m_acMvCandList);
+            //进行TZ搜索
             xTZSearch(pcRefPelData[0], cMv, uiMinSAD, m_bELWithBLMv);
           }
           break;
@@ -1124,6 +1131,7 @@ __inline Void MotionEstimation::xTZ8PointDiamondSearch(IntTZSearchStrukt& rcStru
 
 }
 
+//TZSearch模式
 Void MotionEstimation::xTZSearch(YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD, Bool bEL, Int iSearchRange)
 {
     TZ_SEARCH_CONFIGURATION

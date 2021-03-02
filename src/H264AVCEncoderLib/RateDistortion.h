@@ -9,8 +9,9 @@ namespace JSVM {
 
 class CodingParameter;
 
-class RateDistortion :
-public RateDistortionIf
+
+
+class RateDistortion : public RateDistortionIf
 {
 protected:
     RateDistortion();

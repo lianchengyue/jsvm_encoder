@@ -193,7 +193,7 @@ ErrVal H264AVCEncoderTest::xGetNewPicBuffer (PicBuffer*&  rpcPicBuffer,
     {
         UChar* pcBuffer = new UChar[uiSize];
         ::memset(pcBuffer, 0x00,  uiSize*sizeof(UChar));
-        rpcPicBuffer = new PicBuffer(pcBuffer);
+        rpcPicBuffer = new PicBuffer(pcBuffer);  //pcBuffer的大小 = uiSize: 3618816
     }
     else
     {
@@ -294,6 +294,7 @@ ErrVal H264AVCEncoderTest::go ()
     UInt                    auiMbX[MAX_LAYERS];
     UInt                    auiMbY[MAX_LAYERS];
     UInt                    auiPicSize[MAX_LAYERS];
+    //原始图像buffer
     PicBuffer*              apcOriginalPicBuffer[MAX_LAYERS];
     //Reconstruct Pic Buffer
     PicBuffer*              apcReconstructPicBuffer[MAX_LAYERS];
@@ -456,6 +457,7 @@ ErrVal H264AVCEncoderTest::go ()
         m_auiWidth    [uiLayer]    = auiMbX[uiLayer]<<4;
         UInt  uiSize               = ((uiAllocMbY<<4)+2*YUV_Y_MARGIN)*((uiAllocMbX<<4)+2*YUV_X_MARGIN);
         auiPicSize    [uiLayer]    = ((uiAllocMbX<<4)+2*YUV_X_MARGIN)*((uiAllocMbY<<4)+2*YUV_Y_MARGIN)*3/2;
+        //Luma Offset:
         m_auiLumOffset[uiLayer]    = ((uiAllocMbX<<4)+2*YUV_X_MARGIN)* YUV_Y_MARGIN   + YUV_X_MARGIN;
         m_auiCbOffset [uiLayer]    = ((uiAllocMbX<<3)+  YUV_X_MARGIN)* YUV_Y_MARGIN/2 + YUV_X_MARGIN/2 + uiSize;
         m_auiCrOffset [uiLayer]    = ((uiAllocMbX<<3)+  YUV_X_MARGIN)* YUV_Y_MARGIN/2 + YUV_X_MARGIN/2 + 5*uiSize/4;
@@ -497,6 +499,7 @@ ErrVal H264AVCEncoderTest::go ()
 
             if (uiFrame % uiSkip == 0)
             {
+                ///为original和Reconstruct的Pic申请buffer
                 xGetNewPicBuffer (apcReconstructPicBuffer[uiLayer], uiLayer, auiPicSize[uiLayer]);
                 xGetNewPicBuffer (apcOriginalPicBuffer[uiLayer], uiLayer, auiPicSize[uiLayer]);
 
@@ -520,9 +523,10 @@ ErrVal H264AVCEncoderTest::go ()
                                                       m_auiStride[uiLayer]);
                 }
 #else
-                m_apcReadYuv[uiLayer]->readFrame (*apcOriginalPicBuffer[uiLayer] + m_auiLumOffset[uiLayer],  //Y
-                                                  *apcOriginalPicBuffer[uiLayer] + m_auiCbOffset [uiLayer],  //Cb
-                                                  *apcOriginalPicBuffer[uiLayer] + m_auiCrOffset [uiLayer],  //Cr
+                //加载一帧图像
+                m_apcReadYuv[uiLayer]->readFrame (*apcOriginalPicBuffer[uiLayer] + m_auiLumOffset[uiLayer],  //Y, 127008
+                                                  *apcOriginalPicBuffer[uiLayer] + m_auiCbOffset [uiLayer],  //Cb,2444304
+                                                  *apcOriginalPicBuffer[uiLayer] + m_auiCrOffset [uiLayer],  //Cr,3047440
                                                   m_auiHeight[uiLayer],
                                                   m_auiWidth [uiLayer],
                                                   m_auiStride[uiLayer]);
@@ -617,7 +621,7 @@ ErrVal H264AVCEncoderTest::go ()
 
         //===== call encoder =====
         m_pcH264AVCEncoder->process (cOutExtBinDataAccessorList,
-                                     apcOriginalPicBuffer,
+                                     apcOriginalPicBuffer,  //原始图像buffer
                                      apcReconstructPicBuffer,
                                      acPicBufferOutputList,
                                      acPicBufferUnusedList);
@@ -633,7 +637,7 @@ ErrVal H264AVCEncoderTest::go ()
             xWrite(acPicBufferOutputList[uiLayer], uiLayer);
             xRelease(acPicBufferUnusedList[uiLayer], uiLayer);
         }
-    }
+    } //for(uiFrame = 0; uiFrame < uiMaxFrame; uiFrame++)
 
     // stop time measurement
     clock_t end = clock();

@@ -69,7 +69,7 @@ ErrVal PicEncoder::destroy()
     return Err::m_nOK;
 }
 
-ErrVal PicEncoder::init(CodingParameter*    pcCodingParameter,
+ErrVal PicEncoder::init (CodingParameter*    pcCodingParameter,
                          ControlMngIf*       pcControlMng,
                          SliceEncoder*       pcSliceEncoder,
                          LoopFilter*         pcLoopFilter,
@@ -456,8 +456,11 @@ ErrVal PicEncoder::xInitSliceHeader (SliceHeader*&  rpcSliceHeader,
     ROF(rpcSliceHeader);
 
     //===== determine parameters =====
+    //获取QP值
     Double dQp = m_pcCodingParameter->getBasisQp () + m_pcCodingParameter->getDeltaQpLayer (rcFrameSpec.getTemporalLayer());
     Int iQp = gMin(51, gMax(0, (Int)dQp));
+
+    //根据QP值，计算得到lambda
     rdLambda = 0.85 * pow(2.0, gMin(52.0, dQp) / 3.0 - 4.0);
     //uiSizeL0: 1
     UInt uiSizeL0 = (rcFrameSpec.getSliceType() == I_SLICE ? 0 :
@@ -514,6 +517,7 @@ ErrVal PicEncoder::xInitSliceHeader (SliceHeader*&  rpcSliceHeader,
 
     //===== set MMCO commands =====
     //MM: Marking MODE
+    //MMCO  内存管理控制操作
     if(rcFrameSpec.getMmcoBuf())
     {
         rpcSliceHeader->getDecRefPicMarking().copy(*rcFrameSpec.getMmcoBuf());
@@ -633,9 +637,9 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
     xStartPicture(rcRecPicBufUnit, rcSliceHeader, cList0, cList1);
 
     RefListStruct cRefListStruct;
-    cRefListStruct.acRefFrameListME[0].copy(cList0);
-    cRefListStruct.acRefFrameListMC[0].copy(cList0);
-    cRefListStruct.acRefFrameListRC[0].copy(cList0);
+    cRefListStruct.acRefFrameListME[0].copy(cList0);  //运动估计
+    cRefListStruct.acRefFrameListMC[0].copy(cList0);  //运动补偿
+    cRefListStruct.acRefFrameListRC[0].copy(cList0);  //??????
     cRefListStruct.acRefFrameListME[1].copy(cList1);
     cRefListStruct.acRefFrameListMC[1].copy(cList1);
     cRefListStruct.acRefFrameListRC[1].copy(cList1);
@@ -663,24 +667,29 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
         UInt  uiBitsSlice = 0;
 
         //----- init slice size -----
+        ///1:初始化
+        //rcSliceHeader.getFMO()->getFirstMacroblockInSlice(iSliceGroupID) = 0
         rcSliceHeader.setFirstMbInSlice (rcSliceHeader.getFMO()->getFirstMacroblockInSlice(iSliceGroupID));
+        //rcSliceHeader.getFMO()->getLastMBInSliceGroup(iSliceGroupID) = 8159
         rcSliceHeader.setLastMbInSlice (rcSliceHeader.getFMO()->getLastMBInSliceGroup(iSliceGroupID));
 
         //----- init NAL unit -----
+        ///2:初始化Nalu单元
         xInitExtBinDataAccessor (m_cExtBinDataAccessor);
         m_pcNalUnitEncoder->initNalUnit (&m_cExtBinDataAccessor);
 
         //----- write slice header -----
+        ///3:写slice头
         m_pcNalUnitEncoder->write (rcSliceHeader);
 
         //----- real coding -----
-        //逐个对Slice进行编码
+        ///4:逐个对Slice进行编码
         m_pcSliceEncoder->encodeSlice (rcSliceHeader,
                                        rcRecPicBufUnit.getRecFrame  (),
-                                       rcRecPicBufUnit.getMbDataCtrl(),
+                                       rcRecPicBufUnit.getMbDataCtrl(),//MbDataCtrl m_pcMbDataCtrl
                                        cRefListStruct,
-                                       m_pcCodingParameter->getMCBlks8x8Disable() > 0,
-                                       m_uiFrameWidthInMb,
+                                       m_pcCodingParameter->getMCBlks8x8Disable() > 0,//blocks smaller than 8x8 are disabled
+                                       m_uiFrameWidthInMb,  //120=1920/16
                                        dLambda);
 
         //----- close NAL unit -----

@@ -255,7 +255,7 @@ ErrVal NalUnitEncoder::closeNalUnit (UInt& ruiBits)
 
     //===== write trailing bits =====
     if(NAL_UNIT_END_OF_SEQUENCE != m_eNalUnitType &&
-        NAL_UNIT_END_OF_STREAM   != m_eNalUnitType &&
+       NAL_UNIT_END_OF_STREAM   != m_eNalUnitType &&
        (NAL_UNIT_PREFIX          != m_eNalUnitType || m_eNalRefIdc != NAL_REF_IDC_PRIORITY_LOWEST))
     {
         xWriteTrailingBits();
@@ -307,8 +307,8 @@ ErrVal NalUnitEncoder::convertRBSPToPayload (UInt   &ruiBytesWritten,
 
         if(2 == uiZeroCount && 0 == (pcRBSP[uiReadOffset] & 0xfc))
         {
-            uiZeroCount                   = 0;
-            pcPayload[uiWriteOffset++]  = 0x03;
+            uiZeroCount                = 0;
+            pcPayload[uiWriteOffset++] = 0x03;
         }
 
         pcPayload[uiWriteOffset] = pcRBSP[uiReadOffset];

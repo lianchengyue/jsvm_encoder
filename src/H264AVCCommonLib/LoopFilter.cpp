@@ -110,7 +110,7 @@ ErrVal LoopFilter::destroy()
     return Err::m_nOK;
 }
 
-ErrVal LoopFilter::init(ControlMngIf*         pcControlMngIf,
+ErrVal LoopFilter::init(ControlMngIf*   pcControlMngIf,
                   ReconstructionBypass* pcReconstructionBypass,
                   Bool                  bEncoder)
 {
@@ -131,7 +131,7 @@ ErrVal LoopFilter::uninit()
 }
 
 
-ErrVal LoopFilter::process(SliceHeader&             rcSH,
+ErrVal LoopFilter::process(SliceHeader&       rcSH,
                      Frame*                   pcFrame,
                      Frame*                   pcResidual,
                      MbDataCtrl*              pcMbDataCtrl,
@@ -227,20 +227,20 @@ ErrVal LoopFilter::xFilterMb(const MbDataCtrl*        pcMbDataCtrl,
     UInt uiCbp = 0;
     if(pcResidual)
     {
-      if(b8x8)
-      {
-        for(B8x8Idx c8x8Idx; c8x8Idx.isLegal(); c8x8Idx++)
+        if(b8x8)
         {
-          uiCbp += ((pcResidual->isCurr8x8BlkNotZero(c8x8Idx) ? 0x33 : 0) << c8x8Idx.b8x8());
+            for(B8x8Idx c8x8Idx; c8x8Idx.isLegal(); c8x8Idx++)
+            {
+                uiCbp += ((pcResidual->isCurr8x8BlkNotZero(c8x8Idx) ? 0x33 : 0) << c8x8Idx.b8x8());
+            }
         }
-      }
-      else
-      {
-        for(B4x4Idx c4x4Idx; c4x4Idx.isLegal(); c4x4Idx++)
+        else
         {
-          uiCbp += ((pcResidual->isCurr4x4BlkNotZero(c4x4Idx) ? 0x01 : 0) << c4x4Idx.b4x4());
+            for(B4x4Idx c4x4Idx; c4x4Idx.isLegal(); c4x4Idx++)
+            {
+                uiCbp += ((pcResidual->isCurr4x4BlkNotZero(c4x4Idx) ? 0x01 : 0) << c4x4Idx.b4x4());
+            }
         }
-      }
     }
     rcMbDataAccess.getMbData().setMbCbpResidual(uiCbp);
 
@@ -261,37 +261,37 @@ ErrVal LoopFilter::xFilterMb(const MbDataCtrl*        pcMbDataCtrl,
     m_bAddEdge        = true;
     if(m_bHorMixedMode && bCurrFrame)
     {
-      for(B4x4Idx cIdx; cIdx.b4x4() < 4; cIdx++)
-      {
-        m_aucBsHorTop[cIdx.x()] = xGetHorFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
-      }
+        for(B4x4Idx cIdx; cIdx.b4x4() < 4; cIdx++)
+        {
+            m_aucBsHorTop[cIdx.x()] = xGetHorFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
+        }
     }
     if(m_bVerMixedMode)
     {
-      for(B4x4Idx cIdx; cIdx.b4x4() < 16; cIdx = B4x4Idx(cIdx + 4))
-      {
-        m_aucBsVerBot[cIdx.y()] = xGetVerFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
-      }
+        for(B4x4Idx cIdx; cIdx.b4x4() < 16; cIdx = B4x4Idx(cIdx + 4))
+        {
+            m_aucBsVerBot[cIdx.y()] = xGetVerFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
+        }
     }
     m_bAddEdge = false;
     for(B4x4Idx cIdx; cIdx.isLegal(); cIdx++)
     {
-      if(!b8x8 || ((cIdx.x() & 1) == 0))
-      {
-        m_aaaucBs[VER][cIdx.x()][cIdx.y()]  = xGetVerFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
-      }
-      else
-      {
-        m_aaaucBs[VER][cIdx.x()][cIdx.y()]  = 0;
-      }
-      if(!b8x8 || ((cIdx.y() & 1) == 0))
-      {
-        m_aaaucBs[HOR][cIdx.x()][cIdx.y()]  = xGetHorFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
-      }
-      else
-      {
-        m_aaaucBs[HOR][cIdx.x()][cIdx.y()]  = 0;
-      }
+        if(!b8x8 || ((cIdx.x() & 1) == 0))
+        {
+            m_aaaucBs[VER][cIdx.x()][cIdx.y()]  = xGetVerFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
+        }
+        else
+        {
+            m_aaaucBs[VER][cIdx.x()][cIdx.y()]  = 0;
+        }
+        if(!b8x8 || ((cIdx.y() & 1) == 0))
+        {
+            m_aaaucBs[HOR][cIdx.x()][cIdx.y()]  = xGetHorFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
+        }
+        else
+        {
+            m_aaaucBs[HOR][cIdx.x()][cIdx.y()]  = 0;
+        }
     }
 
     //===== filtering =====

@@ -1,3 +1,5 @@
+//说明： 保存到TraceEncoder_DQId000.txt
+
 #include "H264AVCEncoderLib.h"
 #include "MbCoder.h"
 #include "H264AVCCommonLib/Tables.h"
@@ -16,11 +18,11 @@ namespace JSVM {
 
 
 MbCoder::MbCoder():
-  m_pcMbSymbolWriteIf(NULL),
-  m_pcRateDistortionIf(NULL),
-  m_bInitDone(false),
-  m_bCabac(false),
-  m_bPrevIsSkipped(false)
+    m_pcMbSymbolWriteIf(NULL),
+    m_pcRateDistortionIf(NULL),
+    m_bInitDone(false),
+    m_bCabac(false),
+    m_bPrevIsSkipped(false)
 {
     CabacWriter*  pcCabacWriter = 0;
     UvlcWriter*   pcUvlcWriter  = 0;
@@ -230,14 +232,14 @@ ErrVal MbCoder::encode (MbDataAccess& rcMbDataAccess,
                     xWriteMotionPredFlags(rcMbDataAccess, eMbMode, LIST_1);
                     xWriteReferenceFrames(rcMbDataAccess, eMbMode, LIST_0);
                     xWriteReferenceFrames(rcMbDataAccess, eMbMode, LIST_1);
-                    xWriteMotionVectors(rcMbDataAccess, eMbMode, LIST_0);
-                    xWriteMotionVectors(rcMbDataAccess, eMbMode, LIST_1);
+                    xWriteMotionVectors  (rcMbDataAccess, eMbMode, LIST_0);
+                    xWriteMotionVectors  (rcMbDataAccess, eMbMode, LIST_1);
                 }
                 else
                 {
                     xWriteMotionPredFlags(rcMbDataAccess, eMbMode, LIST_0);
                     xWriteReferenceFrames(rcMbDataAccess, eMbMode, LIST_0);
-                    xWriteMotionVectors(rcMbDataAccess, eMbMode, LIST_0);
+                    xWriteMotionVectors  (rcMbDataAccess, eMbMode, LIST_0);
                 }
             }
         }
@@ -788,10 +790,13 @@ ErrVal MbCoder::xScanLumaIntra16x16(MbDataAccess& rcMbDataAccess, const MbTransf
 {
     if(uiStart == 0 && uiStop != 0)
     {
+        //UvlcWriter::residualBlock
+        //保存宏块的残差信息到TraceEncoder_DQId000.txt
         m_pcMbSymbolWriteIf->residualBlock(rcMbDataAccess, B4x4Idx(0), LUMA_I16_DC, uiStart, uiStop);
     }
     ROFRS(bAC && uiStop > 1, Err::m_nOK);
 
+    //S4x4Idx.isLegal()为16
     for(S4x4Idx cIdx; cIdx.isLegal(); cIdx++)
     {
         m_pcMbSymbolWriteIf->residualBlock(rcMbDataAccess, cIdx, LUMA_I16_AC, uiStart, uiStop);

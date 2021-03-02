@@ -9,15 +9,15 @@ namespace JSVM {
 template<class T> class DynBuf
 {
 public:
-    DynBuf()
-    : m_uiBufferSize(0)
-    , m_pT(0)
+    DynBuf() :
+        m_uiBufferSize(0),
+        m_pT(0)
     {
     }
 
-    DynBuf(const DynBuf<T>& rcDynBuf)
-    : m_uiBufferSize(0)
-    , m_pT(0)
+    DynBuf(const DynBuf<T>& rcDynBuf) :
+        m_uiBufferSize(0),
+        m_pT(0)
     {
         ANOK(copy(rcDynBuf));
     }
@@ -247,9 +247,9 @@ private:
 
 
 
-template<class T>  XDataList<T>::XDataList()
-: m_uiSize    (0)
-, m_uiActive  (0)
+template<class T>  XDataList<T>::XDataList() :
+    m_uiSize    (0),
+    m_uiActive  (0)
 {
 }
 
@@ -357,9 +357,9 @@ template<class T>  Void XDataList<T>::switchFirst()
 
 template<class T>  ErrVal XDataList<T>::setElementAndRemove(UInt uiIPos, UInt uiRPos, T* pEntry)
 {
-    ROT(uiIPos >= X_DATA_LIST_SIZE);
-    ROT(uiIPos >= m_uiSize);
-    ROT(uiIPos >  uiRPos  );
+    ROT (uiIPos >= X_DATA_LIST_SIZE);
+    ROT (uiIPos >= m_uiSize);
+    ROT (uiIPos >  uiRPos);
     if(uiIPos != uiRPos)
     {
         if(uiRPos >= m_uiSize && m_uiSize < X_DATA_LIST_SIZE)

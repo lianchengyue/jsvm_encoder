@@ -1168,6 +1168,7 @@ ErrVal LayerEncoder::xEncodeLayerRepresentation(ExtBinDataAccessorList& rcOutExt
             }
             else
             {
+                ///TQQ
                 m_pcSliceEncoder->encodeSliceSVC(rcControlData, *pcOrgFrame, *pcFrame, pcResidualLF, pcResidualILPred, pcPredSignal, ePicType,
                                                  m_uiNumMaxIter, m_uiIterSearchRange, m_bBiPred8x8Disable, m_bMCBlks8x8Disable, m_uiMaxDeltaQp,
                                                  uiBits);
@@ -3517,6 +3518,8 @@ ErrVal LayerEncoder::initGOP(AccessUnitData& rcAccessUnitData,
         //==== copy picture zero =====
         PicOutputDataList cPicOutputDataList;
         Bool bPicCoded = false;
+
+        ///编码
         xEncodePicture(bPicCoded, 0, 0, rcAccessUnitData, rcPicBufferInputList);
         ROT (bPicCoded);
     }
@@ -3583,6 +3586,8 @@ ErrVal LayerEncoder::process(UInt             uiAUIndex,
     }
 
     Bool  bPicCoded = false;
+
+    ///编码
     xEncodePicture(bPicCoded, uiTemporalId, uiFrameIdInGOP, rcAccessUnitData, rcPicBufferInputList);
     ROF (bPicCoded);
 

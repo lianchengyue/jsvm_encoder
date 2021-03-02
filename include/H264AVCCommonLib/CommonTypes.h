@@ -2,7 +2,6 @@
 #define _COMMONTYPES_H_
 
 #include "Typedefs.h"
-#include "CommonDefs.h"
 
 namespace JSVM {
 
@@ -15,7 +14,8 @@ public:
              UInt uiBits = 0,
              UInt uiYDist = 0,
              UInt uiUDist = 0,
-             UInt uiVDist = 0):  m_fRdCost(fRdCost),
+             UInt uiVDist = 0) :
+        m_fRdCost(fRdCost),
         m_uiAddBits(uiAddBits),
         m_uiBits(uiBits),
         m_uiYDist(uiYDist),
@@ -124,8 +124,8 @@ protected:
 
 public:
     __inline LumaIdx   operator + (SParIdx4x4     eSParIdx)  const { return LumaIdx(m_iIdx + eSParIdx); }
-    __inline LumaIdx   operator + (NeighbourBlock eBlock)    const { return LumaIdx(m_iIdx + eBlock);   }
-    __inline LumaIdx   operator + (ParIdx8x8      eParIdx)   const { return LumaIdx(m_iIdx + eParIdx);  }
+    __inline LumaIdx   operator + (NeighbourBlock eBlock)    const { return LumaIdx(m_iIdx + eBlock); }
+    __inline LumaIdx   operator + (ParIdx8x8      eParIdx)   const { return LumaIdx(m_iIdx + eParIdx); }
 
     operator Int()          const { return m_iIdx;    }
     Int x()                 const { return m_iIdx&3;  }
@@ -160,14 +160,14 @@ class B8x8Idx :public LumaIdx
 public:
     B8x8Idx(Par8x8 ePar8x8) : m_iSIdx(ePar8x8<<2)           { convert(); }
     B8x8Idx()  : m_iSIdx(0)                                 { convert(); }
-    B8x8Idx  operator + (Int i)                       const { return B8x8Idx((m_iSIdx>>2) + i); }
+    B8x8Idx  operator + (Int i) const                       { return B8x8Idx((m_iSIdx>>2) + i); }
     B8x8Idx& operator +=(Int i)                             { m_iSIdx+=i<<2; convert(); return *this; }
     B8x8Idx& operator ++(Int)                               { m_iSIdx+=4;    convert(); return *this; }
     B8x8Idx& operator --(Int)                               { m_iSIdx-=4;    convert(); return *this; }
-    Bool      isLegal()                               const { return m_iSIdx < 16; }
-    const Int xxxgetSIdx()                            const { return m_iSIdx; }
-    ParIdx8x8 b8x8()                                  const { return ParIdx8x8(m_iIdx); }
-    Par8x8    b8x8Index()                             const { return Par8x8(m_iSIdx>>2); }
+    Bool      isLegal()    const                            { return m_iSIdx < 16; }
+    const Int xxxgetSIdx() const                            { return m_iSIdx; }
+    ParIdx8x8 b8x8()       const                            { return ParIdx8x8(m_iIdx); }
+    Par8x8    b8x8Index()  const                            { return Par8x8(m_iSIdx>>2); }
     B8x8Idx(LumaIdx cIdx)
     {
         UInt    uiB8x8  = (cIdx.y() / 2) * 2 + (cIdx.x() / 2);
@@ -202,7 +202,6 @@ public:
 };
 
 
-//S: Sparse???
 class S4x4Idx : public LumaIdx
 {
 private:
@@ -239,10 +238,14 @@ protected:
 class CPlaneIdx
 {
 public:
-    CPlaneIdx(UInt uiIdx = 0) : m_iIdx(uiIdx) {}
+    CPlaneIdx(UInt uiIdx = 0) :
+        m_iIdx(uiIdx)
+    {
+    }
+
     CPlaneIdx& operator ++(Int)    { m_iIdx++; return *this; }
-    Bool       isLegal()     const { return m_iIdx < 2; }
-    operator   Int()         const { return m_iIdx;     }
+    Bool       isLegal() const     { return m_iIdx < 2; }
+    operator   Int()     const     { return m_iIdx;     }
 private:
     UInt m_iIdx;
 };
@@ -255,13 +258,13 @@ public:
     {
     }
 
-    CIdx(const CPlaneIdx &rcCPlIdx)                  : ChromaIdx(rcCPlIdx<<2)             {}
+    CIdx(const CPlaneIdx &rcCPlIdx)                 : ChromaIdx(rcCPlIdx<<2)             {}
     CIdx(const CPlaneIdx &rcCPlIdx, Par8x8 ePar8x8) : ChromaIdx((rcCPlIdx<<2) + ePar8x8) {}
 
     CIdx  operator+ (UInt ui)                   const { return CIdx(m_iIdx + ui); }
     CIdx  operator+ (Int  i)                    const { return CIdx(m_iIdx + i ); }
 
-    CIdx& operator ++(Int)                              { m_iIdx++; return *this; }
+    CIdx& operator ++(Int)                            { m_iIdx++; return *this; }
     Bool isLegal()                              const { return m_iIdx < 8; }
 
     Bool isLegal(CPlaneIdx cCPlIdx)             const { return m_iIdx < ((cCPlIdx + 1) << 2); }

@@ -3,12 +3,12 @@
 #include "ReadYuvFile.h"
 #include <cstdio>
 
-ReadYuvFile::ReadYuvFile()
-: m_uiLumPicHeight(0)
-, m_uiLumPicWidth (0)
-, m_uiStartLine   (0)
-, m_uiEndLine     (MSYS_UINT_MAX)
-, m_eFillMode     (FILL_CLEAR)
+ReadYuvFile::ReadYuvFile():
+    m_uiLumPicHeight(0),
+    m_uiLumPicWidth (0),
+    m_uiStartLine   (0),
+    m_uiEndLine     (MSYS_UINT_MAX),
+    m_eFillMode     (FILL_CLEAR)
 {
 }
 
@@ -19,33 +19,38 @@ ReadYuvFile::~ReadYuvFile()
 
 ErrVal ReadYuvFile::create(ReadYuvFile*& rpcReadYuvFile)
 {
-  rpcReadYuvFile = new ReadYuvFile;
-  ROT(NULL == rpcReadYuvFile);
-  return Err::m_nOK;
+    rpcReadYuvFile = new ReadYuvFile;
+    ROT(NULL == rpcReadYuvFile);
+    return Err::m_nOK;
 }
 
 
 ErrVal ReadYuvFile::destroy()
 {
-  AOT_DBG(m_cFile.is_open());
-  uninit();
-  delete this;
-  return Err::m_nOK;
+    AOT_DBG(m_cFile.is_open());
+    uninit();
+    delete this;
+    return Err::m_nOK;
 }
 
 ErrVal ReadYuvFile::uninit()
 {
-  if(m_cFile.is_open())
-  {
-      m_cFile.close();
-  }
-  m_uiLumPicHeight = 0;
-  m_uiLumPicWidth  = 0;
-  return Err::m_nOK;
+    if(m_cFile.is_open())
+    {
+        m_cFile.close();
+    }
+    m_uiLumPicHeight = 0;
+    m_uiLumPicWidth  = 0;
+    return Err::m_nOK;
 }
 
 
-ErrVal ReadYuvFile::init(const std::string& rcFileName, UInt uiLumPicHeight, UInt uiLumPicWidth, UInt uiStartLine, UInt uiEndLine, FillMode eFillMode)
+ErrVal ReadYuvFile::init(const std::string& rcFileName,
+                         UInt uiLumPicHeight,
+                         UInt uiLumPicWidth,
+                         UInt uiStartLine,
+                         UInt uiEndLine,
+                         FillMode eFillMode)
 {
     ROT(0 == uiLumPicHeight);
     ROT(0 == uiLumPicWidth);
@@ -73,7 +78,14 @@ ErrVal ReadYuvFile::init(const std::string& rcFileName, UInt uiLumPicHeight, UIn
 
 
 
-ErrVal ReadYuvFile::xReadPlane(UChar *pucDest, UInt uiBufHeight, UInt uiBufWidth, UInt uiBufStride, UInt uiPicHeight, UInt uiPicWidth, UInt uiStartLine, UInt uiEndLine)
+ErrVal ReadYuvFile::xReadPlane(UChar *pucDest,
+                               UInt uiBufHeight,
+                               UInt uiBufWidth,
+                               UInt uiBufStride,
+                               UInt uiPicHeight,
+                               UInt uiPicWidth,
+                               UInt uiStartLine,
+                               UInt uiEndLine)
 {
     UInt uiClearSize = uiBufWidth - uiPicWidth;
 

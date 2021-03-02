@@ -837,6 +837,7 @@ ErrVal EncoderCodingParameter::xReadFromFile (std::string& rcFilename, std::stri
     //Step1:循环赋值
     while(!feof(f))
     {
+        ///读取一行
         xReadLine(f, acTags);
         if(acTags[0].empty())
         {

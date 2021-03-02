@@ -1,6 +1,8 @@
 #ifndef _INVERSETRANSFORM_H_
 #define _INVERSETRANSFORM_H_
 
+//变换 与 量化
+
 #include "H264AVCCommonLib/Quantizer.h"
 #include "H264AVCCommonLib/YuvMbBuffer.h"
 
@@ -22,9 +24,7 @@ public:
 
 };
 
-class Transform :
-public Quantizer
-, CoeffLevelPred
+class Transform : public Quantizer, CoeffLevelPred
 {
 protected:
     Transform();

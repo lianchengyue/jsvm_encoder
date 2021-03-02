@@ -34,6 +34,8 @@ enum PicType
     MAX_FRAME_TYPE  = 0x04
 };
 
+
+/*** START: Part类型 ***/
 enum ParIdx16x16
 {
     PART_16x16   = 0x00
@@ -83,6 +85,9 @@ enum SParIdx4x4
     SPART_4x4_2   = 0x04,
     SPART_4x4_3   = 0x05
 };
+/*** END: Part类型 ***/
+
+
 
 enum NeighbourBlock
 {
@@ -99,6 +104,7 @@ enum ListIdx
     LIST_1 = 0x01
 };
 
+//当前的处理状态
 enum ProcessingState
 {
     PRE_PROCESS     = 0,
@@ -108,7 +114,7 @@ enum ProcessingState
     POST_PROCESS    = 4
 };
 
-
+//Slice类型
 enum SliceType
 {
     P_SLICE             = 0,
@@ -119,7 +125,7 @@ enum SliceType
     NOT_SPECIFIED_SLICE = 5
 };
 
-
+//Ref_id
 enum NalRefIdc
 {
     NAL_REF_IDC_PRIORITY_LOWEST  = 0,
@@ -128,6 +134,7 @@ enum NalRefIdc
     NAL_REF_IDC_PRIORITY_HIGHEST = 3
 };
 
+//Nalu类型
 enum NalUnitType
 {
     NAL_UNIT_UNSPECIFIED_0            =  0,
@@ -159,16 +166,17 @@ enum NalUnitType
 #define NAL_UNIT_HEADER_SVC_EXTENSION_BYTES      3
 #define NUM_SPS_IDS                             32
 
+//mb_type
 enum MbMode
 {
     MODE_SKIP         = 0,
     MODE_16x16        = 1,
     MODE_16x8         = 2,
     MODE_8x16         = 3,
-    MODE_8x8          = 4,
-    MODE_8x8ref0      = 5,
+    MODE_8x8          = 4,     //P_8x8 或者 B_8x8
+    MODE_8x8ref0      = 5,     //P_8x8ref0
     INTRA_4X4         = 6,
-    MODE_PCM          = 25+6,
+    MODE_PCM          = 25+6,  //I_PCM
     INTRA_BL          = 36,
     NOT_AVAILABLE     = 99 //TMM
 };
@@ -212,9 +220,10 @@ enum SearchMode
     SPIRAL_SEARCH = 1,
     LOG_SEARCH    = 2,
     FAST_SEARCH   = 3,
-    TZ_SEARCH     = 4
+    TZ_SEARCH     = 4  //.cfg文件中设置为4
 };
 
+//残差
 enum ResidualMode
 {
     LUMA_I16_DC  = 0,

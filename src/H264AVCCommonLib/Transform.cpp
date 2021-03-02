@@ -3,6 +3,8 @@
 #include "H264AVCCommonLib/Tables.h"
 #include "H264AVCCommonLib/Transform.h"
 
+//变换 与 量化
+
 namespace JSVM {
 
 // for SVC to AVC rewrite
@@ -29,9 +31,7 @@ ErrVal CoeffLevelPred::ScaleCoeffLevels(TCoeff* piCoeff, TCoeff* piRefCoeff, UIn
     return Err::m_nOK;
 }
 
-Transform::Transform()
-: m_bClip(true)
-, m_storeCoeffFlag (true)
+Transform::Transform(): m_bClip(true), m_storeCoeffFlag (true)
 {
 }
 

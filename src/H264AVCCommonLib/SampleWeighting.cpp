@@ -6,34 +6,34 @@
 namespace JSVM {
 
 
-SampleWeighting::SampleWeighting()
-: m_uiLumaLogWeightDenom    (5)
-, m_uiChromaLogWeightDenom  (5)
-, m_bExplicit               (false)
-, m_bWeightedPredDisableP   (true)
-, m_bWeightedPredDisableB   (true)
+SampleWeighting::SampleWeighting() :
+    m_uiLumaLogWeightDenom    (5),
+    m_uiChromaLogWeightDenom  (5),
+    m_bExplicit               (false),
+    m_bWeightedPredDisableP   (true),
+    m_bWeightedPredDisableB   (true)
 {
-  m_afpMixSampleFunc[0] = NULL;
-  m_afpMixSampleFunc[1] = NULL;
-  m_afpMixSampleFunc[2] = NULL;
-  m_afpMixSampleFunc[3] = NULL;
-  m_afpMixSampleFunc[4] = NULL;
+    m_afpMixSampleFunc[0] = NULL;
+    m_afpMixSampleFunc[1] = NULL;
+    m_afpMixSampleFunc[2] = NULL;
+    m_afpMixSampleFunc[3] = NULL;
+    m_afpMixSampleFunc[4] = NULL;
 
-  m_afpXMixSampleFunc[0] = NULL;
-  m_afpXMixSampleFunc[1] = NULL;
-  m_afpXMixSampleFunc[2] = NULL;
-  m_afpXMixSampleFunc[3] = NULL;
-  m_afpXMixSampleFunc[4] = NULL;
+    m_afpXMixSampleFunc[0] = NULL;
+    m_afpXMixSampleFunc[1] = NULL;
+    m_afpXMixSampleFunc[2] = NULL;
+    m_afpXMixSampleFunc[3] = NULL;
+    m_afpXMixSampleFunc[4] = NULL;
 }
 
 
 ErrVal SampleWeighting::create(SampleWeighting*& rpcSampleWeighting)
 {
-  rpcSampleWeighting = new SampleWeighting;
+    rpcSampleWeighting = new SampleWeighting;
 
-  ROT (NULL == rpcSampleWeighting);
+    ROT (NULL == rpcSampleWeighting);
 
-  return Err::m_nOK;
+    return Err::m_nOK;
 }
 
 
