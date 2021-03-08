@@ -24,6 +24,8 @@ public:
                 HeaderSymbolWriteIf*  pcHeaderSymbolTestIf);
     ErrVal uninit();
 
+    //申请m_pucTempBuffer
+    //m_pucBuffer: 指向bin的数据部分
     ErrVal initNalUnit(BinDataAccessor*  pcBinDataAccessor);
     ErrVal closeNalUnit(UInt&  ruiBits);
     ErrVal closeAndAppendNalUnits (UInt  *pauiBits,
@@ -55,11 +57,14 @@ protected:
 
 protected:
     Bool                  m_bIsUnitActive;
+    //
     BitWriteBuffer*       m_pcBitWriteBuffer;
     HeaderSymbolWriteIf*  m_pcHeaderSymbolWriteIf;
     HeaderSymbolWriteIf*  m_pcHeaderSymbolTestIf;
+    //每一次待输出的h264格式的bin文件
     BinDataAccessor*      m_pcBinDataAccessor;
     UChar*                m_pucBuffer;
+    //initNalUnit时创建的临时buffer, RBSP
     UChar*                m_pucTempBuffer;
     UChar*                m_pucTempBufferBackup;
     UInt                  m_uiPacketLength;

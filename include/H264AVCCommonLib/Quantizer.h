@@ -2,6 +2,7 @@
 #define _QUANTIZER_H_
 
 #include "Typedefs.h"
+#include "CommonDefs.h"
 
 // h264 namepace begin
 namespace JSVM {
@@ -23,7 +24,7 @@ public :
     {
         m_iPer  = (iQp)/6;
         m_iRem  = (iQp)%6;
-        m_iBits = QP_BITS + m_iPer;
+        m_iBits = QP_BITS + m_iPer;  //QP_BITS:15
         m_iAdd  = (1 << m_iBits) / ((bIntra) ?  3 : 6);
     }
 
@@ -32,12 +33,13 @@ public :
     const Int bits() const    { return m_iBits; }
     const Int add() const     { return m_iAdd; }
     const Int mode() const    { return m_iMode; }
+    //获取QP值
     const Int value() const   { return 6*m_iPer+m_iRem; }
 
 private:
-    Int m_iPer;
-    Int m_iRem;
-    Int m_iBits;
+    Int m_iPer;  //QP / 6
+    Int m_iRem;  //QP % 6
+    Int m_iBits; //15 + m_iPer
     Int m_iAdd;
     Int m_iMode;
 };

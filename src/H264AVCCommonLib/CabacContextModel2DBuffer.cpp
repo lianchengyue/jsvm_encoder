@@ -4,9 +4,9 @@
 namespace JSVM {
 
 CabacContextModel2DBuffer::CabacContextModel2DBuffer(UInt uiSizeY, UInt uiSizeX) :
-  m_pcCContextModel(NULL),
-  m_uiSizeX(uiSizeX),
-  m_uiSizeY(uiSizeY)
+    m_pcCContextModel(NULL),
+    m_uiSizeX(uiSizeX),
+    m_uiSizeY(uiSizeY)
 {
     AOF_DBG( uiSizeY );
     AOF_DBG( uiSizeX );

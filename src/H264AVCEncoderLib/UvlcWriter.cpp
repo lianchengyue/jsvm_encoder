@@ -548,6 +548,7 @@ ErrVal UvlcWriter::writeCode(UInt uiCode, UInt uiLength, const Char* pcTraceStri
         ETRACE_TY(acType);
     }
 
+    //写当前值
     m_pcBitWriteBufferIf->write(uiCode, uiLength);
 
     ETRACE_POS;
@@ -928,10 +929,10 @@ const UChar g_aucTcoeffDScan[9][5] =
 
 
 ErrVal UvlcWriter::residualBlock(MbDataAccess& rcMbDataAccess,
-                                  LumaIdx       cIdx,
-                                  ResidualMode  eResidualMode,
-                                  UInt          uiStart,
-                                  UInt          uiStop)
+                                 LumaIdx       cIdx,
+                                 ResidualMode  eResidualMode,
+                                 UInt          uiStart,
+                                 UInt          uiStop)
 {
    const UChar*  pucScan;
    TCoeff*       piCoeff = rcMbDataAccess.getMbTCoeffs().get(cIdx);

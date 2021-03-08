@@ -6,31 +6,31 @@
 namespace JSVM {
 
 
-RecPicBufUnit::RecPicBufUnit()
-: m_iPoc                  (MSYS_INT_MIN)
-, m_uiFrameNum            (MSYS_UINT_MAX)
-, m_bExisting             (false)
-, m_bNeededForReference   (false)
-, m_bOutputted            (false)
-, m_pcReconstructedFrame  (NULL)
-, m_pcMbDataCtrl          (NULL)
-, m_pcPicBuffer           (NULL)
+RecPicBufUnit::RecPicBufUnit() :
+    m_iPoc                  (MSYS_INT_MIN),
+    m_uiFrameNum            (MSYS_UINT_MAX),
+    m_bExisting             (false),
+    m_bNeededForReference   (false),
+    m_bOutputted            (false),
+    m_pcReconstructedFrame  (NULL),
+    m_pcMbDataCtrl          (NULL),
+    m_pcPicBuffer           (NULL)
 {
 }
 
 
 RecPicBufUnit::~RecPicBufUnit()
 {
-  if(m_pcMbDataCtrl)
-  {
-    m_pcMbDataCtrl->uninit();
-  }
-  if(m_pcReconstructedFrame)
-  {
-    m_pcReconstructedFrame->uninit();
-  }
-  delete m_pcMbDataCtrl;
-  delete m_pcReconstructedFrame;
+    if(m_pcMbDataCtrl)
+    {
+        m_pcMbDataCtrl->uninit();
+    }
+    if(m_pcReconstructedFrame)
+    {
+        m_pcReconstructedFrame->uninit();
+    }
+    delete m_pcMbDataCtrl;
+    delete m_pcReconstructedFrame;
 }
 
 
@@ -136,14 +136,14 @@ ErrVal RecPicBufUnit::markOutputted()
 
 
 
-RecPicBuffer::RecPicBuffer()
-: m_bInitDone               (false)
-, m_pcYuvBufferCtrlFullPel  (NULL)
-, m_pcYuvBufferCtrlHalfPel  (NULL)
-, m_uiNumRefFrames          (0)
-, m_uiMaxFrameNum           (0)
-, m_uiLastRefFrameNum       (MSYS_UINT_MAX)
-, m_pcCurrRecPicBufUnit     (NULL)
+RecPicBuffer::RecPicBuffer() :
+    m_bInitDone               (false),
+    m_pcYuvBufferCtrlFullPel  (NULL),
+    m_pcYuvBufferCtrlHalfPel  (NULL),
+    m_uiNumRefFrames          (0),
+    m_uiMaxFrameNum           (0),
+    m_uiLastRefFrameNum       (MSYS_UINT_MAX),
+    m_pcCurrRecPicBufUnit     (NULL)
 {
 }
 

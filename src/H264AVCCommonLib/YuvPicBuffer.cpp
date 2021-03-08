@@ -8,15 +8,15 @@
 
 namespace JSVM {
 
-YuvPicBuffer::YuvPicBuffer(YuvBufferCtrl& rcYuvBufferCtrl, PicType ePicType)
-: m_rcBufferParam   (rcYuvBufferCtrl.getBufferParameter(ePicType)),
-  m_ePicType        (ePicType),
-  m_rcYuvBufferCtrl (rcYuvBufferCtrl),
-  m_pPelCurrY       (NULL),
-  m_pPelCurrU       (NULL),
-  m_pPelCurrV       (NULL),
-  m_pucYuvBuffer    (NULL),
-  m_pucOwnYuvBuffer (NULL)
+YuvPicBuffer::YuvPicBuffer(YuvBufferCtrl& rcYuvBufferCtrl, PicType ePicType) :
+    m_rcBufferParam   (rcYuvBufferCtrl.getBufferParameter(ePicType)),
+    m_ePicType        (ePicType),
+    m_rcYuvBufferCtrl (rcYuvBufferCtrl),
+    m_pPelCurrY       (NULL),
+    m_pPelCurrU       (NULL),
+    m_pPelCurrV       (NULL),
+    m_pucYuvBuffer    (NULL),
+    m_pucOwnYuvBuffer (NULL)
 {
 }
 

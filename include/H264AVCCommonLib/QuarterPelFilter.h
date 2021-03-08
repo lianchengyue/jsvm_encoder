@@ -9,6 +9,7 @@ namespace JSVM {
 typedef Void (*FilterBlockFunc)(Pel* pDes, Pel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize);
 typedef Void (*XFilterBlockFunc)(XPel* pDes, XPel* pSrc, Int iSrcStride, UInt uiXSize, UInt uiYSize);
 
+//亚像素级的运动估计
 class QuarterPelFilter
 {
 protected:
@@ -27,6 +28,7 @@ public:
         m_afpXFilterBlockFunc[uiFilter](pDes, pSrc, iSrcStride, uiXSize, uiYSize);
     }
 
+    //进行宏块MB的运动估计
     Void predBlk(YuvMbBuffer* pcDesBuffer, YuvPicBuffer* pcSrcBuffer, LumaIdx cIdx, Mv cMv, Int iSizeY, Int iSizeX);
 
     Void weightOnEnergy (UShort *usWeight, XPel* pucSrc, Int iSrcStride, Int iSizeY, Int iSizeX);

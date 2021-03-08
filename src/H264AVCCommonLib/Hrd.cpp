@@ -53,20 +53,20 @@ ErrVal HRD::init(UInt uiCpbCnt)
 
 ErrVal HRD::read(HeaderSymbolReadIf *pcReadIf)
 {
-    RNOKS (pcReadIf->getFlag(m_bHrdParametersPresentFlag,              "HRD: hdr_parameters_present_flag"));
+    RNOKS (pcReadIf->getFlag(m_bHrdParametersPresentFlag, "HRD: hdr_parameters_present_flag"));
     ROFRS (m_bHrdParametersPresentFlag, Err::m_nOK);
 
     UInt uiTmp = 0;
 
 
-    RNOKS (pcReadIf->getUvlc(uiTmp,                                    "HRD: cpb_cnt_minus1"));
+    RNOKS (pcReadIf->getUvlc(uiTmp,                       "HRD: cpb_cnt_minus1"));
     uiTmp++;
     ROTRS (uiTmp > 32, Err::m_nInvalidParameter);
     setCpbCnt(uiTmp);
 
 
-    RNOKS (pcReadIf->getCode(m_uiBitRateScale, 4,                       "HRD: bit_rate_scale"));
-    RNOKS (pcReadIf->getCode(m_uiCpbSizeScale, 4,                       "HRD: cpb_size_scale"));
+    RNOKS (pcReadIf->getCode(m_uiBitRateScale, 4,         "HRD: bit_rate_scale"));
+    RNOKS (pcReadIf->getCode(m_uiCpbSizeScale, 4,         "HRD: cpb_size_scale"));
 
     m_cCntBuf.uninit();
     m_cCntBuf.init(m_uiCpbCnt);
@@ -76,16 +76,16 @@ ErrVal HRD::read(HeaderSymbolReadIf *pcReadIf)
         RNOKS (m_cCntBuf.get(i).read(pcReadIf));
     }
 
-    RNOKS (pcReadIf->getCode(uiTmp, 5,                                  "HRD: initial_cpb_removal_delay_length_minus1"));
+    RNOKS (pcReadIf->getCode(uiTmp, 5,                    "HRD: initial_cpb_removal_delay_length_minus1"));
     setInitialCpbRemovalDelayLength(uiTmp+1);
 
-    RNOKS (pcReadIf->getCode(uiTmp, 5,                                  "HRD: cpb_removal_delay_length_minus1"));
+    RNOKS (pcReadIf->getCode(uiTmp, 5,                    "HRD: cpb_removal_delay_length_minus1"));
     setCpbRemovalDelayLength(uiTmp+1);
 
-    RNOKS (pcReadIf->getCode(uiTmp, 5,                                  "HRD: dpb_output_delay_length_minus1"));
+    RNOKS (pcReadIf->getCode(uiTmp, 5,                    "HRD: dpb_output_delay_length_minus1"));
     setDpbOutputDelayLength(uiTmp+1);
 
-    RNOKS (pcReadIf->getCode(uiTmp, 5,                                  "HRD: time_offset_length"));
+    RNOKS (pcReadIf->getCode(uiTmp, 5,                    "HRD: time_offset_length"));
     setTimeOffsetLength(uiTmp);
 
     return Err::m_nOK;
@@ -109,9 +109,9 @@ ErrVal HRD::write(HeaderSymbolWriteIf* pcWriteIf) const
     }
 
     pcWriteIf->writeCode(getInitialCpbRemovalDelayLength()-1, 5, "HRD: initial_cpb_removal_delay_length_minus1");
-    pcWriteIf->writeCode(getCpbRemovalDelayLength()-1, 5, "HRD: cpb_removal_delay_length_minus1");
-    pcWriteIf->writeCode(getDpbOutputDelayLength()-1, 5, "HRD: dpb_output_delay_length_minus1");
-    pcWriteIf->writeCode(getTimeOffsetLength(), 5, "HRD: time_offset_length");
+    pcWriteIf->writeCode(getCpbRemovalDelayLength()-1, 5,        "HRD: cpb_removal_delay_length_minus1");
+    pcWriteIf->writeCode(getDpbOutputDelayLength()-1, 5,         "HRD: dpb_output_delay_length_minus1");
+    pcWriteIf->writeCode(getTimeOffsetLength(), 5,               "HRD: time_offset_length");
     return Err::m_nOK;
 }
 

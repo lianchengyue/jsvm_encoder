@@ -1,4 +1,3 @@
-
 #include "H264AVCEncoderLib.h"
 #include "H264AVCCommonLib.h"
 #include "RateCtlBase.h"

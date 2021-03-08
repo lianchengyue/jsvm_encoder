@@ -82,15 +82,16 @@ Void CreaterH264AVCEncoder::SetVeryFirstCall()
     m_pcH264AVCEncoder->SetVeryFirstCall();
 }
 
-ErrVal CreaterH264AVCEncoder::writeParameterSets (ExtBinDataAccessor* pcExtBinDataAccessor,
+ErrVal CreaterH264AVCEncoder::writeParameterSets (ExtBinDataAccessor* pcExtBinDataAccessor, //输出, 目标bin
                                                   SequenceParameterSet*&  rpcAVCSPS,
-                                                  Bool&  rbMoreSets)
+                                                  Bool&  rbMoreSets)  //是否有更多
 {
     //AVC模式
     if(m_pcCodingParameter->getAVCmode())
     {
         //初始化SPS与PPS的入口
         m_pcPicEncoder->writeAndInitParameterSets(pcExtBinDataAccessor, rbMoreSets);
+        //设置m_bScalableSeiMessage为true
         m_pcH264AVCEncoder->setScalableSEIMessage(); // due to Nokia's (Ye-Kui's) weird implementation
         return Err::m_nOK;
     }
@@ -114,11 +115,12 @@ ErrVal CreaterH264AVCEncoder::process (ExtBinDataAccessorList&  rcExtBinDataAcce
     //AVC模式
     if (m_pcCodingParameter->getAVCmode())
     {
+        //apcReconstructPicBuffer[0]作为UnusedBuffer
         apcPicBufferUnusedList->push_back (apcReconstructPicBuffer[0]);
-        m_pcPicEncoder->process (apcOriginalPicBuffer[0],
-                                 *apcPicBufferOutputList,
-                                 *apcPicBufferUnusedList,
-                                 rcExtBinDataAccessorList);
+        m_pcPicEncoder->process (apcOriginalPicBuffer[0],   //读取到的yuv
+                                 *apcPicBufferOutputList,   //
+                                 *apcPicBufferUnusedList,   //
+                                 rcExtBinDataAccessorList); //输出的编码后的h264 bin
         return Err::m_nOK;
     }
 
@@ -126,7 +128,7 @@ ErrVal CreaterH264AVCEncoder::process (ExtBinDataAccessorList&  rcExtBinDataAcce
     else
     {
         m_pcH264AVCEncoder->process (rcExtBinDataAccessorList,
-                                     apcOriginalPicBuffer,
+                                     apcOriginalPicBuffer,  //读取到的yuv(多层)
                                      apcReconstructPicBuffer,
                                      apcPicBufferOutputList,
                                      apcPicBufferUnusedList);

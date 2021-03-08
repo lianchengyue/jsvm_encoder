@@ -29,12 +29,24 @@ __inline Bool gBoolRandom()
     return 0 == (rand()&1);
 }
 
+//限制在0~255中
 __inline const Int gClip(const Int iX)
 {
     const Int i2 = (iX & 0xFF);
-    if(i2 == iX)  { return iX; }
-    if(iX < 0)    { return 0x00; }
-    else          { return 0xFF; }
+
+    if(i2 == iX)
+    {
+        return iX;
+    }
+
+    if(iX < 0)
+    {
+        return 0x00;
+    }
+    else
+    {
+        return 0xFF;
+    }
 }
 
 

@@ -5,15 +5,15 @@
 namespace JSVM {
 
 
-MotionEstimationCost::MotionEstimationCost()
-: m_pcRateDistortionIf    (0)
-, m_puiComponentCostAlloc (0)
-, m_puiComponentCost      (0)
-, m_puiHorCost            (0)
-, m_puiVerCost            (0)
-, m_uiMvScaleShift        (0)
-, m_uiCostFactor          (0)
-, m_iSubPelSearchLimit    (-1)
+MotionEstimationCost::MotionEstimationCost() :
+    m_pcRateDistortionIf    (0),
+    m_puiComponentCostAlloc (0),
+    m_puiComponentCost      (0),
+    m_puiHorCost            (0),
+    m_puiVerCost            (0),
+    m_uiMvScaleShift        (0),
+    m_uiCostFactor          (0),
+    m_iSubPelSearchLimit    (-1)
 {
 }
 
@@ -30,13 +30,13 @@ ErrVal MotionEstimationCost::xInit(const Int iSubPelSearchLimit, RateDistortionI
     if(m_iSubPelSearchLimit != iSubPelSearchLimit)
     {
         xUninit();
-        m_iSubPelSearchLimit    = iSubPelSearchLimit;
-        Int iNumPositionsDiv2   = (iSubPelSearchLimit + 4)  << 4;
-        m_puiComponentCostAlloc = new UInt[ iNumPositionsDiv2 << 1 ];
+        m_iSubPelSearchLimit    = iSubPelSearchLimit;               //64
+        Int iNumPositionsDiv2   = (iSubPelSearchLimit + 4)  << 4;   //(64 + 4) * 16
+        m_puiComponentCostAlloc = new UInt[iNumPositionsDiv2 << 1];
         m_puiComponentCost      = m_puiComponentCostAlloc + iNumPositionsDiv2;
         for(Int iPos = -iNumPositionsDiv2; iPos < iNumPositionsDiv2; iPos++)
         {
-            m_puiComponentCost[ iPos ] = xGetComponentBits(iPos);
+            m_puiComponentCost[iPos] = xGetComponentBits(iPos);
         }
     }
     return Err::m_nOK;
@@ -56,6 +56,7 @@ ErrVal MotionEstimationCost::xSetMEPars(const UInt uiMvScaleShift, const Bool bS
 {
     ROF(m_pcRateDistortionIf);
     m_uiMvScaleShift  = uiMvScaleShift;
+    //RDO Cost选择: 使用SAD或SSE
     m_uiCostFactor = m_pcRateDistortionIf->getMotionCostShift(bSad);
     return Err::m_nOK;
 }

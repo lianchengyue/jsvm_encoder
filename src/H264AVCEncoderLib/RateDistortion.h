@@ -18,16 +18,19 @@ protected:
     virtual ~RateDistortion();
 
 public:
-    virtual ErrVal  setMbQpLambda( MbDataAccess& rcMbDataAccess, UInt uiQp, Double dLambda);
+    virtual ErrVal  setMbQpLambda(MbDataAccess& rcMbDataAccess, UInt uiQp, Double dLambda);
 
-    static  ErrVal create( RateDistortion *&rpcRateDistortion);
+    static  ErrVal create(RateDistortion *&rpcRateDistortion);
     virtual ErrVal destroy();
 
-    Double  getCost( UInt uiBits, UInt uiDistortion);
-    Double  getFCost( UInt uiBits, UInt uiDistortion);
-    UInt    getMotionCostShift( Bool bSad) { return (bSad) ? m_uiCostFactorMotionSAD : m_uiCostFactorMotionSSE; }
+    Double  getCost(UInt uiBits, UInt uiDistortion);
+    Double  getFCost(UInt uiBits, UInt uiDistortion);
+    UInt    getMotionCostShift(Bool bSad)
+    {
+        return (bSad) ? m_uiCostFactorMotionSAD : m_uiCostFactorMotionSSE;
+    }
 
-    ErrVal  fixMacroblockQP( MbDataAccess& rcMbDataAccess);
+    ErrVal  fixMacroblockQP(MbDataAccess& rcMbDataAccess);
 
 protected:
     Double m_dCost;

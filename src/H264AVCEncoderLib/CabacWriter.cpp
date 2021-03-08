@@ -15,33 +15,33 @@ const int MAX_COEFF[9] = { 8,16,16,16,15, 4, 4,15,15};
 const int COUNT_THR[9] = { 3, 4, 4, 4, 3, 2, 2, 3, 3};
 
 
-CabacWriter::CabacWriter():
-  m_cFieldFlagCCModel   (1,                3),
-  m_cFldMapCCModel      (NUM_BLOCK_TYPES,  NUM_MAP_CTX),
-  m_cFldLastCCModel     (NUM_BLOCK_TYPES,  NUM_LAST_CTX),
-  m_cBLSkipCCModel      (1,                NUM_BL_SKIP_FLAG_CTX),
-  m_cBCbpCCModel(NUM_BLOCK_TYPES, NUM_BCBP_CTX),
-  m_cMapCCModel(NUM_BLOCK_TYPES, NUM_MAP_CTX),
-  m_cLastCCModel(NUM_BLOCK_TYPES, NUM_LAST_CTX),
-  m_cOneCCModel(NUM_BLOCK_TYPES, NUM_ABS_CTX),
-  m_cAbsCCModel(NUM_BLOCK_TYPES, NUM_ABS_CTX),
-  m_cChromaPredCCModel(1, 4),
-  m_cMbTypeCCModel(3, NUM_MB_TYPE_CTX),
-  m_cBlockTypeCCModel(2, NUM_B8_TYPE_CTX),
-  m_cMvdCCModel(2, NUM_MV_RES_CTX),
-  m_cRefPicCCModel(2, NUM_REF_NO_CTX),
-  m_cMotPredFlagCCModel(1, NUM_MOT_PRED_FLAG_CTX),
-  m_cResPredFlagCCModel(1, NUM_RES_PRED_FLAG_CTX),
-  m_cDeltaQpCCModel(1, NUM_DELTA_QP_CTX),
-  m_cIntraPredCCModel(9, NUM_IPR_CTX),
-  m_cCbpCCModel(3, NUM_CBP_CTX),
-  m_cTransSizeCCModel(1, NUM_TRANSFORM_SIZE_CTX),
-  m_pcSliceHeader(NULL),
-  m_uiBitCounter(0),
-  m_uiPosCounter(0),
-  m_uiLastDQpNonZero(0),
-  m_bTraceEnable(true)
-, m_pcNextCabacWriter(NULL)
+CabacWriter::CabacWriter() :
+    m_cFieldFlagCCModel   (1,                3),
+    m_cFldMapCCModel      (NUM_BLOCK_TYPES,  NUM_MAP_CTX),
+    m_cFldLastCCModel     (NUM_BLOCK_TYPES,  NUM_LAST_CTX),
+    m_cBLSkipCCModel      (1,                NUM_BL_SKIP_FLAG_CTX),
+    m_cBCbpCCModel(NUM_BLOCK_TYPES, NUM_BCBP_CTX),
+    m_cMapCCModel(NUM_BLOCK_TYPES, NUM_MAP_CTX),
+    m_cLastCCModel(NUM_BLOCK_TYPES, NUM_LAST_CTX),
+    m_cOneCCModel(NUM_BLOCK_TYPES, NUM_ABS_CTX),
+    m_cAbsCCModel(NUM_BLOCK_TYPES, NUM_ABS_CTX),
+    m_cChromaPredCCModel(1, 4),
+    m_cMbTypeCCModel(3, NUM_MB_TYPE_CTX),
+    m_cBlockTypeCCModel(2, NUM_B8_TYPE_CTX),
+    m_cMvdCCModel(2, NUM_MV_RES_CTX),
+    m_cRefPicCCModel(2, NUM_REF_NO_CTX),
+    m_cMotPredFlagCCModel(1, NUM_MOT_PRED_FLAG_CTX),
+    m_cResPredFlagCCModel(1, NUM_RES_PRED_FLAG_CTX),
+    m_cDeltaQpCCModel(1, NUM_DELTA_QP_CTX),
+    m_cIntraPredCCModel(9, NUM_IPR_CTX),
+    m_cCbpCCModel(3, NUM_CBP_CTX),
+    m_cTransSizeCCModel(1, NUM_TRANSFORM_SIZE_CTX),
+    m_pcSliceHeader(NULL),
+    m_uiBitCounter(0),
+    m_uiPosCounter(0),
+    m_uiLastDQpNonZero(0),
+    m_bTraceEnable(true),
+    m_pcNextCabacWriter(NULL)
 {
 }
 

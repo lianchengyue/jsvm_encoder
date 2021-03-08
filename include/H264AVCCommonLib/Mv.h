@@ -9,14 +9,17 @@ class Mv
 public:
     __inline const UInt xGetFilter() const;
 
-    Mv()
-      : m_sHor(0),
+    Mv() :
+        m_sHor(0),
         m_sVer(0)
-    {}
-    Mv(Short sHor, Short sVer)
-      : m_sHor(sHor),
+    {
+    }
+
+    Mv(Short sHor, Short sVer) :
+        m_sHor(sHor),
         m_sVer(sVer)
-    {}
+    {
+    }
 
     Short getHor () const                    { return m_sHor; }
     Short getVer () const                    { return m_sVer; }
@@ -123,8 +126,8 @@ public:
 
 enum RefIdxValues
 {
-  BLOCK_NOT_AVAILABLE =  0,
-  BLOCK_NOT_PREDICTED = -1
+    BLOCK_NOT_AVAILABLE =  0,
+    BLOCK_NOT_PREDICTED = -1
 };
 
 
@@ -132,22 +135,27 @@ enum RefIdxValues
 class Mv3D : public Mv
 {
 public:
-    Mv3D()
-      : Mv(),
+    Mv3D() :
+        Mv(),
         m_scRef(BLOCK_NOT_AVAILABLE)
-    {}
-    Mv3D(const Mv& rcMv, SChar scRef)
-      : Mv(rcMv),
-        m_scRef(scRef)
-    {}
-    Mv3D(Short sHor, Short sVer, SChar scRef)
-      : Mv(sHor, sVer),
-        m_scRef(scRef)
-    {}
+    {
+    }
 
-    SChar getRef()                const               { return m_scRef; }
+    Mv3D(const Mv& rcMv, SChar scRef) :
+        Mv(rcMv),
+        m_scRef(scRef)
+    {
+    }
 
-    Void  setZero()                                   { Mv::setZero(); m_scRef = BLOCK_NOT_AVAILABLE; }
+    Mv3D(Short sHor, Short sVer, SChar scRef) :
+        Mv(sHor, sVer),
+        m_scRef(scRef)
+    {
+    }
+
+    SChar getRef() const                            { return m_scRef; }
+
+    Void  setZero()                                 { Mv::setZero(); m_scRef = BLOCK_NOT_AVAILABLE; }
     Void  setRef(SChar scRef)                       { m_scRef = scRef; }
     Void  setMv(const Mv& rcMv)                     { Mv::operator= (rcMv); }
     Void  set(Short sHor, Short sVer, SChar scRef)  { Mv::set(sHor, sVer); m_scRef = scRef; }
@@ -171,13 +179,20 @@ public:
         }
         return *this;
     }
-    Mv3D& minRefIdx(Mv3D& rcMv3D)  { return (((UChar)(rcMv3D.getRef()-1)) < ((UChar)(getRef()-1)) ? rcMv3D : *this); }
-    Bool operator== (const RefIdxValues eRefIdxValues)  { return (eRefIdxValues == m_scRef); }
-    Bool operator!= (const RefIdxValues eRefIdxValues)  { return (eRefIdxValues != m_scRef); }
+    Mv3D& minRefIdx(Mv3D& rcMv3D)
+    {
+        return (((UChar)(rcMv3D.getRef()-1)) < ((UChar)(getRef()-1)) ? rcMv3D : *this);
+    }
+    Bool operator== (const RefIdxValues eRefIdxValues)   { return (eRefIdxValues == m_scRef); }
+    Bool operator!= (const RefIdxValues eRefIdxValues)   { return (eRefIdxValues != m_scRef); }
 
-    operator const SChar()                                { return m_scRef; }
+    operator const SChar()                               { return m_scRef; }
 
-    const Mv3D& operator= (const Mv& rcMv)  { set(rcMv.getHor(), rcMv.getVer(), BLOCK_NOT_AVAILABLE); return *this; }
+    const Mv3D& operator= (const Mv& rcMv)
+    {
+        set(rcMv.getHor(), rcMv.getVer(), BLOCK_NOT_AVAILABLE);
+        return *this;
+    }
 
 private:
     SChar m_scRef;

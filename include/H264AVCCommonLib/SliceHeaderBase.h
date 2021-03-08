@@ -191,7 +191,7 @@ public:
     Bool  isDecRefBasePicMarking () const             { return m_bDecRefBasePicMarking; }
     Bool  getAdaptiveRefPicMarkingModeFlag () const   { return m_bAdaptiveRefPicMarkingModeFlag; }
 
-    Void  setDecRefBasePicMarking (Bool  bDecRefBasePicMarking)                     { m_bDecRefBasePicMarking           = bDecRefBasePicMarking; }
+    Void  setDecRefBasePicMarking (Bool  bDecRefBasePicMarking)                    { m_bDecRefBasePicMarking           = bDecRefBasePicMarking; }
     Void  setAdaptiveRefPicMarkingModeFlag (Bool bAdaptiveRefPicMarkingModeFlag)   { m_bAdaptiveRefPicMarkingModeFlag  = bAdaptiveRefPicMarkingModeFlag; }
 
     const DecRefPicMarking& operator = (const DecRefPicMarking& rcDecRefPicMarking)   { copy(rcDecRefPicMarking); return *this; }

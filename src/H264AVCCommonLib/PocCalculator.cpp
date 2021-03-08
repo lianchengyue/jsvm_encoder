@@ -8,16 +8,16 @@ namespace JSVM {
 
 
 
-PocCalculator::PocCalculator()
-  : m_iLastIdrFieldNum    (0)
-  , m_iBitsLsb            (0)
-  , m_iTop2BotOffset      (0)
-  , m_iPrevRefPocMsb      (0)
-  , m_iPrevRefPocLsb      (-1) //--ICU/ETRI FMO Implementation
-  , m_iMaxPocLsb          (0)
-  , m_iFrameNumOffset     (0)
-  , m_iRefOffsetSum       (0)
-  , m_iPrevFrameNum       (0)
+PocCalculator::PocCalculator() :
+    m_iLastIdrFieldNum    (0),
+    m_iBitsLsb            (0),
+    m_iTop2BotOffset      (0),
+    m_iPrevRefPocMsb      (0),
+    m_iPrevRefPocLsb      (-1), //--ICU/ETRI FMO Implementation
+    m_iMaxPocLsb          (0),
+    m_iFrameNumOffset     (0),
+    m_iRefOffsetSum       (0),
+    m_iPrevFrameNum       (0)
 {
 }
 
@@ -272,7 +272,7 @@ ErrVal PocCalculator::xInitSPS(const SequenceParameterSet& rcSPS)
 
 
 ErrVal PocCalculator::setPoc(SliceHeader&  rcSliceHeader,
-                             Int           iContNumber)
+                             Int  iContNumber)
 {
     ROTRS(iContNumber > (INT_MAX - 1), Err::m_nERR);
 

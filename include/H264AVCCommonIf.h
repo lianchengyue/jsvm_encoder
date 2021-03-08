@@ -133,7 +133,7 @@ enum PicStruct
 class PicBuffer
 {
 public:
-    PicBuffer(Pel* pcBuffer = NULL, Void* pcMediaPacket  = NULL, Int64 i64Cts = 0):
+    PicBuffer(Pel* pcBuffer = NULL, Void* pcMediaPacket  = NULL, Int64 i64Cts = 0) :
         m_pcMediaPacket(pcMediaPacket),
         m_pcBuffer     (pcBuffer),
         m_iInUseCout   (0),

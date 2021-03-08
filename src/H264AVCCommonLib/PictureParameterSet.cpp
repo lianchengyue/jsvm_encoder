@@ -8,32 +8,32 @@
 namespace JSVM {
 
 
-PictureParameterSet::PictureParameterSet()
-: m_eNalUnitType                            (NAL_UNIT_UNSPECIFIED_0)
-, m_uiDependencyId                          (0)
-, m_uiPicParameterSetId                     (MSYS_UINT_MAX)
-, m_uiSeqParameterSetId                     (MSYS_UINT_MAX)
-, m_bEntropyCodingModeFlag                  (false)
-, m_bPicOrderPresentFlag                    (false)
-, m_bWeightedPredFlag                       (false)
-, m_uiWeightedBiPredIdc                     (0)
-, m_uiPicInitQp                             (26)
-, m_iChromaQpIndexOffset                    (0)
-, m_bDeblockingFilterParametersPresentFlag  (false)
-, m_bConstrainedIntraPredFlag               (false)
-, m_bRedundantPicCntPresentFlag             (false)  // JVT-Q054, Red. Picture
-, m_bRedundantKeyPicCntPresentFlag          (false)  // JVT-W049
-, m_bEnableRedundantKeyPicCntPresentFlag    (false)  // JVT-W049
-, m_bTransform8x8ModeFlag                   (false)
-, m_bPicScalingMatrixPresentFlag            (false)
-, m_iSecondChromaQpIndexOffset              (0)
-, m_uiSliceGroupMapType                     (0)
-, m_bSliceGroupChangeDirection_flag         (false)
-, m_uiSliceGroupChangeRateMinus1            (0)
-, m_uiNumSliceGroupMapUnitsMinus1           (0)
-, m_uiSliceGroupIdArraySize                 (0)
-, m_pauiSliceGroupId                        (0)
-, m_bReferencesSubsetSPS                    (false)
+PictureParameterSet::PictureParameterSet() :
+    m_eNalUnitType                            (NAL_UNIT_UNSPECIFIED_0),
+    m_uiDependencyId                          (0),
+    m_uiPicParameterSetId                     (MSYS_UINT_MAX),
+    m_uiSeqParameterSetId                     (MSYS_UINT_MAX),
+    m_bEntropyCodingModeFlag                  (false),
+    m_bPicOrderPresentFlag                    (false),
+    m_bWeightedPredFlag                       (false),
+    m_uiWeightedBiPredIdc                     (0),
+    m_uiPicInitQp                             (26),
+    m_iChromaQpIndexOffset                    (0),
+    m_bDeblockingFilterParametersPresentFlag  (false),
+    m_bConstrainedIntraPredFlag               (false),
+    m_bRedundantPicCntPresentFlag             (false),  // JVT-Q054, Red. Picture
+    m_bRedundantKeyPicCntPresentFlag          (false),  // JVT-W049
+    m_bEnableRedundantKeyPicCntPresentFlag    (false),  // JVT-W049
+    m_bTransform8x8ModeFlag                   (false),
+    m_bPicScalingMatrixPresentFlag            (false),
+    m_iSecondChromaQpIndexOffset              (0),
+    m_uiSliceGroupMapType                     (0),
+    m_bSliceGroupChangeDirection_flag         (false),
+    m_uiSliceGroupChangeRateMinus1            (0),
+    m_uiNumSliceGroupMapUnitsMinus1           (0),
+    m_uiSliceGroupIdArraySize                 (0),
+    m_pauiSliceGroupId                        (0),
+    m_bReferencesSubsetSPS                    (false)
 {
     m_auiNumRefIdxActive[LIST_0] = 0;
     m_auiNumRefIdxActive[LIST_1] = 0;

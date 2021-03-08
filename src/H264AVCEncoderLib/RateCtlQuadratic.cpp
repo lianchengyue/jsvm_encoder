@@ -1,4 +1,3 @@
-
 #include "H264AVCEncoderLib.h"
 #include "H264AVCCommonLib.h"
 #include "RateCtlBase.h"
@@ -666,7 +665,9 @@ void rc_quadratic::updateRCModel(void)
         }
 
         if(iNc > 1)
-          bMADModelFlag=true;
+        {
+            bMADModelFlag=true;
+        }
 
         m_iPPreHeader = m_pcGenericRC->m_iNumberofHeaderBits;
         for (i = (RC_MODEL_HISTORY-2); i > 0; i--)

@@ -113,9 +113,9 @@ public:
 
     BlkMode getBlkMode (const ParIdx8x8 eParIdx, BlkMode eBlkMode);
 
-    MbMotionData()
-      : MbMvData        ()
-      , m_usMotPredFlags(0x0000)
+    MbMotionData() :
+        MbMvData(),
+        m_usMotPredFlags(0x0000)
     {
         m_ascRefIdx[0] = m_ascRefIdx[1] = m_ascRefIdx[2] = m_ascRefIdx[3] = BLOCK_NOT_AVAILABLE;
         m_usMotPredFlags = 0;

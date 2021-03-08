@@ -11,9 +11,9 @@
 // JVT-V068 }
 
 H264AVCEncoderTest::H264AVCEncoderTest() :
-  m_pcH264AVCEncoder(NULL),
-  m_pcWriteBitstreamToFile(NULL),
-  m_pcEncoderCodingParameter(NULL)
+    m_pcH264AVCEncoder(NULL),
+    m_pcWriteBitstreamToFile(NULL),
+    m_pcEncoderCodingParameter(NULL)
 {
     ::memset(m_apcReadYuv,   0x00, MAX_LAYERS*sizeof(Void*));
     ::memset(m_apcWriteYuv,  0x00, MAX_LAYERS*sizeof(Void*));
@@ -84,7 +84,7 @@ ErrVal H264AVCEncoderTest::init(Int argc, Char** argv)
                                          rcLayer.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
         }
 #else
-        //打开源文件
+        //打开源文件, m_cFm_cFile.openm_cFile.openile.open()
         m_apcReadYuv[uiLayer]->init (rcLayer.getInputFilename(),
                                      rcLayer.getFrameHeightInSamples(),
                                      rcLayer.getFrameWidthInSamples(), 0, MSYS_UINT_MAX, eFillMode);
@@ -97,6 +97,7 @@ ErrVal H264AVCEncoderTest::init(Int argc, Char** argv)
     if(m_pcEncoderCodingParameter->getAVCmode())
     {
         WriteBitstreamToFile::create (m_pcWriteBitstreamToFile);
+        //编码后的输出文件
         m_pcWriteBitstreamToFile->init (m_cEncoderIoParameter.cBitstreamFilename);
     }
     //SVC模式
@@ -184,7 +185,7 @@ ErrVal H264AVCEncoderTest::destroy()
     return Err::m_nOK;
 }
 
-
+//uiSize: 3618816
 ErrVal H264AVCEncoderTest::xGetNewPicBuffer (PicBuffer*&  rpcPicBuffer,
                                              UInt  uiLayer,
                                              UInt  uiSize)
@@ -243,6 +244,7 @@ ErrVal H264AVCEncoderTest::xWrite (PicBufferList& rcPicBufferList, UInt uiLayer)
                                           m_auiHeight [uiLayer],
                                           m_auiWidth  [uiLayer],
                                           m_auiStride [uiLayer],
+                                          //TQQ, Crop信息
                                           m_aauiCropping[uiLayer]);
     }
     return Err::m_nOK;
@@ -261,7 +263,9 @@ ErrVal H264AVCEncoderTest::xWrite (ExtBinDataAccessorList& rcList, UInt& ruiByte
   while(rcList.size())
   {
       ruiBytesInFrame += rcList.front()->size() + 4;
+      //写Start Code: 0x00 0x00 0x00 0x01
       m_pcWriteBitstreamToFile->writePacket(&m_cBinDataStartCode);
+      //写一帧h264信息
       m_pcWriteBitstreamToFile->writePacket(rcList.front());
       delete[] rcList.front()->data();
       delete   rcList.front();
@@ -302,6 +306,7 @@ ErrVal H264AVCEncoderTest::go ()
     PicBufferList           acPicBufferOutputList[MAX_LAYERS];
     //未使用队列
     PicBufferList           acPicBufferUnusedList[MAX_LAYERS];
+    //!编码后的一帧h264
     ExtBinDataAccessorList  cOutExtBinDataAccessorList;
     Bool                    bMoreSets;
 #if DOLBY_ENCMUX_ENABLE
@@ -315,6 +320,7 @@ ErrVal H264AVCEncoderTest::go ()
     m_pcH264AVCEncoder->init(m_pcEncoderCodingParameter);
 
     // JVT-W043 {
+    //码率控制: .cfg中的RateControlEnable
     bRateControlEnable = (Bool)((m_pcH264AVCEncoder->getCodingParameter()->m_uiRateControlEnable) > 0 ? true : false);
 
     //2: 通过"比特率-失真优化(Rate–distortion optimization)" 实现 rate Control
@@ -389,7 +395,7 @@ ErrVal H264AVCEncoderTest::go ()
     }
     // JVT-W043 }
 
-    //3: 设置SPS，PPS
+    //3: 循环设置SPS，PPS
     //===== write parameter sets =====
     for (bMoreSets = true; bMoreSets;)
     {
@@ -398,28 +404,34 @@ ErrVal H264AVCEncoderTest::go ()
         cBinData.reset ();
         cBinData.set (aucParameterSetBuffer, 1000);
 
-        //ExtBinDataAccessor: MemAccessor.h中
+        ///ExtBinDataAccessor: SPS/PPS除Start Code外的所有内容
+        //MemAccessor.h中
         //T* m_pcT;
         //T* m_pcOrigT;
         //UInt m_uiSize;
         //UInt m_uiUsableSize;
         ExtBinDataAccessor cExtBinDataAccessor;
-        cBinData.setMemAccessor (cExtBinDataAccessor);
+        cBinData.setMemAccessor (cExtBinDataAccessor);  //cExtBinDataAccessor.size()初始化为1000
 
         JSVM::SequenceParameterSet* pcAVCSPS = NULL;
 
         ///初始化SPS与PPS
-        m_pcH264AVCEncoder->writeParameterSets (&cExtBinDataAccessor, pcAVCSPS, bMoreSets);
+        m_pcH264AVCEncoder->writeParameterSets (&cExtBinDataAccessor, pcAVCSPS, bMoreSets);  //1000到实际值
         if(m_pcH264AVCEncoder->getScalableSeiMessage ())
         {
+            //写Start Code: 0x00 0x00 0x00 0x01
             m_pcWriteBitstreamToFile->writePacket (&m_cBinDataStartCode);
+            //写Parameter Set信息
             m_pcWriteBitstreamToFile->writePacket (&cExtBinDataAccessor);
-
+            printf("cExtBinDataAccessor.size(): %d\n", cExtBinDataAccessor.size());
+            //更新已写的长度
             uiWrittenBytes += 4 + cExtBinDataAccessor.size();
         }
         cBinData.reset();
+
         // JVT-V068 {
-        /*   luodan */
+        /* luodan */
+        //AVC模式下为NULL，不会进入
         if(pcAVCSPS)
         {
             cBinData.set(aucParameterSetBuffer, 1000);
@@ -447,21 +459,30 @@ ErrVal H264AVCEncoderTest::go ()
         JSVM::LayerParameters& rcLayer  = m_pcEncoderCodingParameter->getLayerParameters(uiLayer);
         auiMbX[uiLayer]            = rcLayer.getFrameWidthInMbs ();
         auiMbY[uiLayer]            = rcLayer.getFrameHeightInMbs();
-        uiAllocMbX                 = gMax(uiAllocMbX, auiMbX[uiLayer]);
-        uiAllocMbY                 = gMax(uiAllocMbY, auiMbY[uiLayer]);
+        uiAllocMbX                 = gMax(uiAllocMbX, auiMbX[uiLayer]);  //120
+        uiAllocMbY                 = gMax(uiAllocMbY, auiMbY[uiLayer]);  //68
         m_aauiCropping[uiLayer][0] = 0;
         m_aauiCropping[uiLayer][1] = rcLayer.getHorPadding();
         m_aauiCropping[uiLayer][2] = 0;
-        m_aauiCropping[uiLayer][3] = rcLayer.getVerPadding();
-        m_auiHeight   [uiLayer]    = auiMbY[uiLayer]<<4;
-        m_auiWidth    [uiLayer]    = auiMbX[uiLayer]<<4;
-        UInt  uiSize               = ((uiAllocMbY<<4)+2*YUV_Y_MARGIN)*((uiAllocMbX<<4)+2*YUV_X_MARGIN);
-        auiPicSize    [uiLayer]    = ((uiAllocMbX<<4)+2*YUV_X_MARGIN)*((uiAllocMbY<<4)+2*YUV_Y_MARGIN)*3/2;
-        //Luma Offset:
-        m_auiLumOffset[uiLayer]    = ((uiAllocMbX<<4)+2*YUV_X_MARGIN)* YUV_Y_MARGIN   + YUV_X_MARGIN;
-        m_auiCbOffset [uiLayer]    = ((uiAllocMbX<<3)+  YUV_X_MARGIN)* YUV_Y_MARGIN/2 + YUV_X_MARGIN/2 + uiSize;
-        m_auiCrOffset [uiLayer]    = ((uiAllocMbX<<3)+  YUV_X_MARGIN)* YUV_Y_MARGIN/2 + YUV_X_MARGIN/2 + 5*uiSize/4;
-        m_auiStride   [uiLayer]    = (uiAllocMbX<<4)+ 2*YUV_X_MARGIN;
+        //TQQ, rcLayer.getVerPadding(): 8,  1088-1080
+        m_aauiCropping[uiLayer][3] = rcLayer.getVerPadding();  //8
+        m_auiHeight   [uiLayer]    = auiMbY[uiLayer]<<4;       //1088
+        m_auiWidth    [uiLayer]    = auiMbX[uiLayer]<<4;       //1920
+
+
+        //#define  YUV_X_MARGIN    32
+        //#define  YUV_Y_MARGIN    64
+        //尺寸
+        //uiSize: (1088 + 2*64) * (1920 + 2*32) = 2412544
+        UInt  uiSize            = ((uiAllocMbY<<4) +2*YUV_Y_MARGIN)*((uiAllocMbX<<4)+2*YUV_X_MARGIN);      //2412544
+        //X方向的(1920 + 2*x_margin) * (1088 + 2*y_magin) = 3618816
+        auiPicSize    [uiLayer] = ((uiAllocMbX<<4) +2*YUV_X_MARGIN)*((uiAllocMbY<<4)+2*YUV_Y_MARGIN) * 3/2;//3618816
+        //补偿
+        m_auiLumOffset[uiLayer] = ((uiAllocMbX<<4) +2*YUV_X_MARGIN)* YUV_Y_MARGIN   + YUV_X_MARGIN;               // 127008
+        m_auiCbOffset [uiLayer] = ((uiAllocMbX<<3) +  YUV_X_MARGIN)* YUV_Y_MARGIN/2 + YUV_X_MARGIN/2 +   uiSize;  //2444304
+        m_auiCrOffset [uiLayer] = ((uiAllocMbX<<3) +  YUV_X_MARGIN)* YUV_Y_MARGIN/2 + YUV_X_MARGIN/2 + 5*uiSize/4;//3047440
+        //步长
+        m_auiStride   [uiLayer] = ( uiAllocMbX<<4) + 2*YUV_X_MARGIN;  //1984
     }
 
 #if DOLBY_ENCMUX_ENABLE
@@ -495,13 +516,19 @@ ErrVal H264AVCEncoderTest::go ()
         //===== get picture buffers and read original pictures =====
         for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
         {
-            UInt uiSkip = (1 << m_pcEncoderCodingParameter->getLayerParameters(uiLayer).getTemporalResolution());
+            UInt uiSkip = (1 << m_pcEncoderCodingParameter->getLayerParameters(uiLayer).getTemporalResolution());  //m_uiTemporalResolution=0
 
             if (uiFrame % uiSkip == 0)
             {
                 ///为original和Reconstruct的Pic申请buffer
-                xGetNewPicBuffer (apcReconstructPicBuffer[uiLayer], uiLayer, auiPicSize[uiLayer]);
-                xGetNewPicBuffer (apcOriginalPicBuffer[uiLayer], uiLayer, auiPicSize[uiLayer]);
+                //apcOriginalPicBuffer: 从待编码的YUV文件中读取
+                //auiPicSize[uiLayer]: 3618816, 包含margin的1088p的nv21图像
+                xGetNewPicBuffer (apcReconstructPicBuffer[uiLayer],
+                                  uiLayer,
+                                  auiPicSize[uiLayer]);
+                xGetNewPicBuffer (apcOriginalPicBuffer[uiLayer],
+                                  uiLayer,
+                                  auiPicSize[uiLayer]);
 
 #if DOLBY_ENCMUX_ENABLE
                 if((m_pcEncoderCodingParameter->getMuxMethod() && uiNumLayers >1))
@@ -524,12 +551,14 @@ ErrVal H264AVCEncoderTest::go ()
                 }
 #else
                 //加载一帧图像
+                //cb-  Y  = 2317296
+                //cr - cb =  603136,    /1984=304
                 m_apcReadYuv[uiLayer]->readFrame (*apcOriginalPicBuffer[uiLayer] + m_auiLumOffset[uiLayer],  //Y, 127008
                                                   *apcOriginalPicBuffer[uiLayer] + m_auiCbOffset [uiLayer],  //Cb,2444304
                                                   *apcOriginalPicBuffer[uiLayer] + m_auiCrOffset [uiLayer],  //Cr,3047440
-                                                  m_auiHeight[uiLayer],
-                                                  m_auiWidth [uiLayer],
-                                                  m_auiStride[uiLayer]);
+                                                  m_auiHeight[uiLayer],  //1088
+                                                  m_auiWidth [uiLayer],  //1920
+                                                  m_auiStride[uiLayer]); //1984
 #endif
             }
             else
@@ -549,24 +578,62 @@ ErrVal H264AVCEncoderTest::go ()
                 UInt uiWidth = rcLayer0.getFrameWidthInSamples();
                 UInt uiHeight = rcLayer0.getFrameHeightInSamples();
 
-                sbsMux(*apcMuxPicBuffer[0] + m_auiLumOffset[0], m_auiStride[0], *apcOriginalPicBuffer[0] + m_auiLumOffset[0],  *apcOriginalPicBuffer[1] + m_auiLumOffset[0], m_auiStride[0],
-                  uiWidth, uiHeight, m_pcEncoderCodingParameter->getMuxOffset(0), m_pcEncoderCodingParameter->getMuxOffset(1), m_pcEncoderCodingParameter->getMuxFilter());
-                sbsMux(*apcMuxPicBuffer[0] + m_auiCbOffset[0], (m_auiStride[0]>>1), *apcOriginalPicBuffer[0] + m_auiCbOffset[0],  *apcOriginalPicBuffer[1] + m_auiCbOffset[0], (m_auiStride[0]>>1),
-                  (uiWidth>>1), (uiHeight>>1), m_pcEncoderCodingParameter->getMuxOffset(0), m_pcEncoderCodingParameter->getMuxOffset(1), m_pcEncoderCodingParameter->getMuxFilter());
-                sbsMux(*apcMuxPicBuffer[0] + m_auiCrOffset[0], (m_auiStride[0]>>1), *apcOriginalPicBuffer[0] + m_auiCrOffset[0],  *apcOriginalPicBuffer[1] + m_auiCrOffset[0], (m_auiStride[0]>>1),
-                  (uiWidth>>1), (uiHeight>>1), m_pcEncoderCodingParameter->getMuxOffset(0), m_pcEncoderCodingParameter->getMuxOffset(1), m_pcEncoderCodingParameter->getMuxFilter());
+                sbsMux(*apcMuxPicBuffer[0] + m_auiLumOffset[0],
+                       m_auiStride[0],
+                       *apcOriginalPicBuffer[0] + m_auiLumOffset[0],
+                       *apcOriginalPicBuffer[1] + m_auiLumOffset[0],
+                       m_auiStride[0],
+                       uiWidth,
+                       uiHeight,
+                       m_pcEncoderCodingParameter->getMuxOffset(0),
+                       m_pcEncoderCodingParameter->getMuxOffset(1),
+                       m_pcEncoderCodingParameter->getMuxFilter());
+                sbsMux(*apcMuxPicBuffer[0] + m_auiCbOffset[0],
+                       (m_auiStride[0]>>1),
+                       *apcOriginalPicBuffer[0] + m_auiCbOffset[0],
+                       *apcOriginalPicBuffer[1] + m_auiCbOffset[0],
+                       (m_auiStride[0]>>1),
+                       (uiWidth>>1),
+                       (uiHeight>>1),
+                       m_pcEncoderCodingParameter->getMuxOffset(0),
+                       m_pcEncoderCodingParameter->getMuxOffset(1),
+                       m_pcEncoderCodingParameter->getMuxFilter());
+                sbsMux(*apcMuxPicBuffer[0] + m_auiCrOffset[0],
+                       (m_auiStride[0]>>1),
+                       *apcOriginalPicBuffer[0] + m_auiCrOffset[0],
+                       *apcOriginalPicBuffer[1] + m_auiCrOffset[0],
+                       (m_auiStride[0]>>1),
+                       (uiWidth>>1),
+                       (uiHeight>>1),
+                       m_pcEncoderCodingParameter->getMuxOffset(0),
+                       m_pcEncoderCodingParameter->getMuxOffset(1),
+                       m_pcEncoderCodingParameter->getMuxFilter());
 
                 //padding;
                 padBuf(*apcMuxPicBuffer[0] + m_auiLumOffset[0], m_auiStride[0], uiWidth, uiHeight, m_auiWidth[0], m_auiHeight[0], m_apcReadYuv[0]->getFillMode());
                 padBuf(*apcMuxPicBuffer[0] + m_auiCbOffset[0], (m_auiStride[0]>>1), (uiWidth>>1), (uiHeight>>1), (m_auiWidth[0]>>1), (m_auiHeight[0]>>1), m_apcReadYuv[0]->getFillMode());
                 padBuf(*apcMuxPicBuffer[0] + m_auiCrOffset[0], (m_auiStride[0]>>1), (uiWidth>>1), (uiHeight>>1), (m_auiWidth[0]>>1), (m_auiHeight[0]>>1), m_apcReadYuv[0]->getFillMode());
 
-                sbsMuxFR(*apcMuxPicBuffer[1] + m_auiLumOffset[1], m_auiStride[1], *apcOriginalPicBuffer[0] + m_auiLumOffset[0],  *apcOriginalPicBuffer[1] + m_auiLumOffset[0], m_auiStride[0],
-                  uiWidth, uiHeight);
-                sbsMuxFR(*apcMuxPicBuffer[1] + m_auiCbOffset[1], (m_auiStride[1]>>1), *apcOriginalPicBuffer[0] + m_auiCbOffset[0],  *apcOriginalPicBuffer[1] + m_auiCbOffset[0], (m_auiStride[0]>>1),
-                  (uiWidth>>1), (uiHeight>>1));
-                sbsMuxFR(*apcMuxPicBuffer[1] + m_auiCrOffset[1], (m_auiStride[1]>>1), *apcOriginalPicBuffer[0] + m_auiCrOffset[0],  *apcOriginalPicBuffer[1] + m_auiCrOffset[0], (m_auiStride[0]>>1),
-                  (uiWidth>>1), (uiHeight>>1));
+                sbsMuxFR(*apcMuxPicBuffer[1] + m_auiLumOffset[1],
+                         m_auiStride[1],
+                         *apcOriginalPicBuffer[0] + m_auiLumOffset[0],
+                         *apcOriginalPicBuffer[1] + m_auiLumOffset[0],
+                         m_auiStride[0],
+                         uiWidth,
+                         uiHeight);
+                sbsMuxFR(*apcMuxPicBuffer[1] + m_auiCbOffset[1],
+                         (m_auiStride[1]>>1),
+                         *apcOriginalPicBuffer[0] + m_auiCbOffset[0],
+                         *apcOriginalPicBuffer[1] + m_auiCbOffset[0],
+                         (m_auiStride[0]>>1),
+                         (uiWidth>>1), (uiHeight>>1));
+                sbsMuxFR(*apcMuxPicBuffer[1] + m_auiCrOffset[1],
+                         (m_auiStride[1]>>1),
+                         *apcOriginalPicBuffer[0] + m_auiCrOffset[0],
+                         *apcOriginalPicBuffer[1] + m_auiCrOffset[0],
+                         (m_auiStride[0]>>1),
+                         (uiWidth>>1),
+                         (uiHeight>>1));
 
                 //padding;
                 uiWidth = m_pcEncoderCodingParameter->getLayerParameters(1).getFrameWidthInSamples();
@@ -581,12 +648,36 @@ ErrVal H264AVCEncoderTest::go ()
                 UInt uiWidth = rcLayer0.getFrameWidthInSamples();
                 UInt uiHeight = rcLayer0.getFrameHeightInSamples();
 
-                tabMux(*apcMuxPicBuffer[0] + m_auiLumOffset[0], m_auiStride[0], *apcOriginalPicBuffer[0] + m_auiLumOffset[0],  *apcOriginalPicBuffer[1] + m_auiLumOffset[0], m_auiStride[0],
-                  uiWidth, uiHeight, m_pcEncoderCodingParameter->getMuxOffset(0), m_pcEncoderCodingParameter->getMuxOffset(1), m_pcEncoderCodingParameter->getMuxFilter());
-                tabMux(*apcMuxPicBuffer[0] + m_auiCbOffset[0], (m_auiStride[0]>>1), *apcOriginalPicBuffer[0] + m_auiCbOffset[0],  *apcOriginalPicBuffer[1] + m_auiCbOffset[0], (m_auiStride[0]>>1),
-                  (uiWidth>>1), (uiHeight>>1), m_pcEncoderCodingParameter->getMuxOffset(0), m_pcEncoderCodingParameter->getMuxOffset(1), m_pcEncoderCodingParameter->getMuxFilter());
-                tabMux(*apcMuxPicBuffer[0] + m_auiCrOffset[0], (m_auiStride[0]>>1), *apcOriginalPicBuffer[0] + m_auiCrOffset[0],  *apcOriginalPicBuffer[1] + m_auiCrOffset[0], (m_auiStride[0]>>1),
-                  (uiWidth>>1), (uiHeight>>1), m_pcEncoderCodingParameter->getMuxOffset(0), m_pcEncoderCodingParameter->getMuxOffset(1), m_pcEncoderCodingParameter->getMuxFilter());
+                tabMux(*apcMuxPicBuffer[0] + m_auiLumOffset[0],
+                       m_auiStride[0],
+                       *apcOriginalPicBuffer[0] + m_auiLumOffset[0],
+                       *apcOriginalPicBuffer[1] + m_auiLumOffset[0],
+                       m_auiStride[0],
+                       uiWidth,
+                       uiHeight,
+                       m_pcEncoderCodingParameter->getMuxOffset(0),
+                       m_pcEncoderCodingParameter->getMuxOffset(1),
+                       m_pcEncoderCodingParameter->getMuxFilter());
+                tabMux(*apcMuxPicBuffer[0] + m_auiCbOffset[0],
+                       (m_auiStride[0]>>1),
+                       *apcOriginalPicBuffer[0] + m_auiCbOffset[0],
+                       *apcOriginalPicBuffer[1] + m_auiCbOffset[0],
+                       (m_auiStride[0]>>1),
+                       (uiWidth>>1),
+                       (uiHeight>>1),
+                       m_pcEncoderCodingParameter->getMuxOffset(0),
+                       m_pcEncoderCodingParameter->getMuxOffset(1),
+                       m_pcEncoderCodingParameter->getMuxFilter());
+                tabMux(*apcMuxPicBuffer[0] + m_auiCrOffset[0],
+                       (m_auiStride[0]>>1),
+                       *apcOriginalPicBuffer[0] + m_auiCrOffset[0],
+                       *apcOriginalPicBuffer[1] + m_auiCrOffset[0],
+                       (m_auiStride[0]>>1),
+                       (uiWidth>>1),
+                       (uiHeight>>1),
+                       m_pcEncoderCodingParameter->getMuxOffset(0),
+                       m_pcEncoderCodingParameter->getMuxOffset(1),
+                       m_pcEncoderCodingParameter->getMuxFilter());
 
                 //padding;
                 padBuf(*apcMuxPicBuffer[0] + m_auiLumOffset[0], m_auiStride[0], uiWidth, uiHeight, m_auiWidth[0], m_auiHeight[0], m_apcReadYuv[0]->getFillMode());
@@ -620,24 +711,29 @@ ErrVal H264AVCEncoderTest::go ()
 #endif
 
         //===== call encoder =====
-        m_pcH264AVCEncoder->process (cOutExtBinDataAccessorList,
-                                     apcOriginalPicBuffer,  //原始图像buffer
+        m_pcH264AVCEncoder->process (cOutExtBinDataAccessorList, //编码后的一帧h264
+                                     apcOriginalPicBuffer,       //原始图像buffer, 已加载数据
                                      apcReconstructPicBuffer,
                                      acPicBufferOutputList,
                                      acPicBufferUnusedList);
 
         //===== write and release NAL unit buffers =====
+        //!保存输出的一帧.264文件
         UInt uiBytesUsed = 0;
-        xWrite (cOutExtBinDataAccessorList, uiBytesUsed);
-        uiWrittenBytes  += uiBytesUsed;
+        xWrite(cOutExtBinDataAccessorList, uiBytesUsed);
+        printf("uiBytesUsed=%d\n", uiBytesUsed);
 
-        //===== write and release reconstructed pictures =====
-        for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
-        {
-            xWrite(acPicBufferOutputList[uiLayer], uiLayer);
-            xRelease(acPicBufferUnusedList[uiLayer], uiLayer);
-        }
-    } //for(uiFrame = 0; uiFrame < uiMaxFrame; uiFrame++)
+        uiWrittenBytes  += uiBytesUsed;
+        printf("已写字节数uiWrittenBytes: %d\n", uiWrittenBytes);
+
+///        //===== write and release reconstructed pictures =====
+///        for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
+///        {
+///            //!保存输出的一帧recon文件
+///            xWrite(acPicBufferOutputList[uiLayer], uiLayer);
+///            xRelease(acPicBufferUnusedList[uiLayer], uiLayer);
+///        }
+    } ///===== loop over frames =====结束
 
     // stop time measurement
     clock_t end = clock();
@@ -651,21 +747,23 @@ ErrVal H264AVCEncoderTest::go ()
                                 uiNumCodedFrames,
                                 dHighestLayerOutputRate);
 
-    //===== write and release NAL unit buffers =====
-    xWrite (cOutExtBinDataAccessorList, uiWrittenBytes);
-
-    //===== write and release reconstructed pictures =====
-    for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
-    {
-        xWrite(acPicBufferOutputList[uiLayer], uiLayer);
-        xRelease(acPicBufferUnusedList[uiLayer], uiLayer);
-    }
+///    //===== write and release NAL unit buffers =====
+///    xWrite(cOutExtBinDataAccessorList, uiWrittenBytes);
+///    printf("!!!总字节数uiWrittenBytes: %d\n", uiWrittenBytes);
+///
+///    //===== write and release reconstructed pictures =====
+///    for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
+///    {
+///        xWrite(acPicBufferOutputList[uiLayer], uiLayer);
+///        xRelease(acPicBufferUnusedList[uiLayer], uiLayer);
+///    }
 
 
     //===== set parameters and output summary =====
     m_cEncoderIoParameter.nFrames = uiFrame;
     m_cEncoderIoParameter.nResult = 0;
 
+    //SVC模式
     if (!m_pcEncoderCodingParameter->getAVCmode())
     {
         UChar aucParameterSetBuffer[10000];

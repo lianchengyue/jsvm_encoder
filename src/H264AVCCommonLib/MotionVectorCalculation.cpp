@@ -1,4 +1,3 @@
-
 #include "H264AVCCommonLib.h"
 #include "H264AVCCommonLib/MotionVectorCalculation.h"
 

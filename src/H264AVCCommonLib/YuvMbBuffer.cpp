@@ -1,4 +1,3 @@
-
 #include "H264AVCCommonLib.h"
 #include "H264AVCCommonLib/YuvMbBuffer.h"
 #include "H264AVCCommonLib/YuvPicBuffer.h"
@@ -7,10 +6,10 @@
 namespace JSVM {
 
 
-YuvMbBuffer::YuvMbBuffer()
-: m_pPelCurrY(NULL)
-, m_pPelCurrU(NULL)
-, m_pPelCurrV(NULL)
+YuvMbBuffer::YuvMbBuffer() :
+    m_pPelCurrY(NULL),
+    m_pPelCurrU(NULL),
+    m_pPelCurrV(NULL)
 {
     DO_DBG(::memset(m_aucYuvBuffer, 0 , sizeof(m_aucYuvBuffer)));// TMM_INTERLACE
 }

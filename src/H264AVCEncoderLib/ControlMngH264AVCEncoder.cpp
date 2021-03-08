@@ -115,10 +115,10 @@ ErrVal ControlMngH264AVCEncoder::uninit()
 
     for(UInt uiLayer = 0; uiLayer < MAX_LAYERS; uiLayer++)
     {
-        m_apcYuvFullPelBufferCtrl [uiLayer] = 0;
-        m_apcYuvHalfPelBufferCtrl [uiLayer] = 0;
-        m_apcLayerEncoder         [uiLayer] = 0;
-        m_apcPocCalculator        [uiLayer] = 0;
+        m_apcYuvFullPelBufferCtrl[uiLayer] = 0;
+        m_apcYuvHalfPelBufferCtrl[uiLayer] = 0;
+        m_apcLayerEncoder        [uiLayer] = 0;
+        m_apcPocCalculator       [uiLayer] = 0;
     }
 
 

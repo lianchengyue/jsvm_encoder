@@ -6,23 +6,23 @@
 
 namespace JSVM {
 
-Frame::Frame(YuvBufferCtrl& rcYuvFullPelBufferCtrl, YuvBufferCtrl& rcYuvHalfPelBufferCtrl, PicType ePicType, Frame* pcFrame)
-: m_cFullPelYuvBuffer     (rcYuvFullPelBufferCtrl, ePicType),
-  m_cHalfPelYuvBuffer     (rcYuvHalfPelBufferCtrl, ePicType),
-  m_ePicType              (ePicType),
-  m_bHalfPel              (false),
-  m_bExtended             (false),
-  m_bPocIsSet             (false),
-  m_iPoc                  (0),
-  m_iTopFieldPoc          (0),
-  m_iBotFieldPoc          (0),
-  m_pcFrameTopField       (NULL),
-  m_pcFrameBotField       (NULL),
-  m_pcFrame               (pcFrame),
-  m_pcDPBUnit             (NULL),
-  m_piChannelDistortion   (0)     // JVT-R057 LA-RDO
- ,m_bLongTerm(false)
- ,m_bUnvalid(false)
+Frame::Frame(YuvBufferCtrl& rcYuvFullPelBufferCtrl, YuvBufferCtrl& rcYuvHalfPelBufferCtrl, PicType ePicType, Frame* pcFrame) :
+    m_cFullPelYuvBuffer     (rcYuvFullPelBufferCtrl, ePicType),
+    m_cHalfPelYuvBuffer     (rcYuvHalfPelBufferCtrl, ePicType),
+    m_ePicType              (ePicType),
+    m_bHalfPel              (false),
+    m_bExtended             (false),
+    m_bPocIsSet             (false),
+    m_iPoc                  (0),
+    m_iTopFieldPoc          (0),
+    m_iBotFieldPoc          (0),
+    m_pcFrameTopField       (NULL),
+    m_pcFrameBotField       (NULL),
+    m_pcFrame               (pcFrame),
+    m_pcDPBUnit             (NULL),
+    m_piChannelDistortion   (0),     // JVT-R057 LA-RDO
+    m_bLongTerm(false),
+    m_bUnvalid(false)
 {
     if(m_pcFrame == 0)
     {

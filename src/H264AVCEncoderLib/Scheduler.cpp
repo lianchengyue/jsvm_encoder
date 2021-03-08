@@ -11,17 +11,17 @@
 //##ModelId=404734B00263
 namespace JSVM {
 
-Scheduler::Scheduler():
-  m_dFieldTimeDelta     (0.0208),
-  m_dOutputFrequency    (30),
-  m_uiOutputTicks       (1000),
-  m_dClockFrequency     (30000),
-  m_dActualOutTime      (0),
-  m_dActualInTime       (0),
-  m_dLastBPTime         (0),
-  m_pcCodingParameter   (NULL),
-  m_pfFileDebug         (NULL),
-  m_bInitDone           (false)
+Scheduler::Scheduler() :
+    m_dFieldTimeDelta     (0.0208),
+    m_dOutputFrequency    (30),
+    m_uiOutputTicks       (1000),
+    m_dClockFrequency     (30000),
+    m_dActualOutTime      (0),
+    m_dActualInTime       (0),
+    m_dLastBPTime         (0),
+    m_pcCodingParameter   (NULL),
+    m_pfFileDebug         (NULL),
+    m_bInitDone           (false)
 {
 }
 
@@ -281,17 +281,17 @@ ErrVal Scheduler::xCalculateTiming(HRD::HrdParamType eHrdParamType, UInt uiSize,
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //##ModelId=404734B0030E
-Scheduler::TimingUnit::TimingUnit() //KR
-: m_iDataLength(0),
-  m_iBitRate(0),
-  m_dInitialArrivalEarliest(0),
-  m_dInitialArrival(0),
-  m_dFinalArrival(0),
-  m_dRemoval(0),
-  m_uiFirstIrd(0),
-  m_uiIrd(0),
-  m_uiIrdOffset(0),
-  m_bCbr(false)
+Scheduler::TimingUnit::TimingUnit() ://KR
+    m_iDataLength(0),
+    m_iBitRate(0),
+    m_dInitialArrivalEarliest(0),
+    m_dInitialArrival(0),
+    m_dFinalArrival(0),
+    m_dRemoval(0),
+    m_uiFirstIrd(0),
+    m_uiIrd(0),
+    m_uiIrdOffset(0),
+    m_bCbr(false)
 {
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////

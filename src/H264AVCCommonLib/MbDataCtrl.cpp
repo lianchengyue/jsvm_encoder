@@ -1,4 +1,3 @@
-
 #include "H264AVCCommonLib.h"
 #include "H264AVCCommonLib/MbData.h"
 #include "H264AVCCommonLib/MbDataCtrl.h"
@@ -1351,6 +1350,7 @@ ErrVal MbDataCtrl::initMb(MbDataAccess*& rpcMbDataAccess, UInt uiMbY, UInt uiMbX
     return initMb(rpcMbDataAccess, uiMbY, uiMbX, iForceQp);
 }
 
+//初始化输入的MB
 ErrVal MbDataCtrl::initMb(MbDataAccess*& rpcMbDataAccess, UInt uiMbY, UInt uiMbX, const Int iForceQp)
 {
     ROF(m_bInitDone);
@@ -1467,19 +1467,19 @@ ErrVal MbDataCtrl::initMb(MbDataAccess*& rpcMbDataAccess, UInt uiMbY, UInt uiMbX
 
 
 
-ControlData::ControlData()
-: m_pcMbDataCtrl         (0)
-, m_pcMbDataCtrl0L1      (0)
-, m_pcSliceHeader        (0)
-, m_pcSliceHeaderBot     (0)
-, m_dLambda              (0)
-, m_pcBaseLayerRec       (0)
-, m_pcBaseLayerSbb       (0)
-, m_pcBaseLayerCtrl      (0)
-, m_pcBaseLayerCtrlField (0)
-, m_uiUseBLMotion        (0)
-, m_dScalingFactor       (1.0)
-, m_bSpatialScalability  (false)
+ControlData::ControlData() :
+    m_pcMbDataCtrl         (0),
+    m_pcMbDataCtrl0L1      (0),
+    m_pcSliceHeader        (0),
+    m_pcSliceHeaderBot     (0),
+    m_dLambda              (0),
+    m_pcBaseLayerRec       (0),
+    m_pcBaseLayerSbb       (0),
+    m_pcBaseLayerCtrl      (0),
+    m_pcBaseLayerCtrlField (0),
+    m_uiUseBLMotion        (0),
+    m_dScalingFactor       (1.0),
+    m_bSpatialScalability  (false)
 {
 }
 

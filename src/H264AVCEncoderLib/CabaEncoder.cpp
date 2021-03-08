@@ -10,13 +10,13 @@ namespace JSVM {
 
 
 CabaEncoder::CabaEncoder() :
-  m_pcBitWriteBufferIf(NULL),
-  m_uiRange(0),
-  m_uiLow(0),
-  m_uiByte(0),
-  m_uiBitsLeft(0),
-  m_uiBitsToFollow(0),
-  m_bTraceEnable(true)
+    m_pcBitWriteBufferIf(NULL),
+    m_uiRange(0),
+    m_uiLow(0),
+    m_uiByte(0),
+    m_uiBitsLeft(0),
+    m_uiBitsToFollow(0),
+    m_bTraceEnable(true)
 {
 }
 

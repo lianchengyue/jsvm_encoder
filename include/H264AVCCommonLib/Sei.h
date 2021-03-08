@@ -47,10 +47,10 @@ public:
     class SEIMessage
     {
     public:
-        virtual ~SEIMessage()                                                       {}
-        MessageType     getMessageType()                                      const { return m_eMessageType; }
-        virtual ErrVal  write         (HeaderSymbolWriteIf* pcWriteIf) = 0;
-        virtual ErrVal  read          (HeaderSymbolReadIf*  pcReadIf, ParameterSetMng* pcParameterSetMng) = 0;
+        virtual ~SEIMessage()                    {}
+        MessageType     getMessageType() const   { return m_eMessageType; }
+        virtual ErrVal  write(HeaderSymbolWriteIf* pcWriteIf) = 0;
+        virtual ErrVal  read (HeaderSymbolReadIf*  pcReadIf, ParameterSetMng* pcParameterSetMng) = 0;
 
     protected:
         SEIMessage(MessageType eMessageType) : m_eMessageType(eMessageType) {}
@@ -64,15 +64,15 @@ public:
     class SubSeqInfo : public SEIMessage
     {
     protected:
-        SubSeqInfo()
-        : SEIMessage(SUB_SEQ_INFO)
-        , m_uiSubSeqLayerNum      (0)
-        , m_uiSubSeqId            (0)
-        , m_bFirstRefPicFlag      (false)
-        , m_bLeadingNonRefPicFlag (false)
-        , m_bLastPicFlag          (false)
-        , m_bSubSeqFrameNumFlag   (false)
-        , m_uiSubSeqFrameNum      (0)
+        SubSeqInfo() :
+            SEIMessage(SUB_SEQ_INFO),
+            m_uiSubSeqLayerNum      (0),
+            m_uiSubSeqId            (0),
+            m_bFirstRefPicFlag      (false),
+            m_bLeadingNonRefPicFlag (false),
+            m_bLastPicFlag          (false),
+            m_bSubSeqFrameNumFlag   (false),
+            m_uiSubSeqFrameNum      (0)
         {}
 
     public:
@@ -116,65 +116,65 @@ public:
 
         Void setTlevelNestingFlag(Bool bFlag)                                   { m_temporal_id_nesting_flag = bFlag;                         }//SEI changes update
         Void setPriorityIdSettingFlag(Bool bFlag)                               { m_priority_id_setting_flag = bFlag;                         }//JVT-W053
-        Void setPriorityIdSettingUri (UInt index,UChar ucchar)                    { priority_id_setting_uri[index] = ucchar;                    }//JVT-W053
+        Void setPriorityIdSettingUri (UInt index,UChar ucchar)                  { priority_id_setting_uri[index] = ucchar;                    }//JVT-W053
         Void setNumLayersMinus1(UInt ui)                                        { m_num_layers_minus1 = ui;                                   }
         Void setLayerId (UInt uilayer, UInt uiId)                               { m_layer_id                             [uilayer] = uiId;    }
       //JVT-S036 lsj start
         Void setPriorityId (UInt uilayer, UInt uiLevel)                         { m_priority_id                          [uilayer] = uiLevel; }//SEI changes update
-        Void setDiscardableFlag  (UInt uilayer, Bool bFlag)                       { m_discardable_flag                     [uilayer] = bFlag;   }
-        Void setTemporalId (UInt uilayer, UInt uiLevel)                      { m_temporal_level                       [uilayer] = uiLevel; }
+        Void setDiscardableFlag  (UInt uilayer, Bool bFlag)                     { m_discardable_flag                     [uilayer] = bFlag;   }
+        Void setTemporalId (UInt uilayer, UInt uiLevel)                         { m_temporal_level                       [uilayer] = uiLevel; }
         Void setDependencyId (UInt uilayer, UInt uiId)                          { m_dependency_id                        [uilayer] = uiId;    }
-        Void setQualityLevel (UInt uilayer, UInt uiLevel)                        { m_quality_level                       [uilayer] = uiLevel; }
-        Void setSubPicLayerFlag (UInt uilayer, Bool bFlag)                        { m_sub_pic_layer_flag[uilayer] = bFlag; }
-        Void setSubRegionLayerFlag (UInt uilayer, Bool bFlag)                    { m_sub_region_layer_flag                  [uilayer] = bFlag; }
-        Void setIroiSliceDivisionInfoPresentFlag (UInt uilayer, Bool bFlag)        { m_iroi_division_info_present_flag    [uilayer] = bFlag; }//JVT-W051
-        Void setProfileLevelInfoPresentFlag (UInt uilayer, Bool bFlag)            { m_profile_level_info_present_flag        [uilayer] = bFlag; }
+        Void setQualityLevel (UInt uilayer, UInt uiLevel)                       { m_quality_level                       [uilayer] = uiLevel; }
+        Void setSubPicLayerFlag (UInt uilayer, Bool bFlag)                      { m_sub_pic_layer_flag[uilayer] = bFlag; }
+        Void setSubRegionLayerFlag (UInt uilayer, Bool bFlag)                   { m_sub_region_layer_flag                  [uilayer] = bFlag; }
+        Void setIroiSliceDivisionInfoPresentFlag (UInt uilayer, Bool bFlag)     { m_iroi_division_info_present_flag    [uilayer] = bFlag; }//JVT-W051
+        Void setProfileLevelInfoPresentFlag (UInt uilayer, Bool bFlag)          { m_profile_level_info_present_flag        [uilayer] = bFlag; }
       //JVT-S036 lsj end
 
-        Void setBitrateInfoPresentFlag (UInt uilayer, Bool bFlag)                { m_bitrate_info_present_flag              [uilayer] = bFlag; }
-        Void setFrmRateInfoPresentFlag (UInt uilayer, Bool bFlag)                { m_frm_rate_info_present_flag            [uilayer] = bFlag; }
-        Void setFrmSizeInfoPresentFlag (UInt uilayer, Bool bFlag)                { m_frm_size_info_present_flag            [uilayer] = bFlag; }
-        Void setLayerDependencyInfoPresentFlag (UInt uilayer, Bool bFlag)        { m_layer_dependency_info_present_flag    [uilayer] = bFlag; }
-        Void setParameterSetsInfoPresentFlag (UInt uilayer, Bool bFlag)       { m_parameter_sets_info_present_flag  [uilayer] = bFlag; }//SEI changes update
-        Void setExactInterlayerPredFlag (UInt uilayer, Bool bFlag)            { m_exact_interlayer_pred_flag  [uilayer] = bFlag; }        //JVT-S036 lsj
+        Void setBitrateInfoPresentFlag (UInt uilayer, Bool bFlag)               { m_bitrate_info_present_flag              [uilayer] = bFlag; }
+        Void setFrmRateInfoPresentFlag (UInt uilayer, Bool bFlag)               { m_frm_rate_info_present_flag            [uilayer] = bFlag; }
+        Void setFrmSizeInfoPresentFlag (UInt uilayer, Bool bFlag)               { m_frm_size_info_present_flag            [uilayer] = bFlag; }
+        Void setLayerDependencyInfoPresentFlag (UInt uilayer, Bool bFlag)       { m_layer_dependency_info_present_flag    [uilayer] = bFlag; }
+        Void setParameterSetsInfoPresentFlag (UInt uilayer, Bool bFlag)         { m_parameter_sets_info_present_flag  [uilayer] = bFlag; }//SEI changes update
+        Void setExactInterlayerPredFlag (UInt uilayer, Bool bFlag)              { m_exact_interlayer_pred_flag  [uilayer] = bFlag; }        //JVT-S036 lsj
         //SEI changes update {
         Void setExactSampleValueMatchFlag (UInt uilayer, Bool bFlag)            { m_exact_sample_value_match_flag  [uilayer] = bFlag; }
 //JVT-W046 {
-        Void setLayerConversionFlag (UInt uilayer, Bool bFlag)                        { m_layer_conversion_flag [uilayer]         = bFlag;     }
-        Void setRewritingInfoFlag (UInt uilayer, UInt bType, Bool bFlag)              { m_rewriting_info_flag             [uilayer][bType]  = bFlag;     }
-        Void setConversionTypeIdc (UInt uilayer, UInt uiIdc)                          { m_conversion_type_idc   [uilayer]                   = uiIdc;     }
+        Void setLayerConversionFlag (UInt uilayer, Bool bFlag)                       { m_layer_conversion_flag [uilayer]         = bFlag;     }
+        Void setRewritingInfoFlag (UInt uilayer, UInt bType, Bool bFlag)             { m_rewriting_info_flag             [uilayer][bType]  = bFlag;     }
+        Void setConversionTypeIdc (UInt uilayer, UInt uiIdc)                         { m_conversion_type_idc   [uilayer]                   = uiIdc;     }
         Void setRewritingProfileLevelIdc (UInt uilayer, UInt bType, UInt uiIdc)      { m_rewriting_profile_level_idc     [uilayer][bType]  = uiIdc;     }
-        Void setRewritingAvgBitrateBPS (UInt uilayer, UInt bType, Double dBitrate)        { m_rewriting_avg_bitrate           [uilayer][bType]  = xConvertFromBPS(dBitrate); }
-        Void setRewritingMaxBitrateBPS (UInt uilayer, UInt bType, Double dBitrate)        { m_rewriting_max_bitrate           [uilayer][bType]  = xConvertFromBPS(dBitrate); }
+        Void setRewritingAvgBitrateBPS (UInt uilayer, UInt bType, Double dBitrate)   { m_rewriting_avg_bitrate           [uilayer][bType]  = xConvertFromBPS(dBitrate); }
+        Void setRewritingMaxBitrateBPS (UInt uilayer, UInt bType, Double dBitrate)   { m_rewriting_max_bitrate           [uilayer][bType]  = xConvertFromBPS(dBitrate); }
 //JVT-W046 }
         //SEI changes update }
         Void setLayerOutputFlag      (UInt uilayer,Bool bFlag)                       {m_layer_output_flag                          [uilayer] = bFlag; }//JVT-W047 wxwan
         Void setLayerProfileLevelIdc (UInt uilayer, UInt uiIdc)                      { m_layer_profile_level_idc[uilayer] = uiIdc; }
       //JVT-S036 lsj start
         Void setAvgBitrateBPS (UInt uilayer, Double dBitrate)                        { m_avg_bitrate                    [uilayer] = xConvertFromBPS(dBitrate); }
-        Void setMaxBitrateLayerBPS (UInt uilayer, Double dBitrate)                    { m_max_bitrate_layer                [uilayer] = xConvertFromBPS(dBitrate); }
-        Void setMaxBitrateDecodedPictureBPS (UInt uilayer, Double dBitrate)                { m_max_bitrate_layer_representation            [uilayer] = xConvertFromBPS(dBitrate); }//JVT-W051
+        Void setMaxBitrateLayerBPS (UInt uilayer, Double dBitrate)                   { m_max_bitrate_layer                [uilayer] = xConvertFromBPS(dBitrate); }
+        Void setMaxBitrateDecodedPictureBPS (UInt uilayer, Double dBitrate)          { m_max_bitrate_layer_representation            [uilayer] = xConvertFromBPS(dBitrate); }//JVT-W051
         Void setMaxBitrateCalcWindow (UInt uilayer, UInt uiBitrate)                  { m_max_bitrate_calc_window              [uilayer] = uiBitrate; }
       //JVT-S036 lsj end
 
 
         Void setConstantFrmRateIdc (UInt uilayer, UInt uiFrmrate)                { m_constant_frm_rate_idc                  [uilayer] = uiFrmrate; }
         Void setAvgFrmRate (UInt uilayer, UInt uiFrmrate)                        { m_avg_frm_rate                          [uilayer] = uiFrmrate; }
-        Void setFrmWidthInMbsMinus1 (UInt uilayer, UInt uiWidth)                { m_frm_width_in_mbs_minus1                [uilayer] = uiWidth; }
-        Void setFrmHeightInMbsMinus1 (UInt uilayer, UInt uiHeight)              { m_frm_height_in_mbs_minus1              [uilayer] = uiHeight; }
+        Void setFrmWidthInMbsMinus1 (UInt uilayer, UInt uiWidth)                 { m_frm_width_in_mbs_minus1                [uilayer] = uiWidth; }
+        Void setFrmHeightInMbsMinus1 (UInt uilayer, UInt uiHeight)               { m_frm_height_in_mbs_minus1              [uilayer] = uiHeight; }
         Void setBaseRegionLayerId (UInt uilayer, UInt uiId)                      { m_base_region_layer_id                  [uilayer] = uiId; }
-        Void setDynamicRectFlag (UInt uilayer, Bool bFlag)                      { m_dynamic_rect_flag                      [uilayer] = bFlag; }
-        Void setHorizontalOffset (UInt uilayer, UInt uiOffset)                  { m_horizontal_offset                      [uilayer] = uiOffset; }
-        Void setVerticalOffset (UInt uilayer, UInt uiOffset)                    { m_vertical_offset                        [uilayer] = uiOffset; }
-        Void setRegionWidth (UInt uilayer, UInt uiWidth)                        { m_region_width                          [uilayer] = uiWidth; }
-        Void setRegionHeight (UInt uilayer, UInt uiHeight)                      { m_region_height                          [uilayer] = uiHeight; }
+        Void setDynamicRectFlag (UInt uilayer, Bool bFlag)                       { m_dynamic_rect_flag                      [uilayer] = bFlag; }
+        Void setHorizontalOffset (UInt uilayer, UInt uiOffset)                   { m_horizontal_offset                      [uilayer] = uiOffset; }
+        Void setVerticalOffset (UInt uilayer, UInt uiOffset)                     { m_vertical_offset                        [uilayer] = uiOffset; }
+        Void setRegionWidth (UInt uilayer, UInt uiWidth)                         { m_region_width                          [uilayer] = uiWidth; }
+        Void setRegionHeight (UInt uilayer, UInt uiHeight)                       { m_region_height                          [uilayer] = uiHeight; }
       //JVT-S036 lsj start
-        Void setRoiId (UInt uilayer, UInt RoiId)                        { m_roi_id[uilayer]  = RoiId; }
-        Void setIroiGridFlag (UInt uilayer, Bool bFlag)                { m_iroi_grid_flag[uilayer] = bFlag; }//SEI changes update
-        Void setGridSliceWidthInMbsMinus1 (UInt uilayer, UInt bWidth)              { m_grid_width_in_mbs_minus1[uilayer] = bWidth; }//JVT-W051
-        Void setGridSliceHeightInMbsMinus1 (UInt uilayer, UInt bHeight)            { m_grid_height_in_mbs_minus1[uilayer] = bHeight; }//JVT-W051
+        Void setRoiId (UInt uilayer, UInt RoiId)                                 { m_roi_id[uilayer]  = RoiId; }
+        Void setIroiGridFlag (UInt uilayer, Bool bFlag)                          { m_iroi_grid_flag[uilayer] = bFlag; }//SEI changes update
+        Void setGridSliceWidthInMbsMinus1 (UInt uilayer, UInt bWidth)            { m_grid_width_in_mbs_minus1[uilayer] = bWidth; }//JVT-W051
+        Void setGridSliceHeightInMbsMinus1 (UInt uilayer, UInt bHeight)          { m_grid_height_in_mbs_minus1[uilayer] = bHeight; }//JVT-W051
 
-        Void setROINum(UInt iDependencyId, UInt iNumROI)      { m_aiNumRoi[iDependencyId] = iNumROI; }
+        Void setROINum(UInt iDependencyId, UInt iNumROI)                         { m_aiNumRoi[iDependencyId] = iNumROI; }
         Void setROIID(UInt iDependencyId, UInt* iROIId)
         {
             for (UInt i =0; i < m_aiNumRoi[iDependencyId]; ++i)
@@ -714,12 +714,12 @@ public:
     class ScalableNestingSei : public SEIMessage
     {
     protected:
-        ScalableNestingSei()
-          : SEIMessage(SCALABLE_NESTING_SEI)
-        , m_bAllPicturesInAuFlag  (0)
-        , m_uiNumPictures         (0)
-        , m_bHasBufferingPeriod(false)
-        //, m_pcSEIMessage          (NULL)
+        ScalableNestingSei() :
+            SEIMessage(SCALABLE_NESTING_SEI),
+            m_bAllPicturesInAuFlag(0),
+            m_uiNumPictures(0),
+            m_bHasBufferingPeriod(false)
+            //, m_pcSEIMessage          (NULL)
         {
         }
 
@@ -829,13 +829,13 @@ public:
         };
 
     protected:
-        BufferingPeriod(ParameterSetMng*& rpcParameterSetMng, Bool bNested, UInt uiDQId, UInt uiTId)
-          : SEIMessage(BUFFERING_PERIOD)
-          , m_pcParameterSetMng(rpcParameterSetMng)
-          , m_bNested(bNested)
-          , m_uiDQId(uiDQId)
-          , m_uiTId(uiTId)
-          , m_uiSeqParameterSetId(0)
+        BufferingPeriod(ParameterSetMng*& rpcParameterSetMng, Bool bNested, UInt uiDQId, UInt uiTId) :
+            SEIMessage(BUFFERING_PERIOD),
+            m_pcParameterSetMng(rpcParameterSetMng),
+            m_bNested(bNested),
+            m_uiDQId(uiDQId),
+            m_uiTId(uiTId),
+            m_uiSeqParameterSetId(0)
         {
             m_apcHrd[0] = 0;
             m_apcHrd[1] = 0;
@@ -874,19 +874,19 @@ public:
         {
 
         public:
-            ClockTimestamp()
-              : m_bClockTimestampFlag (false)
-              , m_uiCtType            (MSYS_UINT_MAX)
-              , m_bNuitFieldBasedFlag (false)
-              , m_uiCountingType      (MSYS_UINT_MAX)
-              , m_bFullTimestampFlag  (false)
-              , m_bDiscontinuityFlag  (false)
-              , m_bCntDroppedFlag     (false)
-              , m_uiNFrames           (MSYS_UINT_MAX)
-              , m_uiSeconds           (0)
-              , m_uiMinutes           (0)
-              , m_uiHours             (0)
-              , m_iTimeOffset         (0)
+            ClockTimestamp() :
+                m_bClockTimestampFlag (false),
+                m_uiCtType            (MSYS_UINT_MAX),
+                m_bNuitFieldBasedFlag (false),
+                m_uiCountingType      (MSYS_UINT_MAX),
+                m_bFullTimestampFlag  (false),
+                m_bDiscontinuityFlag  (false),
+                m_bCntDroppedFlag     (false),
+                m_uiNFrames           (MSYS_UINT_MAX),
+                m_uiSeconds           (0),
+                m_uiMinutes           (0),
+                m_uiHours             (0),
+                m_iTimeOffset         (0)
             {
             }
 
@@ -910,13 +910,13 @@ public:
         };
 
     protected:
-      PicTiming(const VUI* pcVUI, UInt uiLayerIndex)
-        : SEIMessage          (PIC_TIMING)
-        , m_pcVUI             (pcVUI)
-        , m_uiLayerIndex      (uiLayerIndex)
-        , m_uiCpbRemovalDelay (MSYS_UINT_MAX)
-        , m_uiDpbOutputDelay  (MSYS_UINT_MAX)
-        , m_ePicStruct        (PS_NOT_SPECIFIED)
+      PicTiming(const VUI* pcVUI, UInt uiLayerIndex) :
+          SEIMessage          (PIC_TIMING),
+          m_pcVUI             (pcVUI),
+          m_uiLayerIndex      (uiLayerIndex),
+          m_uiCpbRemovalDelay (MSYS_UINT_MAX),
+          m_uiDpbOutputDelay  (MSYS_UINT_MAX),
+          m_ePicStruct        (PS_NOT_SPECIFIED)
       {
       }
 
@@ -955,9 +955,9 @@ public:
     public:
 
     protected:
-       AVCCompatibleHRD(VUI* pcVUI)
-         : SEIMessage(AVC_COMPATIBLE_HRD_SEI)
-         , m_pcVUI(pcVUI)
+       AVCCompatibleHRD(VUI* pcVUI) :
+           SEIMessage(AVC_COMPATIBLE_HRD_SEI),
+           m_pcVUI(pcVUI)
        {
        }
 

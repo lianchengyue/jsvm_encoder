@@ -34,15 +34,15 @@ protected:
 class MotionVectorSearchParams
 {
 public:
-    MotionVectorSearchParams()
-      : m_uiSearchMode    (FAST_SEARCH)
-      , m_uiFullPelDFunc  (DF_SAD)
-      , m_uiSubPelDFunc   (DF_SAD)
-      , m_uiSearchRange   (64)
-      , m_uiDirectMode    (0)
-      , m_uiELSearchRange (0)
-      , m_uiFastBiSearch  (0)
-      , m_bELSearch       (false)
+    MotionVectorSearchParams() :
+        m_uiSearchMode    (FAST_SEARCH),
+        m_uiFullPelDFunc  (DF_SAD),
+        m_uiSubPelDFunc   (DF_SAD),
+        m_uiSearchRange   (64),
+        m_uiDirectMode    (0),
+        m_uiELSearchRange (0),
+        m_uiFastBiSearch  (0),
+        m_bELSearch       (false)
     {
     }
 
@@ -92,7 +92,8 @@ public:
     ErrVal check() const ;
 
     Bool isDefault() const                       { return m_uiFilterIdc == 0 && m_iAlphaOffset == 0 && m_iBetaOffset == 0;}
-    const UInt getFilterIdc () const             { return m_uiFilterIdc; }
+    //LoopFilterDisable: (0: on, 1: off, 2: on except for slice boundaries)
+    const UInt getFilterIdc () const             { return m_uiFilterIdc; }   //LoopFilterDisable, MVC.cfg中
     const Int getAlphaOffset () const            { return m_iAlphaOffset; }
     const Int getBetaOffset () const             { return m_iBetaOffset; }
     Void setAlphaOffset (Int iAlphaOffset)       { m_iAlphaOffset = iAlphaOffset; }
@@ -116,95 +117,95 @@ class CodingParameter;
 class LayerParameters
 {
 public:
-  LayerParameters()
-    : m_uiLayerId                         (MSYS_UINT_MAX)
-    , m_uiDependencyId                    (0)
-    , m_uiFrameWidthInSamples             (352)
-    , m_uiFrameHeightInSamples            (288)
-    , m_dInputFrameRate                   (7.5)
-    , m_dOutputFrameRate                  (7.5)
-    , m_cInputFilename                    ("none")
-    , m_cOutputFilename                   ("none")
-    , m_uiEntropyCodingModeFlag           (1)
-    , m_uiEnable8x8Trafo                  (0)
-    , m_uiScalingMatricesPresent          (0)
-    , m_uiMaxAbsDeltaQP                   (1)
-    , m_dBaseQpResidual                   (26.0)
-    , m_uiInterLayerPredictionMode        (0)
-    , m_uiILPredMode                      (MSYS_UINT_MAX)
-    , m_uiILPredMotion                    (MSYS_UINT_MAX)
-    , m_uiILPredResidual                  (MSYS_UINT_MAX)
-    , m_uiDecompositionStages             (0)
-    , m_uiNotCodedStages                  (0)
-    , m_uiTemporalResolution              (0)
-    , m_uiFrameDelay                      (0)
-    , m_iChromaQPIndexOffset              (0)
-    , m_i2ndChromaQPIndexOffset           (0)
-    , m_uiConstrainedIntraPred            (0)
-    , m_uiForceReorderingCommands         (0)
-    , m_uiBaseLayerId                     (MSYS_UINT_MAX)
-    , m_uiMbAff                           (0)
-    , m_uiPAff                            (0)
-    , m_uiUseRedundantSlice               (0)   //JVT-Q054 Red. Picture
-    , m_uiUseRedundantKeySlice            (0)   //JVT-W049
+    LayerParameters() :
+        m_uiLayerId                     (MSYS_UINT_MAX),
+        m_uiDependencyId                (0),
+        m_uiFrameWidthInSamples         (352),
+        m_uiFrameHeightInSamples        (288),
+        m_dInputFrameRate               (7.5),
+        m_dOutputFrameRate              (7.5),
+        m_cInputFilename                ("none"),
+        m_cOutputFilename               ("none"),
+        m_uiEntropyCodingModeFlag       (1),
+        m_uiEnable8x8Trafo              (0),
+        m_uiScalingMatricesPresent      (0),
+        m_uiMaxAbsDeltaQP               (1),
+        m_dBaseQpResidual               (26.0),
+        m_uiInterLayerPredictionMode    (0),
+        m_uiILPredMode                  (MSYS_UINT_MAX),
+        m_uiILPredMotion                (MSYS_UINT_MAX),
+        m_uiILPredResidual              (MSYS_UINT_MAX),
+        m_uiDecompositionStages         (0),
+        m_uiNotCodedStages              (0),
+        m_uiTemporalResolution          (0),
+        m_uiFrameDelay                  (0),
+        m_iChromaQPIndexOffset          (0),
+        m_i2ndChromaQPIndexOffset       (0),
+        m_uiConstrainedIntraPred        (0),
+        m_uiForceReorderingCommands     (0),
+        m_uiBaseLayerId                 (MSYS_UINT_MAX),
+        m_uiMbAff                       (0),
+        m_uiPAff                        (0),
+        m_uiUseRedundantSlice           (0),   //JVT-Q054 Red. Picture
+        m_uiUseRedundantKeySlice        (0),   //JVT-W049
 // JVT-Q065 EIDR{
-    , m_iIDRPeriod                        (0)
+        m_iIDRPeriod                    (0),
   // JVT-Q065 EIDR}
-    , m_iLayerIntraPeriod                 (0)
-    , m_uiMGSVectorMode                   (0)
-    , m_dQpModeDecisionLP                 (0.00)
-    , m_uiNumSliceGroupMapUnitsMinus1     (0)
+        m_iLayerIntraPeriod             (0),
+        m_uiMGSVectorMode               (0),
+        m_dQpModeDecisionLP             (0.00),
+        m_uiNumSliceGroupMapUnitsMinus1 (0),
     // JVT-S054 (ADD) ->
-    , m_uiNumSliceMinus1 (0)
-    , m_bSliceDivisionFlag (false)
+        m_uiNumSliceMinus1              (0),
+        m_bSliceDivisionFlag            (false),
     //, m_uiSliceDivisionType (0)//SEI changes update
-    , m_bGridFlag (0)//SEI changes update
-    , m_puiGridSliceWidthInMbsMinus1 (0)
-    , m_puiGridSliceHeightInMbsMinus1 (0)
-    , m_puiFirstMbInSlice (0)
-    , m_puiLastMbInSlice (0)
-    , m_puiSliceId (0)
+        m_bGridFlag                     (0),//SEI changes update
+        m_puiGridSliceWidthInMbsMinus1  (0),
+        m_puiGridSliceHeightInMbsMinus1 (0),
+        m_puiFirstMbInSlice             (0),
+        m_puiLastMbInSlice              (0),
+        m_puiSliceId                    (0),
     // JVT-S054 (ADD) <-
-    , m_uiSliceGroupIdArraySize(0)
-    , m_pauiSliceGroupId(0)
-    , m_bAVCRewriteFlag                  (0)   // JVT-V035
-    , m_bAVCAdaptiveRewriteFlag          (0)   // JVT-V035
-    , m_uiSliceSkip                      (0)
-    , m_uiSliceSkipTLevelStart           (0)
-    , m_uiLowComplexMbEnable             (0)   // JVT-V079
+        m_uiSliceGroupIdArraySize       (0),
+        m_pauiSliceGroupId              (0),
+        m_bAVCRewriteFlag               (0),   // JVT-V035
+        m_bAVCAdaptiveRewriteFlag       (0),   // JVT-V035
+        m_uiSliceSkip                   (0),
+        m_uiSliceSkipTLevelStart        (0),
+        m_uiLowComplexMbEnable          (0),   // JVT-V079
 
   //S051{
-  , m_cOutSIPFileName                    ("none")
-  , m_cInSIPFileName                     ("none")
-  , m_uiAnaSIP                           (0)
-  , m_bEncSIP                            (false)
+        m_cOutSIPFileName               ("none"),
+        m_cInSIPFileName                ("none"),
+        m_uiAnaSIP                      (0),
+        m_bEncSIP                       (false),
   //S051}
 //JVT-T054{
-    , m_uiLayerCGSSNR         (0)
-    , m_uiQualityLevelCGSSNR  (0)
-    , m_uiBaseLayerCGSSNR     (0)
-    , m_uiBaseQualityLevelCGSSNR (0)
+        m_uiLayerCGSSNR            (0),
+        m_uiQualityLevelCGSSNR     (0),
+        m_uiBaseLayerCGSSNR        (0),
+        m_uiBaseQualityLevelCGSSNR (0),
 //DS_FIX_FT_09_2007
-    , m_bDiscardable          (true)
+        m_bDiscardable             (true),
 //~DS_FIX_FT_09_2007
 //JVT-T054}
-    , m_uiExplicitQPCascading (0)
-    , m_uiIPCMRate            (0)
-    , m_uiBiPred8x8Disable    (0)
-    , m_uiMCBlks8x8Disable    (0)
-    , m_uiBotFieldFirst       (0)
-    , m_uiUseLongTerm         (0)
-    , m_uiPicCodingType       (0)
-    , m_uiNumDependentDId     (0)
-    , m_uiProfileIdc          (0)
-    , m_uiLevelIdc            (0)
-    , m_bIntraOnly            (false)
-    , m_bConstrainedSetFlag0  (false)
-    , m_bConstrainedSetFlag1  (false)
-    , m_bConstrainedSetFlag2  (false)
-    , m_bConstrainedSetFlag3  (false)
-    , m_uiMMCOBaseEnable      (0)  //JVT-S036 lsj
-    , m_uiMMCOEnable          (0)
+        m_uiExplicitQPCascading    (0),
+        m_uiIPCMRate               (0),
+        m_uiBiPred8x8Disable       (0),
+        m_uiMCBlks8x8Disable       (0),
+        m_uiBotFieldFirst          (0),
+        m_uiUseLongTerm            (0),
+        m_uiPicCodingType          (0),
+        m_uiNumDependentDId        (0),
+        m_uiProfileIdc             (0),
+        m_uiLevelIdc               (0),
+        m_bIntraOnly               (false),
+        m_bConstrainedSetFlag0     (false),
+        m_bConstrainedSetFlag1     (false),
+        m_bConstrainedSetFlag2     (false),
+        m_bConstrainedSetFlag3     (false),
+        m_uiMMCOBaseEnable         (0),  //JVT-S036 lsj
+        m_uiMMCOEnable             (0)
     {
         for (UInt ui = 0; ui < MAX_DSTAGES; ui++)
         {
@@ -258,88 +259,88 @@ public:
     ErrVal updateWithLevel(CodingParameter* pcCodingParameter, UInt& ruiLevelIdc);
 
     //===== get =====
-    UInt                            getLayerId                        () const {return m_uiLayerId; }
-    UInt                            getDependencyId                   () const {return m_uiDependencyId; }
-    Bool                            isInterlaced                      () const {return (m_uiMbAff != 0 || m_uiPAff != 0); }
-    UInt                            getFrameWidthInSamples            () const {return m_uiFrameWidthInSamples; }
-    UInt                            getFrameHeightInSamples           () const {return m_uiFrameHeightInSamples; }
-    UInt                            getFrameWidthInMbs                () const {return (m_uiFrameWidthInSamples + 15) >> 4; }
-    UInt                            getFrameHeightInMbs               () const {return (isInterlaced() ? ((m_uiFrameHeightInSamples + 31) >> 5) << 1 : (m_uiFrameHeightInSamples + 15) >> 4); }
-    UInt                            getFrameHeightInMapUnits          () const {return (isInterlaced() ?   (m_uiFrameHeightInSamples + 31) >> 5        : (m_uiFrameHeightInSamples + 15) >> 4); }
-    UInt                            getHorPadding                     () const {return 16*getFrameWidthInMbs () - getFrameWidthInSamples (); }
-    UInt                            getVerPadding                     () const {return 16*getFrameHeightInMbs() - getFrameHeightInSamples(); }
-    Double                          getInputFrameRate                 () const {return m_dInputFrameRate; }
-    Double                          getOutputFrameRate                () const {return m_dOutputFrameRate; }
-    const std::string&              getInputFilename                  () const {return m_cInputFilename; }
-    const std::string&              getOutputFilename                 () const {return m_cOutputFilename; }
-    Bool                            getEntropyCodingModeFlag          () const {return m_uiEntropyCodingModeFlag == 1; }
-    UInt                            getEnable8x8Trafo                 () const {return m_uiEnable8x8Trafo; }
-    UInt                            getScalingMatricesPresent         () const {return m_uiScalingMatricesPresent; }
-    UInt                            getMaxAbsDeltaQP                  () const {return m_uiMaxAbsDeltaQP; }
-    Double                          getBaseQpResidual                 () const {return m_dBaseQpResidual; }
-    Double                          getQpModeDecision          (UInt ui) const {return m_adQpModeDecision[ui]; }
-    Double                          getQpModeDecisionLP               () const {return m_dQpModeDecisionLP; }
-    UInt                            getInterLayerPredictionMode       () const {return m_uiInterLayerPredictionMode; }
-    UInt                            getILPredMode                     () const {return m_uiILPredMode; }
-    UInt                            getILPredMotion                   () const {return m_uiILPredMotion; }
-    UInt                            getILPredResidual                 () const {return m_uiILPredResidual; }
-    Int                             getChromaQPIndexOffset            () const { return m_iChromaQPIndexOffset; }
-    Int                             get2ndChromaQPIndexOffset         () const { return m_i2ndChromaQPIndexOffset; }
+    UInt                getLayerId                        () const {return m_uiLayerId; }
+    UInt                getDependencyId                   () const {return m_uiDependencyId; }
+    Bool                isInterlaced                      () const {return (m_uiMbAff != 0 || m_uiPAff != 0); }
+    UInt                getFrameWidthInSamples            () const {return m_uiFrameWidthInSamples; }
+    UInt                getFrameHeightInSamples           () const {return m_uiFrameHeightInSamples; }
+    UInt                getFrameWidthInMbs                () const {return (m_uiFrameWidthInSamples + 15) >> 4; }
+    UInt                getFrameHeightInMbs               () const {return (isInterlaced() ? ((m_uiFrameHeightInSamples + 31) >> 5) << 1 : (m_uiFrameHeightInSamples + 15) >> 4); }
+    UInt                getFrameHeightInMapUnits          () const {return (isInterlaced() ?   (m_uiFrameHeightInSamples + 31) >> 5        : (m_uiFrameHeightInSamples + 15) >> 4); }
+    UInt                getHorPadding                     () const {return 16*getFrameWidthInMbs () - getFrameWidthInSamples (); }
+    UInt                getVerPadding                     () const {return 16*getFrameHeightInMbs() - getFrameHeightInSamples(); }
+    Double              getInputFrameRate                 () const {return m_dInputFrameRate; }
+    Double              getOutputFrameRate                () const {return m_dOutputFrameRate; }
+    const std::string&  getInputFilename                  () const {return m_cInputFilename; }
+    const std::string&  getOutputFilename                 () const {return m_cOutputFilename; }
+    Bool                getEntropyCodingModeFlag          () const {return m_uiEntropyCodingModeFlag == 1; }
+    UInt                getEnable8x8Trafo                 () const {return m_uiEnable8x8Trafo; }
+    UInt                getScalingMatricesPresent         () const {return m_uiScalingMatricesPresent; }
+    UInt                getMaxAbsDeltaQP                  () const {return m_uiMaxAbsDeltaQP; }
+    Double              getBaseQpResidual                 () const {return m_dBaseQpResidual; }
+    Double              getQpModeDecision          (UInt ui) const {return m_adQpModeDecision[ui]; }
+    Double              getQpModeDecisionLP               () const {return m_dQpModeDecisionLP; }
+    UInt                getInterLayerPredictionMode       () const {return m_uiInterLayerPredictionMode; }
+    UInt                getILPredMode                     () const {return m_uiILPredMode; }
+    UInt                getILPredMotion                   () const {return m_uiILPredMotion; }
+    UInt                getILPredResidual                 () const {return m_uiILPredResidual; }
+    Int                 getChromaQPIndexOffset            () const { return m_iChromaQPIndexOffset; }
+    Int                 get2ndChromaQPIndexOffset         () const { return m_i2ndChromaQPIndexOffset; }
 
 //JVT-V079 Low-complexity MB mode decision {
-    UInt                            getLowComplexMbEnable             () const   { return m_uiLowComplexMbEnable; }
+    UInt                getLowComplexMbEnable             () const { return m_uiLowComplexMbEnable; }
 //JVT-V079 Low-complexity MB mode decision }
 
-    UInt                            getDecompositionStages            () const {return m_uiDecompositionStages; }
-    UInt                            getNotCodedStages                 () const {return m_uiNotCodedStages    ; }
-    UInt                            getTemporalResolution             () const {return m_uiTemporalResolution; }
-    UInt                            getFrameDelay                     () const {return m_uiFrameDelay; }
+    UInt                getDecompositionStages            () const { return m_uiDecompositionStages; }
+    UInt                getNotCodedStages                 () const { return m_uiNotCodedStages    ; }
+    UInt                getTemporalResolution             () const { return m_uiTemporalResolution; }
+    UInt                getFrameDelay                     () const { return m_uiFrameDelay; }
 
-    UInt                            getConstrainedIntraPred           () const {return m_uiConstrainedIntraPred; }
-    UInt                            getForceReorderingCommands        () const {return m_uiForceReorderingCommands; }
-    UInt                            getBaseLayerId                    () const {return m_uiBaseLayerId; }
-    UInt                            getMbAff                          () const {return m_uiMbAff;}
-    UInt                            getPAff                           () const {return m_uiPAff;}
-    Bool                            getUseRedundantSliceFlag          () const {return m_uiUseRedundantSlice == 1; }  //JVT-Q054 Red. Picture
-    Bool                            getUseRedundantKeySliceFlag       () const {return m_uiUseRedundantKeySlice == 1; }   //JVT-W049
+    UInt                getConstrainedIntraPred           () const { return m_uiConstrainedIntraPred; }
+    UInt                getForceReorderingCommands        () const { return m_uiForceReorderingCommands; }
+    UInt                getBaseLayerId                    () const { return m_uiBaseLayerId; }
+    UInt                getMbAff                          () const { return m_uiMbAff;}
+    UInt                getPAff                           () const { return m_uiPAff;}
+    Bool                getUseRedundantSliceFlag          () const { return m_uiUseRedundantSlice == 1; }  //JVT-Q054 Red. Picture
+    Bool                getUseRedundantKeySliceFlag       () const { return m_uiUseRedundantKeySlice == 1; }   //JVT-W049
     //--ICU/ETRI FMO Implementation :  FMO start
-    UInt          getNumSliceGroupsMinus1() const {return m_uiNumSliceGroupsMinus1;}  //for test
-    UInt          getSliceGroupMapType() const {return  m_uiSliceGroupMapType;  }
-    Bool          getSliceGroupChangeDirection_flag () const {return m_bSliceGroupChangeDirection_flag;}
-    UInt          getSliceGroupChangeRateMinus1 () const {return m_uiSliceGroupChangeRateMinus1;}
-    UInt          getNumSliceGroupMapUnitsMinus1() const {return m_uiNumSliceGroupMapUnitsMinus1;}
-    UInt          getSliceGroupId(Int i) const { AOF(i<(Int)m_uiSliceGroupIdArraySize); return m_pauiSliceGroupId[i];}
-    UInt          getSliceMode() const {return m_uiSliceMode;}
-    UInt          getSliceArgument() const { return m_uiSliceArgument ;}
-    const std::string&   getSliceGroupConfigFileName() const{ return m_cSliceGroupConfigFileName;}
-    UInt          getUseRedundantSlice() const { return m_uiUseRedundantSlice;}
-    UInt*         getArrayRunLengthMinus1 () const {return (UInt*)m_uiRunLengthMinus1;}
-    UInt*         getArrayTopLeft () const {return (UInt*)m_uiTopLeft;}
-    UInt*         getArrayBottomRight () const {return (UInt*)m_uiBottomRight;}
-    UInt*         getArraySliceGroupId() const {return m_pauiSliceGroupId;}
+    UInt          getNumSliceGroupsMinus1() const            { return m_uiNumSliceGroupsMinus1;}  //for test
+    UInt          getSliceGroupMapType() const               { return  m_uiSliceGroupMapType;  }
+    Bool          getSliceGroupChangeDirection_flag () const { return m_bSliceGroupChangeDirection_flag;}
+    UInt          getSliceGroupChangeRateMinus1 () const     { return m_uiSliceGroupChangeRateMinus1;}
+    UInt          getNumSliceGroupMapUnitsMinus1() const     { return m_uiNumSliceGroupMapUnitsMinus1;}
+    UInt          getSliceGroupId(Int i) const               { AOF(i<(Int)m_uiSliceGroupIdArraySize); return m_pauiSliceGroupId[i];}
+    UInt          getSliceMode() const                       { return m_uiSliceMode;}
+    UInt          getSliceArgument() const                   { return m_uiSliceArgument ;}
+    const std::string&   getSliceGroupConfigFileName() const { return m_cSliceGroupConfigFileName;}
+    UInt          getUseRedundantSlice() const               { return m_uiUseRedundantSlice;}
+    UInt*         getArrayRunLengthMinus1 () const           { return (UInt*)m_uiRunLengthMinus1;}
+    UInt*         getArrayTopLeft () const                   { return (UInt*)m_uiTopLeft;}
+    UInt*         getArrayBottomRight () const               { return (UInt*)m_uiBottomRight;}
+    UInt*         getArraySliceGroupId() const               { return m_pauiSliceGroupId;}
     //--ICU/ETRI FMO Implementation : FMO end
 
     //<-- consider ROI Extraction ICU/ETRI DS
     const std::string&   getROIConfigFileName() const{ return m_cROIConfigFileName;}
-    UInt          getNumROI() const {return m_uiNumROI;}  //for test
+    UInt          getNumROI() const { return m_uiNumROI;}  //for test
 
-    UInt*         getROIID () const {return (UInt*)m_uiROIID;}
-    UInt*         getSGID () const {return (UInt*)m_uiSGID;}
-    UInt*         getSLID () const {return (UInt*)m_uiSLID;}
+    UInt*         getROIID() const  { return (UInt*)m_uiROIID;}
+    UInt*         getSGID () const  { return (UInt*)m_uiSGID; }
+    UInt*         getSLID () const  { return (UInt*)m_uiSLID; }
     //--> consider ROI Extraction ICU/ETRI DS
 
     UInt  getMMCOBaseEnable ()  const    { return m_uiMMCOBaseEnable; } //JVT-S036 lsj
     UInt  getMMCOEnable     ()  const    { return m_uiMMCOEnable; }
 
-    UInt getMGSVect                        (UInt uiNum) const { return m_uiMGSVectorMode ? m_uiMGSVect[uiNum] : (uiNum == 0 ? 16 : 0); }
-    Bool getTCoeffLevelPredictionFlag ()               const { return m_bAVCRewriteFlag==1; }
-    Bool getAVCAdaptiveRewriteFlag ()       const { return m_bAVCAdaptiveRewriteFlag==1; }
-    Void setAVCRewrite(UInt ui) { m_bAVCRewriteFlag = ui; }
+    UInt getMGSVect                   (UInt uiNum) const { return m_uiMGSVectorMode ? m_uiMGSVect[uiNum] : (uiNum == 0 ? 16 : 0); }
+    Bool getTCoeffLevelPredictionFlag () const           { return m_bAVCRewriteFlag==1; }
+    Bool getAVCAdaptiveRewriteFlag ()    const           { return m_bAVCAdaptiveRewriteFlag==1; }
+    Void setAVCRewrite(UInt ui)                          { m_bAVCRewriteFlag = ui; }
 
-    UInt getSliceSkip() const { return m_uiSliceSkip; }
-    UInt getSliceSkipTLevelStart()  const { return m_uiSliceSkipTLevelStart; }
-    Void setSliceSkip(UInt uiSliceSkip) { m_uiSliceSkip = uiSliceSkip; }
-    Void setSliceSkipTLevelStart(UInt ui)  { m_uiSliceSkipTLevelStart = ui; }
+    UInt getSliceSkip() const                            { return m_uiSliceSkip; }
+    UInt getSliceSkipTLevelStart() const                 { return m_uiSliceSkipTLevelStart; }
+    Void setSliceSkip(UInt uiSliceSkip)                  { m_uiSliceSkip = uiSliceSkip; }
+    Void setSliceSkipTLevelStart(UInt ui)                { m_uiSliceSkipTLevelStart = ui; }
 
     //===== set =====
     Void setLayerId                         (UInt   p) { m_uiLayerId                        = p; }
@@ -520,8 +521,8 @@ public:
     UInt         m_uiFrameDelay;
 
     //----- ESS ----
-    ResizeParameters          m_cResizeParameters;
-    std::string               m_cESSFilename;
+    ResizeParameters  m_cResizeParameters;
+    std::string       m_cESSFilename;
 
     UInt         m_uiMbAff;
     UInt         m_uiPAff;
@@ -621,7 +622,12 @@ public:
 class SampleWeightingParams
 {
 public:
-    SampleWeightingParams() : m_uiIPMode(0), m_uiBMode(0), m_uiLumaDenom(5), m_uiChromaDenom(5), m_fDiscardThr(1)
+    SampleWeightingParams() :
+        m_uiIPMode(0),
+        m_uiBMode(0),
+        m_uiLumaDenom(5),
+        m_uiChromaDenom(5),
+        m_fDiscardThr(1)
     {
     }
     ErrVal check() const ;
@@ -659,71 +665,71 @@ class CodingParameter
     friend class LayerParameters;
 
 public:
-    CodingParameter()
-      : m_dMaximumFrameRate               (0.0)
-      , m_dMaximumDelay                   (1e6)
-      , m_uiTotalFrames                   (0)
-      , m_uiGOPSize                       (0)
-      , m_uiDecompositionStages           (0)
-      , m_uiIntraPeriod                   (0)
-      , m_uiIntraPeriodLowPass            (0)
-      , m_uiNumRefFrames                  (0)
-      , m_uiBaseLayerMode                 (0)
-      , m_uiNumberOfLayers                (0)
-      , m_uiAVCmode                       (0)
-      , m_uiFrameWidth                    (0)
-      , m_uiFrameHeight                   (0)
-      , m_uiSymbolMode                    (0)
-      , m_uiEnable8x8Trafo                (0)
-      , m_uiConstrainedIntraPred          (0)
-      , m_uiScalingMatricesPresent        (0)
-      , m_dBasisQp                        (0)
-      , m_uiDPBSize                       (0)
-      , m_uiNumDPBRefFrames               (0)
-      , m_uiLog2MaxFrameNum               (0)
-      , m_uiLog2MaxPocLsb                 (0)
-      , m_cSequenceFormatString           ()
-      , m_uiMaxRefIdxActiveBL0            (0)
-      , m_uiMaxRefIdxActiveBL1            (0)
-      , m_uiMaxRefIdxActiveP              (0)
+    CodingParameter() :
+        m_dMaximumFrameRate               (0.0),
+        m_dMaximumDelay                   (1e6),
+        m_uiTotalFrames                   (0),
+        m_uiGOPSize                       (0),
+        m_uiDecompositionStages           (0),
+        m_uiIntraPeriod                   (0),
+        m_uiIntraPeriodLowPass            (0),
+        m_uiNumRefFrames                  (0),
+        m_uiBaseLayerMode                 (0),
+        m_uiNumberOfLayers                (0),
+        m_uiAVCmode                       (0),
+        m_uiFrameWidth                    (0),
+        m_uiFrameHeight                   (0),
+        m_uiSymbolMode                    (0),
+        m_uiEnable8x8Trafo                (0),
+        m_uiConstrainedIntraPred          (0),
+        m_uiScalingMatricesPresent        (0),
+        m_dBasisQp                        (0),
+        m_uiDPBSize                       (0),
+        m_uiNumDPBRefFrames               (0),
+        m_uiLog2MaxFrameNum               (0),
+        m_uiLog2MaxPocLsb                 (0),
+        m_cSequenceFormatString           (),
+        m_uiMaxRefIdxActiveBL0            (0),
+        m_uiMaxRefIdxActiveBL1            (0),
+        m_uiMaxRefIdxActiveP              (0),
 //TMM_WP
-      , m_uiIPMode                        (0)
-      , m_uiBMode                         (0)
+        m_uiIPMode                        (0),
+        m_uiBMode                         (0),
 //TMM_WP
-      , m_bNonRequiredEnable              (0) //NonRequired JVT-Q066
-      , m_uiLARDOEnable                   (0)      //JVT-R057 LA-RDO
-      , m_uiEssRPChkEnable                (0)
-      , m_uiMVThres                       (20)
-      , m_uiPreAndSuffixUnitEnable        (0)  //JVT-S036 lsj
+        m_bNonRequiredEnable              (0),//NonRequired JVT-Q066
+        m_uiLARDOEnable                   (0),     //JVT-R057 LA-RDO
+        m_uiEssRPChkEnable                (0),
+        m_uiMVThres                       (20),
+        m_uiPreAndSuffixUnitEnable        (0), //JVT-S036 lsj
 //JVT-T073 {
-      , m_uiNestingSEIEnable              (0)
-      , m_uiSceneInfoEnable               (0)
+        m_uiNestingSEIEnable              (0),
+        m_uiSceneInfoEnable               (0),
 //JVT-T073 }
-      , m_uiIntegrityCheckSEIEnable       (0)//JVT-W052 wxwan
+        m_uiIntegrityCheckSEIEnable       (0),//JVT-W052 wxwan
 //JVT-T054{
-      , m_uiCGSSNRRefinementFlag          (0)
+        m_uiCGSSNRRefinementFlag          (0),
 //JVT-T054}
 // JVT-U085 LMI
-      , m_uiTlevelNestingFlag             (1)
+        m_uiTlevelNestingFlag             (1),
 // JVT-U116 W062 LMI
-      , m_uiTl0DepRepIdxSeiEnable         (0)
-      , m_uiCIUFlag                       (0) //JV
-      , m_uiEncodeKeyPictures             (0)
-      , m_uiMGSKeyPictureControl          (0)
+        m_uiTl0DepRepIdxSeiEnable         (0),
+        m_uiCIUFlag                       (0), //JV
+        m_uiEncodeKeyPictures             (0),
+        m_uiMGSKeyPictureControl          (0),
 // JVT-W043 {
-      , m_uiRCMinQP                       (12)
-      , m_uiRCMaxQP                       (40)
-      , m_uiMaxQpChange                   (2)
-      , m_uiInitialQp                     (30)
-      , m_uiBasicUnit                     (99)
-      , m_uiBitRate                       (64000)
-      , m_uiRateControlEnable             (0)
-      , m_uiAdaptInitialQP                (0)
+        m_uiRCMinQP                       (12),
+        m_uiRCMaxQP                       (40),
+        m_uiMaxQpChange                   (2),
+        m_uiInitialQp                     (30),
+        m_uiBasicUnit                     (99),
+        m_uiBitRate                       (64000),
+        m_uiRateControlEnable             (0),
+        m_uiAdaptInitialQP                (0),
 //JVT-W043 }
-      , m_uiBiPred8x8Disable              (0)
-      , m_uiMCBlks8x8Disable              (0)
+        m_uiBiPred8x8Disable              (0),
+        m_uiMCBlks8x8Disable              (0),
 //JVT-AD021 {
-      , m_uiMultiLayerLambda              (0)
+        m_uiMultiLayerLambda              (0)
 //JVT-AD021 }
     {
         for (UInt uiLayerId = 0; uiLayerId < MAX_LAYERS; uiLayerId++)
@@ -790,9 +796,9 @@ public:
     UInt               getLog2MaxPocLsb          ()        const         { return m_uiLog2MaxPocLsb; }
     std::string        getSequenceFormatString   ()        const         { return m_cSequenceFormatString; }
     Double             getDeltaQpLayer           (UInt ui) const         { return m_adDeltaQpLayer[ui]; }
-    UInt               getMaxRefIdxActiveBL0     ()        const         { return m_uiMaxRefIdxActiveBL0; }
-    UInt               getMaxRefIdxActiveBL1     ()        const         { return m_uiMaxRefIdxActiveBL1; }
-    UInt               getMaxRefIdxActiveP       ()        const         { return m_uiMaxRefIdxActiveP; }
+    UInt               getMaxRefIdxActiveBL0     ()        const         { return m_uiMaxRefIdxActiveBL0; }  //MaxRefIdxActiveBL0, MCV.cfg中
+    UInt               getMaxRefIdxActiveBL1     ()        const         { return m_uiMaxRefIdxActiveBL1; }  //MaxRefIdxActiveBL1, MCV.cfg中
+    UInt               getMaxRefIdxActiveP       ()        const         { return m_uiMaxRefIdxActiveP; }    //MaxRefIdxActiveP  , MCV.cfg中
 
     Void               setInputFile              (Char* p)               { m_cInputFile = p; }
 

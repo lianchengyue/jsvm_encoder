@@ -5,8 +5,7 @@
 
 namespace JSVM {
 
-InputAccessUnit::InputAccessUnit(UInt uiContFrameNumber,
-                                 PicBuffer* pcInputPicBuffer):
+InputAccessUnit::InputAccessUnit(UInt uiContFrameNumber, PicBuffer* pcInputPicBuffer):
     m_uiContFrameNumber(uiContFrameNumber),
     m_pcInputPicBuffer(pcInputPicBuffer)
 {
@@ -19,7 +18,8 @@ InputAccessUnit::~InputAccessUnit()
 
 
 
-InputPicBuffer::InputPicBuffer() : m_bInit (false)
+InputPicBuffer::InputPicBuffer() :
+    m_bInit (false)
 {
 }
 

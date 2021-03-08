@@ -8,9 +8,9 @@ namespace JSVM {
 
 
 //================================= Frame Spec : begin ===================================
-FrameSpec::FrameSpec()
-: m_bInit     (false)
-, m_pcMmcoBuf (NULL)
+FrameSpec::FrameSpec() :
+    m_bInit     (false),
+    m_pcMmcoBuf (NULL)
 {
     m_apcRplrBuf[LIST_0] = NULL;
     m_apcRplrBuf[LIST_1] = NULL;
@@ -633,9 +633,9 @@ Bool SequenceStructure::FrameSequencePart::getNextFrameSpec (FrameSpec& rcFrameS
 
 
 //================================= General Sequence Part : begin ===================================
-SequenceStructure::GeneralSequencePart::GeneralSequencePart()
-: m_bInit               (false)
-, m_papcSequencePart    (0)
+SequenceStructure::GeneralSequencePart::GeneralSequencePart() :
+    m_bInit               (false),
+    m_papcSequencePart    (0)
 {
 }
 
@@ -797,9 +797,9 @@ Bool SequenceStructure::GeneralSequencePart::getNextFrameSpec (FrameSpec& rcFram
 
 
 //================================= Sequence Structure : begin ===================================
-SequenceStructure::SequenceStructure()
-: m_bInit          (false)
-, m_pcSequencePart (0)
+SequenceStructure::SequenceStructure() :
+    m_bInit          (false),
+    m_pcSequencePart (0)
 {
 }
 

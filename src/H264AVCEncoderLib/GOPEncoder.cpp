@@ -36,156 +36,156 @@ namespace JSVM {
 #define FACTOR_53_LP  1.2247448713915890490986420373529   //sqrt(3.0/ 2.0)
 
 
-LayerEncoder::LayerEncoder()
+LayerEncoder::LayerEncoder() :
 //----- references -----
-: m_pcSPS                           (0)
-, m_pcPPS                           (0)
-, m_pcYuvFullPelBufferCtrl          (0)
-, m_pcYuvHalfPelBufferCtrl          (0)
-, m_pcPocCalculator                 (0)
-, m_pcH264AVCEncoder                (0)
-, m_pcSliceEncoder                  (0)
-, m_pcNalUnitEncoder                (0)
-, m_pcLoopFilter                    (0)
-, m_pcQuarterPelFilter              (0)
-, m_pcMotionEstimation              (0)
+    m_pcSPS                           (0),
+    m_pcPPS                           (0),
+    m_pcYuvFullPelBufferCtrl          (0),
+    m_pcYuvHalfPelBufferCtrl          (0),
+    m_pcPocCalculator                 (0),
+    m_pcH264AVCEncoder                (0),
+    m_pcSliceEncoder                  (0),
+    m_pcNalUnitEncoder                (0),
+    m_pcLoopFilter                    (0),
+    m_pcQuarterPelFilter              (0),
+    m_pcMotionEstimation              (0),
 //----- fixed control parameters -----
-, m_bTraceEnable                    (true)
-, m_bFrameMbsOnlyFlag               (true)
-, m_uiDependencyId                       (0)
-, m_uiScalableLayerId                                (0)
-, m_uiLayerId                       (MSYS_UINT_MAX)
-, m_uiBaseLayerId                   (MSYS_UINT_MAX)
-, m_uiBaseQualityLevel              (15)
-, m_uiFrameWidthInMb                (0)
-, m_uiFrameHeightInMb               (0)
-, m_uiMaxGOPSize                    (0)
-, m_uiDecompositionStages           (0)
-, m_uiTemporalResolution            (0)
-, m_uiNotCodedStages                (0)
-, m_uiFrameDelay                    (0)
-, m_uiMaxNumRefFrames               (0)
-, m_uiLowPassIntraPeriod            (0)
-, m_uiNumMaxIter                    (0)
-, m_uiIterSearchRange               (0)
-, m_uiMaxDeltaQp                    (0)
-, m_bH264AVCCompatible              (true )
-, m_bInterLayerPrediction           (true )
-, m_bAdaptiveBaseModeFlag           (true )
-, m_bAdaptiveMotionPredFlag         (true )
-, m_bAdaptiveResidualPredFlag       (true )
-, m_bDefaultBaseModeFlag            (false)
-, m_bDefaultMotionPredFlag          (false)
-, m_bDefaultResidualPredFlag        (false)
-, m_bWriteSubSequenceSei            (false)
-, m_dBaseQPResidual                 (0.0)
-, m_uiFilterIdc                     (0)
-, m_iAlphaOffset                    (0)
-, m_iBetaOffset                     (0)
+    m_bTraceEnable                    (true),
+    m_bFrameMbsOnlyFlag               (true),
+    m_uiDependencyId                  (0),
+    m_uiScalableLayerId               (0),
+    m_uiLayerId                       (MSYS_UINT_MAX),
+    m_uiBaseLayerId                   (MSYS_UINT_MAX),
+    m_uiBaseQualityLevel              (15),
+    m_uiFrameWidthInMb                (0),
+    m_uiFrameHeightInMb               (0),
+    m_uiMaxGOPSize                    (0),
+    m_uiDecompositionStages           (0),
+    m_uiTemporalResolution            (0),
+    m_uiNotCodedStages                (0),
+    m_uiFrameDelay                    (0),
+    m_uiMaxNumRefFrames               (0),
+    m_uiLowPassIntraPeriod            (0),
+    m_uiNumMaxIter                    (0),
+    m_uiIterSearchRange               (0),
+    m_uiMaxDeltaQp                    (0),
+    m_bH264AVCCompatible              (true),
+    m_bInterLayerPrediction           (true),
+    m_bAdaptiveBaseModeFlag           (true),
+    m_bAdaptiveMotionPredFlag         (true),
+    m_bAdaptiveResidualPredFlag       (true),
+    m_bDefaultBaseModeFlag            (false),
+    m_bDefaultMotionPredFlag          (false),
+    m_bDefaultResidualPredFlag        (false),
+    m_bWriteSubSequenceSei            (false),
+    m_dBaseQPResidual                 (0.0),
+    m_uiFilterIdc                     (0),
+    m_iAlphaOffset                    (0),
+    m_iBetaOffset                     (0),
 //----- variable control parameters -----
-, m_bInitDone                       (false)
-, m_bFirstGOPCoded                  (false)
-, m_uiGOPSize                       (0)
-, m_uiFrameCounter                  (0)
-, m_uiFrameNum                      (0)
-, m_uiIdrPicId                                            (0) //EIDR 0619
-, m_uiGOPNumber                     (0)
+    m_bInitDone                       (false),
+    m_bFirstGOPCoded                  (false),
+    m_uiGOPSize                       (0),
+    m_uiFrameCounter                  (0),
+    m_uiFrameNum                      (0),
+    m_uiIdrPicId                      (0), //EIDR 0619
+    m_uiGOPNumber                     (0),
 //----- frame memories -----
-, m_papcFrame                       (0)
-, m_papcELFrame                     (0)
-, m_pcResidualLF                    (0)
-, m_pcResidualILPred                (0)
-, m_pcSubband                       (0)
+    m_papcFrame                       (0),
+    m_papcELFrame                     (0),
+    m_pcResidualLF                    (0),
+    m_pcResidualILPred                (0),
+    m_pcSubband                       (0),
 //TMM_WP
-, m_bBaseLayerWp                    (false)
+    m_bBaseLayerWp                    (false),
 //TMM_WP
-, m_pcAnchorFrameOriginal           (0)
-, m_pcAnchorFrameReconstructed      (0)
-, m_pcBaseLayerFrame                (0)
-, m_pcBaseLayerResidual             (0)
+    m_pcAnchorFrameOriginal           (0),
+    m_pcAnchorFrameReconstructed      (0),
+    m_pcBaseLayerFrame                (0),
+    m_pcBaseLayerResidual             (0),
 //----- control data arrays -----
-, m_pacControlData                  (0)
-, m_pcBaseLayerCtrl                 (0)
-, m_pcBaseLayerCtrlField            (0)
+    m_pacControlData                  (0),
+    m_pcBaseLayerCtrl                 (0),
+    m_pcBaseLayerCtrlField            (0),
 //----- auxiliary buffers -----
-, m_uiWriteBufferSize               (0)
-, m_pucWriteBuffer                  (0)
+    m_uiWriteBufferSize               (0),
+    m_pucWriteBuffer                  (0),
 //----- PSNR & rate -----
-, m_fOutputFrameRate                (0.0)
-, m_uiParameterSetBits              (0)
+    m_fOutputFrameRate                (0.0),
+    m_uiParameterSetBits              (0),
 //--- FGS ---
-, m_pcResizeParameters              (0)//TMM_ESS
-, m_pESSFile                        (0)
+    m_pcResizeParameters              (0),//TMM_ESS
+    m_pESSFile                        (0),
 // JVT-Q065 EIDR{
-, m_iIDRPeriod                                  (0)
+    m_iIDRPeriod                      (0),
 // JVT-Q065 EIDR}
-, m_iLayerIntraPeriod               (0)
-, m_bLARDOEnable                    (false) //JVT-R057 LA-RDO
-, m_uiEssRPChkEnable                                (0)
-, m_uiMVThres                                                (20)
-, m_uiNonRequiredWrite                      (0)  //NonRequired JVT-Q066 (06-04-08)
-, m_uiPreAndSuffixUnitEnable                      (0) //JVT-S036 lsj
-, m_bMMCOBaseEnable                              (true) //JVT-S036 lsj
-, m_bMMCOEnable                     (true)
+    m_iLayerIntraPeriod               (0),
+    m_bLARDOEnable                    (false), //JVT-R057 LA-RDO
+    m_uiEssRPChkEnable                (0),
+    m_uiMVThres                       (20),
+    m_uiNonRequiredWrite              (0),  //NonRequired JVT-Q066 (06-04-08)
+    m_uiPreAndSuffixUnitEnable        (0), //JVT-S036 lsj
+    m_bMMCOBaseEnable                 (true), //JVT-S036 lsj
+    m_bMMCOEnable                     (true),
 // JVT-S054 (ADD) ->
-, m_puiFirstMbInSlice               (0)
+    m_puiFirstMbInSlice               (0),
 // JVT-S054 (ADD) <-
 //S051{
-, m_uiTotalFrame                              (0)
-, m_auiFrameBits                              (NULL)
-, m_uiAnaSIP                                    (0)
-, m_bEncSIP                                        (false)
-, m_cInSIPFileName                            ("none")
-, m_cOutSIPFileName                            ("none")
+    m_uiTotalFrame                    (0),
+    m_auiFrameBits                    (NULL),
+    m_uiAnaSIP                        (0),
+    m_bEncSIP                         (false),
+    m_cInSIPFileName                  ("none"),
+    m_cOutSIPFileName                 ("none"),
 //S051}
 //JVT-T054{
-, m_uiLayerCGSSNR                   (0)
-, m_uiQualityLevelCGSSNR            (0)
-, m_uiBaseLayerCGSSNR               (MSYS_UINT_MAX)
-, m_uiBaseQualityLevelCGSSNR        (0)
+    m_uiLayerCGSSNR                   (0),
+    m_uiQualityLevelCGSSNR            (0),
+    m_uiBaseLayerCGSSNR               (MSYS_UINT_MAX),
+    m_uiBaseQualityLevelCGSSNR        (0),
 //JVT-T054}
 // JVT-U085 LMI
-, m_bTlevelNestingFlag              (true)
+    m_bTlevelNestingFlag              (true),
 // JVT-U116 W062 LMI
-, m_bTl0DepRepIdxEnable            (false)
+    m_bTl0DepRepIdxEnable             (false),
 //JVT-U106 Behaviour at slice boundaries{
-, m_bCIUFlag                       (false)
+    m_bCIUFlag                        (false),
 //JVT-U106 Behaviour at slice boundaries}
-, m_bGOPInitialized                (false)
-, m_uiMGSKeyPictureControl(0)
-, m_bHighestMGSLayer(false)
-, m_pcRedundantCtrl (0)//RPIC bug fix
-, m_uiLastCodedFrameIdInGOP (MSYS_UINT_MAX)
-, m_uiLastCodedTemporalId   (MSYS_UINT_MAX)
-, m_bBotFieldFirst          (false)
-, m_bUseLongTermPics        (false)
-, m_iMaxLongTermFrmIdx      (-1)
-, m_uiNextTL0LongTermIdx    (0)
-, m_uiPicCodingType         (0)
-, m_uiFrameIdWithSmallestTId(0)
-, m_uiNumFramesLeftInGOP    (0)
+    m_bGOPInitialized                 (false),
+    m_uiMGSKeyPictureControl          (0),
+    m_bHighestMGSLayer                (false),
+    m_pcRedundantCtrl                 (0),//RPIC bug fix
+    m_uiLastCodedFrameIdInGOP         (MSYS_UINT_MAX),
+    m_uiLastCodedTemporalId           (MSYS_UINT_MAX),
+    m_bBotFieldFirst                  (false),
+    m_bUseLongTermPics                (false),
+    m_iMaxLongTermFrmIdx              (-1),
+    m_uiNextTL0LongTermIdx            (0),
+    m_uiPicCodingType                 (0),
+    m_uiFrameIdWithSmallestTId        (0),
+    m_uiNumFramesLeftInGOP            (0)
 {
-  ::memset(m_abIsRef,                      0x00, sizeof(m_abIsRef                    ));
-  ::memset(m_apcFrameTemp,                 0x00, sizeof(m_apcFrameTemp               ));
-  ::memset(m_auiPicCodingType,             0x00, sizeof(m_auiPicCodingType           ));
-  ::memset(m_auiFrameIdToTemporalId,       0x00, sizeof(m_auiFrameIdToTemporalId     ));
-  ::memset(m_auiCodingIndexToFrameId,      0x00, sizeof(m_auiCodingIndexToFrameId    ));
-  ::memset(m_abMaxLongTermIdxSend,         0x00, sizeof(m_abMaxLongTermIdxSend       ));
-  ::memset(m_auiFrameIdToFrameNumOrLTIdx,  0x00, sizeof(m_auiFrameIdToFrameNumOrLTIdx));
-  ::memset(m_apcBaseFrame,                 0x00, sizeof(m_apcBaseFrame               ));
+    ::memset(m_abIsRef,                      0x00, sizeof(m_abIsRef                    ));
+    ::memset(m_apcFrameTemp,                 0x00, sizeof(m_apcFrameTemp               ));
+    ::memset(m_auiPicCodingType,             0x00, sizeof(m_auiPicCodingType           ));
+    ::memset(m_auiFrameIdToTemporalId,       0x00, sizeof(m_auiFrameIdToTemporalId     ));
+    ::memset(m_auiCodingIndexToFrameId,      0x00, sizeof(m_auiCodingIndexToFrameId    ));
+    ::memset(m_abMaxLongTermIdxSend,         0x00, sizeof(m_abMaxLongTermIdxSend       ));
+    ::memset(m_auiFrameIdToFrameNumOrLTIdx,  0x00, sizeof(m_auiFrameIdToFrameNumOrLTIdx));
+    ::memset(m_apcBaseFrame,                 0x00, sizeof(m_apcBaseFrame               ));
 
-  m_apabBaseModeFlagAllowedArrays[0] = 0;
-  m_apabBaseModeFlagAllowedArrays[1] = 0;
+    m_apabBaseModeFlagAllowedArrays[0] = 0;
+    m_apabBaseModeFlagAllowedArrays[1] = 0;
 
-  UInt ui;
-  for(ui = 0; ui <= MAX_DSTAGES; ui++)
-  {
-    m_auiNumFramesCoded [ui]  = 0;
-    m_adPSNRSumY        [ui]  = 0.0;
-    m_adPSNRSumU        [ui]  = 0.0;
-    m_adPSNRSumV        [ui]  = 0.0;
-  }
-  m_uiNewlyCodedBits      = 0;
+    UInt ui;
+    for(ui = 0; ui <= MAX_DSTAGES; ui++)
+    {
+        m_auiNumFramesCoded [ui]  = 0;
+        m_adPSNRSumY        [ui]  = 0.0;
+        m_adPSNRSumU        [ui]  = 0.0;
+        m_adPSNRSumV        [ui]  = 0.0;
+    }
+    m_uiNewlyCodedBits      = 0;
 }
 
 
@@ -222,22 +222,22 @@ ErrVal LayerEncoder::destroy()
 
 
 ErrVal LayerEncoder::init(CodingParameter*   pcCodingParameter,
-                           LayerParameters*   pcLayerParameters,
-                           H264AVCEncoder*    pcH264AVCEncoder,
-                           SliceEncoder*      pcSliceEncoder,
-                           LoopFilter*        pcLoopFilter,
-                           PocCalculator*     pcPocCalculator,
-                           NalUnitEncoder*    pcNalUnitEncoder,
-                           YuvBufferCtrl*     pcYuvFullPelBufferCtrl,
-                           YuvBufferCtrl*     pcYuvHalfPelBufferCtrl,
-                           QuarterPelFilter*  pcQuarterPelFilter,
-                           MotionEstimation*  pcMotionEstimation
-                           //JVT-U106 Behaviour at slice boundaries{
-                           ,ReconstructionBypass* pcReconstructionBypass
-                           //JVT-U106 Behaviour at slice boundaries}
-                           // JVT-V068 {
-                           ,StatBuf<Scheduler*, MAX_SCALABLE_LAYERS>* apcScheduler
-                           // JVT-V068 }
+                          LayerParameters*   pcLayerParameters,
+                          H264AVCEncoder*    pcH264AVCEncoder,
+                          SliceEncoder*      pcSliceEncoder,
+                          LoopFilter*        pcLoopFilter,
+                          PocCalculator*     pcPocCalculator,
+                          NalUnitEncoder*    pcNalUnitEncoder,
+                          YuvBufferCtrl*     pcYuvFullPelBufferCtrl,
+                          YuvBufferCtrl*     pcYuvHalfPelBufferCtrl,
+                          QuarterPelFilter*  pcQuarterPelFilter,
+                          MotionEstimation*  pcMotionEstimation
+                          //JVT-U106 Behaviour at slice boundaries{
+                          ,ReconstructionBypass* pcReconstructionBypass
+                          //JVT-U106 Behaviour at slice boundaries}
+                          // JVT-V068 {
+                          ,StatBuf<Scheduler*, MAX_SCALABLE_LAYERS>* apcScheduler
+                          // JVT-V068 }
                           )
 {
     ROF(pcCodingParameter);
@@ -332,9 +332,9 @@ ErrVal LayerEncoder::init(CodingParameter*   pcCodingParameter,
     m_bWriteSubSequenceSei      = pcCodingParameter->getBaseLayerMode () > 1 && m_uiDependencyId == 0;
 
     m_bSameResBL = (m_uiBaseLayerId != MSYS_UINT_MAX &&
-                     pcCodingParameter->getLayerParameters(m_uiBaseLayerId).getFrameWidthInSamples () == pcLayerParameters->getFrameWidthInSamples () &&
-                     pcCodingParameter->getLayerParameters(m_uiBaseLayerId).getFrameHeightInSamples() == pcLayerParameters->getFrameHeightInSamples() &&
-                     pcLayerParameters->getResizeParameters().m_iExtendedSpatialScalability == ESS_NONE);
+                    pcCodingParameter->getLayerParameters(m_uiBaseLayerId).getFrameWidthInSamples () == pcLayerParameters->getFrameWidthInSamples () &&
+                    pcCodingParameter->getLayerParameters(m_uiBaseLayerId).getFrameHeightInSamples() == pcLayerParameters->getFrameHeightInSamples() &&
+                    pcLayerParameters->getResizeParameters().m_iExtendedSpatialScalability == ESS_NONE);
 
     m_bSameResEL = false;
 
@@ -639,7 +639,7 @@ ErrVal LayerEncoder::xInitCodingOrder(UInt uiDecompositionStages, UInt uiTempora
 
 
 ErrVal LayerEncoder::initParameterSets(const SequenceParameterSet& rcSPS,
-                                 const PictureParameterSet&  rcPPS)
+                                       const PictureParameterSet&  rcPPS)
 {
     //===== set references =====
     m_pcSPS                 = &rcSPS;

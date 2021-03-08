@@ -199,7 +199,7 @@ protected:
                                    UInt                uiAddBits,
                                    Bool                bLowComplexity=false);
 
-    //对宏块MB进行编码
+    //!对宏块MB进行编码
     ErrVal  xEncodeChromaIntra    (IntMbTempData&      rcMbTempData,
                                    UInt&               ruiExtCbp,
                                    UInt&               ruiBits,

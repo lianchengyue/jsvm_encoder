@@ -48,11 +48,12 @@ public:
 
     Void getDistStruct(UInt uiBlkMode, DFunc eDFunc, Bool bBiDirectional, XDistSearchStruct& rDistSearchStruct)
     {
-        rDistSearchStruct.Func    = m_aaafpDistortionFunc[(bBiDirectional?1:0)][eDFunc][uiBlkMode];
-        rDistSearchStruct.iRows   = m_aiRows[uiBlkMode];
-        rDistSearchStruct.pYOrg   = m_cOrgData.getLumBlk();
-        rDistSearchStruct.pUOrg   = m_cOrgData.getCbBlk ();
-        rDistSearchStruct.pVOrg   = m_cOrgData.getCrBlk ();
+        rDistSearchStruct.Func  = m_aaafpDistortionFunc[(bBiDirectional?1:0)][eDFunc][uiBlkMode];
+        rDistSearchStruct.iRows = m_aiRows[uiBlkMode];
+        rDistSearchStruct.pYOrg = m_cOrgData.getLumBlk();
+        rDistSearchStruct.pUOrg = m_cOrgData.getCbBlk ();
+        rDistSearchStruct.pVOrg = m_cOrgData.getCrBlk ();
+
         DO_DBG(rDistSearchStruct.pYSearch = NULL);
         DO_DBG(rDistSearchStruct.iYStride = 0);
         DO_DBG(rDistSearchStruct.pUSearch = NULL);

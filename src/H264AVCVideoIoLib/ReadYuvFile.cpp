@@ -1,4 +1,3 @@
-
 #include "H264AVCVideoIoLib.h"
 #include "ReadYuvFile.h"
 #include <cstdio>
@@ -62,6 +61,7 @@ ErrVal ReadYuvFile::init(const std::string& rcFileName,
     m_uiEndLine   = uiEndLine;
     m_eFillMode   = eFillMode;
 
+    //加载YUV
     if(Err::m_nOK != m_cFile.open(rcFileName, LargeFile::OM_READONLY))
     {
         std::cerr << "failed to open YUV input file " << rcFileName.data() << std::endl;
@@ -78,7 +78,7 @@ ErrVal ReadYuvFile::init(const std::string& rcFileName,
 
 
 
-ErrVal ReadYuvFile::xReadPlane(UChar *pucDest,
+ErrVal ReadYuvFile::xReadPlane(UChar *pucDest,  //apcOriginalPicBuffer[uiLayer]中某分量的地址
                                UInt uiBufHeight,
                                UInt uiBufWidth,
                                UInt uiBufStride,
@@ -95,6 +95,7 @@ ErrVal ReadYuvFile::xReadPlane(UChar *pucDest,
     // clear skiped buffer above reading section and skip in file
     if(0 != uiStartLine)
     {
+        //uiStartLine始终为0,不会进入
         UInt uiLines = uiStartLine;
         ::memset(pucDest, 0, uiBufWidth * uiLines);
         pucDest += uiBufStride * uiLines;
@@ -122,6 +123,9 @@ ErrVal ReadYuvFile::xReadPlane(UChar *pucDest,
     }
 
     // clear remaining buffer
+    //uiPicHeight: 1080
+    //uiBufHeight: 1088
+    ///高度与实际高度不统一时
     if(uiPicHeight != uiBufHeight)
     {
         if(uiEnd != uiPicHeight)
@@ -133,34 +137,36 @@ ErrVal ReadYuvFile::xReadPlane(UChar *pucDest,
         {
             switch(m_eFillMode)
             {
-              case FILL_CLEAR:
-              {
-                  UInt uiLines = uiBufHeight - uiPicHeight;
-                  ::memset(pucDest, 0, uiBufWidth * uiLines);
-              }
-              break;
-              case FILL_FRAME:
-              {
-                  for(UInt y = uiPicHeight; y < uiBufHeight; y++)
-                  {
-                      memcpy(pucDest, pucDest - uiBufStride, uiBufStride);
-                      pucDest += uiBufStride;
-                  }
-              }
-              break;
-              case FILL_FIELD:
-              {
-                  ROT((uiBufHeight - uiPicHeight) & 1);
-                  for(UInt y = uiPicHeight; y < uiBufHeight; y+=2)
-                  {
-                      memcpy(pucDest, pucDest - 2*uiBufStride, 2*uiBufStride);
-                      pucDest += 2*uiBufStride;
-                  }
-              }
-              break;
-              default:
-                  AF()
-              break;
+                case FILL_CLEAR:
+                {
+                    UInt uiLines = uiBufHeight - uiPicHeight;
+                    ::memset(pucDest, 0, uiBufWidth * uiLines);
+                }
+                break;
+                //这里
+                case FILL_FRAME:
+                {
+                    for(UInt y = uiPicHeight; y < uiBufHeight; y++)
+                    {
+                        //uiBufStride: 1984
+                        memcpy(pucDest, pucDest - uiBufStride, uiBufStride);
+                        pucDest += uiBufStride;
+                    }
+                }
+                break;
+                case FILL_FIELD:
+                {
+                    ROT((uiBufHeight - uiPicHeight) & 1);
+                    for(UInt y = uiPicHeight; y < uiBufHeight; y+=2)
+                    {
+                        memcpy(pucDest, pucDest - 2*uiBufStride, 2*uiBufStride);
+                        pucDest += 2*uiBufStride;
+                    }
+                }
+                break;
+                default:
+                    AF()
+                break;
             }
         }
     }
@@ -185,8 +191,17 @@ ErrVal ReadYuvFile::readFrame (UChar *pLum,
     UInt uiEndLine   = m_uiEndLine;
 
     printf("\n读取第N帧...\n");
+    //从OriginalPicBuffer中读取Y,U,V三个分量
+
     //读取Luma分量
-    xReadPlane(pLum, uiBufHeight, uiBufWidth, uiBufStride, uiPicHeight, uiPicWidth, uiStartLine, uiEndLine);
+    xReadPlane(pLum,
+               uiBufHeight,  //1088
+               uiBufWidth,
+               uiBufStride,  //1984
+               uiPicHeight,  //1980
+               uiPicWidth,
+               uiStartLine,
+               uiEndLine);
 
     uiPicHeight  >>= 1;
     uiPicWidth   >>= 1;
@@ -198,9 +213,23 @@ ErrVal ReadYuvFile::readFrame (UChar *pLum,
     uiEndLine    >>= 1;
 
     //读取Cb分量
-    xReadPlane(pCb, uiBufHeight, uiBufWidth, uiBufStride, uiPicHeight, uiPicWidth, uiStartLine, uiEndLine);
+    xReadPlane(pCb,
+               uiBufHeight,
+               uiBufWidth,
+               uiBufStride,
+               uiPicHeight,
+               uiPicWidth,
+               uiStartLine,
+               uiEndLine);
     //读取Cr分量
-    xReadPlane(pCr, uiBufHeight, uiBufWidth, uiBufStride, uiPicHeight, uiPicWidth, uiStartLine, uiEndLine);
+    xReadPlane(pCr,
+               uiBufHeight,
+               uiBufWidth,
+               uiBufStride,
+               uiPicHeight,
+               uiPicWidth,
+               uiStartLine,
+               uiEndLine);
 
     return Err::m_nOK;
 

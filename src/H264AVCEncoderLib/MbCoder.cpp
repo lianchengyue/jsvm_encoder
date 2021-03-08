@@ -97,7 +97,7 @@ ErrVal MbCoder::uninit()
 
 
 ErrVal MbCoder::encode (MbDataAccess& rcMbDataAccess,
-                        MbDataAccess* pcMbDataAccessBase,
+                        MbDataAccess* pcMbDataAccessBase,  //输入为NULL
                         Bool  bTerminateSlice,
                         Bool  bSendTerminateSlice)
 {
@@ -693,17 +693,17 @@ ErrVal MbCoder::xWriteMotionVectors(MbDataAccess& rcMbDataAccess,
 
 
 ErrVal MbCoder::xWriteTextureInfo(MbDataAccess&            rcMbDataAccess,
-                                   MbDataAccess*            pcMbDataAccessBase,    // JVT-R091
-                                   const MbTransformCoeffs& rcMbTCoeff,
-                                   Bool                     bTrafo8x8Flag,
-                                   UInt                     uiStart,
-                                   UInt                     uiStop,
-                                   UInt                     uiMGSFragment
-                                  )
+                                  MbDataAccess*            pcMbDataAccessBase,    // JVT-R091
+                                  const MbTransformCoeffs& rcMbTCoeff,
+                                  Bool                     bTrafo8x8Flag,
+                                  UInt                     uiStart,  //0
+                                  UInt                     uiStop,   //16
+                                  UInt                     uiMGSFragment)
 {
     Bool bWriteDQp = (uiStart < uiStop);
 
     if(uiMGSFragment == 0) // required, since we don't have the correct slice header
+    {
         if(rcMbDataAccess.getMbData().getBLSkipFlag() ||
            !rcMbDataAccess.getMbData().isIntra())
         {
@@ -715,6 +715,7 @@ ErrVal MbCoder::xWriteTextureInfo(MbDataAccess&            rcMbDataAccess,
                 }
             }
         }
+    }
 
     if(uiStart != 0 || uiStop != 16)
     {
@@ -756,7 +757,6 @@ ErrVal MbCoder::xWriteTextureInfo(MbDataAccess&            rcMbDataAccess,
             {
                 if((uiCbp >> c8x8Idx.b8x8Index()) & 1)
                 {
-                    //FLQ, residualBlock8x8
                     m_pcMbSymbolWriteIf->residualBlock8x8(rcMbDataAccess, c8x8Idx, LUMA_SCAN, uiStart, uiStop);
                 }
             }
@@ -791,7 +791,7 @@ ErrVal MbCoder::xScanLumaIntra16x16(MbDataAccess& rcMbDataAccess, const MbTransf
     if(uiStart == 0 && uiStop != 0)
     {
         //UvlcWriter::residualBlock
-        //保存宏块的残差信息到TraceEncoder_DQId000.txt
+        //直流分量DC, 保存宏块的残差信息到TraceEncoder_DQId000.txt
         m_pcMbSymbolWriteIf->residualBlock(rcMbDataAccess, B4x4Idx(0), LUMA_I16_DC, uiStart, uiStop);
     }
     ROFRS(bAC && uiStop > 1, Err::m_nOK);
@@ -799,6 +799,7 @@ ErrVal MbCoder::xScanLumaIntra16x16(MbDataAccess& rcMbDataAccess, const MbTransf
     //S4x4Idx.isLegal()为16
     for(S4x4Idx cIdx; cIdx.isLegal(); cIdx++)
     {
+        //交流分量AC
         m_pcMbSymbolWriteIf->residualBlock(rcMbDataAccess, cIdx, LUMA_I16_AC, uiStart, uiStop);
     }
 
@@ -811,14 +812,14 @@ ErrVal MbCoder::xScanLumaBlock(MbDataAccess& rcMbDataAccess, const MbTransformCo
     return Err::m_nOK;
 }
 
-
+//Chroma, DC直流
 ErrVal MbCoder::xScanChromaDc(MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiStart, UInt uiStop)
 {
     m_pcMbSymbolWriteIf->residualBlock(rcMbDataAccess, CIdx(0), CHROMA_DC, uiStart, uiStop);
     m_pcMbSymbolWriteIf->residualBlock(rcMbDataAccess, CIdx(4), CHROMA_DC, uiStart, uiStop);
     return Err::m_nOK;
 }
-
+//ChromaIdx, U分量AC交流
 ErrVal MbCoder::xScanChromaAcU(MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiStart, UInt uiStop)
 {
     m_pcMbSymbolWriteIf->residualBlock(rcMbDataAccess, CIdx(0), CHROMA_AC, uiStart, uiStop);
@@ -827,7 +828,7 @@ ErrVal MbCoder::xScanChromaAcU(MbDataAccess& rcMbDataAccess, const MbTransformCo
     m_pcMbSymbolWriteIf->residualBlock(rcMbDataAccess, CIdx(3), CHROMA_AC, uiStart, uiStop);
     return Err::m_nOK;
 }
-
+//Chroma, U分量AC交流
 ErrVal MbCoder::xScanChromaAcV(MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiStart, UInt uiStop)
 {
     m_pcMbSymbolWriteIf->residualBlock(rcMbDataAccess, CIdx(4), CHROMA_AC, uiStart, uiStop);
@@ -837,21 +838,33 @@ ErrVal MbCoder::xScanChromaAcV(MbDataAccess& rcMbDataAccess, const MbTransformCo
     return Err::m_nOK;
 }
 
+///遍历Chroma块
 ErrVal MbCoder::xScanChromaBlocks(MbDataAccess& rcMbDataAccess, const MbTransformCoeffs& rcTCoeff, UInt uiChromCbp, UInt uiStart, UInt uiStop)
 {
     ROTRS(1 > uiChromCbp, Err::m_nOK);
 
     if(uiStart == 0)
     {
-        xScanChromaDc (rcMbDataAccess, rcTCoeff, uiStart, uiStop);
+        //DC分量
+        xScanChromaDc (rcMbDataAccess,
+                       rcTCoeff,
+                       uiStart,
+                       uiStop);
     }
 
     ROTRS(2 > uiChromCbp, Err::m_nOK);
 
     if(uiStop > 1)
     {
-        xScanChromaAcU(rcMbDataAccess, rcTCoeff, uiStart, uiStop);
-        xScanChromaAcV(rcMbDataAccess, rcTCoeff, uiStart, uiStop);
+        //AC分量
+        xScanChromaAcU(rcMbDataAccess,
+                       rcTCoeff,
+                       uiStart,
+                       uiStop);
+        xScanChromaAcV(rcMbDataAccess,
+                       rcTCoeff,
+                       uiStart,
+                       uiStop);
     }
     return Err::m_nOK;
 }

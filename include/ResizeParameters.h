@@ -28,13 +28,13 @@ class ResizeParameters;
 
 __inline Int CeilLog2(Int i)
 {
-  Int s = 0; i--;
-  while(i > 0)
-  {
-    s++;
-    i >>= 1;
-  }
-  return s;
+    Int s = 0; i--;
+    while(i > 0)
+    {
+        s++;
+        i >>= 1;
+    }
+    return s;
 }
 
 
@@ -69,33 +69,33 @@ public:
 class ResizeParameters 
 {
 public:
-    ResizeParameters()
-      : m_iExtendedSpatialScalability (ESS_NONE)
-      , m_iLevelIdc                   (0)
-      , m_bFrameMbsOnlyFlag           (true)
-      , m_bFieldPicFlag               (false)
-      , m_bBotFieldFlag               (false)
-      , m_bIsMbAffFrame               (false)
-      , m_iFrameWidth                 (0)
-      , m_iFrameHeight                (0)
-      , m_iWidthInSamples             (0)
-      , m_iHeightInSamples            (0)
-      , m_iChromaPhaseX               (0)
-      , m_iChromaPhaseY               (0)
-      , m_iScaledRefFrmWidth          (0)
-      , m_iScaledRefFrmHeight         (0)
-      , m_iLeftFrmOffset              (0)
-      , m_iTopFrmOffset               (0)
-      , m_iRefLayerChromaPhaseX       (0)
-      , m_iRefLayerChromaPhaseY       (0)
-      , m_bRefLayerFrameMbsOnlyFlag   (true)
-      , m_bRefLayerFieldPicFlag       (false)
-      , m_bRefLayerBotFieldFlag       (false)
-      , m_bRefLayerIsMbAffFrame       (false)
-      , m_iRefLayerFrmWidth           (0)
-      , m_iRefLayerFrmHeight          (0)
-      , m_iRefLayerWidthInSamples     (0)
-      , m_iRefLayerHeightInSamples    (0)
+    ResizeParameters() :
+        m_iExtendedSpatialScalability (ESS_NONE),
+        m_iLevelIdc                   (0),
+        m_bFrameMbsOnlyFlag           (true),
+        m_bFieldPicFlag               (false),
+        m_bBotFieldFlag               (false),
+        m_bIsMbAffFrame               (false),
+        m_iFrameWidth                 (0),
+        m_iFrameHeight                (0),
+        m_iWidthInSamples             (0),
+        m_iHeightInSamples            (0),
+        m_iChromaPhaseX               (0),
+        m_iChromaPhaseY               (0),
+        m_iScaledRefFrmWidth          (0),
+        m_iScaledRefFrmHeight         (0),
+        m_iLeftFrmOffset              (0),
+        m_iTopFrmOffset               (0),
+        m_iRefLayerChromaPhaseX       (0),
+        m_iRefLayerChromaPhaseY       (0),
+        m_bRefLayerFrameMbsOnlyFlag   (true) ,
+        m_bRefLayerFieldPicFlag       (false),
+        m_bRefLayerBotFieldFlag       (false),
+        m_bRefLayerIsMbAffFrame       (false),
+        m_iRefLayerFrmWidth           (0),
+        m_iRefLayerFrmHeight          (0),
+        m_iRefLayerWidthInSamples     (0),
+        m_iRefLayerHeightInSamples    (0)
     { 
     }
 
@@ -119,24 +119,24 @@ public:
     }
     Bool  getCroppingFlag() const
     {
-        ROTRS(m_iExtendedSpatialScalability == ESS_PICT,   true);
-        ROFRS(m_iLeftFrmOffset == 0,                       true);
-        ROFRS(m_iTopFrmOffset  == 0,                       true);
-        ROFRS(m_iFrameWidth    == m_iScaledRefFrmWidth,    true);
-        ROFRS(m_iFrameHeight   == m_iScaledRefFrmHeight,   true);
+        ROTRS(m_iExtendedSpatialScalability == ESS_PICT, true);
+        ROFRS(m_iLeftFrmOffset == 0,                     true);
+        ROFRS(m_iTopFrmOffset  == 0,                     true);
+        ROFRS(m_iFrameWidth    == m_iScaledRefFrmWidth,  true);
+        ROFRS(m_iFrameHeight   == m_iScaledRefFrmHeight, true);
         return false;
     }
     Bool  getSpatialResolutionChangeFlag() const
     {
-        ROTRS(m_iExtendedSpatialScalability == ESS_PICT,                                     true);
-        ROFRS(m_bFieldPicFlag         == m_bRefLayerFieldPicFlag,                            true);
-        ROFRS(m_bIsMbAffFrame         == m_bRefLayerIsMbAffFrame,                            true);
-        ROFRS((m_iLeftFrmOffset %                                            16 ) == 0,      true);
-        ROFRS((m_iTopFrmOffset  % (m_bFieldPicFlag || m_bIsMbAffFrame ? 32 : 16)) == 0,      true);
-        ROFRS(m_iRefLayerFrmWidth     == m_iScaledRefFrmWidth,                               true);
-        ROFRS(m_iRefLayerFrmHeight    == m_iScaledRefFrmHeight,                              true);
-        ROFRS(m_iRefLayerChromaPhaseX == m_iChromaPhaseX,                                    true);
-        ROFRS(m_iRefLayerChromaPhaseY == m_iChromaPhaseY,                                    true);
+        ROTRS(m_iExtendedSpatialScalability == ESS_PICT,                                true);
+        ROFRS(m_bFieldPicFlag         == m_bRefLayerFieldPicFlag,                       true);
+        ROFRS(m_bIsMbAffFrame         == m_bRefLayerIsMbAffFrame,                       true);
+        ROFRS((m_iLeftFrmOffset %                                            16 ) == 0, true);
+        ROFRS((m_iTopFrmOffset  % (m_bFieldPicFlag || m_bIsMbAffFrame ? 32 : 16)) == 0, true);
+        ROFRS(m_iRefLayerFrmWidth     == m_iScaledRefFrmWidth,                          true);
+        ROFRS(m_iRefLayerFrmHeight    == m_iScaledRefFrmHeight,                         true);
+        ROFRS(m_iRefLayerChromaPhaseX == m_iChromaPhaseX,                               true);
+        ROFRS(m_iRefLayerChromaPhaseY == m_iChromaPhaseY,                               true);
         return false;
     }
     Bool  getRestrictedSpatialResolutionChangeFlag() const

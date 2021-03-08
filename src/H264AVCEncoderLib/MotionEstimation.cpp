@@ -12,12 +12,12 @@ namespace JSVM {
 
 
 MotionEstimation::MotionEstimation() :
-  m_pcQuarterPelFilter(NULL),
-  m_pcXDistortion(NULL),
-  m_iMaxLogStep(0),
-  m_pcMvSpiralSearch(NULL),
-  m_uiSpiralSearchEntries(0)
-  ,m_bELWithBLMv(false)
+    m_pcQuarterPelFilter(NULL),
+    m_pcXDistortion(NULL),
+    m_iMaxLogStep(0),
+    m_pcMvSpiralSearch(NULL),
+    m_uiSpiralSearchEntries(0),
+    m_bELWithBLMv(false)
 {
 }
 
@@ -29,17 +29,17 @@ MotionEstimation::~MotionEstimation()
 
 ErrVal MotionEstimation::destroy()
 {
-  delete this;
-  return Err::m_nOK;
+    delete this;
+    return Err::m_nOK;
 }
 
 
 ErrVal MotionEstimation::init(XDistortion*      pcXDistortion,
-                               CodingParameter*  pcCodingParameter,
-                               RateDistortionIf* pcRateDistortionIf,
-                               QuarterPelFilter* pcQuarterPelFilter,
-                               Transform*        pcTransform,
-                               SampleWeighting*  pcSampleWeighting)
+                              CodingParameter*  pcCodingParameter,
+                              RateDistortionIf* pcRateDistortionIf,
+                              QuarterPelFilter* pcQuarterPelFilter,
+                              Transform*        pcTransform,
+                              SampleWeighting*  pcSampleWeighting)
 {
     MotionCompensation::init(pcQuarterPelFilter, pcTransform, pcSampleWeighting);
     ROT(NULL == pcXDistortion);
@@ -68,7 +68,7 @@ ErrVal MotionEstimation::init(XDistortion*      pcXDistortion,
 
     UInt uiSize = gMax(uiSubPelSearchEntries, m_uiSpiralSearchEntries);
 
-    m_pcMvSpiralSearch = new Mv [ uiSize*uiSize ];
+    m_pcMvSpiralSearch = new Mv [uiSize*uiSize];
     m_uiSpiralSearchEntries *= m_uiSpiralSearchEntries;
 
     ROT(NULL == m_pcMvSpiralSearch);
@@ -258,9 +258,11 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
         m_cParams.setFullPelDFunc(DF_SAD); // set to normal SAD
     }
     // <<< heiko.schwarz@hhi.fhg.de (fix for uninitialized memory with YUV_SAD and bi-directional search)
-    xSetMEPars    (2,(1 != m_cParams.getFullPelDFunc()));
-    //设predict值
+    xSetMEPars (2,(1 != m_cParams.getFullPelDFunc()));
+
+    //(唯一一处调用) 设predict值
     xSetPredictor (rcMvPred);
+
     m_pcXDistortion ->getDistStruct(uiMode, m_cParams.getFullPelDFunc(), false, m_cXDSS);
     m_cXDSS.pYOrg   = pcWeightedYuvBuffer->getLumBlk ();
     m_cXDSS.pUOrg   = pcWeightedYuvBuffer->getCbBlk ();
@@ -314,7 +316,11 @@ ErrVal MotionEstimation::estimateBlockWithStart (const MbDataAccess&  rcMbDataAc
             m_acMvCandList.push_back(rcMvPred);
             rcMbDataAccess.addMvPredictors(m_acMvCandList);
             //进行TZ搜索
-            xTZSearch(pcRefPelData[0], cMv, uiMinSAD, m_bELWithBLMv);
+            xTZSearch(pcRefPelData[0],
+                      cMv,
+                      uiMinSAD,
+                      m_bELWithBLMv  //false
+                      /*defalut: 0*/);
           }
           break;
         default:
@@ -371,7 +377,10 @@ ErrVal MotionEstimation::initMb (UInt uiMbPosY, UInt uiMbPosX, MbDataAccess& rcM
 }
 
 
-Void MotionEstimation::xPelBlockSearch (YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD, UInt uiSearchRange)
+Void MotionEstimation::xPelBlockSearch (YuvPicBuffer *pcPelData,
+                                        Mv& rcMv,
+                                        UInt& ruiSAD,
+                                        UInt uiSearchRange)
 {
     if(!uiSearchRange)
     {
@@ -492,7 +501,12 @@ Void MotionEstimation::xPelSpiralSearch (YuvPicBuffer *pcPelData, Mv& rcMv, UInt
 
 
 
-Void MotionEstimation::xPelLogSearch(YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD, Bool bFme, UInt uiStep, UInt uiSearchRange)
+Void MotionEstimation::xPelLogSearch(YuvPicBuffer *pcPelData,
+                                     Mv& rcMv,
+                                     UInt& ruiSAD,
+                                     Bool bFme,
+                                     UInt uiStep,
+                                     UInt uiSearchRange)
 {
     if(!uiSearchRange)
     {
@@ -908,8 +922,11 @@ __inline Void MotionEstimation::xTZ2PointSearch(IntTZSearchStrukt& rcStrukt,
     } // switch(rcStrukt.ucPointNr)
 }
 
-__inline Void MotionEstimation::xTZ8PointSquareSearch(IntTZSearchStrukt& rcStrukt, SearchRect rcSearchRect,
-                                                       const Int iStartX, const Int iStartY, const Int iDist)
+__inline Void MotionEstimation::xTZ8PointSquareSearch(IntTZSearchStrukt& rcStrukt,
+                                                      SearchRect rcSearchRect,
+                                                      const Int iStartX,
+                                                      const Int iStartY,
+                                                      const Int iDist)
 {   // 8 point search,                   //   1 2 3
     // search around the start point     //   4 0 5
     // with the required  distance       //   6 7 8
@@ -1132,7 +1149,11 @@ __inline Void MotionEstimation::xTZ8PointDiamondSearch(IntTZSearchStrukt& rcStru
 }
 
 //TZSearch模式
-Void MotionEstimation::xTZSearch(YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD, Bool bEL, Int iSearchRange)
+Void MotionEstimation::xTZSearch(YuvPicBuffer *pcPelData,
+                                 Mv& rcMv,
+                                 UInt& ruiSAD,
+                                 Bool bEL,          //false
+                                 Int iSearchRange)  //default:0
 {
     TZ_SEARCH_CONFIGURATION
 
@@ -1140,9 +1161,13 @@ Void MotionEstimation::xTZSearch(YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD
     if(!iSearchRange)
     {
         if(bEL)
+        {
             iSearchRange = m_cParams.getELSearchRange();
+        }
         else
+        {
             iSearchRange = m_cParams.getSearchRange();
+        }
     }
     rcMv.limitComponents(MotionCompensation::m_cMin, MotionCompensation::m_cMax);
     SearchRect cSearchRect;
@@ -1184,6 +1209,7 @@ Void MotionEstimation::xTZSearch(YuvPicBuffer *pcPelData, Mv& rcMv, UInt& ruiSAD
         xTZCheckPoint(cStrukt, 0, 0, 0, 0);
     }
 
+    //!开始Search
     // start search                     // ucPointNr
     Int  iDist       = 0;               //   1 2 3
     Int  iStartX     = cStrukt.iBestX;  //   4 0 5

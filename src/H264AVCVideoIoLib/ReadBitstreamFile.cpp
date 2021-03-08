@@ -1,4 +1,3 @@
-
 #include "ReadBitstreamFile.h"
 #include <cstdio>
 

@@ -12,10 +12,12 @@ TEMPLATE = app
 DEFINES += \
     _DEBUG \
      NO_DEBUG \
+#RecPic
+    WITH_RECPIC \
+#打印Pruefpunkt
 #    PRUEF_PUNKT \
-#   MSYS_WIN32 \
-     MSYS_LINUX \
-     MSYS_UNIX_LARGEFILE \
+    MSYS_LINUX \
+    MSYS_UNIX_LARGEFILE \
 #    PROPOSED_DEBLOCKING_APRIL2010 \
 #追踪
     ENCODER_TRACE \

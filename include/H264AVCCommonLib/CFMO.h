@@ -37,14 +37,14 @@ public:
     unsigned int* slice_group_id_map;
 
 public:
-    FMO_PPS()
-    :num_slice_group_map_units_minus1(0)
-    ,num_slice_groups_minus1(0)
-    ,slice_group_map_type(0)
-    ,slice_group_change_direction_flag(0)
-    ,slice_group_change_rate_minus1(0)
-    ,slice_group_id_map_size(0)
-    ,slice_group_id_map(0)
+    FMO_PPS() :
+        num_slice_group_map_units_minus1(0),
+        num_slice_groups_minus1(0),
+        slice_group_map_type(0),
+        slice_group_change_direction_flag(0),
+        slice_group_change_rate_minus1(0),
+        slice_group_id_map_size(0),
+        slice_group_id_map(0)
     {}
 
     ~FMO_PPS()

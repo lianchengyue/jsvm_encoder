@@ -9,15 +9,15 @@
 namespace JSVM {
 
 
-VUI::BitstreamRestriction::BitstreamRestriction(SequenceParameterSet* pcSPS):
-  m_bBitstreamRestrictionFlag           (false),
-  m_bMotionVectorsOverPicBoundariesFlag (true),
-  m_uiMaxBytesPerPicDenom               (0),
-  m_uiMaxBitsPerMbDenom                 (1),
-  m_uiLog2MaxMvLengthHorizontal         (16),
-  m_uiLog2MaxMvLengthVertical           (16),
-  m_uiMaxDecFrameReordering             (pcSPS->getMaxDPBSize()),
-  m_uiMaxDecFrameBuffering              (pcSPS->getMaxDPBSize())
+VUI::BitstreamRestriction::BitstreamRestriction(SequenceParameterSet* pcSPS) :
+    m_bBitstreamRestrictionFlag           (false),
+    m_bMotionVectorsOverPicBoundariesFlag (true),
+    m_uiMaxBytesPerPicDenom               (0),
+    m_uiMaxBitsPerMbDenom                 (1),
+    m_uiLog2MaxMvLengthHorizontal         (16),
+    m_uiLog2MaxMvLengthVertical           (16),
+    m_uiMaxDecFrameReordering             (pcSPS->getMaxDPBSize()),
+    m_uiMaxDecFrameBuffering              (pcSPS->getMaxDPBSize())
 {
 }
 

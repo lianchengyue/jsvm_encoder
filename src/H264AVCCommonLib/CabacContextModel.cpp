@@ -48,8 +48,8 @@ const Double CabacContextModel::m_afEntropy[128] =
 
 
 CabacContextModel::CabacContextModel() :
-  m_ucState(0)
-, m_uiCount(0)
+    m_ucState(0),
+    m_uiCount(0)
 {
 }
 

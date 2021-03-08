@@ -688,14 +688,14 @@ ErrVal SliceEncoder::encodeSlice (SliceHeader&  rcSliceHeader,
 
         ///对一个MB进行编码
         m_pcMbEncoder->encodeMacroblock (*pcMbDataAccess,   //初始化后的一个MB
-                                          pcFrame,          //一帧m_pcReconstructedFrame图像
-                                          rcRefListStruct,  //参考帧列表List0, List1
-                                          uiMaxMvPerMb,     //8
-                                          bMCBlks8x8Disable,//MC: false
-                                          m_pcCodingParameter->getBiPred8x8Disable() > 0, //禁用比8×8更小的块
-                                          m_pcCodingParameter->getMotionVectorSearchParams().getNumMaxIter(),     //4
-                                          m_pcCodingParameter->getMotionVectorSearchParams().getIterSearchRange(),//4
-                                          dlambda);
+                                         pcFrame,          //一帧m_pcReconstructedFrame图像
+                                         rcRefListStruct,  //参考帧列表List0, List1
+                                         uiMaxMvPerMb,     //8
+                                         bMCBlks8x8Disable,//MC: false
+                                         m_pcCodingParameter->getBiPred8x8Disable() > 0, //禁用比8×8更小的块
+                                         m_pcCodingParameter->getMotionVectorSearchParams().getNumMaxIter(),     //4
+                                         m_pcCodingParameter->getMotionVectorSearchParams().getIterSearchRange(),//4
+                                         dlambda);
         //write, 输出结果
         m_pcMbCoder->encode (*pcMbDataAccess,
                              NULL,

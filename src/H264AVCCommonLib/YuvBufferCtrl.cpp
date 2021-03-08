@@ -4,9 +4,9 @@
 namespace JSVM {
 
 YuvBufferCtrl::YuvBufferCtrl() :
-  m_uiChromaSize  (0),
-  m_iResolution   (0),
-  m_bInitDone     (false)
+    m_uiChromaSize  (0),
+    m_iResolution   (0),
+    m_bInitDone     (false)
 {
 }
 

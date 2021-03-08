@@ -15,37 +15,37 @@
 namespace JSVM {
 
 
-PicEncoder::PicEncoder()
-: m_bInit                   (false)
-, m_bInitParameterSets      (false)
-, m_pcSequenceStructure     (NULL)
-, m_pcInputPicBuffer        (NULL)
-, m_pcSPS                   (NULL)
-, m_pcPPS                   (NULL)
-, m_pcRecPicBuffer          (NULL)
-, m_pcCodingParameter       (NULL)
-, m_pcControlMng            (NULL)
-, m_pcSliceEncoder          (NULL)
-, m_pcLoopFilter            (NULL)
-, m_pcPocCalculator         (NULL)
-, m_pcNalUnitEncoder        (NULL)
-, m_pcYuvBufferCtrlFullPel  (NULL)
-, m_pcYuvBufferCtrlHalfPel  (NULL)
-, m_pcQuarterPelFilter      (NULL)
-, m_pcMotionEstimation      (NULL)
-, m_uiFrameWidthInMb        (0)
-, m_uiFrameHeightInMb       (0)
-, m_uiMbNumber              (0)
-, m_uiFrameNum              (0)
-, m_uiIdrPicId              (0)
-, m_uiCodedFrames           (0)
-, m_dSumYPSNR               (0.0)
-, m_dSumUPSNR               (0.0)
-, m_dSumVPSNR               (0.0)
-, m_uiWrittenBytes          (0)
-, m_uiWriteBufferSize       (0)
-, m_pucWriteBuffer          (NULL)
-, m_bTraceEnable            (true)
+PicEncoder::PicEncoder() :
+    m_bInit                   (false),
+    m_bInitParameterSets      (false),
+    m_pcSequenceStructure     (NULL),
+    m_pcInputPicBuffer        (NULL),
+    m_pcSPS                   (NULL),
+    m_pcPPS                   (NULL),
+    m_pcRecPicBuffer          (NULL),
+    m_pcCodingParameter       (NULL),
+    m_pcControlMng            (NULL),
+    m_pcSliceEncoder          (NULL),
+    m_pcLoopFilter            (NULL),
+    m_pcPocCalculator         (NULL),
+    m_pcNalUnitEncoder        (NULL),
+    m_pcYuvBufferCtrlFullPel  (NULL),
+    m_pcYuvBufferCtrlHalfPel  (NULL),
+    m_pcQuarterPelFilter      (NULL),
+    m_pcMotionEstimation      (NULL),
+    m_uiFrameWidthInMb        (0),
+    m_uiFrameHeightInMb       (0),
+    m_uiMbNumber              (0),
+    m_uiFrameNum              (0),
+    m_uiIdrPicId              (0),
+    m_uiCodedFrames           (0),
+    m_dSumYPSNR               (0.0),
+    m_dSumUPSNR               (0.0),
+    m_dSumVPSNR               (0.0),
+    m_uiWrittenBytes          (0),
+    m_uiWriteBufferSize       (0),
+    m_pucWriteBuffer          (NULL),
+    m_bTraceEnable            (true)
 {
 }
 
@@ -166,9 +166,13 @@ ErrVal PicEncoder::uninit()
     return Err::m_nOK;
 }
 
-
+///AVC模式专用
+//对NAL的三连:
+//m_pcNalUnitEncoder->initNalUnit ()
+//m_pcNalUnitEncoder->write       ()
+//m_pcNalUnitEncoder->closeNalUnit()
 ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAccessor,
-                                              Bool&               rbMoreSets)
+                                             Bool&  rbMoreSets)
 {
     if(!m_pcSPS)
     {
@@ -177,8 +181,10 @@ ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAcc
 
         //===== write SPS =====
         UInt uiSPSBits = 0;
+        //! flq, pcExtBinDataAccessor: 在这里对bin进行初始化
         m_pcNalUnitEncoder->initNalUnit (pcExtBinDataAccessor);
-        ///写SPS到 TraceEncoder_DQId000.txt
+
+        ///写SPS到 TraceEncoder_DQId000.txt + nal_ref_idc赋值 + nal_unit_type赋值
         m_pcNalUnitEncoder->write (*m_pcSPS);
         m_pcNalUnitEncoder->closeNalUnit (uiSPSBits);
         m_uiWrittenBytes += ((uiSPSBits >> 3) + 4);
@@ -191,7 +197,8 @@ ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAcc
         //===== write PPS =====
         UInt uiPPSBits = 0;
         m_pcNalUnitEncoder->initNalUnit(pcExtBinDataAccessor);
-        ///写PPS到 TraceEncoder_DQId000.txt
+
+        ///写PPS到 TraceEncoder_DQId000.txt + nal_ref_idc赋值 + nal_unit_type赋值
         m_pcNalUnitEncoder->write (*m_pcPPS);
         m_pcNalUnitEncoder->closeNalUnit (uiPPSBits);
         m_uiWrittenBytes += ((uiPPSBits >> 3) + 4);
@@ -207,10 +214,10 @@ ErrVal PicEncoder::writeAndInitParameterSets(ExtBinDataAccessor* pcExtBinDataAcc
 }
 
 
-ErrVal PicEncoder::process (PicBuffer*  pcInputPicBuffer,
+ErrVal PicEncoder::process (PicBuffer*  pcInputPicBuffer,  //读取到的yuv
                             PicBufferList&  rcOutputList,
                             PicBufferList&  rcUnusedList,
-                            ExtBinDataAccessorList&  rcExtBinDataAccessorList)
+                            ExtBinDataAccessorList&  rcExtBinDataAccessorList)  //输出的编码后的h264 bin
 {
     ROF(m_bInitParameterSets);
 
@@ -251,8 +258,14 @@ ErrVal PicEncoder::process (PicBuffer*  pcInputPicBuffer,
         /***初始化slice header***/
         /***********************/
         xInitSliceHeader (pcSliceHeader, m_cFrameSpecification, dLambda);
-        //
-        m_pcRecPicBuffer->initCurrRecPicBufUnit(pcRecPicBufUnit, pcOrigPicBuffer, pcSliceHeader, rcOutputList, rcUnusedList);
+        //Rec到这里rcOutputList
+#ifdef WITH_RECPIC
+        m_pcRecPicBuffer->initCurrRecPicBufUnit(pcRecPicBufUnit,
+                                                pcOrigPicBuffer,
+                                                pcSliceHeader,
+                                                rcOutputList,
+                                                rcUnusedList);
+#endif
 
 
 
@@ -261,14 +274,20 @@ ErrVal PicEncoder::process (PicBuffer*  pcInputPicBuffer,
         /***对一帧图像进行encode**/
         /***********************/
         //----- encoding -----
-        xEncodePicture (rcExtBinDataAccessorList, *pcRecPicBufUnit, *pcSliceHeader, dLambda, uiPictureBits);
+        xEncodePicture (rcExtBinDataAccessorList,
+                        *pcRecPicBufUnit,
+                        *pcSliceHeader,
+                        dLambda,
+                        uiPictureBits);
         m_uiWrittenBytes += (uiPictureBits >> 3);
 
 
 
         ///Step 5: 保存输出后的h264文件
         ///----- store picture -----
+#ifdef WITH_RECPIC
         m_pcRecPicBuffer->store (pcRecPicBufUnit, pcSliceHeader, rcOutputList, rcUnusedList);
+#endif
 
         //----- reset -----
         delete pcInputAccessUnit;
@@ -501,15 +520,15 @@ ErrVal PicEncoder::xInitSliceHeader (SliceHeader*&  rpcSliceHeader,
     //Reference List0 与 List1
     //===== reference picture list ===== (init with default data, later updated)
     rpcSliceHeader->setNumRefIdxActiveOverrideFlag (false);
-    rpcSliceHeader->setNumRefIdxActive (LIST_0, uiSizeL0);
-    rpcSliceHeader->setNumRefIdxActive (LIST_1, uiSizeL1);
+    rpcSliceHeader->setNumRefIdxActive (LIST_0, uiSizeL0);  //uiSizeL0: 1
+    rpcSliceHeader->setNumRefIdxActive (LIST_1, uiSizeL1);  //uiSizeL1: 0
 
     //===== set deblocking filter parameters =====
     if(rpcSliceHeader->getPPS().getDeblockingFilterParametersPresentFlag())
     {
-        rpcSliceHeader->getDeblockingFilterParameter().setDisableDeblockingFilterIdc (m_pcCodingParameter->getLoopFilterParams().getFilterIdc   ());
-        rpcSliceHeader->getDeblockingFilterParameter().setSliceAlphaC0Offset (2*m_pcCodingParameter->getLoopFilterParams().getAlphaOffset ());
-        rpcSliceHeader->getDeblockingFilterParameter().setSliceBetaOffset (2*m_pcCodingParameter->getLoopFilterParams().getBetaOffset  ());
+        rpcSliceHeader->getDeblockingFilterParameter().setDisableDeblockingFilterIdc(  m_pcCodingParameter->getLoopFilterParams().getFilterIdc   ());
+        rpcSliceHeader->getDeblockingFilterParameter().setSliceAlphaC0Offset        (2*m_pcCodingParameter->getLoopFilterParams().getAlphaOffset ());
+        rpcSliceHeader->getDeblockingFilterParameter().setSliceBetaOffset           (2*m_pcCodingParameter->getLoopFilterParams().getBetaOffset  ());
     }
 
     //===== set picture order count =====
@@ -517,7 +536,7 @@ ErrVal PicEncoder::xInitSliceHeader (SliceHeader*&  rpcSliceHeader,
 
     //===== set MMCO commands =====
     //MM: Marking MODE
-    //MMCO  内存管理控制操作
+    //MMCO  内存管理控制操作 Marking MODE Control Operation
     if(rcFrameSpec.getMmcoBuf())
     {
         rpcSliceHeader->getDecRefPicMarking().copy(*rcFrameSpec.getMmcoBuf());
@@ -622,6 +641,10 @@ ErrVal PicEncoder::xAppendNewExtBinDataAccessor (ExtBinDataAccessorList& rcExtBi
 
 
 //编码一帧NV21图像
+//对NAL的三连:
+//m_pcNalUnitEncoder->initNalUnit ()
+//m_pcNalUnitEncoder->write       ()
+//m_pcNalUnitEncoder->closeNalUnit()
 ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorList,
                                    RecPicBufUnit&  rcRecPicBufUnit,
                                    SliceHeader&    rcSliceHeader,
@@ -694,6 +717,7 @@ ErrVal PicEncoder::xEncodePicture (ExtBinDataAccessorList& rcExtBinDataAccessorL
 
         //----- close NAL unit -----
         m_pcNalUnitEncoder->closeNalUnit(uiBitsSlice);
+        //???
         xAppendNewExtBinDataAccessor(rcExtBinDataAccessorList, &m_cExtBinDataAccessor);
         uiBitsSlice += 4*8;
         uiBits += uiBitsSlice;
@@ -749,8 +773,10 @@ ErrVal PicEncoder::xStartPicture (RecPicBufUnit& rcRecPicBufUnit,
     }
 
     //===== reset macroblock data =====
+#ifdef WITH_RECPIC
     rcRecPicBufUnit.getMbDataCtrl()->reset();
     rcRecPicBufUnit.getMbDataCtrl()->clear();
+#endif
 
     return Err::m_nOK;
 }
@@ -790,8 +816,8 @@ ErrVal PicEncoder::xFinishPicture (RecPicBufUnit&  rcRecPicBufUnit,
     }
 
     //===== deblocking =====
-    ///~环路滤波
-    ///m_pcLoopFilter->process (rcSliceHeader, rcRecPicBufUnit.getRecFrame(), NULL, rcRecPicBufUnit.getMbDataCtrl(), 0, false);
+    ///TQQ, 环路滤波
+    m_pcLoopFilter->process (rcSliceHeader, rcRecPicBufUnit.getRecFrame(), NULL, rcRecPicBufUnit.getMbDataCtrl(), 0, false);
 
     //===== get PSNR =====
     Double dPSNR[3];

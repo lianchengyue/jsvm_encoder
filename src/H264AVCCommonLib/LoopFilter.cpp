@@ -87,9 +87,9 @@ const LoopFilter::AlphaClip LoopFilter::g_acAlphaClip[52] =
 
 
 
-LoopFilter::LoopFilter()
-: m_pcControlMngIf        (0)
-, m_pcReconstructionBypass(0)
+LoopFilter::LoopFilter() :
+    m_pcControlMngIf        (0),
+    m_pcReconstructionBypass(0)
 {
 }
 
@@ -111,8 +111,8 @@ ErrVal LoopFilter::destroy()
 }
 
 ErrVal LoopFilter::init(ControlMngIf*   pcControlMngIf,
-                  ReconstructionBypass* pcReconstructionBypass,
-                  Bool                  bEncoder)
+                        ReconstructionBypass* pcReconstructionBypass,
+                        Bool                  bEncoder)
 {
     ROF(pcControlMngIf);
     ROF(pcReconstructionBypass);
@@ -131,13 +131,13 @@ ErrVal LoopFilter::uninit()
 }
 
 
-ErrVal LoopFilter::process(SliceHeader&       rcSH,
-                     Frame*                   pcFrame,
-                     Frame*                   pcResidual,
-                     MbDataCtrl*              pcMbDataCtrl,
-                     const DBFilterParameter* pcInterLayerDBParameter,
-                     Bool                     bSpatialScalabilityFlag,
-                     const MbStatus*          apcMbStatus)
+ErrVal LoopFilter::process(SliceHeader&  rcSH,
+                           Frame*        pcFrame,
+                           Frame*        pcResidual,
+                           MbDataCtrl*   pcMbDataCtrl,
+                           const DBFilterParameter* pcInterLayerDBParameter,
+                           Bool             bSpatialScalabilityFlag,
+                           const MbStatus*  apcMbStatus)
 {
     ROF (m_pcControlMngIf);
     ROF (pcFrame);
@@ -155,19 +155,20 @@ ErrVal LoopFilter::process(SliceHeader&       rcSH,
 
     apcFrame[TOP_FIELD] = pcFrame->getPic(TOP_FIELD);
     apcFrame[BOT_FIELD] = pcFrame->getPic(BOT_FIELD);
-    apcFrame[FRAME    ] = pcFrame->getPic(FRAME   );
+    apcFrame[FRAME] = pcFrame->getPic(FRAME);
     if(pcResidual)
     {
         pcResidual->addFrameFieldBuffer();
         apcResidual [TOP_FIELD] = pcResidual->getPic(TOP_FIELD);
         apcResidual [BOT_FIELD] = pcResidual->getPic(BOT_FIELD);
-        apcResidual [FRAME    ] = pcResidual->getPic(FRAME   );
+        apcResidual [FRAME] = pcResidual->getPic(FRAME);
     }
 
 
     //===== filtering =====
     for(LFPass eLFPass = FIRST_PASS; eLFPass < TWO_PASSES; eLFPass = LFPass(eLFPass + 1))
     {
+        //rcSH.getMbInPic()个数: 8160
         for(UInt uiMbAddress = 0; uiMbAddress < rcSH.getMbInPic(); uiMbAddress++)
         {
             MbDataAccess* pcMbDataAccess = 0;
@@ -250,27 +251,37 @@ ErrVal LoopFilter::xFilterMb(const MbDataCtrl*        pcMbDataCtrl,
     m_bVerMixedMode   = (bFieldFlag != rcMbDataAccess.getMbDataLeft().getFieldFlag());
     if(bFieldFlag)
     {
-      m_bHorMixedMode = (bFieldFlag != rcMbDataAccess.getMbDataAboveAbove().getFieldFlag());
+        m_bHorMixedMode = (bFieldFlag != rcMbDataAccess.getMbDataAboveAbove().getFieldFlag());
     }
     else
     {
-      m_bHorMixedMode = (bFieldFlag != rcMbDataAccess.getMbDataAbove().getFieldFlag());
+        m_bHorMixedMode = (bFieldFlag != rcMbDataAccess.getMbDataAbove().getFieldFlag());
     }
 
     //===== determine boundary filter strength =====
-    m_bAddEdge        = true;
+    m_bAddEdge = true;
     if(m_bHorMixedMode && bCurrFrame)
     {
         for(B4x4Idx cIdx; cIdx.b4x4() < 4; cIdx++)
         {
-            m_aucBsHorTop[cIdx.x()] = xGetHorFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
+            m_aucBsHorTop[cIdx.x()] = xGetHorFilterStrength(rcMbDataAccess,
+                                                            cIdx,
+                                                            iFilterIdc,
+                                                            bInterLayerFlag,
+                                                            bSpatialScalableFlag,
+                                                            eLFPass);
         }
     }
     if(m_bVerMixedMode)
     {
         for(B4x4Idx cIdx; cIdx.b4x4() < 16; cIdx = B4x4Idx(cIdx + 4))
         {
-            m_aucBsVerBot[cIdx.y()] = xGetVerFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
+            m_aucBsVerBot[cIdx.y()] = xGetVerFilterStrength(rcMbDataAccess,
+                                                            cIdx,
+                                                            iFilterIdc,
+                                                            bInterLayerFlag,
+                                                            bSpatialScalableFlag,
+                                                            eLFPass);
         }
     }
     m_bAddEdge = false;
@@ -278,15 +289,25 @@ ErrVal LoopFilter::xFilterMb(const MbDataCtrl*        pcMbDataCtrl,
     {
         if(!b8x8 || ((cIdx.x() & 1) == 0))
         {
-            m_aaaucBs[VER][cIdx.x()][cIdx.y()]  = xGetVerFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
+            m_aaaucBs[VER][cIdx.x()][cIdx.y()] = xGetVerFilterStrength(rcMbDataAccess,
+                                                                       cIdx,
+                                                                       iFilterIdc,
+                                                                       bInterLayerFlag,
+                                                                       bSpatialScalableFlag,
+                                                                       eLFPass);
         }
         else
         {
-            m_aaaucBs[VER][cIdx.x()][cIdx.y()]  = 0;
+            m_aaaucBs[VER][cIdx.x()][cIdx.y()] = 0;
         }
         if(!b8x8 || ((cIdx.y() & 1) == 0))
         {
-            m_aaaucBs[HOR][cIdx.x()][cIdx.y()]  = xGetHorFilterStrength(rcMbDataAccess, cIdx, iFilterIdc, bInterLayerFlag, bSpatialScalableFlag, eLFPass);
+            m_aaaucBs[HOR][cIdx.x()][cIdx.y()] = xGetHorFilterStrength(rcMbDataAccess,
+                                                                       cIdx,
+                                                                       iFilterIdc,
+                                                                       bInterLayerFlag,
+                                                                       bSpatialScalableFlag,
+                                                                       eLFPass);
         }
         else
         {
@@ -296,11 +317,21 @@ ErrVal LoopFilter::xFilterMb(const MbDataCtrl*        pcMbDataCtrl,
 
     //===== filtering =====
     m_bHorMixedMode = m_bHorMixedMode && bCurrFrame;
-    xLumaVerFiltering(rcMbDataAccess, rcDFP, pcYuvBuffer);
-    xLumaHorFiltering(rcMbDataAccess, rcDFP, pcYuvBuffer);
+    xLumaVerFiltering(rcMbDataAccess,
+                      rcDFP,
+                      pcYuvBuffer);
+    xLumaHorFiltering(rcMbDataAccess,
+                      rcDFP,
+                      pcYuvBuffer);
+
     ROTRS (iFilterIdc > 3, Err::m_nOK);
-    xChromaVerFiltering(rcMbDataAccess, rcDFP, pcYuvBuffer);
-    xChromaHorFiltering(rcMbDataAccess, rcDFP, pcYuvBuffer);
+
+    xChromaVerFiltering(rcMbDataAccess,
+                        rcDFP,
+                        pcYuvBuffer);
+    xChromaHorFiltering(rcMbDataAccess,
+                        rcDFP,
+                        pcYuvBuffer);
     return Err::m_nOK;
 }
 

@@ -16,19 +16,17 @@ class RateDistortionIf;
 class CodingParameter;
 class QuarterPelFilter;
 
-
-class MotionEstimation
-: public MotionCompensation
-, public MotionEstimationCost
+///TQQ, 运动估计 与 运动补偿
+class MotionEstimation : public MotionCompensation, public MotionEstimationCost
 {
 public:
     class MEBiSearchParameters
     {
     public:
-      YuvMbBuffer*      pcAltRefPelData;    // the prediction signal for the opposite list (not weighted)
-      UInt              uiL1Search;         // 1 if current search is L1 search, else false
-      const Frame*      pcAltRefFrame;      // the reference frame of the opposite list
-      const PredWeight* apcWeight[2];       // { list 0 prediction weight, list 1 prediction weight }
+        YuvMbBuffer*      pcAltRefPelData;    // the prediction signal for the opposite list (not weighted)
+        UInt              uiL1Search;         // 1 if current search is L1 search, else false
+        const Frame*      pcAltRefFrame;      // the reference frame of the opposite list
+        const PredWeight* apcWeight[2];       // { list 0 prediction weight, list 1 prediction weight }
     };
 
 protected:

@@ -68,58 +68,58 @@ const SequenceParameterSet::LevelLimit SequenceParameterSet::m_aLevelLimit[52] =
 
 
 
-SequenceParameterSet::SequenceParameterSet  ()
-: m_eNalUnitType                            (NAL_UNIT_UNSPECIFIED_0)
-, m_uiDependencyId                          (0)
-, m_eProfileIdc                             (SCALABLE_HIGH_PROFILE)
-, m_bConstrainedSet0Flag                    (false)
-, m_bConstrainedSet1Flag                    (false)
-, m_bConstrainedSet2Flag                    (false)
-, m_bConstrainedSet3Flag                    (false)
-, m_uiLevelIdc                              (0)
-, m_uiSeqParameterSetId                     (MSYS_UINT_MAX)
-, m_uiChromaFormatIdc                       (1) //JVT-W046
-, m_bSeparateColourPlaneFlag                (false)
-, m_uiBitDepthLumaMinus8                    (0)
-, m_uiBitDepthChromaMinus8                  (0)
-, m_bTransformBypassFlag                    (false)
-, m_bSeqScalingMatrixPresentFlag            (false)
-, m_uiLog2MaxFrameNum                       (0)
-, m_uiPicOrderCntType                       (0)
-, m_uiLog2MaxPicOrderCntLsb                 (4)
-, m_bDeltaPicOrderAlwaysZeroFlag            (false)
-, m_iOffsetForNonRefPic                     (0)
-, m_iOffsetForTopToBottomField              (0)
-, m_uiNumRefFramesInPicOrderCntCycle        (0)
-, m_uiNumRefFrames                          (0)
-, m_bGapsInFrameNumValueAllowedFlag         (false)
-, m_uiFrameWidthInMbs                       (0)
-, m_uiFrameHeightInMbs                      (0)
-, m_bDirect8x8InferenceFlag                 (false)
-, m_uiExtendedSpatialScalability            (ESS_NONE) // TMM_ESS
-, m_uiChromaPhaseXPlus1                     (0) // TMM_ESS
-, m_uiChromaPhaseYPlus1                     (1)// TMM_ESS
-, m_uiBaseChromaPhaseXPlus1                 (0) //JVT-W046
-, m_uiBaseChromaPhaseYPlus1                 (1) //JVT-W046
-, m_bInterlayerDeblockingPresent            (0)
-, m_bFrameMbsOnlyFlag                       (true)
-, m_bMbAdaptiveFrameFieldFlag               (false)
-, m_bAVCRewriteFlag                         (false)   // V035
-, m_bAVCAdaptiveRewriteFlag                 (false)
-, m_bAVCHeaderRewriteFlag                   (false) //JVT-W046
+SequenceParameterSet::SequenceParameterSet  () :
+    m_eNalUnitType                            (NAL_UNIT_UNSPECIFIED_0),
+    m_uiDependencyId                          (0),
+    m_eProfileIdc                             (SCALABLE_HIGH_PROFILE),
+    m_bConstrainedSet0Flag                    (false),
+    m_bConstrainedSet1Flag                    (false),
+    m_bConstrainedSet2Flag                    (false),
+    m_bConstrainedSet3Flag                    (false),
+    m_uiLevelIdc                              (0),
+    m_uiSeqParameterSetId                     (MSYS_UINT_MAX),
+    m_uiChromaFormatIdc                       (1), //JVT-W046
+    m_bSeparateColourPlaneFlag                (false),
+    m_uiBitDepthLumaMinus8                    (0),
+    m_uiBitDepthChromaMinus8                  (0),
+    m_bTransformBypassFlag                    (false),
+    m_bSeqScalingMatrixPresentFlag            (false),
+    m_uiLog2MaxFrameNum                       (0),
+    m_uiPicOrderCntType                       (0),
+    m_uiLog2MaxPicOrderCntLsb                 (4),
+    m_bDeltaPicOrderAlwaysZeroFlag            (false),
+    m_iOffsetForNonRefPic                     (0),
+    m_iOffsetForTopToBottomField              (0),
+    m_uiNumRefFramesInPicOrderCntCycle        (0),
+    m_uiNumRefFrames                          (0),
+    m_bGapsInFrameNumValueAllowedFlag         (false),
+    m_uiFrameWidthInMbs                       (0),
+    m_uiFrameHeightInMbs                      (0),
+    m_bDirect8x8InferenceFlag                 (false),
+    m_uiExtendedSpatialScalability            (ESS_NONE), // TMM_ESS
+    m_uiChromaPhaseXPlus1                     (0), // TMM_ESS
+    m_uiChromaPhaseYPlus1                     (1),// TMM_ESS
+    m_uiBaseChromaPhaseXPlus1                 (0), //JVT-W046
+    m_uiBaseChromaPhaseYPlus1                 (1), //JVT-W046
+    m_bInterlayerDeblockingPresent            (0),
+    m_bFrameMbsOnlyFlag                       (true),
+    m_bMbAdaptiveFrameFieldFlag               (false),
+    m_bAVCRewriteFlag                         (false),   // V035
+    m_bAVCAdaptiveRewriteFlag                 (false),
+    m_bAVCHeaderRewriteFlag                   (false), //JVT-W046
 //SSPS {
-, m_bSVCVUIParametersPresentFlag            (false)
-, m_bAdditionalExtension2Flag               (false)
+    m_bSVCVUIParametersPresentFlag            (false),
+    m_bAdditionalExtension2Flag               (false),
 //SSPS }
-, m_uiFrameCropLeftOffset                   (0)
-, m_uiFrameCropRightOffset                  (0)
-, m_uiFrameCropTopOffset                    (0)
-, m_uiFrameCropBottomOffset                 (0)
+    m_uiFrameCropLeftOffset                   (0),
+    m_uiFrameCropRightOffset                  (0),
+    m_uiFrameCropTopOffset                    (0),
+    m_uiFrameCropBottomOffset                 (0)
 {
-  m_auiNumRefIdxUpdateActiveDefault[LIST_0]=1;// VW
-  m_auiNumRefIdxUpdateActiveDefault[LIST_1]=1;// VW
-  ::memset(m_uiMGSVect,           0x00, 16*sizeof(UInt));
-  m_uiMGSVect[0] = 16;
+    m_auiNumRefIdxUpdateActiveDefault[LIST_0]=1;// VW
+    m_auiNumRefIdxUpdateActiveDefault[LIST_1]=1;// VW
+    ::memset(m_uiMGSVect,           0x00, 16*sizeof(UInt));
+    m_uiMGSVect[0] = 16;
 }
 
 SequenceParameterSet::~SequenceParameterSet()

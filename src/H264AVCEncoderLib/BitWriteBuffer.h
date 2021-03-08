@@ -57,6 +57,7 @@ public:
     UInt getBitsWriten() { return m_uiBitsWritten; }
     //JVT-X046 }
 protected:
+    //交换大小端
     UInt  xSwap( UInt ul )
     {
         // heiko.schwarz@hhi.fhg.de: support for BSD systems as proposed by Steffen Kamp [kamp@ient.rwth-aachen.de]
@@ -76,13 +77,16 @@ protected:
 
 protected:
     UInt   m_uiDWordsLeft;
+    //已写的bit数
     UInt   m_uiBitsWritten;
     Int    m_iValidBits;
+    //<4字节时的内容
     UInt   m_ulCurrentBits;
+    //>4字节时的内容, 指向m_pucTempBuffer
     UInt*  m_pulStreamPacket;
 
 private:
-    UInt   m_uiInitPacketLength;
+    UInt   m_uiInitPacketLength;  //当前NAL的长度, 默认1000
     BitWriteBuffer * m_pcNextBitWriteBuffer;
     UChar *m_pucNextStreamPacket;
 };

@@ -215,7 +215,9 @@ ErrVal IntraPredictionSearch::predictSChromaBlock (YuvMbBuffer *pcYuvBuffer, UIn
     //0(DC)
     case 0:
       {
+        //cb分量
         xPred8x8IMode0DC (pucCb, iStride);
+        //cr分量
         xPred8x8IMode0DC (pucCr, iStride);
         rbValid = true;
         break;
@@ -265,9 +267,9 @@ ErrVal IntraPredictionSearch::predictSChromaBlock (YuvMbBuffer *pcYuvBuffer, UIn
 
 ///(可选)亮度8x8的9种Intra预测模式
 ErrVal IntraPredictionSearch::predictSLumaBlock8x8 (YuvMbBuffer* pcYuvBuffer,
-                                                    UInt            uiPredMode,
-                                                    B8x8Idx         c8x8Idx,
-                                                    Bool&           rbValid)
+                                                    UInt         uiPredMode,
+                                                    B8x8Idx      c8x8Idx,
+                                                    Bool&        rbValid)
 {
     rbValid       = false;
     XPel* pPel    = pcYuvBuffer->getLumBlk  ();

@@ -10,16 +10,15 @@ namespace JSVM {
 
 
 
-RplrCommand::RplrCommand(ReOrderingOfPicNumsIdc eReOrderingOfPicNumsIdc,
-                         UInt uiValue)
-: m_eReOrderingOfPicNumsIdc(eReOrderingOfPicNumsIdc)
-, m_uiValue(uiValue)
+RplrCommand::RplrCommand(ReOrderingOfPicNumsIdc eReOrderingOfPicNumsIdc, UInt uiValue) :
+    m_eReOrderingOfPicNumsIdc(eReOrderingOfPicNumsIdc),
+    m_uiValue(uiValue)
 {
 }
 
-RplrCommand::RplrCommand(const RplrCommand& rcRplrCommand)
-: m_eReOrderingOfPicNumsIdc (rcRplrCommand.m_eReOrderingOfPicNumsIdc)
-, m_uiValue                 (rcRplrCommand.m_uiValue)
+RplrCommand::RplrCommand(const RplrCommand& rcRplrCommand) :
+    m_eReOrderingOfPicNumsIdc (rcRplrCommand.m_eReOrderingOfPicNumsIdc),
+    m_uiValue                 (rcRplrCommand.m_uiValue)
 {
 }
 

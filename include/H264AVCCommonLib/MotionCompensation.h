@@ -74,12 +74,14 @@ public:
         m_pcResizeParameters = resizeParameters;
     }
 
+    //宏块的运动补偿
     ErrVal compensateMb (MbDataAccess&   rcMbDataAccess,
                          RefFrameList&   rcRefFrameList0,
                          RefFrameList&   rcRefFrameList1,
                          YuvMbBuffer* pcRecBuffer,
                          Bool            bCalcMv);
 
+    //子宏块的运动补偿
     ErrVal compensateSubMb (B8x8Idx         c8x8Idx,
                             MbDataAccess&   rcMbDataAccess,
                             RefFrameList&   rcRefFrameList0,
@@ -138,8 +140,10 @@ public:
 protected:
     Void xPredMb8x8Mode (B8x8Idx c8x8Idx, MbDataAccess& rcMbDataAccess, const Frame* pcRefFrame0, const Frame* pcRefFrame1, YuvMbBuffer* pcRecBuffer);
 
+    //预测Luma
     Void xPredLuma (YuvMbBuffer* pcRecBuffer,      Int iSizeX, Int iSizeY, MC8x8& rcMc8x8D);
     Void xPredLuma (YuvMbBuffer* apcTarBuffer[2],  Int iSizeX, Int iSizeY, MC8x8& rcMc8x8D, SParIdx4x4 eSParIdx);
+    //预测Chroma
     Void xPredChroma (YuvMbBuffer* pcRecBuffer,      Int iSizeX, Int iSizeY, MC8x8& rcMc8x8D);
     Void xPredChroma (YuvMbBuffer* apcTarBuffer[2],  Int iSizeX, Int iSizeY, MC8x8& rcMc8x8D, SParIdx4x4 eSParIdx);
 
@@ -156,6 +160,10 @@ private:
     __inline Void xGetBlkPredData (MbDataAccess& rcMbDataAccess, const Frame* pcRefFrame0, const Frame* pcRefFrame1, MC8x8& rcMC8x8D, BlkMode eBlkMode);
 
 protected:
+    //亚像素级的运动估计
+    //1: Luma   1/2插值
+    //2: Luma   1/4插值
+    //3: Chroma 1/8插值
     QuarterPelFilter*  m_pcQuarterPelFilter;
     Transform*  m_pcTransform;
     SampleWeighting*  m_pcSampleWeighting;

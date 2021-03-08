@@ -8,18 +8,18 @@
 namespace JSVM {
 
 
-NalUnitEncoder::NalUnitEncoder()
-: m_bIsUnitActive         (false)
-, m_pcBitWriteBuffer      (0)
-, m_pcHeaderSymbolWriteIf (0)
-, m_pcHeaderSymbolTestIf  (0)
-, m_pcBinDataAccessor     (0)
-, m_pucBuffer             (0)
-, m_pucTempBuffer         (0)
-, m_pucTempBufferBackup   (0)
-, m_uiPacketLength        (MSYS_UINT_MAX)
-, m_eNalUnitType          (NAL_UNIT_UNSPECIFIED_0)
-, m_eNalRefIdc            (NAL_REF_IDC_PRIORITY_LOWEST)
+NalUnitEncoder::NalUnitEncoder() :
+    m_bIsUnitActive         (false),
+    m_pcBitWriteBuffer      (0),
+    m_pcHeaderSymbolWriteIf (0),
+    m_pcHeaderSymbolTestIf  (0),
+    m_pcBinDataAccessor     (0),
+    m_pucBuffer             (0),
+    m_pucTempBuffer         (0),
+    m_pucTempBufferBackup   (0),
+    m_uiPacketLength        (MSYS_UINT_MAX),
+    m_eNalUnitType          (NAL_UNIT_UNSPECIFIED_0),
+    m_eNalRefIdc            (NAL_REF_IDC_PRIORITY_LOWEST)
 {
 }
 
@@ -88,6 +88,9 @@ ErrVal NalUnitEncoder::destroy()
 }
 
 
+//! 参数1: pcBinDataAccessor: H264AVCEncoderTest::go中的cExtBinDataAccessor
+//申请m_pucTempBuffer
+//m_pucBuffer: 指向bin的数据部分
 ErrVal NalUnitEncoder::initNalUnit (BinDataAccessor* pcBinDataAccessor)
 {
     ROT(m_bIsUnitActive);
@@ -96,17 +99,25 @@ ErrVal NalUnitEncoder::initNalUnit (BinDataAccessor* pcBinDataAccessor)
 
     m_bIsUnitActive     = true;
     m_pcBinDataAccessor = pcBinDataAccessor;
+    //m_pcT
+    ///FLQ, 指向m_pucBuffer(Payload)
     m_pucBuffer         = pcBinDataAccessor->data();
 
+    //printf("AVC: 该NAL中m_pucBuffer的大小: %d\n", uiPayloadBufferSize);
+    printf("AVC: m_uiPacketLength: %d, m_pcBinDataAccessor->size(): %d\n", m_uiPacketLength, m_pcBinDataAccessor->size());
+
+    //第一次: 申请数据
     if(m_uiPacketLength != m_pcBinDataAccessor->size())
     {
         delete[] m_pucTempBuffer;
 
         m_uiPacketLength = m_pcBinDataAccessor->size();
-        m_pucTempBuffer  = new UChar[ m_uiPacketLength ];
+        m_pucTempBuffer  = new UChar[m_uiPacketLength];
         ROF(m_pucTempBuffer);
     }
 
+    //m_uiPacketLength初始值: 1000或者6266880
+    //更新到实际值
     m_pcBitWriteBuffer->initPacket((UInt*)(m_pucTempBuffer), m_uiPacketLength-1);
 
     return Err::m_nOK;
@@ -150,8 +161,9 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits (UInt                    *pauiBits
     const UChar      *pucRBSP              = m_pucTempBuffer;
     UInt              uiPayloadBufferSize  = m_uiPacketLength;
 
-    ROF(pcExtBinDataAccessor->data() == pucPayload         );
+    ROF(pcExtBinDataAccessor->data() == pucPayload);
     ROF(pcExtBinDataAccessor->size() == uiPayloadBufferSize);
+    printf("SVC: 该NAL中m_pucBuffer的大小: %d\n", uiPayloadBufferSize);
 
     UInt uiFragment = 0;
     while(true)
@@ -161,7 +173,7 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits (UInt                    *pauiBits
         convertRBSPToPayload(uiBytes, uiHeaderBytes, pucPayload, pucRBSP, uiPayloadBufferSize);
         pauiBits[uiFragment] = 8 * uiBytes;
 
-        UChar* pucNewBuffer = new UChar [ uiBytes ];
+        UChar* pucNewBuffer = new UChar [uiBytes];
         ROF(pucNewBuffer);
         memcpy(pucNewBuffer, pucPayload, uiBytes * sizeof(UChar));
 
@@ -256,8 +268,9 @@ ErrVal NalUnitEncoder::closeNalUnit (UInt& ruiBits)
     //===== write trailing bits =====
     if(NAL_UNIT_END_OF_SEQUENCE != m_eNalUnitType &&
        NAL_UNIT_END_OF_STREAM   != m_eNalUnitType &&
-       (NAL_UNIT_PREFIX          != m_eNalUnitType || m_eNalRefIdc != NAL_REF_IDC_PRIORITY_LOWEST))
+       (NAL_UNIT_PREFIX         != m_eNalUnitType || m_eNalRefIdc != NAL_REF_IDC_PRIORITY_LOWEST))
     {
+        //补0，写拖尾位
         xWriteTrailingBits();
     }
     m_pcBitWriteBuffer->flushBuffer();
@@ -269,10 +282,18 @@ ErrVal NalUnitEncoder::closeNalUnit (UInt& ruiBits)
         uiHeaderBytes += NAL_UNIT_HEADER_SVC_EXTENSION_BYTES;
     }
 
-    UInt  uiBits = (m_pcBitWriteBuffer->getNumberOfWrittenBits() + 7) >> 3;
+    //实际是字节数。 +7: 不足8bit补足
+    UInt  uiBits = (m_pcBitWriteBuffer->getNumberOfWrittenBits() + 7) >> 3;//(m_uiBitsWritten + 7)>>3
 
-    convertRBSPToPayload(uiBits, uiHeaderBytes, m_pucBuffer, m_pucTempBuffer, m_uiPacketLength);
+    ///赋值指向pcBinDataAccessor->data()的payload
+    convertRBSPToPayload(uiBits,  //字节数
+                         uiHeaderBytes,  //头字节数
+                         m_pucBuffer,      //Dst: Payload
+                         m_pucTempBuffer,  //Src: RBSP, initNalUnit()中申请的临时buffer
+                         m_uiPacketLength);//PayloadBuffer尺寸
+    //把uiBits的值赋值给m_pcBinDataAccessor->size(): m_uiSize
     m_pcBinDataAccessor->decreaseEndPos(m_pcBinDataAccessor->size() - uiBits);
+    printf("当前nal的bit数uiBits=%d\n", uiBits);
     ruiBits = 8*uiBits;
 
     //==== reset parameters =====
@@ -284,11 +305,17 @@ ErrVal NalUnitEncoder::closeNalUnit (UInt& ruiBits)
     return Err::m_nOK;
 }
 
-ErrVal NalUnitEncoder::convertRBSPToPayload (UInt   &ruiBytesWritten,
-                                             UInt   uiHeaderBytes,
-                                             UChar  *pcPayload,
-                                             const UChar  *pcRBSP,
-                                             UInt   uiPayloadBufferSize)
+//! RBSP + 0X03
+//uiBits:
+//uiHeaderBytes:
+//m_pucBuffer:
+//m_pucTempBuffer:   //initNalUnit()中申请的临时buffer
+//m_uiPacketLength:
+ErrVal NalUnitEncoder::convertRBSPToPayload (UInt   &ruiBytesWritten,   //待写的字节数
+                                             UInt   uiHeaderBytes,      //1
+                                             UChar  *pcPayload,         //Dst: payload
+                                             const UChar  *pcRBSP,      //Src: RBSP
+                                             UInt   uiPayloadBufferSize)//1000
 {
     UInt uiZeroCount    = 0;
     UInt uiReadOffset   = uiHeaderBytes;
@@ -322,6 +349,8 @@ ErrVal NalUnitEncoder::convertRBSPToPayload (UInt   &ruiBytesWritten,
             uiZeroCount = 0;
         }
     }
+
+    //最后两位为0
     if((0x00 == pcPayload[uiWriteOffset-1]) && (0x00 == pcPayload[uiWriteOffset-2]))
     {
         ROT(uiWriteOffset >= uiPayloadBufferSize);
@@ -332,6 +361,7 @@ ErrVal NalUnitEncoder::convertRBSPToPayload (UInt   &ruiBytesWritten,
     return Err::m_nOK;
 }
 
+//closeNalUnit时，补0
 ErrVal NalUnitEncoder::xWriteTrailingBits()
 {
     m_pcBitWriteBuffer->write(1);
@@ -350,10 +380,12 @@ ErrVal NalUnitEncoder::xWriteTrailingBits()
 
 ErrVal NalUnitEncoder::write(const SequenceParameterSet& rcSPS)
 {
-    //写SPS信息到.txt
+    //写SPS所有信息到TraceEncoder_DQId000.txt 与 bin缓存中
     rcSPS.write(m_pcHeaderSymbolWriteIf);
 
+    ///nal_unit_type: JSVM::NAL_UNIT_SPS (7)
     m_eNalUnitType  = rcSPS.getNalUnitType();
+    ///nal_ref_idc: JSVM::NAL_REF_IDC_PRIORITY_HIGHEST (3)
     m_eNalRefIdc    = NAL_REF_IDC_PRIORITY_HIGHEST;
     return Err::m_nOK;
 }
@@ -361,10 +393,12 @@ ErrVal NalUnitEncoder::write(const SequenceParameterSet& rcSPS)
 
 ErrVal NalUnitEncoder::write(const PictureParameterSet& rcPPS)
 {
-    //写PPS信息到.txt
+    //写PPS所有信息到TraceEncoder_DQId000.txt 与 bin缓存中
     rcPPS.write(m_pcHeaderSymbolWriteIf);
 
+    ///nal_unit_type: JSVM::NAL_UNIT_PPS (8)
     m_eNalUnitType  = rcPPS.getNalUnitType();
+    ///nal_ref_idc: JSVM::NAL_REF_IDC_PRIORITY_HIGHEST (3)
     m_eNalRefIdc    = NAL_REF_IDC_PRIORITY_HIGHEST;
     return Err::m_nOK;
 }

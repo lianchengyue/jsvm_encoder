@@ -21,17 +21,17 @@ namespace JSVM {
 
 
 H264AVCEncoder::H264AVCEncoder():
-  m_pcParameterSetMng (NULL),
-  m_pcPocCalculator   (NULL),
-  m_pcNalUnitEncoder  (NULL),
-  m_pcControlMng      (NULL),
-  m_pcCodingParameter (NULL),
-  m_bVeryFirstCall    (true),
-  m_bScalableSeiMessage(false),
-  m_bInitDone         (false),
-  m_bTraceEnable      (false),
-  m_bWrteROISEI          (true),
-  m_loop_roi_sei      (0)
+    m_pcParameterSetMng (NULL),
+    m_pcPocCalculator   (NULL),
+    m_pcNalUnitEncoder  (NULL),
+    m_pcControlMng      (NULL),
+    m_pcCodingParameter (NULL),
+    m_bVeryFirstCall    (true),
+    m_bScalableSeiMessage(false),
+    m_bInitDone         (false),
+    m_bTraceEnable      (false),
+    m_bWrteROISEI       (true),
+    m_loop_roi_sei      (0)
 {
     ::memset(m_apcLayerEncoder, 0x00, MAX_LAYERS*sizeof(Void*));
     ::memset(m_aaadFinalFramerate, 0x00, MAX_LAYERS*MAX_TEMP_LEVELS*MAX_QUALITY_LEVELS*sizeof(Double));
@@ -925,6 +925,7 @@ ErrVal H264AVCEncoder::xWriteMotionSEI (ExtBinDataAccessor* pcExtBinDataAccessor
     return Err::m_nOK;
 }
 
+///SVC模式专用
 ErrVal H264AVCEncoder::writeParameterSets (ExtBinDataAccessor* pcExtBinDataAccessor,
                                            SequenceParameterSet*& rpcAVCSPS,
                                            Bool &rbMoreSets)
