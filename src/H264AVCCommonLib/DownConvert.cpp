@@ -822,10 +822,10 @@ void DownConvert::xVertIntraUpsampling(int  iBaseW,   int  iBaseH,
 
 
 void DownConvert::xBasicIntraUpsampling(int  iBaseW,   int  iBaseH,   int  iCurrW,   int  iCurrH,
-                                    int  iLOffset, int  iTOffset, int  iROffset, int  iBOffset,
-                                    int  iShiftX,  int  iShiftY,  int  iScaleX,  int  iScaleY,
-                                    int  iOffsetX, int  iOffsetY, int  iAddX,    int  iAddY,
-                                    int  iDeltaX,  int  iDeltaY,  int  iYBorder, bool bChromaFilter, int iMargin)
+                                        int  iLOffset, int  iTOffset, int  iROffset, int  iBOffset,
+                                        int  iShiftX,  int  iShiftY,  int  iScaleX,  int  iScaleY,
+                                        int  iOffsetX, int  iOffsetY, int  iAddX,    int  iAddY,
+                                        int  iDeltaX,  int  iDeltaY,  int  iYBorder, bool bChromaFilter, int iMargin)
 {
     assert(iMargin >= 0);
 
@@ -1034,7 +1034,7 @@ void DownConvert::xCompUpsamplingDyadic(int iBaseW, int iBaseH, bool bChroma)
             //----- upsample column -----
             for(int i = 0; i < iBaseH; i++)
             {
-                m_paiTmp1dBuffer[2*i ] = piSrc[i*m_iImageStride] << 5;
+                m_paiTmp1dBuffer[2*i] = piSrc[i*m_iImageStride] << 5;
                 m_paiTmp1dBuffer[2*i+1] = 0;
 
                 if(bChroma)
@@ -1069,7 +1069,7 @@ void DownConvert::xCompUpsamplingDyadic(int iBaseW, int iBaseH, bool bChroma)
             //----- upsample row -----
             for(int i = 0; i < iBaseW; i++)
             {
-                m_paiTmp1dBuffer[2*i ] = piSrc[i] << 5;
+                m_paiTmp1dBuffer[2*i] = piSrc[i] << 5;
                 m_paiTmp1dBuffer[2*i+1] = 0;
 
                 if(bChroma)
@@ -1271,7 +1271,7 @@ DownConvert::xUpsamplingData6tapBilin(int iInLength, int iOutLength)
   // 1/4 pel samples
   for(x = 0; x < iInLength-1; x++)
   {
-    Tmp1dBufferInQ1pel[x] = ((m_paiTmp1dBuffer[x ] << 5) + Tmp1dBufferInHalfpel[x] + 1) >> 1;
+    Tmp1dBufferInQ1pel[x] = ((m_paiTmp1dBuffer[x] << 5) + Tmp1dBufferInHalfpel[x] + 1) >> 1;
     Tmp1dBufferInQ3pel[x] = ((m_paiTmp1dBuffer[x+1] << 5) + Tmp1dBufferInHalfpel[x] + 1) >> 1;
   }
   Tmp1dBufferInQ1pel[iInLength-1] = ((m_paiTmp1dBuffer[iInLength-1] << 5) + Tmp1dBufferInHalfpel[iInLength-1] + 1) >> 1;

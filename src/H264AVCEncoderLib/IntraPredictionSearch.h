@@ -8,9 +8,8 @@
 
 namespace JSVM {
 
-
-class IntraPredictionSearch :
-public IntraPrediction
+//MbEncoder中调用
+class IntraPredictionSearch : public IntraPrediction
 {
 protected:
     IntraPredictionSearch();

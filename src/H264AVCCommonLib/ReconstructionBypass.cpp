@@ -116,19 +116,28 @@ ErrVal ReconstructionBypass::padRecFrame (Frame*  pcFrame,
                         {
                             if(auiOutMask[uiDir])
                             {
-                                cBuffer.loadSurrounding(pcPicBuffer,  g_D2XD[uiDir], g_D2YD[uiDir]);
+                                cBuffer.loadSurrounding(pcPicBuffer,
+                                                        g_D2XD[uiDir],
+                                                        g_D2YD[uiDir]);
                                 xPadRecMb(&cBuffer, auiOutMask[uiDir]);
                             }
-                            pcPicBuffer->loadBuffer  (&cBuffer, g_D2XD[uiDir], g_D2YD[uiDir]);
+                            pcPicBuffer->loadBuffer(&cBuffer,
+                                                    g_D2XD[uiDir],
+                                                    g_D2YD[uiDir]);
                         }
                         else
                         {
                             if (auiOutMask[uiDir])
                             {
-                                cBuffer.loadSurrounding_MbAff (pcPicBuffer, auiOutMask[uiDir], g_D2XD[uiDir], g_D2YD[uiDir]);
+                                cBuffer.loadSurrounding_MbAff(pcPicBuffer,
+                                                              auiOutMask[uiDir],
+                                                              g_D2XD[uiDir],
+                                                              g_D2YD[uiDir]);
                                 xPadRecMb_MbAff (&cBuffer, auiOutMask[uiDir]);
                             }
-                            pcPicBuffer->loadBuffer (&cBuffer, g_D2XD[uiDir], g_D2YD[uiDir]);
+                            pcPicBuffer->loadBuffer (&cBuffer,
+                                                     g_D2XD[uiDir],
+                                                     g_D2YD[uiDir]);
                         }
                     }
                 }
@@ -329,7 +338,13 @@ ErrVal ReconstructionBypass::xPadRecMb_MbAff (YuvMbBufferExtension* pcBuffer, UI
     return Err::m_nOK;
 }
 
-ErrVal ReconstructionBypass::xPad8x8Blk_MbAff (YuvMbBufferExtension* pcBuffer, UInt ui8x8Blk, Bool bV0, Bool bV1, Bool bH, Bool bC0, Bool bC1)
+ErrVal ReconstructionBypass::xPad8x8Blk_MbAff (YuvMbBufferExtension* pcBuffer,
+                                               UInt ui8x8Blk,
+                                               Bool bV0,
+                                               Bool bV1,
+                                               Bool bH,
+                                               Bool bC0,
+                                               Bool bC1)
 {
     Bool    bSwitch     = (!bV0 && bV1 && bH) || (!bV0 && !bH && !bC0 && (bV1 || bC1));
     Bool    bDouble     = (bV0 && bV1) || ((bV0 || bC0) && !bH && (bV1 || bC1));
@@ -355,25 +370,40 @@ ErrVal ReconstructionBypass::xPad8x8Blk_MbAff (YuvMbBufferExtension* pcBuffer, U
     return Err::m_nOK;
 }
 
-ErrVal ReconstructionBypass::xPadBlock_MbAff(YuvMbBufferExtension* pcBuffer, LumaIdx cIdx, Bool bVer, Bool bHor, Bool bCorner, Bool bHalfYSize, Bool bFromAbove, Bool bFromLeft)
+ErrVal ReconstructionBypass::xPadBlock_MbAff(YuvMbBufferExtension* pcBuffer,
+                                             LumaIdx cIdx,
+                                             Bool bVer,
+                                             Bool bHor,
+                                             Bool bCorner,
+                                             Bool bHalfYSize,
+                                             Bool bFromAbove,
+                                             Bool bFromLeft)
 {
     if(bVer && bHor)
     {
         if(bFromAbove && bFromLeft)
         {
-            pcBuffer->mergeFromLeftAbove (cIdx, bCorner, bHalfYSize);
+            pcBuffer->mergeFromLeftAbove (cIdx,
+                                          bCorner,
+                                          bHalfYSize);
         }
         else if(bFromAbove)
         {
-            pcBuffer->mergeFromRightAbove(cIdx, bCorner, bHalfYSize);
+            pcBuffer->mergeFromRightAbove(cIdx,
+                                          bCorner,
+                                          bHalfYSize);
         }
         else if(bFromLeft)
         {
-            pcBuffer->mergeFromLeftBelow (cIdx, bCorner, bHalfYSize);
+            pcBuffer->mergeFromLeftBelow (cIdx,
+                                          bCorner,
+                                          bHalfYSize);
         }
         else
         {
-            pcBuffer->mergeFromRightBelow(cIdx, bCorner, bHalfYSize);
+            pcBuffer->mergeFromRightBelow(cIdx,
+                                          bCorner,
+                                          bHalfYSize);
         }
     }
     else if(bVer)
@@ -426,7 +456,13 @@ ErrVal ReconstructionBypass::xPadBlock_MbAff(YuvMbBufferExtension* pcBuffer, Lum
 }
 
 
-Bool ReconstructionBypass::xRequiresOutsidePadding(UInt uiMbX, UInt uiMbY, UInt uiFrameWidth, UInt uiFrameHeight, Bool bMbAff, UInt uiOrgMask, UInt* pauiMask)
+Bool ReconstructionBypass::xRequiresOutsidePadding(UInt uiMbX,
+                                                   UInt uiMbY,
+                                                   UInt uiFrameWidth,
+                                                   UInt uiFrameHeight,
+                                                   Bool bMbAff,
+                                                   UInt uiOrgMask,
+                                                   UInt* pauiMask)
 {
     AOT(uiMbX >= uiFrameWidth );
     AOT(uiMbY >= uiFrameHeight);
@@ -461,7 +497,10 @@ Bool ReconstructionBypass::xRequiresOutsidePadding(UInt uiMbX, UInt uiMbY, UInt 
 }
 
 
-ErrVal ReconstructionBypass::xOutshiftMask (Bool bMbAff, UInt uiDir, UInt uiOrgMask, UInt& ruiShiftedMask)
+ErrVal ReconstructionBypass::xOutshiftMask (Bool bMbAff,
+                                            UInt uiDir,
+                                            UInt uiOrgMask,
+                                            UInt& ruiShiftedMask)
 {
     ROT(uiDir == 4);
     ROT(uiDir >  8);

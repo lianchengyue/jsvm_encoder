@@ -23,6 +23,7 @@ public:
       const Int getHeight() const              { return m_iHeight; }
       const Int getWidth() const               { return m_iWidth; }
 
+      //获取对应分量的id的offset
       const UInt getYBlk(LumaIdx cIdx) const   { return m_uiLumOffset +  ((cIdx.y() * m_iStride + cIdx.x())<<(2 + m_iResolution)); }
       const UInt getUBlk(LumaIdx cIdx) const   { return m_uiCbOffset  +  ((cIdx.y() * m_iStride + (cIdx.x()<<1)) << m_iResolution); }
       const UInt getVBlk(LumaIdx cIdx) const   { return m_uiCrOffset  +  ((cIdx.y() * m_iStride + (cIdx.x()<<1)) << m_iResolution); }

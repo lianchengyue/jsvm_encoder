@@ -42,8 +42,11 @@ typedef MemAccessor<UChar> BinDataAccessor;
 #define gMin(x,y) ((x)<(y)?(x):(y))
 #define gMax(x,y) ((x)>(y)?(x):(y))
 
+//1Byte
 typedef UChar   Pel;
+//2Byte
 typedef Short   XPel;
+//4Byte
 typedef Int     XXPel;
 
 class TCoeff

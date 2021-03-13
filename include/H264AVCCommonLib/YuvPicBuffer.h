@@ -27,6 +27,7 @@ public:
     XPel*      getCbBlk ()                      { return m_pPelCurrU; }
     XPel*      getCrBlk ()                      { return m_pPelCurrV; }
 
+    //设置m_pPelCurrY, m_pPelCurrU, m_pPelCurrV
     Void  set4x4Block(LumaIdx cIdx)
     {
         m_pPelCurrY = m_pucYuvBuffer + m_rcBufferParam.getYBlk(cIdx);
@@ -198,8 +199,10 @@ protected:
     XPel*  m_pPelCurrU;
     XPel*  m_pPelCurrV;
 
+    //将pcOrigPicBuffer逐像素赋值给m_pucYuvBuffer
     XPel*  m_pucYuvBuffer;
-    XPel*  m_pucOwnYuvBuffer;
+    //YuvPicBuffer::init()时候初始化
+    XPel*  m_pucOwnYuvBuffer;  //与m_pucYuvBuffer指向同一个地址
 
     const PicType   m_ePicType;
 private:

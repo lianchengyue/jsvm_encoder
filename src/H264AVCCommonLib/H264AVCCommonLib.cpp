@@ -1,4 +1,3 @@
-
 #include "H264AVCCommonLib.h"
 
 const ErrVal Err::m_nOK =                (0);

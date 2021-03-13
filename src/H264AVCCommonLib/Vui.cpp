@@ -512,10 +512,10 @@ ErrVal VUI::writeSVCExtension(HeaderSymbolWriteIf* pcWriteIf) const
 
 ErrVal VUI::LayerInfo::read(HeaderSymbolReadIf* pcReadIf)
 {
-  RNOKS(pcReadIf->getCode(m_uiDependencyID, 3,  "VUI: dependency_id" ));
-  RNOKS(pcReadIf->getCode(m_uiQualityId,    4,  "VUI: quality_level" ));
-  RNOKS(pcReadIf->getCode(m_uiTemporalId,   3,  "VUI: temporal_level"));
-  return Err::m_nOK;
+    RNOKS(pcReadIf->getCode(m_uiDependencyID, 3,  "VUI: dependency_id" ));
+    RNOKS(pcReadIf->getCode(m_uiQualityId,    4,  "VUI: quality_level" ));
+    RNOKS(pcReadIf->getCode(m_uiTemporalId,   3,  "VUI: temporal_level"));
+    return Err::m_nOK;
 }
 
 ErrVal VUI::read(HeaderSymbolReadIf *pcReadIf)

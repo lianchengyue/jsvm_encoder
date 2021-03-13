@@ -61,6 +61,7 @@ ErrVal MotionEstimationCost::xSetMEPars(const UInt uiMvScaleShift, const Bool bS
     return Err::m_nOK;
 }
 
+//????
 ErrVal MotionEstimationCost::xSetPredictor(const Mv& rcMv)
 {
     m_puiHorCost = m_puiComponentCost - rcMv.getHor();

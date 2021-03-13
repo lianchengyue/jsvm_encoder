@@ -106,7 +106,7 @@ MotionUpsampling::MotionUpsampling(MbDataCtrl&       rcMbDataCtrlCurr,
 , m_rcMbDataCtrlBase    (rcMbDataCtrlBase)
 , m_iMbX0CropFrm        ((rcResizeParameters.m_iLeftFrmOffset + 15) / 16)
 , m_iMbY0CropFrm        ((rcResizeParameters.m_iTopFrmOffset + 15) / 16)
-, m_iMbX1CropFrm        ((rcResizeParameters.m_iLeftFrmOffset + rcResizeParameters.m_iScaledRefFrmWidth ) / 16)
+, m_iMbX1CropFrm        ((rcResizeParameters.m_iLeftFrmOffset + rcResizeParameters.m_iScaledRefFrmWidth) / 16)
 , m_iMbY1CropFrm        ((rcResizeParameters.m_iTopFrmOffset + rcResizeParameters.m_iScaledRefFrmHeight) / 16)
 {
 }
@@ -446,23 +446,23 @@ ErrVal MotionUpsampling::xSetPartIdcArray()
 
                     if(!aabProcI8x8Blk[iXPInv][iYP] && m_aaiPartIdc[iXOInv][iYO] != -1)
                     {
-                        m_aaiPartIdc[iXO ][iYO ] = m_aaiPartIdc[iXOInv][iYO ];
-                        m_aaiPartIdc[iXO+1][iYO ] = m_aaiPartIdc[iXOInv][iYO ];
-                        m_aaiPartIdc[iXO ][iYO+1] = m_aaiPartIdc[iXOInv][iYO+1];
+                        m_aaiPartIdc[iXO][iYO] = m_aaiPartIdc[iXOInv][iYO];
+                        m_aaiPartIdc[iXO+1][iYO] = m_aaiPartIdc[iXOInv][iYO];
+                        m_aaiPartIdc[iXO][iYO+1] = m_aaiPartIdc[iXOInv][iYO+1];
                         m_aaiPartIdc[iXO+1][iYO+1] = m_aaiPartIdc[iXOInv][iYO+1];
                     }
                     else if(!aabProcI8x8Blk[iXP][iYPInv] && m_aaiPartIdc[iXO][iYOInv] != -1)
                     {
-                        m_aaiPartIdc[iXO ][iYO ] = m_aaiPartIdc[iXO ][iYOInv];
-                        m_aaiPartIdc[iXO+1][iYO ] = m_aaiPartIdc[iXO+1][iYOInv];
-                        m_aaiPartIdc[iXO ][iYO+1] = m_aaiPartIdc[iXO ][iYOInv];
+                        m_aaiPartIdc[iXO][iYO] = m_aaiPartIdc[iXO][iYOInv];
+                        m_aaiPartIdc[iXO+1][iYO] = m_aaiPartIdc[iXO+1][iYOInv];
+                        m_aaiPartIdc[iXO][iYO+1] = m_aaiPartIdc[iXO][iYOInv];
                         m_aaiPartIdc[iXO+1][iYO+1] = m_aaiPartIdc[iXO+1][iYOInv];
                     }
                     else if(!aabProcI8x8Blk[iXPInv][iYPInv] && m_aaiPartIdc[iXOInv][iYOInv] != -1)
                     {
-                        m_aaiPartIdc[iXO ][iYO ] = m_aaiPartIdc[iXOInv][iYOInv];
-                        m_aaiPartIdc[iXO+1][iYO ] = m_aaiPartIdc[iXOInv][iYOInv];
-                        m_aaiPartIdc[iXO ][iYO+1] = m_aaiPartIdc[iXOInv][iYOInv];
+                        m_aaiPartIdc[iXO][iYO] = m_aaiPartIdc[iXOInv][iYOInv];
+                        m_aaiPartIdc[iXO+1][iYO] = m_aaiPartIdc[iXOInv][iYOInv];
+                        m_aaiPartIdc[iXO][iYO+1] = m_aaiPartIdc[iXOInv][iYOInv];
                         m_aaiPartIdc[iXO+1][iYO+1] = m_aaiPartIdc[iXOInv][iYOInv];
                     }
                 }
@@ -487,7 +487,7 @@ ErrVal MotionUpsampling::xGetInitialBaseRefIdxAndMv(Int     i4x4BlkX,
     MbData&       rcMbDataBase      = m_rcMbDataCtrlBase.getMbDataByIndex ((UInt)iMbIdxBase);
     Int           iCurrFieldMb      = (m_bCurrFieldMb                                                              ? 1 : 0);
     Int           iBaseFieldMb      = (m_rcResizeParameters.m_bRefLayerFieldPicFlag || rcMbDataBase.getFieldFlag() ? 1 : 0);
-    MbMotionData& rcMotionDataBase  = rcMbDataBase    .getMbMotionData  (eListIdx   );
+    MbMotionData& rcMotionDataBase  = rcMbDataBase    .getMbMotionData  (eListIdx);
     Int           iRefIdxBase       = rcMotionDataBase.getRefIdx        (c4x4IdxBase);
     const Mv&     rcMvBase          = rcMotionDataBase.getMv            (c4x4IdxBase);
 
@@ -659,9 +659,9 @@ ErrVal MotionUpsampling::xDeriveBlockModeAndUpdateMv(Int i8x8BlkIdx)
         for(Int iListIdx = 0; iListIdx < m_iMaxListIdx; iListIdx++)
         {
             Mv  cTmpMv  = m_aaacMv[iListIdx][iXC][iYC];
-            m_aaacMv[iListIdx][iXO ][iYO ]  = cTmpMv;
-            m_aaacMv[iListIdx][iXO+1][iYO ]  = cTmpMv;
-            m_aaacMv[iListIdx][iXO ][iYO+1]  = cTmpMv;
+            m_aaacMv[iListIdx][iXO][iYO]  = cTmpMv;
+            m_aaacMv[iListIdx][iXO+1][iYO]  = cTmpMv;
+            m_aaacMv[iListIdx][iXO][iYO+1]  = cTmpMv;
             m_aaacMv[iListIdx][iXO+1][iYO+1]  = cTmpMv;
         }
     }
@@ -670,11 +670,11 @@ ErrVal MotionUpsampling::xDeriveBlockModeAndUpdateMv(Int i8x8BlkIdx)
     {
         for(Int iListIdx = 0; iListIdx < m_iMaxListIdx; iListIdx++)
         {
-            Bool  bHor1Match  = (xMvDiff(m_aaacMv[iListIdx][iXO ][iYO ], m_aaacMv[iListIdx][iXO+1][iYO ]) <= iAbsMvDiffThreshold);
-            Bool  bHor2Match  = (xMvDiff(m_aaacMv[iListIdx][iXO ][iYO+1], m_aaacMv[iListIdx][iXO+1][iYO+1]) <= iAbsMvDiffThreshold);
-            Bool  bVer1Match  = (xMvDiff(m_aaacMv[iListIdx][iXO ][iYO ], m_aaacMv[iListIdx][iXO ][iYO+1]) <= iAbsMvDiffThreshold);
-            Bool  bVer2Match  = (xMvDiff(m_aaacMv[iListIdx][iXO+1][iYO ], m_aaacMv[iListIdx][iXO+1][iYO+1]) <= iAbsMvDiffThreshold);
-            Bool  bDiagMatch  = (xMvDiff(m_aaacMv[iListIdx][iXO ][iYO ], m_aaacMv[iListIdx][iXO+1][iYO+1]) <= iAbsMvDiffThreshold);
+            Bool  bHor1Match  = (xMvDiff(m_aaacMv[iListIdx][iXO][iYO], m_aaacMv[iListIdx][iXO+1][iYO]) <= iAbsMvDiffThreshold);
+            Bool  bHor2Match  = (xMvDiff(m_aaacMv[iListIdx][iXO][iYO+1], m_aaacMv[iListIdx][iXO+1][iYO+1]) <= iAbsMvDiffThreshold);
+            Bool  bVer1Match  = (xMvDiff(m_aaacMv[iListIdx][iXO][iYO], m_aaacMv[iListIdx][iXO][iYO+1]) <= iAbsMvDiffThreshold);
+            Bool  bVer2Match  = (xMvDiff(m_aaacMv[iListIdx][iXO+1][iYO], m_aaacMv[iListIdx][iXO+1][iYO+1]) <= iAbsMvDiffThreshold);
+            Bool  bDiagMatch  = (xMvDiff(m_aaacMv[iListIdx][iXO][iYO], m_aaacMv[iListIdx][iXO+1][iYO+1]) <= iAbsMvDiffThreshold);
             b8x8Match         = b8x8Match && bHor1Match && bVer1Match && bDiagMatch;
             bHorMatch         = bHorMatch && bHor1Match && bHor2Match;
             bVerMatch         = bVerMatch && bVer1Match && bVer2Match;
@@ -693,31 +693,31 @@ ErrVal MotionUpsampling::xDeriveBlockModeAndUpdateMv(Int i8x8BlkIdx)
             {
             case BLK_8x8:
               {
-                Mv  cNewMv  = (m_aaacMv[iListIdx][iXO ][iYO ] + m_aaacMv[iListIdx][iXO+1][iYO ] +
-                                m_aaacMv[iListIdx][iXO ][iYO+1] + m_aaacMv[iListIdx][iXO+1][iYO+1] + Mv(2,2)) >> 2;
-                m_aaacMv[iListIdx][iXO ][iYO ]  = cNewMv;
-                m_aaacMv[iListIdx][iXO+1][iYO ]  = cNewMv;
-                m_aaacMv[iListIdx][iXO ][iYO+1]  = cNewMv;
+                Mv cNewMv = (m_aaacMv[iListIdx][iXO][iYO] + m_aaacMv[iListIdx][iXO+1][iYO] +
+                             m_aaacMv[iListIdx][iXO][iYO+1] + m_aaacMv[iListIdx][iXO+1][iYO+1] + Mv(2,2)) >> 2;
+                m_aaacMv[iListIdx][iXO][iYO]  = cNewMv;
+                m_aaacMv[iListIdx][iXO+1][iYO]  = cNewMv;
+                m_aaacMv[iListIdx][iXO][iYO+1]  = cNewMv;
                 m_aaacMv[iListIdx][iXO+1][iYO+1]  = cNewMv;
                 break;
               }
             case BLK_8x4:
               {
-                Mv  cNewMvA = (m_aaacMv[iListIdx][iXO ][iYO ] + m_aaacMv[iListIdx][iXO+1][iYO ] + Mv(1,1)) >> 1;
-                Mv  cNewMvB = (m_aaacMv[iListIdx][iXO ][iYO+1] + m_aaacMv[iListIdx][iXO+1][iYO+1] + Mv(1,1)) >> 1;
-                m_aaacMv[iListIdx][iXO ][iYO ]  = cNewMvA;
-                m_aaacMv[iListIdx][iXO+1][iYO ]  = cNewMvA;
-                m_aaacMv[iListIdx][iXO ][iYO+1]  = cNewMvB;
+                Mv  cNewMvA = (m_aaacMv[iListIdx][iXO][iYO] + m_aaacMv[iListIdx][iXO+1][iYO] + Mv(1,1)) >> 1;
+                Mv  cNewMvB = (m_aaacMv[iListIdx][iXO][iYO+1] + m_aaacMv[iListIdx][iXO+1][iYO+1] + Mv(1,1)) >> 1;
+                m_aaacMv[iListIdx][iXO][iYO]  = cNewMvA;
+                m_aaacMv[iListIdx][iXO+1][iYO]  = cNewMvA;
+                m_aaacMv[iListIdx][iXO][iYO+1]  = cNewMvB;
                 m_aaacMv[iListIdx][iXO+1][iYO+1]  = cNewMvB;
                 break;
               }
             case BLK_4x8:
               {
-                Mv  cNewMvA = (m_aaacMv[iListIdx][iXO ][iYO ] + m_aaacMv[iListIdx][iXO ][iYO+1] + Mv(1,1)) >> 1;
-                Mv  cNewMvB = (m_aaacMv[iListIdx][iXO+1][iYO ] + m_aaacMv[iListIdx][iXO+1][iYO+1] + Mv(1,1)) >> 1;
-                m_aaacMv[iListIdx][iXO ][iYO ]  = cNewMvA;
-                m_aaacMv[iListIdx][iXO+1][iYO ]  = cNewMvB;
-                m_aaacMv[iListIdx][iXO ][iYO+1]  = cNewMvA;
+                Mv  cNewMvA = (m_aaacMv[iListIdx][iXO][iYO] + m_aaacMv[iListIdx][iXO][iYO+1] + Mv(1,1)) >> 1;
+                Mv  cNewMvB = (m_aaacMv[iListIdx][iXO+1][iYO] + m_aaacMv[iListIdx][iXO+1][iYO+1] + Mv(1,1)) >> 1;
+                m_aaacMv[iListIdx][iXO][iYO]  = cNewMvA;
+                m_aaacMv[iListIdx][iXO+1][iYO]  = cNewMvB;
+                m_aaacMv[iListIdx][iXO][iYO+1]  = cNewMvA;
                 m_aaacMv[iListIdx][iXO+1][iYO+1]  = cNewMvB;
                 break;
               }
@@ -880,13 +880,13 @@ ErrVal MotionUpsampling::xSetResPredSafeFlag()
 ErrVal MotionUpsampling::xSetPredMbData()
 {
     //=== get MbData reference ===
-    Int           iFieldPic     = (m_rcResizeParameters.m_bFieldPicFlag ? 1 : 0);
-    Int           iBotField     = (m_rcResizeParameters.m_bBotFieldFlag ? 1 : 0);
-    Int           iMbStride     = (m_rcResizeParameters.m_iFrameWidth >> 4) << iFieldPic;
-    Int           iMbOffset     = (m_rcResizeParameters.m_iFrameWidth >> 4)  * iBotField;
-    Int           iMbIdx        = iMbOffset + m_iMbYCurr * iMbStride + m_iMbXCurr;
-    MbData&       rcMbData      = m_rcMbDataCtrlCurr.getMbDataByIndex((UInt)iMbIdx);
-    MbMotionData* apcMotion[2]  = { &rcMbData.getMbMotionData(LIST_0), &rcMbData.getMbMotionData(LIST_1) };
+    Int           iFieldPic    = (m_rcResizeParameters.m_bFieldPicFlag ? 1 : 0);
+    Int           iBotField    = (m_rcResizeParameters.m_bBotFieldFlag ? 1 : 0);
+    Int           iMbStride    = (m_rcResizeParameters.m_iFrameWidth >> 4) << iFieldPic;
+    Int           iMbOffset    = (m_rcResizeParameters.m_iFrameWidth >> 4)  * iBotField;
+    Int           iMbIdx       = iMbOffset + m_iMbYCurr * iMbStride + m_iMbXCurr;
+    MbData&       rcMbData     = m_rcMbDataCtrlCurr.getMbDataByIndex((UInt)iMbIdx);
+    MbMotionData* apcMotion[2] = { &rcMbData.getMbMotionData(LIST_0), &rcMbData.getMbMotionData(LIST_1) };
 
     //=== reset MbDataStruct data data ===
     rcMbData.clear();
@@ -1011,15 +1011,20 @@ ErrVal MbDataCtrl::xCreateData(UInt uiSize)
     for(UInt uiIdx = 0; uiIdx < uiSize; uiIdx++)
     {
         m_pcMbData[uiIdx].init(m_pcMbTCoeffs + uiIdx,
-                                 m_apcMbMvdData[0] + uiIdx,
-                                 m_apcMbMvdData[1] + uiIdx,
-                                 m_apcMbMotionData[0] + uiIdx,
-                                 m_apcMbMotionData[1] + uiIdx);
+                               m_apcMbMvdData[0] + uiIdx,
+                               m_apcMbMvdData[1] + uiIdx,
+                               m_apcMbMotionData[0] + uiIdx,
+                               m_apcMbMotionData[1] + uiIdx);
     }
 
     // clear outside mb data
     m_pcMbData[uiSize-1].getMbTCoeffs().setAllCoeffCount(0);
-    m_pcMbData[uiSize-1].initMbData(0, 0, MSYS_UINT_MAX, MSYS_UINT_MAX, MSYS_UINT_MAX, NOT_SPECIFIED_SLICE);
+    m_pcMbData[uiSize-1].initMbData(0,
+                                    0,
+                                    MSYS_UINT_MAX,
+                                    MSYS_UINT_MAX,
+                                    MSYS_UINT_MAX,
+                                    NOT_SPECIFIED_SLICE);
 
     return Err::m_nOK;
 }
@@ -1109,7 +1114,7 @@ ErrVal MbDataCtrl::init(const SequenceParameterSet& rcSPS)
 
 ErrVal MbDataCtrl::copyMotion(MbDataCtrl& rcMbDataCtrl, PicType ePicType)
 {
-    UInt uiStride = (ePicType == FRAME     ? m_iMbPerLine : m_iMbPerLine << 1);
+    UInt uiStride = (ePicType == FRAME ? m_iMbPerLine : m_iMbPerLine << 1);
     UInt uiMbOffset = (ePicType == BOT_FIELD ? m_iMbPerLine : 0);
     UInt uiNumLines = m_uiSize / uiStride;
     MbData* pcMbDataDes = &(m_pcMbData[uiMbOffset]);
@@ -1141,8 +1146,15 @@ ErrVal MbDataCtrl::upsampleMotion(SliceHeader*      pcSliceHeader,
     ROF(pcResizeParameters);
     ROF(pcBaseMbDataCtrl);
 
-    MotionUpsampling  cMotionUpsampling(*this, *pcSliceHeader, *pcResizeParameters, *pcBaseMbDataCtrl,
-                                         pcRefFrameList0, pcRefFrameList1, bFieldResampling, bResidualPredCheck, iMvThreshold);
+    MotionUpsampling  cMotionUpsampling(*this,
+                                        *pcSliceHeader,
+                                        *pcResizeParameters,
+                                        *pcBaseMbDataCtrl,
+                                         pcRefFrameList0,
+                                        pcRefFrameList1,
+                                        bFieldResampling,
+                                        bResidualPredCheck,
+                                        iMvThreshold);
     Int iMbXMax = (pcResizeParameters->m_iFrameWidth  >> 4);
     Int iMbYMax = (pcResizeParameters->m_iFrameHeight >> 4) >> (pcResizeParameters->m_bFieldPicFlag ? 1 : 0);
 
@@ -1238,9 +1250,9 @@ ErrVal MbDataCtrl::initSliceLF(SliceHeader& rcSH, const MbStatus* apcMbStatus)
         {
             uiMbCbpDQID0    = uiMbCbpLevels;
         }
-        rcMbData.setMbCbpDQId0    (uiMbCbpDQID0 );
+        rcMbData.setMbCbpDQId0    (uiMbCbpDQID0);
         rcMbData.setMbCbpLevelsLF (uiMbCbpLevels);
-        rcMbData.setSliceIdcLF    (uiSliceIdcLF );
+        rcMbData.setSliceIdcLF    (uiSliceIdcLF);
     }
     return Err::m_nOK;
 }
@@ -1409,7 +1421,12 @@ ErrVal MbDataCtrl::initMb(MbDataAccess*& rpcMbDataAccess, UInt uiMbY, UInt uiMbX
         {
             uiSliceId = m_uiSliceId;
             rcMbDataCurr.getMbTCoeffs().clear();
-            rcMbDataCurr.initMbData(m_ucLastMbQp, m_ucLastMbQp4LF, uiSliceId, uiMbAddr, uiMapUnit, m_pcSliceHeader->getSliceType());
+            rcMbDataCurr.initMbData(m_ucLastMbQp,
+                                    m_ucLastMbQp4LF,
+                                    uiSliceId,
+                                    uiMbAddr,
+                                    uiMapUnit,
+                                    m_pcSliceHeader->getSliceType());
             rcMbDataCurr.clear();
             m_uiMbProcessed++;
         }
@@ -1503,7 +1520,7 @@ ErrVal ControlData::init(SliceHeader*  pcSliceHeader,
                          Double        dLambda)
 {
     ROF(pcSliceHeader);
-    ROF(pcMbDataCtrl );
+    ROF(pcMbDataCtrl);
 
     m_pcSliceHeader = pcSliceHeader;
     m_pcMbDataCtrl  = pcMbDataCtrl;
@@ -1522,7 +1539,7 @@ ErrVal ControlData::init(SliceHeader*  pcSliceHeader,
 ErrVal ControlData::init(SliceHeader*  pcSliceHeader)
 {
     ROF(pcSliceHeader);
-    ROF(m_pcMbDataCtrl );
+    ROF(m_pcMbDataCtrl);
 
     m_pcSliceHeader         = pcSliceHeader;
 
@@ -1649,7 +1666,7 @@ ErrVal MbDataCtrl::getBoundaryMask_MbAff(Int iMbY, Int iMbX, Bool& rbIntra, UInt
 
     //===== current macroblock pair =====
     {
-        Int iMbIdxCurrTop   = iMbPairTIdxCurr + (m_pcMbData[iMbPairTIdxCurr].getFieldFlag() ? iMbFieldOffset : 0           );
+        Int iMbIdxCurrTop   = iMbPairTIdxCurr + (m_pcMbData[iMbPairTIdxCurr].getFieldFlag() ? iMbFieldOffset : 0);
         Int iMbIdxCurrBot   = iMbPairTIdxCurr + (m_pcMbData[iMbPairTIdxCurr].getFieldFlag() ? iMbFieldOffset : m_uiMbStride);
         bAvailableCurrTop   = m_pcMbData[iMbIdxCurrTop].isIntraInSlice(uiCurrentSliceID);
         bAvailableCurrBot   = m_pcMbData[iMbIdxCurrBot].isIntraInSlice(uiCurrentSliceID);
@@ -1662,7 +1679,7 @@ ErrVal MbDataCtrl::getBoundaryMask_MbAff(Int iMbY, Int iMbX, Bool& rbIntra, UInt
     //===== left macroblock pair =====
     if(bMbPairAvailableLeft)
     {
-        Int iMbIdxLeftTop  = iMbPairTIdxCurr - 1 + (m_pcMbData[iMbPairTIdxCurr - 1].getFieldFlag() ? iMbFieldOffset : 0           );
+        Int iMbIdxLeftTop  = iMbPairTIdxCurr - 1 + (m_pcMbData[iMbPairTIdxCurr - 1].getFieldFlag() ? iMbFieldOffset : 0);
         Int iMbIdxLeftBot  = iMbPairTIdxCurr - 1 + (m_pcMbData[iMbPairTIdxCurr - 1].getFieldFlag() ? iMbFieldOffset : m_uiMbStride);
         bAvailableLeftTop  = m_pcMbData[iMbIdxLeftTop].isIntraInSlice(uiCurrentSliceID);
         bAvailableLeftBot  = m_pcMbData[iMbIdxLeftBot].isIntraInSlice(uiCurrentSliceID);
@@ -1671,7 +1688,7 @@ ErrVal MbDataCtrl::getBoundaryMask_MbAff(Int iMbY, Int iMbX, Bool& rbIntra, UInt
     //===== right macroblock pair =====
     if(bMbPairAvailableRight)
     {
-        Int iMbIdxRightTop = iMbPairTIdxCurr + 1 + (m_pcMbData[iMbPairTIdxCurr + 1].getFieldFlag() ? iMbFieldOffset : 0           );
+        Int iMbIdxRightTop = iMbPairTIdxCurr + 1 + (m_pcMbData[iMbPairTIdxCurr + 1].getFieldFlag() ? iMbFieldOffset : 0);
         Int iMbIdxRightBot = iMbPairTIdxCurr + 1 + (m_pcMbData[iMbPairTIdxCurr + 1].getFieldFlag() ? iMbFieldOffset : m_uiMbStride);
         bAvailableRightTop = m_pcMbData[iMbIdxRightTop].isIntraInSlice(uiCurrentSliceID);
         bAvailableRightBot = m_pcMbData[iMbIdxRightBot].isIntraInSlice(uiCurrentSliceID);

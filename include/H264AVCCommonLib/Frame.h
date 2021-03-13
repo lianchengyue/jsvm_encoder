@@ -425,6 +425,7 @@ protected:
     Frame*          m_pcFrameBotField;
     Frame*          m_pcFrame;
 
+    //DPB: 解码图像缓存区
     DPBUnit*        m_pcDPBUnit;
     // JVT-R057 LA-RDO{
     UInt*            m_piChannelDistortion;

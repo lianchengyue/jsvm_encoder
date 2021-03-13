@@ -128,8 +128,8 @@ const UChar MbDataAccess::m_aucMbType2x1[9] =
     17 //3, 0x8
 };
 
-const UChar MbDataAccess::m_aucChroma2LumaIdx[8 ]  = { 0, 2, 8,10,   0, 2, 8,10 };
-const UChar MbDataAccess::m_auc4x4Idx28x8Idx [16 ]  = { 0, 0, 1, 1,   0, 0, 1, 1,   2, 2, 3, 3,   2, 2, 3, 3 };
+const UChar MbDataAccess::m_aucChroma2LumaIdx[8 ] = { 0, 2, 8,10,   0, 2, 8,10 };
+const UChar MbDataAccess::m_auc4x4Idx28x8Idx [16] = { 0, 0, 1, 1,   0, 0, 1, 1,   2, 2, 3, 3,   2, 2, 3, 3 };
 
 
 
@@ -252,7 +252,7 @@ UInt MbDataAccess::getCtxCoeffCount(ChromaIdx cIdx, UInt uiStart, UInt uiStop)  
   Bool bLeftAvailable = false;
   UInt uiCoeffCount     = 0;
 
-  B4x4Idx       cLumIdx(m_aucChroma2LumaIdx[ cIdx ]);
+  B4x4Idx       cLumIdx(m_aucChroma2LumaIdx[ cIdx]);
   Int           iComp = (cIdx >> 2) << 2;
 
   {
@@ -264,11 +264,11 @@ UInt MbDataAccess::getCtxCoeffCount(ChromaIdx cIdx, UInt uiStart, UInt uiStop)  
       bLeftAvailable = true;
       if((uiStart == 0 && uiStop == 16) || rcMbDataLeft.isPCM())
       {
-        uiCoeffCount += rcMbDataLeft.getMbTCoeffs().getCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdxL.b4x4() ]));
+        uiCoeffCount += rcMbDataLeft.getMbTCoeffs().getCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdxL.b4x4()]));
       }
       else
       {
-        uiCoeffCount = rcMbDataLeft.getMbTCoeffs().calcCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdxL.b4x4() ]),
+        uiCoeffCount = rcMbDataLeft.getMbTCoeffs().calcCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdxL.b4x4()]),
                                                                   rcMbDataLeft.getFieldFlag() ? g_aucFieldScan : g_aucFrameScan,
                                                                   uiStart,
                                                                   uiStop);
@@ -281,11 +281,11 @@ UInt MbDataAccess::getCtxCoeffCount(ChromaIdx cIdx, UInt uiStart, UInt uiStop)  
   {
     if((uiStart == 0 && uiStop == 16) || rcMbDataAbove.isPCM())
     {
-      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().getCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdx.b4x4() ]));
+      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().getCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdx.b4x4()]));
     }
     else
     {
-      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().calcCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdx.b4x4() ]),
+      uiCoeffCount += rcMbDataAbove.getMbTCoeffs().calcCoeffCount(CIdx(iComp + m_auc4x4Idx28x8Idx[ cLumIdx.b4x4()]),
                                                                   rcMbDataAbove.getFieldFlag() ? g_aucFieldScan : g_aucFrameScan,
                                                                   uiStart,
                                                                   uiStop);
@@ -626,8 +626,8 @@ ErrVal  MbDataAccess::setConvertMbType(UInt uiMbType)
   {
     if(uiMbType < 23)
     {
-      m_rcMbCurr.setMbMode(m_aausInterBMbType0[ uiMbType ]);
-      m_rcMbCurr.setFwdBwd(m_aausInterBMbType1[ uiMbType ]);
+      m_rcMbCurr.setMbMode(m_aausInterBMbType0[ uiMbType]);
+      m_rcMbCurr.setFwdBwd(m_aausInterBMbType1[ uiMbType]);
       return Err::m_nOK;
     }
 
@@ -797,7 +797,7 @@ Bool MbDataAccess::xSpatialDirectMode(ParIdx8x8 eParIdx, Bool b8x8, RefFrameList
   {
     ListIdx       eListIdx          = ListIdx(uiLstIdx);
     MbMotionData& rcMbMotionDataLX  = getMbMotionData(eListIdx);
-    SChar         scRefIdx          = ascRefIdx[ eListIdx ];
+    SChar         scRefIdx          = ascRefIdx[ eListIdx];
     Bool          bZeroMv;
         Bool          bMvValid = true;
 
@@ -805,29 +805,29 @@ Bool MbDataAccess::xSpatialDirectMode(ParIdx8x8 eParIdx, Bool b8x8, RefFrameList
     if(b8x8 || bAllColNonZero || scRefIdx < 1)
     {
       bZeroMv         = (bDirectZeroPred || scRefIdx < 1 || (scRefIdx == 1 && bColZeroFlagBlk0));
-      const Mv& rcMv  = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      const Mv& rcMv  = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx]);
       rcMbMotionDataLX.setAllMv(rcMv, eParIdx);
             bMvValid = xCheckMv(rcMv);
     }
     else
     {
       bZeroMv         = (scRefIdx == 1 && bColZeroFlagBlk0);
-      const Mv& rcMv0 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      const Mv& rcMv0 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx]);
       rcMbMotionDataLX.setAllMv(rcMv0, eParIdx, SPART_4x4_0);
             bMvValid &= xCheckMv(rcMv0);
 
       bZeroMv         = (scRefIdx == 1 && bColZeroFlagBlk1);
-      const Mv& rcMv1 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      const Mv& rcMv1 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx]);
       rcMbMotionDataLX.setAllMv(rcMv1, eParIdx, SPART_4x4_1);
             bMvValid &= xCheckMv(rcMv1);
 
       bZeroMv         = (scRefIdx == 1 && bColZeroFlagBlk2);
-      const Mv& rcMv2 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      const Mv& rcMv2 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx]);
       rcMbMotionDataLX.setAllMv(rcMv2, eParIdx, SPART_4x4_2);
             bMvValid &= xCheckMv(rcMv2);
 
       bZeroMv         = (scRefIdx == 1 && bColZeroFlagBlk3);
-      const Mv& rcMv3 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx ]);
+      const Mv& rcMv3 = (bZeroMv ? Mv::ZeroMv() : acMvPred [ eListIdx]);
       rcMbMotionDataLX.setAllMv(rcMv3, eParIdx, SPART_4x4_3);
             bMvValid &= xCheckMv(rcMv3);
     }

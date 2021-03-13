@@ -147,17 +147,17 @@ ErrVal H264AVCEncoderTest::destroy()
 
     for(UInt ui = 0; ui < MAX_LAYERS; ui++)
     {
-      if(m_apcWriteYuv[ui])
-      {
-          m_apcWriteYuv[ui]->uninit();
-          m_apcWriteYuv[ui]->destroy();
-      }
+        if(m_apcWriteYuv[ui])
+        {
+            m_apcWriteYuv[ui]->uninit();
+            m_apcWriteYuv[ui]->destroy();
+        }
 
-      if(m_apcReadYuv[ui])
-      {
-          m_apcReadYuv[ui]->uninit();
-          m_apcReadYuv[ui]->destroy();
-      }
+        if(m_apcReadYuv[ui])
+        {
+            m_apcReadYuv[ui]->uninit();
+            m_apcReadYuv[ui]->destroy();
+        }
     }
 
 
@@ -401,8 +401,8 @@ ErrVal H264AVCEncoderTest::go ()
     {
         UChar   aucParameterSetBuffer[1000];
         BinData cBinData;
-        cBinData.reset ();
-        cBinData.set (aucParameterSetBuffer, 1000);
+        cBinData.reset();
+        cBinData.set(aucParameterSetBuffer, 1000);
 
         ///ExtBinDataAccessor: SPS/PPS除Start Code外的所有内容
         //MemAccessor.h中
@@ -410,14 +410,17 @@ ErrVal H264AVCEncoderTest::go ()
         //T* m_pcOrigT;
         //UInt m_uiSize;
         //UInt m_uiUsableSize;
-        ExtBinDataAccessor cExtBinDataAccessor;
-        cBinData.setMemAccessor (cExtBinDataAccessor);  //cExtBinDataAccessor.size()初始化为1000
+        ExtBinDataAccessor  cExtBinDataAccessor;
+        //!//将对应bin变量cBinData的值，设置给输入变量cExtBinDataAccessor
+        cBinData.setMemAccessor (cExtBinDataAccessor);  //将cExtBinDataAccessor.size()初始化为1000
 
         JSVM::SequenceParameterSet* pcAVCSPS = NULL;
 
         ///初始化SPS与PPS
-        m_pcH264AVCEncoder->writeParameterSets (&cExtBinDataAccessor, pcAVCSPS, bMoreSets);  //1000到实际值
-        if(m_pcH264AVCEncoder->getScalableSeiMessage ())
+        m_pcH264AVCEncoder->writeParameterSets(&cExtBinDataAccessor,  //1000到实际值
+                                               pcAVCSPS,
+                                               bMoreSets);
+        if(m_pcH264AVCEncoder->getScalableSeiMessage())
         {
             //写Start Code: 0x00 0x00 0x00 0x01
             m_pcWriteBitstreamToFile->writePacket (&m_cBinDataStartCode);
@@ -711,11 +714,11 @@ ErrVal H264AVCEncoderTest::go ()
 #endif
 
         //===== call encoder =====
-        m_pcH264AVCEncoder->process (cOutExtBinDataAccessorList, //编码后的一帧h264
-                                     apcOriginalPicBuffer,       //原始图像buffer, 已加载数据
-                                     apcReconstructPicBuffer,
-                                     acPicBufferOutputList,
-                                     acPicBufferUnusedList);
+        m_pcH264AVCEncoder->process(cOutExtBinDataAccessorList, //编码后的一帧h264(在该process中赋值, PicEncoder::xAppendNewExtBinDataAccessor中push)
+                                    apcOriginalPicBuffer,       //原始图像buffer, 已加载数据
+                                    apcReconstructPicBuffer,
+                                    acPicBufferOutputList,
+                                    acPicBufferUnusedList);
 
         //===== write and release NAL unit buffers =====
         //!保存输出的一帧.264文件
@@ -724,7 +727,7 @@ ErrVal H264AVCEncoderTest::go ()
         printf("uiBytesUsed=%d\n", uiBytesUsed);
 
         uiWrittenBytes  += uiBytesUsed;
-        printf("已写字节数uiWrittenBytes: %d\n", uiWrittenBytes);
+        printf("已写字节数uiWrittenBytes: %d\n\n\n", uiWrittenBytes);
 
 ///        //===== write and release reconstructed pictures =====
 ///        for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
@@ -747,16 +750,16 @@ ErrVal H264AVCEncoderTest::go ()
                                 uiNumCodedFrames,
                                 dHighestLayerOutputRate);
 
-///    //===== write and release NAL unit buffers =====
-///    xWrite(cOutExtBinDataAccessorList, uiWrittenBytes);
-///    printf("!!!总字节数uiWrittenBytes: %d\n", uiWrittenBytes);
-///
-///    //===== write and release reconstructed pictures =====
-///    for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
-///    {
-///        xWrite(acPicBufferOutputList[uiLayer], uiLayer);
-///        xRelease(acPicBufferUnusedList[uiLayer], uiLayer);
-///    }
+    //===== write and release NAL unit buffers =====
+    xWrite(cOutExtBinDataAccessorList, uiWrittenBytes);
+    printf("!!!总字节数uiWrittenBytes: %d\n", uiWrittenBytes);
+
+    //===== write and release reconstructed pictures =====
+    for (uiLayer = 0; uiLayer < uiNumLayers; uiLayer++)
+    {
+        xWrite(acPicBufferOutputList[uiLayer], uiLayer);
+        xRelease(acPicBufferUnusedList[uiLayer], uiLayer);
+    }
 
 
     //===== set parameters and output summary =====

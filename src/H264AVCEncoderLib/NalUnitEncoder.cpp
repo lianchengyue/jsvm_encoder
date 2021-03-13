@@ -88,7 +88,7 @@ ErrVal NalUnitEncoder::destroy()
 }
 
 
-//! 参数1: pcBinDataAccessor: H264AVCEncoderTest::go中的cExtBinDataAccessor
+//! 参数1: pcBinDataAccessor: H264AVCEncoderTest::go中的cExtBinDataAccessor, 压缩后的当前帧的二进制文件
 //申请m_pucTempBuffer
 //m_pucBuffer: 指向bin的数据部分
 ErrVal NalUnitEncoder::initNalUnit (BinDataAccessor* pcBinDataAccessor)
@@ -101,7 +101,7 @@ ErrVal NalUnitEncoder::initNalUnit (BinDataAccessor* pcBinDataAccessor)
     m_pcBinDataAccessor = pcBinDataAccessor;
     //m_pcT
     ///FLQ, 指向m_pucBuffer(Payload)
-    m_pucBuffer         = pcBinDataAccessor->data();
+    m_pucBuffer = pcBinDataAccessor->data();
 
     //printf("AVC: 该NAL中m_pucBuffer的大小: %d\n", uiPayloadBufferSize);
     printf("AVC: m_uiPacketLength: %d, m_pcBinDataAccessor->size(): %d\n", m_uiPacketLength, m_pcBinDataAccessor->size());
@@ -157,7 +157,9 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits (UInt                    *pauiBits
     }
 
     BitWriteBufferIf *pcCurrentWriteBuffer = m_pcBitWriteBuffer;
+    //m_pucBuffer: 目标, 指向Payload
     UChar            *pucPayload           = m_pucBuffer;
+    //m_pucTempBuffer: 源, 指向RBSP
     const UChar      *pucRBSP              = m_pucTempBuffer;
     UInt              uiPayloadBufferSize  = m_uiPacketLength;
 
@@ -170,7 +172,12 @@ ErrVal NalUnitEncoder::closeAndAppendNalUnits (UInt                    *pauiBits
     {
         UInt uiBits  = pcCurrentWriteBuffer->getNumberOfWrittenBits();
         UInt uiBytes = (uiBits + 7) >> 3;
-        convertRBSPToPayload(uiBytes, uiHeaderBytes, pucPayload, pucRBSP, uiPayloadBufferSize);
+        ///赋值指向pcBinDataAccessor->data()的payload
+        convertRBSPToPayload(uiBytes,
+                             uiHeaderBytes,
+                             pucPayload,
+                             pucRBSP,
+                             uiPayloadBufferSize);
         pauiBits[uiFragment] = 8 * uiBytes;
 
         UChar* pucNewBuffer = new UChar [uiBytes];

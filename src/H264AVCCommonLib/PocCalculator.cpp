@@ -276,13 +276,14 @@ ErrVal PocCalculator::setPoc(SliceHeader&  rcSliceHeader,
 {
     ROTRS(iContNumber > (INT_MAX - 1), Err::m_nERR);
 
-    if(rcSliceHeader.getIdrFlag())
+    if(rcSliceHeader.getIdrFlag())  //m_bIdrFlag: true
     {
-        m_iBitsLsb          = rcSliceHeader.getSPS().getLog2MaxPicOrderCntLsb();
-        m_iLastIdrFieldNum  = iContNumber;
+        m_iBitsLsb = rcSliceHeader.getSPS().getLog2MaxPicOrderCntLsb();  //7
+        m_iLastIdrFieldNum = iContNumber;  //0
     }
 
     Int iCurrPoc = iContNumber - m_iLastIdrFieldNum;
+    printf("MYTEMP, iCurrPoc=%d\n", iCurrPoc);
 
     if(rcSliceHeader.getPicType() & TOP_FIELD)
 	{
@@ -290,6 +291,7 @@ ErrVal PocCalculator::setPoc(SliceHeader&  rcSliceHeader,
 
         if(rcSliceHeader.getPicType() == FRAME)
 		{
+            //到达这里
             rcSliceHeader.setBotFieldPoc(rcSliceHeader.getTopFieldPoc() + (rcSliceHeader.getPPS().getPicOrderPresentFlag() ? m_iTop2BotOffset : 0));
             rcSliceHeader.setDeltaPicOrderCntBottom (rcSliceHeader.getBotFieldPoc() - rcSliceHeader.getTopFieldPoc());
 		}

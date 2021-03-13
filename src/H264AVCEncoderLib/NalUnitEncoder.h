@@ -63,9 +63,13 @@ protected:
     HeaderSymbolWriteIf*  m_pcHeaderSymbolTestIf;
     //每一次待输出的h264格式的bin文件
     BinDataAccessor*      m_pcBinDataAccessor;
+
+    ///目标, 指向Payload
     UChar*                m_pucBuffer;
     //initNalUnit时创建的临时buffer, RBSP
+    ///源, 指向RBSP
     UChar*                m_pucTempBuffer;
+
     UChar*                m_pucTempBufferBackup;
     UInt                  m_uiPacketLength;
     NalUnitType           m_eNalUnitType;

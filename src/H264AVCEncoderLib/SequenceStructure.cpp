@@ -865,6 +865,7 @@ ErrVal SequenceStructure::init (const String& rcString,
 
     if(uiNumberOfFrames != MSYS_UINT_MAX)
     {
+        //初始化SequenceStructure中的参数
         xInitParameters();
     }
 
@@ -877,7 +878,7 @@ Void SequenceStructure::reset()
     m_cFrameSpec.uninit ();
 
     m_uiNumberOfFramesProcessed = 0;
-    m_uiFrameNumPartOffset      = 0;
+    m_uiFrameNumPartOffset = 0;
 }
 
 

@@ -35,10 +35,10 @@ Void RplrCommand::copy(const RplrCommand& rcRplrCommand)
 ErrVal RplrCommand::write(HeaderSymbolWriteIf&  rcWriteIf,  Bool&  rbEnd) const
 {
     rcWriteIf.writeUvlc(m_eReOrderingOfPicNumsIdc,  "RPLR: reordering_of_pic_nums_idc");
-    rbEnd = (m_eReOrderingOfPicNumsIdc == RPLR_END );
-    ROTRS (rbEnd, Err::m_nOK );
+    rbEnd = (m_eReOrderingOfPicNumsIdc == RPLR_END);
+    ROTRS (rbEnd, Err::m_nOK);
 
-    switch(m_eReOrderingOfPicNumsIdc )
+    switch(m_eReOrderingOfPicNumsIdc)
     {
         case RPLR_NEG:
         case RPLR_POS:
@@ -54,21 +54,21 @@ ErrVal RplrCommand::write(HeaderSymbolWriteIf&  rcWriteIf,  Bool&  rbEnd) const
 }
 
 ErrVal RplrCommand::read(HeaderSymbolReadIf&  rcReadIf,
-                   Bool&                rbEnd )
+                         Bool&  rbEnd)
 {
   UInt  uiReOrderingOfPicNumsIdc;
   rcReadIf.getUvlc(uiReOrderingOfPicNumsIdc, "RPLR: reordering_of_pic_nums_idc");
 
-  m_eReOrderingOfPicNumsIdc = ReOrderingOfPicNumsIdc(uiReOrderingOfPicNumsIdc );
-  m_uiValue                 = 0;
-  rbEnd                     = (m_eReOrderingOfPicNumsIdc == RPLR_END );
-  ROTRS (rbEnd, Err::m_nOK );
+  m_eReOrderingOfPicNumsIdc = ReOrderingOfPicNumsIdc(uiReOrderingOfPicNumsIdc);
+  m_uiValue = 0;
+  rbEnd = (m_eReOrderingOfPicNumsIdc == RPLR_END);
+  ROTRS (rbEnd, Err::m_nOK);
 
-  switch(m_eReOrderingOfPicNumsIdc )
+  switch(m_eReOrderingOfPicNumsIdc)
   {
       case RPLR_NEG:
       case RPLR_POS:
-          rcReadIf.getUvlc(m_uiValue, "RPLR: abs_diff_pic_num_minus1" );
+          rcReadIf.getUvlc(m_uiValue, "RPLR: abs_diff_pic_num_minus1");
           break;
       case RPLR_LONG:
           rcReadIf.getUvlc(m_uiValue, "RPLR: long_term_pic_num");
@@ -81,14 +81,14 @@ ErrVal RplrCommand::read(HeaderSymbolReadIf&  rcReadIf,
 
 
 
-RefPicListReOrdering::RefPicListReOrdering()
-: m_bRefPicListReorderingFlag(false )
+RefPicListReOrdering::RefPicListReOrdering() :
+    m_bRefPicListReorderingFlag(false)
 {
 }
 
-RefPicListReOrdering::RefPicListReOrdering(const RefPicListReOrdering& rcRefPicListReOrdering )
-: StatBuf<RplrCommand,33>     (rcRefPicListReOrdering )
-, m_bRefPicListReorderingFlag (false )
+RefPicListReOrdering::RefPicListReOrdering(const RefPicListReOrdering& rcRefPicListReOrdering) :
+    StatBuf<RplrCommand,33>     (rcRefPicListReOrdering),
+    m_bRefPicListReorderingFlag (false)
 {
 }
 
@@ -111,7 +111,7 @@ Void RefPicListReOrdering::copy(const RefPicListReOrdering& rcRefPicListReOrderi
 ErrVal RefPicListReOrdering::write(HeaderSymbolWriteIf& rcWriteIf) const
 {
     rcWriteIf.writeFlag(m_bRefPicListReorderingFlag,  "RPLR: ref_pic_list_reordering_flag");
-    ROFRS (m_bRefPicListReorderingFlag, Err::m_nOK );
+    ROFRS (m_bRefPicListReorderingFlag, Err::m_nOK);
 
     Bool  bEnd = false;
     for(UInt uiIndex = 0; !bEnd; uiIndex++)
@@ -121,16 +121,16 @@ ErrVal RefPicListReOrdering::write(HeaderSymbolWriteIf& rcWriteIf) const
     return Err::m_nOK;
 }
 
-ErrVal RefPicListReOrdering::read(HeaderSymbolReadIf& rcReadIf, UInt uiNumRefIdx )
+ErrVal RefPicListReOrdering::read(HeaderSymbolReadIf& rcReadIf, UInt uiNumRefIdx)
 {
     rcReadIf.getFlag(m_bRefPicListReorderingFlag,  "RPLR: ref_pic_list_reordering_flag");
-    ROFRS (m_bRefPicListReorderingFlag, Err::m_nOK );
+    ROFRS (m_bRefPicListReorderingFlag, Err::m_nOK);
 
     Bool  bEnd = false;
     for(UInt uiIndex = 0; !bEnd; uiIndex++)
     {
         get(uiIndex).read(rcReadIf, bEnd);
-        ROT (uiIndex > uiNumRefIdx && !bEnd );
+        ROT (uiIndex > uiNumRefIdx && !bEnd);
     }
     return Err::m_nOK;
 }
@@ -139,17 +139,17 @@ ErrVal RefPicListReOrdering::read(HeaderSymbolReadIf& rcReadIf, UInt uiNumRefIdx
 
 MmcoCommand::MmcoCommand(Mmco eMmco,
                          UInt uiValue1,
-                         UInt uiValue2)
-: m_eMmco     (eMmco)
-, m_uiValue1  (uiValue1)
-, m_uiValue2  (uiValue2)
+                         UInt uiValue2) :
+    m_eMmco     (eMmco),
+    m_uiValue1  (uiValue1),
+    m_uiValue2  (uiValue2)
 {
 }
 
-MmcoCommand::MmcoCommand(const MmcoCommand& rcMmcoCommand)
-: m_eMmco     (rcMmcoCommand.m_eMmco)
-, m_uiValue1  (rcMmcoCommand.m_uiValue1)
-, m_uiValue2  (rcMmcoCommand.m_uiValue2)
+MmcoCommand::MmcoCommand(const MmcoCommand& rcMmcoCommand) :
+    m_eMmco     (rcMmcoCommand.m_eMmco),
+    m_uiValue1  (rcMmcoCommand.m_uiValue1),
+    m_uiValue2  (rcMmcoCommand.m_uiValue2)
 {
 }
 
@@ -170,7 +170,7 @@ ErrVal MmcoCommand::write(HeaderSymbolWriteIf& rcWriteIf,
 {
     rcWriteIf.writeUvlc(m_eMmco, "DRPM: memory_mangement_control_operation");
     rbEnd = (m_eMmco == MMCO_END);
-    ROTRS (rbEnd, Err::m_nOK );
+    ROTRS (rbEnd, Err::m_nOK);
 
     switch(m_eMmco)
     {
@@ -181,19 +181,19 @@ ErrVal MmcoCommand::write(HeaderSymbolWriteIf& rcWriteIf,
             rcWriteIf.writeUvlc(m_uiValue1,  "DRPM: long_term_pic_num");
             break;
         case MMCO_ASSIGN_LONG_TERM:
-            ROT (bRefBasePic );
+            ROT (bRefBasePic);
             rcWriteIf.writeUvlc(m_uiValue1,  "DRPM: difference_of_pic_nums_minus1");
             rcWriteIf.writeUvlc(m_uiValue2,  "DRPM: long_term_frame_idx");
             break;
         case MMCO_MAX_LONG_TERM_IDX:
-            ROT (bRefBasePic );
+            ROT (bRefBasePic);
             rcWriteIf.writeUvlc(m_uiValue1,  "DRPM: max_long_term_frame_idx_plus1");
             break;
         case MMCO_RESET:
-            ROT (bRefBasePic );
+            ROT (bRefBasePic);
             break;
         case MMCO_SET_LONG_TERM:
-            ROT (bRefBasePic );
+            ROT (bRefBasePic);
             rcWriteIf.writeUvlc(m_uiValue1,  "DRPM: long_term_frame_idx");
             break;
         default:
@@ -204,7 +204,7 @@ ErrVal MmcoCommand::write(HeaderSymbolWriteIf& rcWriteIf,
 
 ErrVal MmcoCommand::read(HeaderSymbolReadIf&  rcReadIf,
                          Bool   bRefBasePic,
-                         Bool&  rbEnd )
+                         Bool&  rbEnd)
 {
     UInt  uiMmco;
     rcReadIf.getUvlc(uiMmco, "DRPM: memory_mangement_control_operation");
@@ -212,7 +212,7 @@ ErrVal MmcoCommand::read(HeaderSymbolReadIf&  rcReadIf,
     m_uiValue1 = 0;
     m_uiValue2 = 0;
     rbEnd = (m_eMmco == MMCO_END);
-    ROTRS (rbEnd, Err::m_nOK );
+    ROTRS (rbEnd, Err::m_nOK);
 
     switch(m_eMmco)
     {
@@ -223,19 +223,19 @@ ErrVal MmcoCommand::read(HeaderSymbolReadIf&  rcReadIf,
         rcReadIf.getUvlc(m_uiValue1, "DRPM: long_term_pic_num");
         break;
     case MMCO_ASSIGN_LONG_TERM:
-        ROT (bRefBasePic );
+        ROT (bRefBasePic);
         rcReadIf.getUvlc(m_uiValue1, "DRPM: difference_of_pic_nums_minus1");
         rcReadIf.getUvlc(m_uiValue2, "DRPM: long_term_frame_idx");
         break;
     case MMCO_MAX_LONG_TERM_IDX:
-        ROT (bRefBasePic );
+        ROT (bRefBasePic);
         rcReadIf.getUvlc(m_uiValue1, "DRPM: max_long_term_frame_idx_plus1");
         break;
     case MMCO_RESET:
-        ROT (bRefBasePic );
+        ROT (bRefBasePic);
         break;
     case MMCO_SET_LONG_TERM:
-        ROT (bRefBasePic );
+        ROT (bRefBasePic);
         rcReadIf.getUvlc(m_uiValue1, "DRPM: long_term_frame_idx");
         break;
     default:
@@ -246,16 +246,16 @@ ErrVal MmcoCommand::read(HeaderSymbolReadIf&  rcReadIf,
 
 
 
-DecRefPicMarking::DecRefPicMarking(Bool bDecRefBasePicMarking)
-: m_bDecRefBasePicMarking         (bDecRefBasePicMarking)
-, m_bAdaptiveRefPicMarkingModeFlag(false)
+DecRefPicMarking::DecRefPicMarking(Bool bDecRefBasePicMarking) :
+    m_bDecRefBasePicMarking  (bDecRefBasePicMarking),
+    m_bAdaptiveRefPicMarkingModeFlag(false)
 {
 }
 
-DecRefPicMarking::DecRefPicMarking(const DecRefPicMarking& rcDecRefPicMarking)
-: StatBuf<MmcoCommand,33>         (rcDecRefPicMarking)
-, m_bDecRefBasePicMarking         (rcDecRefPicMarking.m_bDecRefBasePicMarking)
-, m_bAdaptiveRefPicMarkingModeFlag(rcDecRefPicMarking.m_bAdaptiveRefPicMarkingModeFlag)
+DecRefPicMarking::DecRefPicMarking(const DecRefPicMarking& rcDecRefPicMarking) :
+    StatBuf<MmcoCommand,33>  (rcDecRefPicMarking),
+    m_bDecRefBasePicMarking  (rcDecRefPicMarking.m_bDecRefBasePicMarking),
+    m_bAdaptiveRefPicMarkingModeFlag(rcDecRefPicMarking.m_bAdaptiveRefPicMarkingModeFlag)
 {
 }
 
@@ -287,7 +287,7 @@ ErrVal DecRefPicMarking::write(HeaderSymbolWriteIf& rcWriteIf) const
     {
         rcWriteIf.writeFlag(m_bAdaptiveRefPicMarkingModeFlag,  "DPRM:  adaptive_ref_pic_marking_mode_flag");
     }
-    ROFRS (m_bAdaptiveRefPicMarkingModeFlag, Err::m_nOK );
+    ROFRS (m_bAdaptiveRefPicMarkingModeFlag, Err::m_nOK);
 
     Bool  bEnd = false;
     for(UInt uiIndex = 0; !bEnd; uiIndex++)
@@ -307,7 +307,7 @@ ErrVal DecRefPicMarking::read(HeaderSymbolReadIf& rcReadIf)
     {
         rcReadIf.getFlag(m_bAdaptiveRefPicMarkingModeFlag,  "DPRM:  adaptive_ref_pic_marking_mode_flag");
     }
-    ROFRS (m_bAdaptiveRefPicMarkingModeFlag, Err::m_nOK );
+    ROFRS (m_bAdaptiveRefPicMarkingModeFlag, Err::m_nOK);
 
     Bool  bEnd = false;
     for(UInt uiIndex = 0; !bEnd; uiIndex++)
@@ -319,12 +319,12 @@ ErrVal DecRefPicMarking::read(HeaderSymbolReadIf& rcReadIf)
 
 Bool DecRefPicMarking::hasMMCO5() const
 {
-    ROFRS(m_bAdaptiveRefPicMarkingModeFlag,  false );
+    ROFRS(m_bAdaptiveRefPicMarkingModeFlag,  false);
     Bool bEnd = false;
     for(Int iIndex = 0; !bEnd; iIndex++)
     {
         Mmco   eMmcoOp  = get(iIndex).getCommand();
-        ROTRS(eMmcoOp == MMCO_RESET, true );
+        ROTRS(eMmcoOp == MMCO_RESET, true);
         bEnd = (eMmcoOp == MMCO_END);
     }
     return false;
@@ -332,27 +332,27 @@ Bool DecRefPicMarking::hasMMCO5() const
 
 
 
-PredWeight::PredWeight()
-: m_bLumaWeightFlag   (false)
-, m_iLumaWeight       (0)
-, m_iLumaOffset       (0)
-, m_bChromaWeightFlag (false)
-, m_iChromaCbWeight   (0)
-, m_iChromaCbOffset   (0)
-, m_iChromaCrWeight   (0)
-, m_iChromaCrOffset   (0)
+PredWeight::PredWeight() :
+    m_bLumaWeightFlag   (false),
+    m_iLumaWeight       (0),
+    m_iLumaOffset       (0),
+    m_bChromaWeightFlag (false),
+    m_iChromaCbWeight   (0),
+    m_iChromaCbOffset   (0),
+    m_iChromaCrWeight   (0),
+    m_iChromaCrOffset   (0)
 {
 }
 
-PredWeight::PredWeight(const PredWeight& rcPredWeight)
-: m_bLumaWeightFlag   (rcPredWeight.m_bLumaWeightFlag)
-, m_iLumaWeight       (rcPredWeight.m_iLumaWeight)
-, m_iLumaOffset       (rcPredWeight.m_iLumaOffset)
-, m_bChromaWeightFlag (rcPredWeight.m_bChromaWeightFlag)
-, m_iChromaCbWeight   (rcPredWeight.m_iChromaCbWeight)
-, m_iChromaCbOffset   (rcPredWeight.m_iChromaCbOffset)
-, m_iChromaCrWeight   (rcPredWeight.m_iChromaCrWeight)
-, m_iChromaCrOffset   (rcPredWeight.m_iChromaCrOffset)
+PredWeight::PredWeight(const PredWeight& rcPredWeight) :
+    m_bLumaWeightFlag   (rcPredWeight.m_bLumaWeightFlag),
+    m_iLumaWeight       (rcPredWeight.m_iLumaWeight),
+    m_iLumaOffset       (rcPredWeight.m_iLumaOffset),
+    m_bChromaWeightFlag (rcPredWeight.m_bChromaWeightFlag),
+    m_iChromaCbWeight   (rcPredWeight.m_iChromaCbWeight),
+    m_iChromaCbOffset   (rcPredWeight.m_iChromaCbOffset),
+    m_iChromaCrWeight   (rcPredWeight.m_iChromaCrWeight),
+    m_iChromaCrOffset   (rcPredWeight.m_iChromaCrOffset)
 {
 }
 
@@ -372,7 +372,7 @@ Void PredWeight::copy(const PredWeight& rcPredWeight)
     m_iChromaCrOffset   = rcPredWeight.m_iChromaCrOffset;
 }
 
-ErrVal PredWeight::write(HeaderSymbolWriteIf& rcWriteIf ) const
+ErrVal PredWeight::write(HeaderSymbolWriteIf& rcWriteIf) const
 {
     rcWriteIf.writeFlag(m_bLumaWeightFlag,    "PWT: luma_weight_flag");
     if(m_bLumaWeightFlag)
@@ -380,7 +380,7 @@ ErrVal PredWeight::write(HeaderSymbolWriteIf& rcWriteIf ) const
         rcWriteIf.writeSvlc(m_iLumaWeight,    "PWT: luma_weight");
         rcWriteIf.writeSvlc(m_iLumaOffset,    "PWT: luma_offset");
     }
-    rcWriteIf.writeFlag(m_bChromaWeightFlag, "PWT: chroma_weight_flag");
+    rcWriteIf.writeFlag(m_bChromaWeightFlag,  "PWT: chroma_weight_flag");
     if(m_bChromaWeightFlag)
     {
         rcWriteIf.writeSvlc(m_iChromaCbWeight,   "PWT: chroma_weight (Cb)");
@@ -393,20 +393,20 @@ ErrVal PredWeight::write(HeaderSymbolWriteIf& rcWriteIf ) const
 
 ErrVal PredWeight::read(HeaderSymbolReadIf& rcReadIf, UInt uiLumaLog2WeightDenom, UInt uiChromaLog2WeightDenom)
 {
-    rcReadIf.getFlag(m_bLumaWeightFlag,   "PWT: luma_weight_flag");
+    rcReadIf.getFlag(m_bLumaWeightFlag, "PWT: luma_weight_flag");
     if(m_bLumaWeightFlag)
     {
         rcReadIf.getSvlc(m_iLumaWeight, "PWT: luma_weight");
         rcReadIf.getSvlc(m_iLumaOffset, "PWT: luma_offset");
-        ROT (m_iLumaWeight < -128 || m_iLumaWeight > 127 );
-        ROT (m_iLumaOffset < -128 || m_iLumaOffset > 127 );
+        ROT (m_iLumaWeight < -128 || m_iLumaWeight > 127);
+        ROT (m_iLumaOffset < -128 || m_iLumaOffset > 127);
     }
     else
     {
         m_iLumaWeight = (1 << uiLumaLog2WeightDenom);
         m_iLumaOffset = 0;
     }
-    rcReadIf.getFlag(m_bChromaWeightFlag, "PWT: chroma_weight_flag");
+    rcReadIf.getFlag(m_bChromaWeightFlag,   "PWT: chroma_weight_flag");
 
     if(m_bChromaWeightFlag)
     {
@@ -414,10 +414,10 @@ ErrVal PredWeight::read(HeaderSymbolReadIf& rcReadIf, UInt uiLumaLog2WeightDenom
         rcReadIf.getSvlc(m_iChromaCbOffset, "PWT: chroma_offset (Cb)");
         rcReadIf.getSvlc(m_iChromaCrWeight, "PWT: chroma_weight (Cr)");
         rcReadIf.getSvlc(m_iChromaCrOffset, "PWT: chroma_offset (Cr)");
-        ROT (m_iChromaCbWeight < -128 || m_iChromaCbWeight > 127 );
-        ROT (m_iChromaCbOffset < -128 || m_iChromaCbOffset > 127 );
-        ROT (m_iChromaCrWeight < -128 || m_iChromaCrWeight > 127 );
-        ROT (m_iChromaCrOffset < -128 || m_iChromaCrOffset > 127 );
+        ROT (m_iChromaCbWeight < -128 || m_iChromaCbWeight > 127);
+        ROT (m_iChromaCbOffset < -128 || m_iChromaCbOffset > 127);
+        ROT (m_iChromaCrWeight < -128 || m_iChromaCrWeight > 127);
+        ROT (m_iChromaCrOffset < -128 || m_iChromaCrOffset > 127);
     }
     else
     {
@@ -429,26 +429,27 @@ ErrVal PredWeight::read(HeaderSymbolReadIf& rcReadIf, UInt uiLumaLog2WeightDenom
 
 Bool PredWeight::operator == (const JSVM::PredWeight &rcPredWeight) const
 {
-    ROFRS(m_bLumaWeightFlag   == rcPredWeight.m_bLumaWeightFlag,   false );
-    ROFRS(m_iLumaWeight       == rcPredWeight.m_iLumaWeight,       false );
-    ROFRS(m_iLumaOffset       == rcPredWeight.m_iLumaOffset,       false );
-    ROFRS(m_bChromaWeightFlag == rcPredWeight.m_bChromaWeightFlag, false );
-    ROFRS(m_iChromaCbWeight   == rcPredWeight.m_iChromaCbWeight,   false );
-    ROFRS(m_iChromaCbOffset   == rcPredWeight.m_iChromaCbOffset,   false );
-    ROFRS(m_iChromaCrWeight   == rcPredWeight.m_iChromaCrWeight,   false );
-    ROFRS(m_iChromaCrOffset   == rcPredWeight.m_iChromaCrOffset,   false );
+    ROFRS(m_bLumaWeightFlag   == rcPredWeight.m_bLumaWeightFlag,   false);
+    ROFRS(m_iLumaWeight       == rcPredWeight.m_iLumaWeight,       false);
+    ROFRS(m_iLumaOffset       == rcPredWeight.m_iLumaOffset,       false);
+    ROFRS(m_bChromaWeightFlag == rcPredWeight.m_bChromaWeightFlag, false);
+    ROFRS(m_iChromaCbWeight   == rcPredWeight.m_iChromaCbWeight,   false);
+    ROFRS(m_iChromaCbOffset   == rcPredWeight.m_iChromaCbOffset,   false);
+    ROFRS(m_iChromaCrWeight   == rcPredWeight.m_iChromaCrWeight,   false);
+    ROFRS(m_iChromaCrOffset   == rcPredWeight.m_iChromaCrOffset,   false);
     return true;
 }
 
 Bool PredWeight::operator != (const JSVM::PredWeight &rcPredWeight) const
 {
-    return ! (*this == rcPredWeight );
+    return ! (*this == rcPredWeight);
 }
 
-Int PredWeight::xRandom(Int iMin, Int iMax )
+Int PredWeight::xRandom(Int iMin, Int iMax)
 {
-    Int iRange  = iMax - iMin + 1;
-    Int iValue  = rand() % iRange;
+    Int iRange = iMax - iMin + 1;
+    Int iValue = rand() % iRange;
+
     return iMin + iValue;
 }
 
@@ -471,7 +472,9 @@ ErrVal PredWeight::initRandomly()
     return Err::m_nOK;
 }
 
-ErrVal PredWeight::initWeights(Int iLumaWeight, Int iCbWeight, Int iCrWeight)
+ErrVal PredWeight::initWeights(Int iLumaWeight,
+                               Int iCbWeight,
+                               Int iCrWeight)
 {
     m_iLumaWeight     = iLumaWeight;
     m_iChromaCbWeight = iCbWeight;
@@ -479,7 +482,9 @@ ErrVal PredWeight::initWeights(Int iLumaWeight, Int iCbWeight, Int iCrWeight)
     return Err::m_nOK;
 }
 
-ErrVal PredWeight::initOffsets(Int iLumaOffset, Int iCbOffset, Int iCrOffset)
+ErrVal PredWeight::initOffsets(Int iLumaOffset,
+                               Int iCbOffset,
+                               Int iCrOffset)
 {
     m_iLumaOffset     = iLumaOffset;
     m_iChromaCbOffset = iCbOffset;
@@ -499,7 +504,9 @@ ErrVal PredWeight::setOffsets(const Double* padOffsets)
     return Err::m_nOK;
 }
 
-ErrVal PredWeight::setWeights(const Double* padWeights, Int iLumaScale, Int iChromaScale)
+ErrVal PredWeight::setWeights(const Double* padWeights,
+                              Int iLumaScale,
+                              Int iChromaScale)
 {
     Int iLuma = (Int)padWeights[0];
     Int iCb   = (Int)padWeights[1];
@@ -519,7 +526,7 @@ ErrVal PredWeight::getOffsets(Double* padOffsets)
     return Err::m_nOK;
 }
 
-ErrVal PredWeight::getWeights(Double* padWeights )
+ErrVal PredWeight::getWeights(Double* padWeights)
 {
     padWeights[0] = (Double) m_iLumaWeight;
     padWeights[1] = (Double) m_iChromaCbWeight;
@@ -530,7 +537,7 @@ ErrVal PredWeight::getWeights(Double* padWeights )
 Void PredWeight::scaleL1Weight(Int iDistScaleFactor)
 {
     iDistScaleFactor >>= 2;
-    if(iDistScaleFactor > 128 || iDistScaleFactor < -64 )
+    if(iDistScaleFactor > 128 || iDistScaleFactor < -64)
     {
         iDistScaleFactor = 32;
     }
@@ -577,8 +584,12 @@ ErrVal PredWeightTable::initDefaults(UInt uiLumaWeightDenom, UInt uiChromaWeight
     Int iChromaOffset = 0;
     for(UInt uiIndex = 0; uiIndex < size(); uiIndex++)
     {
-        get(uiIndex).initWeights(iLumaWeight, iChromaWeight, iChromaWeight);
-        get(uiIndex).initOffsets(iLumaOffset, iChromaOffset, iChromaOffset);
+        get(uiIndex).initWeights(iLumaWeight,
+                                 iChromaWeight,
+                                 iChromaWeight);
+        get(uiIndex).initOffsets(iLumaOffset,
+                                 iChromaOffset,
+                                 iChromaOffset);
     }
     return Err::m_nOK;
 }
@@ -603,12 +614,12 @@ ErrVal PredWeightTable::setWeights(const Double (*padWeights)[3], Int iLumaScale
 
 Void PredWeightTable::clear()
 {
-    setAll(PredWeight() );
+    setAll(PredWeight());
 }
 
-Void PredWeightTable::copy(const PredWeightTable& rcPredWeightTable )
+Void PredWeightTable::copy(const PredWeightTable& rcPredWeightTable)
 {
-    StatBuf<PredWeight,32>::copy(rcPredWeightTable );
+    StatBuf<PredWeight,32>::copy(rcPredWeightTable);
 }
 
 ErrVal PredWeightTable::write(HeaderSymbolWriteIf& rcWriteIf, UInt uiNumRefIdxActiveMinus1) const
@@ -631,19 +642,19 @@ ErrVal PredWeightTable::read(HeaderSymbolReadIf& rcReadIf, UInt uiNumRefIdxActiv
 
 
 
-DBFilterParameter::DBFilterParameter(Bool bInterLayerParameters)
-: m_bInterLayerParameters       (bInterLayerParameters)
-, m_uiDisableDeblockingFilterIdc(false)
-, m_iSliceAlphaC0OffsetDiv2     (0)
-, m_iSliceBetaOffsetDiv2        (0)
+DBFilterParameter::DBFilterParameter(Bool bInterLayerParameters) :
+    m_bInterLayerParameters       (bInterLayerParameters),
+    m_uiDisableDeblockingFilterIdc(false),
+    m_iSliceAlphaC0OffsetDiv2     (0),
+    m_iSliceBetaOffsetDiv2        (0)
 {
 }
 
-DBFilterParameter::DBFilterParameter(const DBFilterParameter& rcDBFilterParameter)
-: m_bInterLayerParameters       (rcDBFilterParameter.m_bInterLayerParameters)
-, m_uiDisableDeblockingFilterIdc(rcDBFilterParameter.m_uiDisableDeblockingFilterIdc)
-, m_iSliceAlphaC0OffsetDiv2     (rcDBFilterParameter.m_iSliceAlphaC0OffsetDiv2)
-, m_iSliceBetaOffsetDiv2        (rcDBFilterParameter.m_iSliceBetaOffsetDiv2)
+DBFilterParameter::DBFilterParameter(const DBFilterParameter& rcDBFilterParameter) :
+    m_bInterLayerParameters       (rcDBFilterParameter.m_bInterLayerParameters),
+    m_uiDisableDeblockingFilterIdc(rcDBFilterParameter.m_uiDisableDeblockingFilterIdc),
+    m_iSliceAlphaC0OffsetDiv2     (rcDBFilterParameter.m_iSliceAlphaC0OffsetDiv2),
+    m_iSliceBetaOffsetDiv2        (rcDBFilterParameter.m_iSliceBetaOffsetDiv2)
 {
 }
 
@@ -710,48 +721,48 @@ ErrVal DBFilterParameter::read(HeaderSymbolReadIf& rcReadIf, Bool bSVCNalUnit)
             rcReadIf.getSvlc(m_iSliceBetaOffsetDiv2,         "SH: inter_layer_slice_beta_offset_div2");
         }
     }
-    ROT( bSVCNalUnit && m_uiDisableDeblockingFilterIdc > 6 );
-    ROT(!bSVCNalUnit && m_uiDisableDeblockingFilterIdc > 2 );
-    ROT(m_iSliceAlphaC0OffsetDiv2  < -6 || m_iSliceAlphaC0OffsetDiv2 > 6 );
-    ROT(m_iSliceBetaOffsetDiv2     < -6 || m_iSliceBetaOffsetDiv2    > 6 );
+    ROT( bSVCNalUnit && m_uiDisableDeblockingFilterIdc > 6);
+    ROT(!bSVCNalUnit && m_uiDisableDeblockingFilterIdc > 2);
+    ROT(m_iSliceAlphaC0OffsetDiv2  < -6 || m_iSliceAlphaC0OffsetDiv2 > 6);
+    ROT(m_iSliceBetaOffsetDiv2     < -6 || m_iSliceBetaOffsetDiv2    > 6);
     return Err::m_nOK;
 }
 
 
 
-NalUnitHeader::NalUnitHeader()
-: m_bForbiddenZeroBit     (false)
-, m_eNalRefIdc            (NAL_REF_IDC_PRIORITY_LOWEST)
-, m_eNalUnitType          (NAL_UNIT_UNSPECIFIED_0)
-, m_bReservedOneBit       (true)
-, m_bIdrFlag              (false)
-, m_uiPriorityId          (0)
-, m_bNoInterLayerPredFlag (true)
-, m_uiDependencyId        (0)
-, m_uiQualityId           (0)
-, m_uiTemporalId          (0)
-, m_bUseRefBasePicFlag    (false)
-, m_bDiscardableFlag      (false)
-, m_bOutputFlag           (true)
-, m_uiReservedThree2Bits  (3)
+NalUnitHeader::NalUnitHeader() :
+    m_bForbiddenZeroBit     (false),
+    m_eNalRefIdc            (NAL_REF_IDC_PRIORITY_LOWEST),
+    m_eNalUnitType          (NAL_UNIT_UNSPECIFIED_0),
+    m_bReservedOneBit       (true),
+    m_bIdrFlag              (false),
+    m_uiPriorityId          (0),
+    m_bNoInterLayerPredFlag (true),
+    m_uiDependencyId        (0),
+    m_uiQualityId           (0),
+    m_uiTemporalId          (0),
+    m_bUseRefBasePicFlag    (false),
+    m_bDiscardableFlag      (false),
+    m_bOutputFlag           (true),
+    m_uiReservedThree2Bits  (3)
 {
 }
 
-NalUnitHeader::NalUnitHeader(const NalUnitHeader& rcNalUnitHeader )
-: m_bForbiddenZeroBit       (rcNalUnitHeader.m_bForbiddenZeroBit)
-, m_eNalRefIdc              (rcNalUnitHeader.m_eNalRefIdc)
-, m_eNalUnitType            (rcNalUnitHeader.m_eNalUnitType)
-, m_bReservedOneBit         (rcNalUnitHeader.m_bReservedOneBit)
-, m_bIdrFlag                (rcNalUnitHeader.m_bIdrFlag)
-, m_uiPriorityId            (rcNalUnitHeader.m_uiPriorityId)
-, m_bNoInterLayerPredFlag   (rcNalUnitHeader.m_bNoInterLayerPredFlag)
-, m_uiDependencyId          (rcNalUnitHeader.m_uiDependencyId)
-, m_uiQualityId             (rcNalUnitHeader.m_uiQualityId)
-, m_uiTemporalId            (rcNalUnitHeader.m_uiTemporalId)
-, m_bUseRefBasePicFlag      (rcNalUnitHeader.m_bUseRefBasePicFlag)
-, m_bDiscardableFlag        (rcNalUnitHeader.m_bDiscardableFlag)
-, m_bOutputFlag             (rcNalUnitHeader.m_bOutputFlag)
-, m_uiReservedThree2Bits    (rcNalUnitHeader.m_uiReservedThree2Bits)
+NalUnitHeader::NalUnitHeader(const NalUnitHeader& rcNalUnitHeader) :
+    m_bForbiddenZeroBit       (rcNalUnitHeader.m_bForbiddenZeroBit),
+    m_eNalRefIdc              (rcNalUnitHeader.m_eNalRefIdc),
+    m_eNalUnitType            (rcNalUnitHeader.m_eNalUnitType),
+    m_bReservedOneBit         (rcNalUnitHeader.m_bReservedOneBit),
+    m_bIdrFlag                (rcNalUnitHeader.m_bIdrFlag),
+    m_uiPriorityId            (rcNalUnitHeader.m_uiPriorityId),
+    m_bNoInterLayerPredFlag   (rcNalUnitHeader.m_bNoInterLayerPredFlag),
+    m_uiDependencyId          (rcNalUnitHeader.m_uiDependencyId),
+    m_uiQualityId             (rcNalUnitHeader.m_uiQualityId),
+    m_uiTemporalId            (rcNalUnitHeader.m_uiTemporalId),
+    m_bUseRefBasePicFlag      (rcNalUnitHeader.m_bUseRefBasePicFlag),
+    m_bDiscardableFlag        (rcNalUnitHeader.m_bDiscardableFlag),
+    m_bOutputFlag             (rcNalUnitHeader.m_bOutputFlag),
+    m_uiReservedThree2Bits    (rcNalUnitHeader.m_uiReservedThree2Bits)
 {
 }
 
@@ -759,12 +770,12 @@ NalUnitHeader::~NalUnitHeader()
 {
 }
 
-Void NalUnitHeader::copy(const NalUnitHeader& rcNalUnitHeader, Bool bInclusiveSVCExtension )
+Void NalUnitHeader::copy(const NalUnitHeader& rcNalUnitHeader, Bool bInclusiveSVCExtension)
 {
     m_bForbiddenZeroBit     = rcNalUnitHeader.m_bForbiddenZeroBit;
     m_eNalRefIdc            = rcNalUnitHeader.m_eNalRefIdc;
     m_eNalUnitType          = rcNalUnitHeader.m_eNalUnitType;
-    ROFVS(bInclusiveSVCExtension );
+    ROFVS(bInclusiveSVCExtension);
 
     m_bReservedOneBit       = rcNalUnitHeader.m_bReservedOneBit;
     m_bIdrFlag              = rcNalUnitHeader.m_bIdrFlag;
@@ -845,7 +856,7 @@ ErrVal NalUnitHeader::read(HeaderSymbolReadIf& rcReadIf)
                                    m_eNalUnitType == NAL_UNIT_CODED_SLICE ||
                                    m_eNalUnitType == NAL_UNIT_CODED_SLICE_DATAPART_A ||
                                    m_eNalUnitType == NAL_UNIT_CODED_SLICE_DATAPART_B ||
-                                   m_eNalUnitType == NAL_UNIT_CODED_SLICE_DATAPART_C );
+                                   m_eNalUnitType == NAL_UNIT_CODED_SLICE_DATAPART_C);
     }
 
     //----- check forbidden and reserved bits -----
@@ -854,7 +865,7 @@ ErrVal NalUnitHeader::read(HeaderSymbolReadIf& rcReadIf)
         m_bForbiddenZeroBit     = false;
         m_bReservedOneBit       = true;
         m_uiReservedThree2Bits  = 3;
-        ROT(true );
+        ROT(true);
     }
 
     return Err::m_nOK;
@@ -862,20 +873,20 @@ ErrVal NalUnitHeader::read(HeaderSymbolReadIf& rcReadIf)
 
 
 
-AUDelimiter::AUDelimiter()
-: m_uiPrimaryPicType  (0)
+AUDelimiter::AUDelimiter() :
+    m_uiPrimaryPicType  (0)
 {
 }
 
-AUDelimiter::AUDelimiter(const NalUnitHeader& rcNalUnitHeader)
-: NalUnitHeader       (rcNalUnitHeader)
-, m_uiPrimaryPicType  (0 )
+AUDelimiter::AUDelimiter(const NalUnitHeader& rcNalUnitHeader) :
+    NalUnitHeader       (rcNalUnitHeader),
+    m_uiPrimaryPicType  (0)
 {
 }
 
-AUDelimiter::AUDelimiter(const AUDelimiter& rcAUDelimiter)
-: NalUnitHeader       (rcAUDelimiter)
-, m_uiPrimaryPicType  (rcAUDelimiter.m_uiPrimaryPicType)
+AUDelimiter::AUDelimiter(const AUDelimiter& rcAUDelimiter) :
+    NalUnitHeader       (rcAUDelimiter),
+    m_uiPrimaryPicType  (rcAUDelimiter.m_uiPrimaryPicType)
 {
 }
 
@@ -918,8 +929,8 @@ EndOfSequence::EndOfSequence()
 {
 }
 
-EndOfSequence::EndOfSequence(const NalUnitHeader& rcNalUnitHeader)
-: NalUnitHeader(rcNalUnitHeader)
+EndOfSequence::EndOfSequence(const NalUnitHeader& rcNalUnitHeader) :
+    NalUnitHeader(rcNalUnitHeader)
 {
 }
 
@@ -964,13 +975,13 @@ EndOfStream::EndOfStream()
 {
 }
 
-EndOfStream::EndOfStream(const NalUnitHeader& rcNalUnitHeader)
-: NalUnitHeader(rcNalUnitHeader)
+EndOfStream::EndOfStream(const NalUnitHeader& rcNalUnitHeader) :
+    NalUnitHeader(rcNalUnitHeader)
 {
 }
 
-EndOfStream::EndOfStream(const EndOfStream& rcEndOfStream)
-: NalUnitHeader(rcEndOfStream)
+EndOfStream::EndOfStream(const EndOfStream& rcEndOfStream) :
+    NalUnitHeader(rcEndOfStream)
 {
 }
 
@@ -978,7 +989,7 @@ EndOfStream::~EndOfStream()
 {
 }
 
-Void EndOfStream::copy(const EndOfStream& rcEndOfStream, Bool bInclusiveNALUnitHeader )
+Void EndOfStream::copy(const EndOfStream& rcEndOfStream, Bool bInclusiveNALUnitHeader)
 {
     if(bInclusiveNALUnitHeader)
     {
@@ -1010,15 +1021,15 @@ FillerData::FillerData() : m_uiNumFFBytes(0)
 {
 }
 
-FillerData::FillerData(const NalUnitHeader& rcNalUnitHeader)
-: NalUnitHeader (rcNalUnitHeader)
-, m_uiNumFFBytes(0)
+FillerData::FillerData(const NalUnitHeader& rcNalUnitHeader) :
+    NalUnitHeader (rcNalUnitHeader),
+    m_uiNumFFBytes(0)
 {
 }
 
-FillerData::FillerData(const FillerData& rcFillerData)
-: NalUnitHeader (rcFillerData)
-, m_uiNumFFBytes(rcFillerData.m_uiNumFFBytes)
+FillerData::FillerData(const FillerData& rcFillerData) :
+    NalUnitHeader (rcFillerData),
+    m_uiNumFFBytes(rcFillerData.m_uiNumFFBytes)
 {
 }
 
@@ -1066,33 +1077,33 @@ ErrVal FillerData::read(HeaderSymbolReadIf& rcReadIf, Bool bInclusiveNalUnitHead
     {
         UInt uiFFByte;
         rcReadIf.getCode(uiFFByte, 8, "ff_byte");
-        ROF (uiFFByte == 0xFF );
+        ROF (uiFFByte == 0xFF);
     }
     return Err::m_nOK;
 }
 
 
 
-PrefixHeader::PrefixHeader()
-: m_bStoreRefBasePicFlag(false)
-, m_cDecRefBasePicMarking(true)
-, m_bPrefixNalUnitAdditionalExtensionFlag(false)
+PrefixHeader::PrefixHeader() :
+    m_bStoreRefBasePicFlag(false),
+    m_cDecRefBasePicMarking(true),
+    m_bPrefixNalUnitAdditionalExtensionFlag(false)
 {
 }
 
-PrefixHeader::PrefixHeader(const NalUnitHeader& rcNalUnitHeader)
-: NalUnitHeader                           (rcNalUnitHeader)
-, m_bStoreRefBasePicFlag                  (false)
-, m_cDecRefBasePicMarking                 (true)
-, m_bPrefixNalUnitAdditionalExtensionFlag (false)
+PrefixHeader::PrefixHeader(const NalUnitHeader& rcNalUnitHeader) :
+    NalUnitHeader                           (rcNalUnitHeader),
+    m_bStoreRefBasePicFlag                  (false),
+    m_cDecRefBasePicMarking                 (true),
+    m_bPrefixNalUnitAdditionalExtensionFlag (false)
 {
 }
 
-PrefixHeader::PrefixHeader(const PrefixHeader &rcPrefixHeader)
-: NalUnitHeader                           (rcPrefixHeader)
-, m_bStoreRefBasePicFlag                  (rcPrefixHeader.m_bStoreRefBasePicFlag)
-, m_cDecRefBasePicMarking                 (rcPrefixHeader.m_cDecRefBasePicMarking)
-, m_bPrefixNalUnitAdditionalExtensionFlag (rcPrefixHeader.m_bPrefixNalUnitAdditionalExtensionFlag)
+PrefixHeader::PrefixHeader(const PrefixHeader &rcPrefixHeader) :
+    NalUnitHeader                           (rcPrefixHeader),
+    m_bStoreRefBasePicFlag                  (rcPrefixHeader.m_bStoreRefBasePicFlag),
+    m_cDecRefBasePicMarking                 (rcPrefixHeader.m_cDecRefBasePicMarking),
+    m_bPrefixNalUnitAdditionalExtensionFlag (rcPrefixHeader.m_bPrefixNalUnitAdditionalExtensionFlag)
 {
 }
 
@@ -1117,38 +1128,38 @@ ErrVal PrefixHeader::write(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveNALUni
     {
         NalUnitHeader::write(rcWriteIf);
     }
-    if(getNalRefIdc() != NAL_REF_IDC_PRIORITY_LOWEST )
+    if(getNalRefIdc() != NAL_REF_IDC_PRIORITY_LOWEST)
     {
         rcWriteIf.writeFlag(m_bStoreRefBasePicFlag, "store_ref_base_pic_flag");
-        if((getUseRefBasePicFlag() || m_bStoreRefBasePicFlag ) && ! getIdrFlag() )
+        if((getUseRefBasePicFlag() || m_bStoreRefBasePicFlag) && ! getIdrFlag())
         {
             m_cDecRefBasePicMarking.write(rcWriteIf);
         }
-        rcWriteIf.writeFlag(m_bPrefixNalUnitAdditionalExtensionFlag, "additional_prefix_nal_unit_extension_flag" );
-        ROT (m_bPrefixNalUnitAdditionalExtensionFlag ); // not supported in encoder
+        rcWriteIf.writeFlag(m_bPrefixNalUnitAdditionalExtensionFlag, "additional_prefix_nal_unit_extension_flag");
+        ROT (m_bPrefixNalUnitAdditionalExtensionFlag); // not supported in encoder
     }
     return Err::m_nOK;
 }
 
-ErrVal PrefixHeader::read(HeaderSymbolReadIf& rcReadIf, Bool bInclusiveNALUnitHeader )
+ErrVal PrefixHeader::read(HeaderSymbolReadIf& rcReadIf, Bool bInclusiveNALUnitHeader)
 {
     Bool bDummy;
 
-    if(bInclusiveNALUnitHeader )
+    if(bInclusiveNALUnitHeader)
     {
         NalUnitHeader::read(rcReadIf);
     }
-    if(getNalRefIdc() != NAL_REF_IDC_PRIORITY_LOWEST )
+    if(getNalRefIdc() != NAL_REF_IDC_PRIORITY_LOWEST)
     {
         rcReadIf.getFlag(m_bStoreRefBasePicFlag, "store_ref_base_pic_flag");
-        if((getUseRefBasePicFlag() || m_bStoreRefBasePicFlag ) && ! getIdrFlag() )
+        if((getUseRefBasePicFlag() || m_bStoreRefBasePicFlag) && ! getIdrFlag())
         {
             m_cDecRefBasePicMarking.read(rcReadIf);
         }
         rcReadIf.getFlag(m_bPrefixNalUnitAdditionalExtensionFlag,  "additional_prefix_nal_unit_extension_flag");
-        if(m_bPrefixNalUnitAdditionalExtensionFlag ) // read, but ignore following data
+        if(m_bPrefixNalUnitAdditionalExtensionFlag) // read, but ignore following data
         {
-            while(rcReadIf.moreRBSPData() )
+            while(rcReadIf.moreRBSPData())
             {
                 rcReadIf.getFlag(bDummy, "additional_prefix_nal_unit_extension_data_flag");
             }
@@ -1156,7 +1167,7 @@ ErrVal PrefixHeader::read(HeaderSymbolReadIf& rcReadIf, Bool bInclusiveNALUnitHe
     }
     else // read, but ignore following data
     {
-      while(rcReadIf.moreRBSPData() )
+      while(rcReadIf.moreRBSPData())
       {
           rcReadIf.getFlag(bDummy, "additional_prefix_nal_unit_extension_data_flag");
       }
@@ -1171,29 +1182,29 @@ SliceHeaderSyntax::SliceHeaderSyntax()
     xInit();
 }
 
-SliceHeaderSyntax::SliceHeaderSyntax(const NalUnitHeader& rcNalUnitHeader)
-: PrefixHeader(rcNalUnitHeader)
+SliceHeaderSyntax::SliceHeaderSyntax(const NalUnitHeader& rcNalUnitHeader) :
+    PrefixHeader(rcNalUnitHeader)
 {
     xInit();
 }
 
-SliceHeaderSyntax::SliceHeaderSyntax(const PrefixHeader& rcPrefixHeader )
-: PrefixHeader(rcPrefixHeader)
+SliceHeaderSyntax::SliceHeaderSyntax(const PrefixHeader& rcPrefixHeader) :
+    PrefixHeader(rcPrefixHeader)
 {
     xInit();
 }
 
-SliceHeaderSyntax::SliceHeaderSyntax(const SliceHeaderSyntax& rcSliceHeaderSyntax )
-: PrefixHeader(rcSliceHeaderSyntax)
+SliceHeaderSyntax::SliceHeaderSyntax(const SliceHeaderSyntax& rcSliceHeaderSyntax) :
+    PrefixHeader(rcSliceHeaderSyntax)
 {
     xCopy(rcSliceHeaderSyntax);
 }
 
 SliceHeaderSyntax::SliceHeaderSyntax(const SequenceParameterSet& rcSPS,
-                                     const PictureParameterSet&  rcPPS )
+                                     const PictureParameterSet&  rcPPS)
 {
     xInit();
-    ANOK(xInitParameterSets(rcSPS, rcPPS ) );
+    ANOK(xInitParameterSets(rcSPS, rcPPS));
 }
 
 SliceHeaderSyntax::~SliceHeaderSyntax()
@@ -1208,31 +1219,31 @@ ErrVal SliceHeaderSyntax::init(const SequenceParameterSet& rcSPS, const PictureP
     return Err::m_nOK;
 }
 
-Void SliceHeaderSyntax::copy(const SliceHeaderSyntax& rcSliceHeaderSyntax, Bool bInclusiveNalUnitHeader )
+Void SliceHeaderSyntax::copy(const SliceHeaderSyntax& rcSliceHeaderSyntax, Bool bInclusiveNalUnitHeader)
 {
-    PrefixHeader::copy(rcSliceHeaderSyntax, bInclusiveNalUnitHeader );
-    xCopy(rcSliceHeaderSyntax );
+    PrefixHeader::copy(rcSliceHeaderSyntax, bInclusiveNalUnitHeader);
+    xCopy(rcSliceHeaderSyntax);
 }
 
-ErrVal SliceHeaderSyntax::writePrefix(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveNalUnitHeader ) const
+ErrVal SliceHeaderSyntax::writePrefix(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveNalUnitHeader) const
 {
     NalUnitType eNalUnitType = getNalUnitType();
-    const_cast<SliceHeaderSyntax&>(*this).setNalUnitType(NAL_UNIT_PREFIX );
+    const_cast<SliceHeaderSyntax&>(*this).setNalUnitType(NAL_UNIT_PREFIX);
     PrefixHeader::write(rcWriteIf, bInclusiveNalUnitHeader);
-    const_cast<SliceHeaderSyntax&>(*this).setNalUnitType(eNalUnitType );
+    const_cast<SliceHeaderSyntax&>(*this).setNalUnitType(eNalUnitType);
     return Err::m_nOK;
 }
 
 
-ErrVal SliceHeaderSyntax::write(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveNalUnitHeader ) const
+ErrVal SliceHeaderSyntax::write(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveNalUnitHeader) const
 {
-    ROF(parameterSetsInitialized() );
+    ROF(parameterSetsInitialized());
 
-    ETRACE_DECLARE(Bool m_bTraceEnable = true );
-    ETRACE_LAYER  (Int(16 * getDependencyId() + getQualityId() ) );
+    ETRACE_DECLARE(Bool m_bTraceEnable = true);
+    ETRACE_LAYER  (Int(16 * getDependencyId() + getQualityId()));
     ETRACE_NEWSLICE;
 
-    if(bInclusiveNalUnitHeader )
+    if(bInclusiveNalUnitHeader)
     {
         NalUnitHeader::write(rcWriteIf);
     }
@@ -1261,15 +1272,15 @@ ErrVal SliceHeaderSyntax::write(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveN
             rcWriteIf.writeSvlc (m_iDeltaPicOrderCntBottom, "SH: delta_pic_order_cnt_bottom");
         }
     }
-    if(getSPS().getPicOrderCntType() == 1 && !getSPS().getDeltaPicOrderAlwaysZeroFlag() )
+    if(getSPS().getPicOrderCntType() == 1 && !getSPS().getDeltaPicOrderAlwaysZeroFlag())
     {
         rcWriteIf.writeSvlc(m_iDeltaPicOrderCnt0, "SH: delta_pic_order_cnt[0]");
-        if(getPPS().getPicOrderPresentFlag() && ! m_bFieldPicFlag )
+        if(getPPS().getPicOrderPresentFlag() && ! m_bFieldPicFlag)
         {
             rcWriteIf.writeSvlc (m_iDeltaPicOrderCnt1, "SH: delta_pic_order_cnt[1]");
         }
     }
-    if(getPPS().getRedundantPicCntPresentFlag() )
+    if(getPPS().getRedundantPicCntPresentFlag())
     {
         rcWriteIf.writeUvlc (m_uiRedundantPicCnt, "SH: redundant_pic_cnt");
     }
@@ -1330,7 +1341,7 @@ ErrVal SliceHeaderSyntax::write(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveN
             if(!getSPS().getAVCHeaderRewriteFlag() && ! isH264AVCCompatible())
             {
                 rcWriteIf.writeFlag(getStoreRefBasePicFlag(), "SH: store_ref_base_pic_flag");
-                if((getUseRefBasePicFlag() || getStoreRefBasePicFlag() ) && !getIdrFlag())
+                if((getUseRefBasePicFlag() || getStoreRefBasePicFlag()) && !getIdrFlag())
                 {
                     getDecRefBasePicMarking().write(rcWriteIf);
                 }
@@ -1344,7 +1355,7 @@ ErrVal SliceHeaderSyntax::write(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveN
     rcWriteIf.writeSvlc(m_iSliceQpDelta,  "SH: slice_qp_delta");
     if(isSPSlice() || isSISlice())
     {
-        if(isSPSlice() )
+        if(isSPSlice())
         {
             rcWriteIf.writeFlag(m_bSPForSwitchFlag, "SH: sp_for_switch_flag");
         }
@@ -1369,7 +1380,7 @@ ErrVal SliceHeaderSyntax::write(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveN
             m_cInterLayerDeblockingFilterParameter.write(rcWriteIf);
         }
         rcWriteIf.writeFlag(m_bConstrainedIntraResamplingFlag, "SH: constrained_intra_resampling_flag");
-        if(getSPS().getExtendedSpatialScalability() == ESS_PICT )
+        if(getSPS().getExtendedSpatialScalability() == ESS_PICT)
         {
             rcWriteIf.writeFlag(m_bRefLayerChromaPhaseXPlus1Flag, "SH: ref_layer_chroma_phase_x_plus1_flag");
             rcWriteIf.writeCode(m_uiRefLayerChromaPhaseYPlus1, 2, "SH: ref_layer_chroma_phase_y_plus1");
@@ -1389,30 +1400,30 @@ ErrVal SliceHeaderSyntax::write(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveN
         else
         {
           rcWriteIf.writeFlag(m_bAdaptiveBaseModeFlag, "SH: adaptive_base_mode_flag");
-          if(!m_bAdaptiveBaseModeFlag )
+          if(!m_bAdaptiveBaseModeFlag)
           {
               rcWriteIf.writeFlag(m_bDefaultBaseModeFlag, "SH: default_base_mode_flag");
           }
           if(!m_bDefaultBaseModeFlag)
           {
             rcWriteIf.writeFlag(m_bAdaptiveMotionPredictionFlag, "SH: adaptive_motion_prediction_flag");
-            if(!m_bAdaptiveMotionPredictionFlag )
+            if(!m_bAdaptiveMotionPredictionFlag)
             {
                 rcWriteIf.writeFlag(m_bDefaultMotionPredictionFlag,                 "SH: default_motion_prediction_flag");
             }
           }
           rcWriteIf.writeFlag(m_bAdaptiveResidualPredictionFlag,              "SH: adaptive_residual_prediction_flag");
-          if(!m_bAdaptiveResidualPredictionFlag )
+          if(!m_bAdaptiveResidualPredictionFlag)
           {
               rcWriteIf.writeFlag(m_bDefaultResidualPredictionFlag,               "SH: default_residual_prediction_flag");
           }
         }
-        if(getSPS().getAVCAdaptiveRewriteFlag() )
+        if(getSPS().getAVCAdaptiveRewriteFlag())
         {
-            rcWriteIf.writeFlag(m_bTCoeffLevelPredictionFlag,  "SH: tcoeff_level_prediction_flag" );
+            rcWriteIf.writeFlag(m_bTCoeffLevelPredictionFlag,  "SH: tcoeff_level_prediction_flag");
         }
     }
-    if(!getSPS().getAVCHeaderRewriteFlag() && ! isH264AVCCompatible() && ! m_bSliceSkipFlag )
+    if(!getSPS().getAVCHeaderRewriteFlag() && ! isH264AVCCompatible() && ! m_bSliceSkipFlag)
     {
         UInt  uiScanIdxStart  = (m_uiScanIdxStart == m_uiScanIdxStop ? 1 : m_uiScanIdxStart);
         UInt  uiScanIdxEnd    = (m_uiScanIdxStart == m_uiScanIdxStop ? 0 : m_uiScanIdxStop - 1);
@@ -1423,7 +1434,9 @@ ErrVal SliceHeaderSyntax::write(HeaderSymbolWriteIf& rcWriteIf, Bool bInclusiveN
 }
 
 
-ErrVal SliceHeaderSyntax::read(ParameterSetMng& rcParameterSetMng, HeaderSymbolReadIf& rcReadIf, Bool bInclusiveNalUnitHeader)
+ErrVal SliceHeaderSyntax::read(ParameterSetMng& rcParameterSetMng,
+                               HeaderSymbolReadIf& rcReadIf,
+                               Bool bInclusiveNalUnitHeader)
 {
     if(bInclusiveNalUnitHeader)
     {
@@ -1433,12 +1446,13 @@ ErrVal SliceHeaderSyntax::read(ParameterSetMng& rcParameterSetMng, HeaderSymbolR
     rcReadIf.getUvlc(m_uiFirstMbInSlice, "SH: first_mb_in_slice");
     UInt uiSliceType;
     rcReadIf.getUvlc(uiSliceType, "SH: slice_type");
-    m_eSliceType = SliceType(uiSliceType );
+    m_eSliceType = SliceType(uiSliceType);
     rcReadIf.getUvlc(m_uiPicParameterSetId, "SH: pic_parameter_set_id");
     xInitParameterSets(rcParameterSetMng, m_uiPicParameterSetId, getNalUnitType() == NAL_UNIT_CODED_SLICE_SCALABLE);
 
     rcReadIf.getCode(m_uiFrameNum,
-                     getSPS().getLog2MaxFrameNum(), "SH: frame_num");
+                     getSPS().getLog2MaxFrameNum(),
+                     "SH: frame_num");
     if(!getSPS().getFrameMbsOnlyFlag())
     {
         rcReadIf.getFlag (m_bFieldPicFlag,  "SH: field_pic_flag");
@@ -1510,7 +1524,7 @@ ErrVal SliceHeaderSyntax::read(ParameterSetMng& rcParameterSetMng, HeaderSymbolR
                 rcReadIf.getUvlc(m_uiLumaLog2WeightDenom, "PWT: luma_log_weight_denom");
                 rcReadIf.getUvlc(m_uiChromaLog2WeightDenom, "PWT: chroma_log_weight_denom");
                 m_cPredWeightTableL0.read(rcReadIf, m_uiNumRefIdxL0ActiveMinus1, m_uiLumaLog2WeightDenom, m_uiChromaLog2WeightDenom);
-                if(isBSlice() )
+                if(isBSlice())
                 {
                     m_cPredWeightTableL1.read(rcReadIf, m_uiNumRefIdxL1ActiveMinus1, m_uiLumaLog2WeightDenom, m_uiChromaLog2WeightDenom);
                 }
@@ -1531,7 +1545,7 @@ ErrVal SliceHeaderSyntax::read(ParameterSetMng& rcParameterSetMng, HeaderSymbolR
             {
                 Bool bStoreRefBasePicFlag;
                 rcReadIf.getFlag (bStoreRefBasePicFlag, "SH: store_ref_base_pic_flag");
-                setStoreRefBasePicFlag(bStoreRefBasePicFlag );
+                setStoreRefBasePicFlag(bStoreRefBasePicFlag);
                 if((getUseRefBasePicFlag() || getStoreRefBasePicFlag()) && !getIdrFlag())
                 {
                     getDecRefBasePicMarking().read(rcReadIf);
@@ -1556,17 +1570,17 @@ ErrVal SliceHeaderSyntax::read(ParameterSetMng& rcParameterSetMng, HeaderSymbolR
 
     if(getPPS().getDeblockingFilterParametersPresentFlag())
     {
-        m_cDeblockingFilterParameter.read(rcReadIf, getNalUnitType() == NAL_UNIT_CODED_SLICE_SCALABLE );
+        m_cDeblockingFilterParameter.read(rcReadIf, getNalUnitType() == NAL_UNIT_CODED_SLICE_SCALABLE);
     }
 
     if(getPPS().getNumSliceGroupsMinus1() > 0 &&
-       getPPS().getSliceGroupMapType() >= 3 && getPPS().getSliceGroupMapType() <= 5 )
+       getPPS().getSliceGroupMapType() >= 3 && getPPS().getSliceGroupMapType() <= 5)
     {
         rcReadIf.getCode(m_uiSliceGroupChangeCycle,
                          getPPS().getLog2MaxSliceGroupChangeCycle(getSPS().getMbInFrame()), "SH: slice_group_change_cycle");
     }
 
-    if(!getNoInterLayerPredFlag() && getQualityId() == 0 )
+    if(!getNoInterLayerPredFlag() && getQualityId() == 0)
     {
         rcReadIf.getUvlc(m_uiRefLayerDQId, "SH: ref_layer_dq_id");
         if(getSPS().getInterlayerDeblockingPresent())
@@ -1593,7 +1607,7 @@ ErrVal SliceHeaderSyntax::read(ParameterSetMng& rcParameterSetMng, HeaderSymbolR
         }
         else
         {
-            m_uiRefLayerDQId  = (getDependencyId() << 4 ) + getQualityId() - 1;
+            m_uiRefLayerDQId  = (getDependencyId() << 4) + getQualityId() - 1;
         }
     }
     if(!getNoInterLayerPredFlag())
@@ -1601,7 +1615,7 @@ ErrVal SliceHeaderSyntax::read(ParameterSetMng& rcParameterSetMng, HeaderSymbolR
         rcReadIf.getFlag(m_bSliceSkipFlag,  "SH: slice_skip_flag");
         if(m_bSliceSkipFlag)
         {
-            rcReadIf.getUvlc (m_uiNumMbsInSliceMinus1,  "SH: num_mbs_in_slice_minus1" );
+            rcReadIf.getUvlc (m_uiNumMbsInSliceMinus1,  "SH: num_mbs_in_slice_minus1");
         }
         else
         {
@@ -1670,8 +1684,8 @@ Void SliceHeaderSyntax::xInit()
     m_bNumRefIdxActiveOverrideFlag          = false;
     m_uiNumRefIdxL0ActiveMinus1             = 0;
     m_uiNumRefIdxL1ActiveMinus1             = 0;
-    m_cRefPicListReorderingL0               .clear(false );
-    m_cRefPicListReorderingL1               .clear(false );
+    m_cRefPicListReorderingL0               .clear(false);
+    m_cRefPicListReorderingL1               .clear(false);
     m_bBasePredWeightTableFlag              = false;
     m_uiLumaLog2WeightDenom                 = 0;
     m_uiChromaLog2WeightDenom               = 0;
@@ -1679,15 +1693,15 @@ Void SliceHeaderSyntax::xInit()
     m_cPredWeightTableL1                    .clear();
     m_bNoOutputOfPriorPicsFlag              = true;
     m_bLongTermReferenceFlag                = false;
-    m_cDecRefPicMarking                     .clear(false, false );
+    m_cDecRefPicMarking                     .clear(false, false);
     m_uiCabacInitIdc                        = 0;
     m_iSliceQpDelta                         = 0;
     m_bSPForSwitchFlag                      = false;
     m_iSliceQsDelta                         = 0;
-    m_cDeblockingFilterParameter            .clear(false );
+    m_cDeblockingFilterParameter            .clear(false);
     m_uiSliceGroupChangeCycle               = 0;
     m_uiRefLayerDQId                        = MSYS_UINT_MAX;
-    m_cInterLayerDeblockingFilterParameter  .clear(true );
+    m_cInterLayerDeblockingFilterParameter  .clear(true);
     m_bConstrainedIntraResamplingFlag       = false;
     m_bRefLayerChromaPhaseXPlus1Flag        = false;
     m_uiRefLayerChromaPhaseYPlus1           = 0;
@@ -1773,7 +1787,7 @@ Void SliceHeaderSyntax::xCopy(const SliceHeaderSyntax&  rcSliceHeaderSyntax)
 
 ErrVal SliceHeaderSyntax::xInitScalingMatrix()
 {
-    ROF(parameterSetsInitialized() );
+    ROF(parameterSetsInitialized());
 
     const Bool    bSeqScalMatPresent  = getSPS().getSeqScalingMatrixPresentFlag();
     const Bool    bPicScalMatPresent  = getPPS().getPicScalingMatrixPresentFlag();
@@ -1911,14 +1925,14 @@ ErrVal SliceHeaderSyntax::xInitParameterSets(ParameterSetMng& rcParameterSetMng,
         }
         if(!bSupported)
         {
-            fprintf(stderr, "\n" );
-            fprintf(stderr, "Unsupported conformance point:\n" );
-            fprintf(stderr, "   profile_idc          = %d\n", (Int)pcSPS->getProfileIdc() );
-            fprintf(stderr, "   constraint_set0_flag = %d\n", (pcSPS->getConstrainedSet0Flag() ? 1 : 0 ) );
-            fprintf(stderr, "   constraint_set1_flag = %d\n", (pcSPS->getConstrainedSet1Flag() ? 1 : 0 ) );
-            fprintf(stderr, "   constraint_set2_flag = %d\n", (pcSPS->getConstrainedSet2Flag() ? 1 : 0 ) );
-            fprintf(stderr, "   constraint_set3_flag = %d\n", (pcSPS->getConstrainedSet3Flag() ? 1 : 0 ) );
-            fprintf(stderr, "\n" );
+            fprintf(stderr, "\n");
+            fprintf(stderr, "Unsupported conformance point:\n");
+            fprintf(stderr, "   profile_idc          = %d\n", (Int)pcSPS->getProfileIdc());
+            fprintf(stderr, "   constraint_set0_flag = %d\n", (pcSPS->getConstrainedSet0Flag() ? 1 : 0));
+            fprintf(stderr, "   constraint_set1_flag = %d\n", (pcSPS->getConstrainedSet1Flag() ? 1 : 0));
+            fprintf(stderr, "   constraint_set2_flag = %d\n", (pcSPS->getConstrainedSet2Flag() ? 1 : 0));
+            fprintf(stderr, "   constraint_set3_flag = %d\n", (pcSPS->getConstrainedSet3Flag() ? 1 : 0));
+            fprintf(stderr, "\n");
             RERR();
         }
     }
@@ -1932,8 +1946,8 @@ ErrVal SliceHeaderSyntax::xInitParameterSets(const SequenceParameterSet& rcSPS, 
     m_pcPPS                           = &rcPPS;
     m_pcSPS                           = &rcSPS;
     m_uiPicParameterSetId             = rcPPS.getPicParameterSetId();
-    m_uiNumRefIdxL0ActiveMinus1       = rcPPS.getNumRefIdxActive(LIST_0 ) - 1;
-    m_uiNumRefIdxL1ActiveMinus1       = rcPPS.getNumRefIdxActive(LIST_1 ) - 1;
+    m_uiNumRefIdxL0ActiveMinus1       = rcPPS.getNumRefIdxActive(LIST_0) - 1;
+    m_uiNumRefIdxL1ActiveMinus1       = rcPPS.getNumRefIdxActive(LIST_1) - 1;
     m_bRefLayerChromaPhaseXPlus1Flag  = rcSPS.getBaseChromaPhaseXPlus1() != 0;
     m_uiRefLayerChromaPhaseYPlus1     = rcSPS.getBaseChromaPhaseYPlus1();
     m_iScaledRefLayerLeftOffset       = rcSPS.getScaledBaseLeftOffset();

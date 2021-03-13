@@ -58,14 +58,22 @@ public:
         m_uiUsableSize = rcMemAccessor.m_uiUsableSize;
     }
 
+    //将输入参数的值设置进去
     Void set(T* pcT, UInt uiSize, T* pcOrigT=NULL, UInt uiUsableSize=0)
     {
         m_pcT = pcT;
         m_uiSize = uiSize;
         m_pcOrigT = pcOrigT;
         m_uiUsableSize = uiUsableSize;
-        if(NULL == pcOrigT) { m_pcOrigT = pcT; }
-        if(0 == uiUsableSize) { m_uiUsableSize = m_uiSize; }
+        if(NULL == pcOrigT)
+        {
+            m_pcOrigT = pcT;
+        }
+
+        if(0 == uiUsableSize)
+        {
+            m_uiUsableSize = m_uiSize;
+        }
     }
 
     Void clear()

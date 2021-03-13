@@ -185,14 +185,14 @@ ErrVal LoopFilter::process(SliceHeader&  rcSH,
                                                  rcSH.isMbaffFrame());
 
             PicType             eMbPicType        = pcMbDataAccess->getMbPicType();
-            YuvPicBuffer*       pcFrameBuffer     = apcFrame[ eMbPicType ]->getFullPelYuvBuffer();
-            YuvPicBuffer*       pcResidualBuffer  = (pcResidual ? apcResidual[ eMbPicType ]->getFullPelYuvBuffer() : 0);
+            YuvPicBuffer*       pcFrameBuffer     = apcFrame[eMbPicType]->getFullPelYuvBuffer();
+            YuvPicBuffer*       pcResidualBuffer  = (pcResidual ? apcResidual[eMbPicType]->getFullPelYuvBuffer() : 0);
 
             const SliceHeader*  pcDBSliceHeader   = 0;
             if(apcMbStatus)
             {
                 const UInt      uiMbIdx     = rcSH.getMbIndexFromAddress(uiMbAddress);
-                const MbStatus& rcMbStatus  = apcMbStatus[ uiMbIdx ];
+                const MbStatus& rcMbStatus  = apcMbStatus[uiMbIdx];
                 pcDBSliceHeader             = rcMbStatus.getLastCodedSliceHeader();
             }
 
@@ -916,14 +916,14 @@ UChar LoopFilter::xCheckMvDataB(const MbData& rcQMbData,
 
 Void LoopFilter::xFilter(XPel* pFlt, const Int& iOffset, const Int& iIndexA, const Int& iIndexB, const UChar& ucBs, const Bool& bLum)
 {
-    Int iAlpha    = g_acAlphaClip[ iIndexA ].ucAlpha;
-    Int P0        = pFlt[  -iOffset];
-    Int Q0        = pFlt[         0];
+    Int iAlpha    = g_acAlphaClip[iIndexA].ucAlpha;
+    Int P0        = pFlt[ -iOffset];
+    Int Q0        = pFlt[        0];
     Int P1        = pFlt[-2*iOffset];
-    Int Q1        = pFlt[   iOffset];
+    Int Q1        = pFlt[  iOffset];
     Int iDelta    = Q0 - P0;
     Int iAbsDelta = abs(iDelta );
-    Int iBeta     = g_aucBetaTab [ iIndexB ];
+    Int iBeta     = g_aucBetaTab [iIndexB];
 
     ROFVS(ucBs);
     ROFVS(iAbsDelta < iAlpha);
@@ -931,12 +931,12 @@ Void LoopFilter::xFilter(XPel* pFlt, const Int& iOffset, const Int& iIndexA, con
 
     if(ucBs < 4)
     {
-        Int C0 = g_acAlphaClip[ iIndexA ].aucClip[ucBs];
+        Int C0 = g_acAlphaClip[iIndexA].aucClip[ucBs];
 
         if(bLum)
         {
             Int P2 = pFlt[-3*iOffset] ;
-            Int Q2 = pFlt[ 2*iOffset] ;
+            Int Q2 = pFlt[2*iOffset] ;
             Int aq = ((abs(Q2 - Q0) < iBeta) ? 1 : 0);
             Int ap = ((abs(P2 - P0) < iBeta) ? 1 : 0);
 
@@ -947,28 +947,29 @@ Void LoopFilter::xFilter(XPel* pFlt, const Int& iOffset, const Int& iIndexA, con
 
             if(aq)
             {
-                pFlt[   iOffset] = Q1 + gClipMinMax((Q2 + ((P0 + Q0 + 1)>>1) - (Q1<<1)) >> 1, -C0, C0);
+                pFlt[  iOffset] = Q1 + gClipMinMax((Q2 + ((P0 + Q0 + 1)>>1) - (Q1<<1)) >> 1, -C0, C0);
             }
 
             C0 += ap + aq -1;
         }
 
         C0++;
-        Int iDiff      = gClipMinMax(((iDelta << 2) + (P1 - Q1) + 4) >> 3, -C0, C0) ;
+
+        Int iDiff = gClipMinMax(((iDelta << 2) + (P1 - Q1) + 4) >> 3, -C0, C0) ;
         pFlt[-iOffset] = gClip(P0 + iDiff);
-        pFlt[       0] = gClip(Q0 - iDiff);
+        pFlt[0] = gClip(Q0 - iDiff);
         return;
     }
 
     if(!bLum)
     {
-        pFlt[         0] = ((Q1 << 1) + Q0 + P1 + 2) >> 2;
-        pFlt[  -iOffset] = ((P1 << 1) + P0 + Q1 + 2) >> 2;
+        pFlt[        0] = ((Q1 << 1) + Q0 + P1 + 2) >> 2;
+        pFlt[ -iOffset] = ((P1 << 1) + P0 + Q1 + 2) >> 2;
     }
     else
     {
         Int  P2      = pFlt[-3*iOffset] ;
-        Int  Q2      = pFlt[ 2*iOffset] ;
+        Int  Q2      = pFlt[2*iOffset] ;
         Bool bEnable = (iAbsDelta < ((iAlpha >> 2) + 2));
         Bool aq      = bEnable & (abs(Q2 - Q0) < iBeta);
         Bool ap      = bEnable & (abs(P2 - P0) < iBeta);
@@ -976,9 +977,9 @@ Void LoopFilter::xFilter(XPel* pFlt, const Int& iOffset, const Int& iIndexA, con
 
         if(aq)
         {
-            pFlt[         0] = (P1 + ((Q1 + PQ0) << 1) +  Q2 + 4) >> 3;
-            pFlt[   iOffset] = (PQ0 +Q1 + Q2 + 2) >> 2;
-            pFlt[ 2*iOffset] = (((pFlt[ 3*iOffset] + Q2) <<1) + Q2 + Q1 + PQ0 + 4) >> 3;
+            pFlt[        0] = (P1 + ((Q1 + PQ0) << 1) +  Q2 + 4) >> 3;
+            pFlt[  iOffset] = (PQ0 +Q1 + Q2 + 2) >> 2;
+            pFlt[2*iOffset] = (((pFlt[3*iOffset] + Q2) <<1) + Q2 + Q1 + PQ0 + 4) >> 3;
         }
         else
         {
@@ -987,7 +988,7 @@ Void LoopFilter::xFilter(XPel* pFlt, const Int& iOffset, const Int& iIndexA, con
 
         if(ap)
         {
-            pFlt[  -iOffset] = (Q1 + ((P1 + PQ0) << 1) +  P2 + 4) >> 3;
+            pFlt[ -iOffset] = (Q1 + ((P1 + PQ0) << 1) +  P2 + 4) >> 3;
             pFlt[-2*iOffset] = (PQ0 +P1 + P2 + 2) >> 2;
             pFlt[-3*iOffset] = (((pFlt[-4*iOffset] + P2) <<1) + pFlt[-3*iOffset] + P1 + PQ0 + 4) >> 3;
         }

@@ -17,6 +17,7 @@ YuvBufferCtrl::~YuvBufferCtrl()
 ErrVal YuvBufferCtrl::getChromaSize(UInt& ruiChromaSize)
 {
     ROF(m_bInitDone);
+    //32765 Or 603136
     ruiChromaSize = m_uiChromaSize;
     return Err::m_nOK;
 }

@@ -595,7 +595,7 @@ ErrVal SequenceParameterSet::read (HeaderSymbolReadIf* pcReadIf,
        m_eProfileIdc != HIGH_444_PROFILE           &&
        m_eProfileIdc != CAVLC_444_PROFILE          &&
        m_eProfileIdc != SCALABLE_BASELINE_PROFILE  &&
-       m_eProfileIdc != SCALABLE_HIGH_PROFILE       )
+       m_eProfileIdc != SCALABLE_HIGH_PROFILE)
     {
         // unkown profile
         rbCompletelyParsed = false;

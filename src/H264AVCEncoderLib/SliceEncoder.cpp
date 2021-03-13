@@ -640,6 +640,16 @@ ErrVal SliceEncoder::encodeMbAffSliceSVC (ControlData&  rcControlData,        //
 
 
 ///对一个Slice进行编码
+//初始化Slice与MB
+//pcMbDataCtrl->initSlice()
+//            ->initMb   ()
+//初始化待编码的Slice与MB
+//m_pcControlMng->initSliceForCoding()
+//              ->initMbForCoding   ()
+//对一个MB进行编码
+//m_pcMbEncoder->encodeMacroblock()
+//保存编码后的bin数据
+//m_pcMbCoder->encode()
 ErrVal SliceEncoder::encodeSlice (SliceHeader&  rcSliceHeader,
                                   Frame*        pcFrame,
                                   MbDataCtrl*   pcMbDataCtrl, ///MbDataCtrl m_pcMbDataCtrl
@@ -662,11 +672,14 @@ ErrVal SliceEncoder::encodeSlice (SliceHeader&  rcSliceHeader,
     ROT(rcSliceHeader.isBSlice() && ! pcMbDataCtrlL1);
 
     //===== initialization =====
-    pcMbDataCtrl->initSlice (rcSliceHeader, ENCODE_PROCESS, false, pcMbDataCtrlL1);
+    pcMbDataCtrl->initSlice (rcSliceHeader,
+                             ENCODE_PROCESS,
+                             false,
+                             pcMbDataCtrlL1);
     m_pcControlMng->initSliceForCoding (rcSliceHeader);
 
 
-    //Step 5: 逐个对该slice中的宏块进行编码
+    ///Step 5: 逐个对该slice中的宏块进行编码
     //===== loop over macroblocks =====
     //rcSliceHeader.getLastMbInSlice():8159
     //rcSliceHeader.getFMO()->getNextMBNr(uiMbAddress): 获取本FMO中下一个MB的idx
@@ -756,9 +769,11 @@ ErrVal SliceEncoder::xSetPredWeights (SliceHeader& rcSH,
 
     if(rcSH.isBSlice ())
     {
-        rcSH.getPredWeightTable(LIST_1).initDefaults (rcSH.getLumaLog2WeightDenom(), rcSH.getChromaLog2WeightDenom());
+        rcSH.getPredWeightTable(LIST_1).initDefaults (rcSH.getLumaLog2WeightDenom(),
+                                                      rcSH.getChromaLog2WeightDenom());
     }
-    rcSH.getPredWeightTable(LIST_0).initDefaults (rcSH.getLumaLog2WeightDenom(), rcSH.getChromaLog2WeightDenom());
+    rcSH.getPredWeightTable(LIST_0).initDefaults (rcSH.getLumaLog2WeightDenom(),
+                                                  rcSH.getChromaLog2WeightDenom());
 
     Double afFwWeight[MAX_REF_FRAMES][3];
     Double afBwWeight[MAX_REF_FRAMES][3];
@@ -769,8 +784,12 @@ ErrVal SliceEncoder::xSetPredWeights (SliceHeader& rcSH,
     /* init arrays with default weights */
     for (UInt x = 0; x < MAX_REF_FRAMES; x++)
     {
-        xInitDefaultWeights (afFwWeight[x], rcSH.getLumaLog2WeightDenom(), rcSH.getChromaLog2WeightDenom());
-        xInitDefaultWeights (afBwWeight[x], rcSH.getLumaLog2WeightDenom(), rcSH.getChromaLog2WeightDenom());
+        xInitDefaultWeights(afFwWeight[x],
+                            rcSH.getLumaLog2WeightDenom(),
+                            rcSH.getChromaLog2WeightDenom());
+        xInitDefaultWeights(afBwWeight[x],
+                            rcSH.getLumaLog2WeightDenom(),
+                            rcSH.getChromaLog2WeightDenom());
 
         afFwOffsets[x][0] = afFwOffsets[x][1] = afFwOffsets[x][2] = 0;
         afBwOffsets[x][0] = afBwOffsets[x][1] = afBwOffsets[x][2] = 0;
@@ -778,13 +797,24 @@ ErrVal SliceEncoder::xSetPredWeights (SliceHeader& rcSH,
 
     if (rcSH.isBSlice())
     {
-        m_pcMbEncoder->getPredWeights (rcSH, LIST_1, afBwWeight,
-                                       pOrgFrame, rcRefFrameList1);
-        rcSH.getPredWeightTable(LIST_1).setWeights (afBwWeight, iLumaScale, iChromaScale);
+        m_pcMbEncoder->getPredWeights(rcSH,
+                                      LIST_1,
+                                      afBwWeight,
+                                      pOrgFrame,
+                                      rcRefFrameList1);
+        rcSH.getPredWeightTable(LIST_1).setWeights (afBwWeight,
+                                                    iLumaScale,
+                                                    iChromaScale);
     }
 
-    m_pcMbEncoder->getPredWeights (rcSH, LIST_0, afFwWeight, pOrgFrame, rcRefFrameList0);
-    rcSH.getPredWeightTable (LIST_0).setWeights(afFwWeight, iLumaScale, iChromaScale);
+    m_pcMbEncoder->getPredWeights(rcSH,
+                                  LIST_0,
+                                  afFwWeight,
+                                  pOrgFrame,
+                                  rcRefFrameList0);
+    rcSH.getPredWeightTable(LIST_0).setWeights(afFwWeight,
+                                                iLumaScale,
+                                                iChromaScale);
 
     return Err::m_nOK;
 }
@@ -1020,7 +1050,8 @@ ErrVal SliceEncoder::xAddTCoeffs2 (MbDataAccess& rcMbDataAccess, MbDataAccess& r
             m_pcTransform->addPrediction8x8Blk (rcMbDataAccess.getMbTCoeffs().get8x8(c8x8Idx),
                                                 rcMbDataAccessBase.getMbTCoeffs().get8x8(c8x8Idx),
                                                 rcMbDataAccess.getMbData().getQp(),
-                                                rcMbDataAccessBase.getMbData().getQp(), bCoded);
+                                                rcMbDataAccessBase.getMbData().getQp(),
+                                                bCoded);
 
             if(rcMbDataAccess.getMbData().isIntra16x16())
                 AOT(1);
@@ -1060,15 +1091,17 @@ ErrVal SliceEncoder::xAddTCoeffs2 (MbDataAccess& rcMbDataAccess, MbDataAccess& r
 
     // Add the chroma coefficients and update the BCBP
     m_pcTransform->addPredictionChromaBlocks (rcMbDataAccess.getMbTCoeffs().get(CIdx(0)),
-                                               rcMbDataAccessBase.getMbTCoeffs().get(CIdx(0)),
-                                               rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.getMbData().getQp()),
-                                               rcMbDataAccess.getSH().getBaseSliceHeader()->getCbQp(rcMbDataAccessBase.getMbData().getQp()),
-                                               bChromaDC, bChromaAC);
+                                              rcMbDataAccessBase.getMbTCoeffs().get(CIdx(0)),
+                                              rcMbDataAccess.getSH().getCbQp(rcMbDataAccess.getMbData().getQp()),
+                                              rcMbDataAccess.getSH().getBaseSliceHeader()->getCbQp(rcMbDataAccessBase.getMbData().getQp()),
+                                              bChromaDC,
+                                              bChromaAC);
     m_pcTransform->addPredictionChromaBlocks (rcMbDataAccess.getMbTCoeffs().get(CIdx(4)),
-                                               rcMbDataAccessBase.getMbTCoeffs().get(CIdx(4)),
-                                               rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.getMbData().getQp()),
-                                               rcMbDataAccess.getSH().getBaseSliceHeader()->getCrQp(rcMbDataAccessBase.getMbData().getQp()),
-                                               bChromaDC, bChromaAC);
+                                              rcMbDataAccessBase.getMbTCoeffs().get(CIdx(4)),
+                                              rcMbDataAccess.getSH().getCrQp(rcMbDataAccess.getMbData().getQp()),
+                                              rcMbDataAccess.getSH().getBaseSliceHeader()->getCrQp(rcMbDataAccessBase.getMbData().getQp()),
+                                              bChromaDC,
+                                              bChromaAC);
 
     uiBCBP |= (bChromaAC?2:(bChromaDC?1:0))<<16;
 
@@ -1110,8 +1143,8 @@ ErrVal SliceEncoder::xAddTCoeffs2 (MbDataAccess& rcMbDataAccess, MbDataAccess& r
 
 
     // Process luma blocks
-    const QpParameter&  cSrcLQp = cSrcQuantizer.getLumaQp ();
-    const QpParameter&  cDstLQp = cDstQuantizer.getLumaQp ();
+    const QpParameter&  cSrcLQp = cSrcQuantizer.getLumaQp();
+    const QpParameter&  cDstLQp = cDstQuantizer.getLumaQp();
 
     QpParameter cScaleQp;
     cScaleQp.setQp((cSrcLQp.per()-cDstLQp.per())*6+(cSrcLQp.rem()-cDstLQp.rem()), true);

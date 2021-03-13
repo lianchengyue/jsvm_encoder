@@ -136,7 +136,9 @@ private:
       UInt   m_uiFramesSkipped;
       Bool   m_bUseBaseRep;
       UInt   m_uiLayer;
+      //!(MMCO): Memory Management Control Operation
       DecRefPicMarking* m_pcMmcoBuf;
+      //!(RPLR): Reference Picture List Reordering  参考图象重序列
       RefPicListReOrdering* m_apcRplrBuf[2];
   };
 
@@ -177,6 +179,7 @@ private:
       ErrVal  check ();
 
       Bool    isFirstIDR ()  const;
+      //DPB: 解码图片缓存区
       UInt    getMinDPBSizeRef ()  const;
       UInt    getMinDPBSizeNonRef ()  const;
 

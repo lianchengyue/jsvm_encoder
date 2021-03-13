@@ -15,7 +15,7 @@ public:
     const UChar getState()           { return m_ucState>>1; }
     const UChar getMps()             { return m_ucState&1;  }
     Void toggleMps()                 { m_ucState ^= 1;      }
-    Void setState(UChar ucState)   { m_ucState = (ucState<<1)+getMps(); }
+    Void setState(UChar ucState)     { m_ucState = (ucState<<1)+getMps(); }
 
     Void init(Short asCtxInit[], Int iQp)
     {

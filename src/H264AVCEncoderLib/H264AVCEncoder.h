@@ -102,7 +102,7 @@ public:
                                 UInt uiTemporalId,
                                 UInt uiFrameIdInTId);
 
-    Void setScalableSEIMessage  ()       { m_bScalableSeiMessage = true; }
+    Void setScalableSEIMessage  ()       { m_bScalableSeiMessage = true/*true temp_modified by flq*/; }
 // JVT-V068 HRD {
     Void setBufferPeriodSEIMessage()     { m_bWriteBufferingPeriodSEI = true; }
     ErrVal writeAVCCompatibleHRDSEI(ExtBinDataAccessor* pcExtBinDataAccessor, SequenceParameterSet& rcSPS);

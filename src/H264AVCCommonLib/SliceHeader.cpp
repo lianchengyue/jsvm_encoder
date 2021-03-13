@@ -64,7 +64,7 @@ SliceHeader::SliceHeader(const NalUnitHeader& rcNalUnitHeader) :
     }
 }
 
-SliceHeader::SliceHeader    (const PrefixHeader& rcPrefixHeader) :
+SliceHeader::SliceHeader(const PrefixHeader& rcPrefixHeader) :
     SliceHeaderSyntax         (rcPrefixHeader),
     m_eErrorConcealMode       (EC_NONE),
     m_bTrueSlice              (true),
@@ -165,7 +165,7 @@ ErrVal SliceHeader::init(const SequenceParameterSet& rcSPS, const PictureParamet
     m_bSCoeffResidualPred = false;
     m_iLongTermFrameIdx   = -1;
     m_bReconstructionLayer= false;
-    ::memset(m_aapcRefFrameList, 0x00, sizeof    (m_aapcRefFrameList));
+    ::memset(m_aapcRefFrameList, 0x00, sizeof(m_aapcRefFrameList));
     for(UInt ui=0;ui<MAX_TEMP_LEVELS;ui++)
     {
         ::memset(m_aauiNumRefIdxActiveUpdate[ui] , 0x00, 2*sizeof(UInt));
@@ -215,7 +215,7 @@ ErrVal SliceHeader::copyPrefix(const PrefixHeader& rcPrefixHeader)
     return Err::m_nOK;
 }
 
-UInt SliceHeader::getMapUnitFromPosition    (UInt uiMbY, UInt uiMbX) const
+UInt SliceHeader::getMapUnitFromPosition(UInt uiMbY, UInt uiMbX) const
 {
     AOF (parameterSetsInitialized());
     UInt   uiMapUnit = uiMbY * getSPS().getFrameWidthInMbs() + uiMbX;
@@ -239,7 +239,9 @@ UInt SliceHeader::getMbAddressFromPosition(UInt uiMbY, UInt uiMbX) const
     return uiMbAddress;
 }
 
-Void SliceHeader::getMbPositionFromAddress(UInt& ruiMbY, UInt& ruiMbX, UInt uiMbAddress) const
+Void SliceHeader::getMbPositionFromAddress(UInt& ruiMbY,
+                                           UInt& ruiMbX,
+                                           UInt uiMbAddress) const
 {
     AOF (parameterSetsInitialized());
 
@@ -256,7 +258,10 @@ Void SliceHeader::getMbPositionFromAddress(UInt& ruiMbY, UInt& ruiMbX, UInt uiMb
     }
 }
 
-Void SliceHeader::getMbPosAndIndexFromAddress(UInt& ruiMbY, UInt& ruiMbX, UInt& ruiMbIndex, UInt uiMbAddress) const
+Void SliceHeader::getMbPosAndIndexFromAddress(UInt& ruiMbY,
+                                              UInt& ruiMbX,
+                                              UInt& ruiMbIndex,
+                                              UInt uiMbAddress) const
 {
     AOF (parameterSetsInitialized());
 
@@ -288,15 +293,18 @@ UInt SliceHeader::getMbIndexFromAddress(UInt uiMbAddress) const
   return    uiMbAddress;
 }
 
-Bool SliceHeader::isFieldPair(UInt uiFrameNum, PicType ePicType, Bool bIsRefPic) const
+Bool SliceHeader::isFieldPair(UInt uiFrameNum,
+                              PicType ePicType,
+                              Bool bIsRefPic) const
 {
-    ROTRS (getFrameNum ()  !=  uiFrameNum, false);
-    ROTRS (isRefPic    ()  !=  bIsRefPic,  false);
-    ROTRS (getPicType  ()  &   ePicType,   false);
+    ROTRS (getFrameNum()  !=  uiFrameNum, false);
+    ROTRS (isRefPic   ()  !=  bIsRefPic,  false);
+    ROTRS (getPicType ()  &   ePicType,   false);
     return true;
 }
 
-Int SliceHeader::getDistScaleFactorWP(const Frame* pcFrameL0, const Frame* pcFrameL1) const
+Int SliceHeader::getDistScaleFactorWP(const Frame* pcFrameL0,
+                                      const Frame* pcFrameL1) const
 {
     Int iDiffPocD = pcFrameL1->getPoc() - pcFrameL0->getPoc();
     if(pcFrameL0->isLongTerm() || pcFrameL1->isLongTerm() || iDiffPocD == 0)
@@ -311,7 +319,9 @@ Int SliceHeader::getDistScaleFactorWP(const Frame* pcFrameL0, const Frame* pcFra
     return iScale;
 }
 
-const PredWeight& SliceHeader::getPredWeight (ListIdx eListIdx, UInt uiRefIdx, Bool bFieldFlag) const
+const PredWeight& SliceHeader::getPredWeight (ListIdx eListIdx,
+                                              UInt uiRefIdx,
+                                              Bool bFieldFlag) const
 {
     if (bFieldFlag)
     {
@@ -323,7 +333,9 @@ const PredWeight& SliceHeader::getPredWeight (ListIdx eListIdx, UInt uiRefIdx, B
     }
 }
 
-PredWeight& SliceHeader::getPredWeight(ListIdx eListIdx, UInt uiRefIdx, Bool bFieldFlag)
+PredWeight& SliceHeader::getPredWeight(ListIdx eListIdx,
+                                       UInt uiRefIdx,
+                                       Bool bFieldFlag)
 {
     if (bFieldFlag)
     {

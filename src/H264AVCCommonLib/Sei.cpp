@@ -107,7 +107,9 @@ ErrVal SEI::writeScalableNestingSei (HeaderSymbolWriteIf*  pcWriteIf,
     uiNestedSeiSize = uiSize;
 
     uiStart  = pcWriteTestIf->getNumberOfWrittenBits();
-    xWritePayloadHeader(pcWriteTestIf, pcBottom->getMessageType(), uiSize);
+    xWritePayloadHeader(pcWriteTestIf,
+                        pcBottom->getMessageType(),
+                        uiSize);
     uiBits = pcWriteTestIf->getNumberOfWrittenBits() - uiStart;
     AOT((uiBits & 7) > 0);
     uiSize += (uiBits>>3);
@@ -122,7 +124,9 @@ ErrVal SEI::writeScalableNestingSei (HeaderSymbolWriteIf*  pcWriteIf,
     uiStart  = pcWriteIf->getNumberOfWrittenBits();
     xWritePayloadHeader(pcWriteIf, SCALABLE_NESTING_SEI, uiSize);
     pcTop->write(pcWriteIf);
-    xWritePayloadHeader(pcWriteIf, pcBottom->getMessageType(), uiNestedSeiSize);
+    xWritePayloadHeader(pcWriteIf,
+                        pcBottom->getMessageType(),
+                        uiNestedSeiSize);
     pcBottom->write(pcWriteIf);
     uiBits = pcWriteIf->getNumberOfWrittenBits() - uiStart;
     UInt uiAlignedBits = (8 - (uiBits&7)) % 8;

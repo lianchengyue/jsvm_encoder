@@ -6,10 +6,10 @@
 
 namespace JSVM {
 
-const UInt MbMotionData::m_auiBlk2Part [16]  = { 0, 0, 1, 1,
-                                                 0, 0, 1, 1,
-                                                 2, 2, 3, 3,
-                                                 2, 2, 3, 3 };  // XDIRECT
+const UInt MbMotionData::m_auiBlk2Part[16] = { 0, 0, 1, 1,
+                                               0, 0, 1, 1,
+                                               2, 2, 3, 3,
+                                               2, 2, 3, 3 };  // XDIRECT
 
 
 ErrVal MbMvData::save(FILE* pFile)
@@ -87,16 +87,16 @@ Void  MbMotionData::copyFrom(const MbMotionData& rcMbMotionData, const ParIdx8x8
 Void MbMvData::copyFrom(const MbMvData& rcMbMvData)
 {
     memcpy(m_acMv, rcMbMvData.m_acMv, sizeof(m_acMv));
-    m_bFieldFlag  = rcMbMvData.m_bFieldFlag;
+    m_bFieldFlag = rcMbMvData.m_bFieldFlag;
 }
 
 Void RefPicIdc::set(const Frame* pcFrame)
 {
     if(pcFrame)
     {
-        m_iPoc      = pcFrame->getPoc();
-        m_ePicType  = pcFrame->getPicType();
-        m_pcFrame   = pcFrame->getFrame();
+        m_iPoc     = pcFrame->getPoc();
+        m_ePicType = pcFrame->getPicType();
+        m_pcFrame  = pcFrame->getFrame();
         AOF(m_pcFrame);
         return;
     }
@@ -161,7 +161,7 @@ BlkMode MbMotionData::getBlkMode(const ParIdx8x8 eParIdx, BlkMode eBlkMode)
 
 Void  MbMotionData::copyFrom(const MbMotionData& rcMbMotionData)
 {
-    memcpy(m_ascRefIdx,  rcMbMotionData.m_ascRefIdx, 4 * sizeof(SChar));
+    memcpy(m_ascRefIdx,   rcMbMotionData.m_ascRefIdx,   4 * sizeof(SChar));
     memcpy(m_acRefPicIdc, rcMbMotionData.m_acRefPicIdc, 4 * sizeof(RefPicIdc));
     m_usMotPredFlags = rcMbMotionData.m_usMotPredFlags;
 

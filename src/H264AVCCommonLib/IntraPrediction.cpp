@@ -32,10 +32,10 @@ IntraPrediction::IntraPrediction()
     m_uiAvailableMaskMb=0;
     m_uiAvailable=0;
     m_bSpecial=false;
-    ::memset(m_ac8x8Pred,0,26*sizeof(XPel));
+    ::memset(m_ac8x8Pred, 0, 26*sizeof(XPel));
 
-    m_pucHor = m_ac8x8Pred+1;
-    m_pucVer = m_ac8x8Pred+18;
+    m_pucHor = m_ac8x8Pred + 1;
+    m_pucVer = m_ac8x8Pred + 18;
 }
 
 IntraPrediction::~IntraPrediction()
@@ -88,19 +88,19 @@ ErrVal IntraPrediction::predictLumaMb(Pel* puc, Int iStride, UInt uiPredMode)
     switch(uiPredMode & 0xf)
     {
         case 0:
-            xPred16x16IMode0Vert  (puc, iStride);
+            xPred16x16IMode0Vert(puc, iStride);
             break;
 
         case 1:
-            xPred16x16IMode1Hori  (puc, iStride);
+            xPred16x16IMode1Hori(puc, iStride);
             break;
 
         case 2:
-            xPred16x16IMode2DC    (puc, iStride);
+            xPred16x16IMode2DC(puc, iStride);
             break;
 
         case 3:
-            xPred16x16IMode3Plane (puc, iStride);
+            xPred16x16IMode3Plane(puc, iStride);
             break;
 
         default:
@@ -630,7 +630,7 @@ Void IntraPrediction::xPred16x16IMode3Plane(Pel* puc, Int iStride) // plane pred
 
     Int iB =  (5 * iH + 32) >> 6;
     Int iC =  (5 * iV + 32) >> 6;
-    Int iA = 16 * (Int)(puc[(iStride << 4) - (iStride + 1)] + puc[ 15 - iStride ]);
+    Int iA = 16 * (Int)(puc[(iStride << 4) - (iStride + 1)] + puc[15 - iStride]);
     Int x, y;
 
     for(y = 0; y < 16; y++)
@@ -724,7 +724,7 @@ Void IntraPrediction::xPred8x8IMode3Plane(Pel* puc, Int iStride) // plane predic
 
     Int iB =  (17 * iH + 16) >> 5;
     Int iC =  (17 * iV + 16) >> 5;
-    Int iA = 16 * (Int)(puc[(iStride << 3) - (iStride + 1)] + puc[ 7 - iStride ]);
+    Int iA = 16 * (Int)(puc[(iStride << 3) - (iStride + 1)] + puc[7 - iStride]);
     Int x, y;
 
     for(y = 0; y < 8; y++)
@@ -795,7 +795,7 @@ Void IntraPrediction::xPred16x16IMode2DC(XPel* puc, Int iStride) // DC predictio
     }
     else
     {
-        for(m = -1, n = 0; n < 16; n++, m+= iStride)
+        for(m = -1, n = 0; n < 16; n++, m += iStride)
         {
             uiDcValue += puc[m];
         }
@@ -854,7 +854,7 @@ Void IntraPrediction::xPred16x16IMode3Plane(XPel* puc, Int iStride) // plane pre
 
     Int iB =  (5 * iH + 32) >> 6;
     Int iC =  (5 * iV + 32) >> 6;
-    Int iA = 16 * (Int)(puc[(iStride << 4) - (iStride + 1)] + puc[ 15 - iStride ]);
+    Int iA = 16 * (Int)(puc[(iStride << 4) - (iStride + 1)] + puc[15 - iStride]);
     Int x, y;
 
     for(y = 0; y < 16; y++)
@@ -1244,29 +1244,29 @@ Void IntraPrediction::xPred8x8IMode3Plane(XPel* puc, Int iStride) // plane predi
     puc += 3 - iStride;
     for(n = 1; n < 5; n++)
     {
-      iH += n * (Int)(puc[n] - puc[-n]);
+        iH += n * (Int)(puc[n] - puc[-n]);
     }
 
     puc += (iStride << 2) - 4;
     for(m = iStride, n = 1; n < 5; n++, m += iStride)
     {
-      iV += n * (Int)(puc[m] - puc[-m]);
+        iV += n * (Int)(puc[m] - puc[-m]);
     }
     puc -= 3 * iStride - 1;
 
     Int iB =  (17 * iH + 16) >> 5;
     Int iC =  (17 * iV + 16) >> 5;
-    Int iA = 16 * (Int)(puc[(iStride << 3) - (iStride + 1)] + puc[ 7 - iStride ]);
+    Int iA = 16 * (Int)(puc[(iStride << 3) - (iStride + 1)] + puc[7 - iStride]);
     Int x, y;
 
     for(y = 0; y < 8; y++)
     {
-      Int iYSum = iA + (y-3) * iC + 16;
-      for(x = 0; x < 8; x++)
-      {
-        pucDes[x] = gClip((iYSum + (x-3) * iB) >> 5);
-      }
-      pucDes += iStride;
+        Int iYSum = iA + (y-3) * iC + 16;
+        for(x = 0; x < 8; x++)
+        {
+            pucDes[x] = gClip((iYSum + (x-3) * iB) >> 5);
+        }
+        pucDes += iStride;
     }
 }
 
@@ -1417,6 +1417,7 @@ Void IntraPrediction::xSet8x8AvailableMask(B8x8Idx cIdx)
 }
 
 
+//Luma 8x8
 ErrVal IntraPrediction::predictLuma8x8Block (XPel* puc, Int iStride, UInt uiPredMode, B8x8Idx cIdx)
 {
     xSet8x8AvailableMask(cIdx);
@@ -1512,9 +1513,9 @@ Void IntraPrediction::xLoadHorPred8x8 (XPel* puc, Int iStride)
 
         if(! m_bSpecial)
         {
-            m_pucHor[ 8] = (puc[ 7-iStride] + 2*puc[ 8-iStride] + puc[ 9-iStride] + 2) >> 2;
-            m_pucHor[ 9] = (puc[ 8-iStride] + 2*puc[ 9-iStride] + puc[10-iStride] + 2) >> 2;
-            m_pucHor[10] = (puc[ 9-iStride] + 2*puc[10-iStride] + puc[11-iStride] + 2) >> 2;
+            m_pucHor[8] = (puc[7-iStride] + 2*puc[8-iStride] + puc[9-iStride] + 2) >> 2;
+            m_pucHor[9] = (puc[8-iStride] + 2*puc[9-iStride] + puc[10-iStride] + 2) >> 2;
+            m_pucHor[10] = (puc[9-iStride] + 2*puc[10-iStride] + puc[11-iStride] + 2) >> 2;
             m_pucHor[11] = (puc[10-iStride] + 2*puc[11-iStride] + puc[12-iStride] + 2) >> 2;
             m_pucHor[12] = (puc[11-iStride] + 2*puc[12-iStride] + puc[13-iStride] + 2) >> 2;
             m_pucHor[13] = (puc[12-iStride] + 2*puc[13-iStride] + puc[14-iStride] + 2) >> 2;
@@ -1524,13 +1525,13 @@ Void IntraPrediction::xLoadHorPred8x8 (XPel* puc, Int iStride)
         }
         else
         {
-            m_pucHor[ 8] = (puc[ 7-iStride] + 2*puc[ 8-iStride] + puc[ 9-iStride] + 2) >> 2;
-            m_pucHor[ 9] = (puc[ 8-iStride] + 2*puc[ 9-iStride] + puc[10-iStride] + 2) >> 2;
-            m_pucHor[10] = (puc[ 9-iStride] + 2*puc[10-iStride] + puc[11-iStride] + 2) >> 2;
-            m_pucHor[11] = (puc[10-iStride] + 2*puc[11-iStride] + puc[8         ] + 2) >> 2;
-            m_pucHor[12] = (puc[11-iStride] + 2*puc[8         ] + puc[9         ] + 2) >> 2;
-            m_pucHor[13] = (puc[8         ] + 2*puc[9         ] + puc[10        ] + 2) >> 2;
-            m_pucHor[14] = (puc[9         ] + 2*puc[10        ] + puc[11        ] + 2) >> 2;
+            m_pucHor[8] = (puc[7-iStride] + 2*puc[8-iStride] + puc[9-iStride] + 2) >> 2;
+            m_pucHor[9] = (puc[8-iStride] + 2*puc[9-iStride] + puc[10-iStride] + 2) >> 2;
+            m_pucHor[10] = (puc[9-iStride] + 2*puc[10-iStride] + puc[11-iStride] + 2) >> 2;
+            m_pucHor[11] = (puc[10-iStride] + 2*puc[11-iStride] + puc[8        ] + 2) >> 2;
+            m_pucHor[12] = (puc[11-iStride] + 2*puc[8        ] + puc[9        ] + 2) >> 2;
+            m_pucHor[13] = (puc[8        ] + 2*puc[9        ] + puc[10       ] + 2) >> 2;
+            m_pucHor[14] = (puc[9        ] + 2*puc[10       ] + puc[11       ] + 2) >> 2;
 
             m_pucHor[15] = (puc[10] + 3*puc[11] + 2) >> 2;
         }

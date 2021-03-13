@@ -7,52 +7,64 @@
 
 
 template< class T >
-class MemCont : public MemIf< T >
+class MemCont : public MemIf<T>
 {
 public:
   class MemContHelper
   {
   public:
-    MemContHelper() {}
-    MemContHelper(MemIf< T >& rcMemIf)
-    {
-      rcMemIf.release(m_pcT, m_uiSize, m_pcOrigT, m_uiUsableSize);
-    }
-    virtual ~MemContHelper() {}
+      MemContHelper() {}
+      MemContHelper(MemIf<T>& rcMemIf)
+      {
+          rcMemIf.release(m_pcT, m_uiSize, m_pcOrigT, m_uiUsableSize);
+      }
+      virtual ~MemContHelper() {}
 
   public:
-    MemContHelper& operator=(MemIf< T >& rcMemIf)
-    {
-      rcMemIf.release(m_pcT, m_uiSize, m_pcOrigT, m_uiUsableSize);
-      return *this;
-    }
+      MemContHelper& operator=(MemIf<T>& rcMemIf)
+      {
+          rcMemIf.release(m_pcT, m_uiSize, m_pcOrigT, m_uiUsableSize);
+          return *this;
+      }
 
   public:
-    T* data() const { return m_pcT; }
-    T* origData() const { return m_pcOrigT; }
-    UInt size() const { return m_uiSize; }
-    UInt usableSize() const { return m_uiUsableSize; }
+      T* data() const         { return m_pcT; }
+      T* origData() const     { return m_pcOrigT; }
+      UInt size() const       { return m_uiSize; }
+      UInt usableSize() const { return m_uiUsableSize; }
 
   private:
-    T* m_pcT;
-    T* m_pcOrigT;
-    UInt m_uiSize;
-    UInt m_uiUsableSize;
+      T* m_pcT;
+      T* m_pcOrigT;
+      UInt m_uiSize;
+      UInt m_uiUsableSize;
   };
 
 public:
     MemCont() :
-      m_pcT(NULL), m_pcOrigT(NULL), m_uiSize(0), m_uiUsableSize(0) {}
+        m_pcT(NULL), m_pcOrigT(NULL), m_uiSize(0), m_uiUsableSize(0) {}
 
     MemCont(T* pcT, UInt uiSize, T* pcOrigT=NULL, UInt uiUsableSize=0) :
-      m_pcT(pcT), m_pcOrigT(pcOrigT), m_uiSize(uiSize) , m_uiUsableSize(uiUsableSize)
+        m_pcT(pcT),
+        m_pcOrigT(pcOrigT),
+        m_uiSize(uiSize) ,
+        m_uiUsableSize(uiUsableSize)
     {
-        if(NULL == m_pcOrigT) m_pcOrigT = m_pcT;
-        if(0 == m_uiUsableSize) m_uiUsableSize = uiSize;
+        if(NULL == m_pcOrigT)
+        {
+            m_pcOrigT = m_pcT;
+        }
+        if(0 == m_uiUsableSize)
+        {
+            m_uiUsableSize = uiSize;
+        }
     }
 
-    MemCont(const MemCont< T >& rcMemCont) :
-      m_pcT(NULL), m_pcOrigT(NULL), m_uiSize(0), m_uiUsableSize(0)
+    MemCont(const MemCont<T>& rcMemCont) :
+        m_pcT(NULL),
+        m_pcOrigT(NULL),
+        m_uiSize(0),
+        m_uiUsableSize(0)
     {
         if((0 != rcMemCont.m_uiSize) && (NULL != rcMemCont.m_pcT))
         {
@@ -65,8 +77,11 @@ public:
         }
     }
 
-    MemCont(const MemAccessor< T >& rcMemAccessor) :
-      m_pcT(NULL), m_pcOrigT(NULL), m_uiSize(0), m_uiUsableSize(0)
+    MemCont(const MemAccessor<T>& rcMemAccessor) :
+        m_pcT(NULL),
+        m_pcOrigT(NULL),
+        m_uiSize(0),
+        m_uiUsableSize(0)
     {
         if((0 != rcMemAccessor.size()) && (NULL != rcMemAccessor.data()))
         {
@@ -78,7 +93,10 @@ public:
     }
 
     MemCont(const MemContHelper& rcMemContHelper) :
-      m_pcT(NULL), m_pcOrigT(NULL), m_uiSize(0), m_uiUsableSize(0)
+        m_pcT(NULL),
+        m_pcOrigT(NULL),
+        m_uiSize(0),
+        m_uiUsableSize(0)
     {
         if((0 != rcMemContHelper.size()) && (NULL != rcMemContHelper.data()))
         {
@@ -92,7 +110,7 @@ public:
     virtual ~MemCont() { if(m_pcOrigT) { delete[] m_pcOrigT; } }
 
 public:
-  MemCont< T >& operator=(const MemCont< T >& rcMemCont)
+  MemCont<T>& operator=(const MemCont<T>& rcMemCont)
   {
       if(this == &rcMemCont) { return *this; }
 
@@ -119,7 +137,7 @@ public:
       return *this;
   }
 
-  MemCont< T >& operator=(const MemAccessor< T >& rcMemAccessor)
+  MemCont<T>& operator=(const MemAccessor<T>& rcMemAccessor)
   {
       if(m_pcOrigT == rcMemAccessor.origData())
       {
@@ -149,7 +167,7 @@ public:
       return *this;
   }
 
-  MemCont< T >& operator=(const MemContHelper& rcMemContHelper)
+  MemCont<T>& operator=(const MemContHelper& rcMemContHelper)
   {
       if(m_pcOrigT == rcMemContHelper.origData())
       {
@@ -185,18 +203,35 @@ public:
 public:
     MemType getMemType() const { return MEM_CONT; }
 
-    Void set(MemIf< T >& rcMemIf)
+    Void set(MemIf<T>& rcMemIf)
     {
         ROTV(this == &rcMemIf);
         if(m_pcOrigT) { delete[] m_pcOrigT; }
         rcMemIf.release(m_pcT, m_uiSize, m_pcOrigT, m_uiUsableSize);
     }
 
+    //m_pcOrigT 指向 输入参数pcT
+    //令m_uiUsableSize可用空间=总空间
     Void set(T* pcT, UInt uiSize, T* pcOrigT=NULL, UInt uiUsableSize=0)
     {
-        if(NULL == pcOrigT) { pcOrigT = pcT; }
-        if(0 == uiUsableSize) { uiUsableSize = uiSize; }
-        if(m_pcOrigT != pcOrigT) { if(m_pcOrigT) { delete[] m_pcOrigT; } }
+        if(NULL == pcOrigT)
+        {
+            pcOrigT = pcT;
+        }
+
+        if(0 == uiUsableSize)
+        {
+            uiUsableSize = uiSize;
+        }
+
+        if(m_pcOrigT != pcOrigT)
+        {
+            if(m_pcOrigT)
+            {
+                delete[] m_pcOrigT;
+            }
+        }
+
         m_pcT = pcT;
         m_pcOrigT = pcOrigT;
         m_uiSize = uiSize;
@@ -245,7 +280,7 @@ public:
         m_uiUsableSize = 0;
     }
 
-    Void release(MemAccessor< T >& rcMemAccessor)
+    Void release(MemAccessor<T>& rcMemAccessor)
     {
         rcMemAccessor.set(m_pcT, m_uiSize, m_pcOrigT, m_uiUsableSize);
 
@@ -255,8 +290,25 @@ public:
         m_uiUsableSize = 0;
     }
 
-    Void deleteData() { if(m_pcOrigT) { delete[] m_pcOrigT; } m_pcOrigT = NULL; m_pcT = NULL; m_uiSize = 0; m_uiUsableSize = 0; }
-    Void reset() { m_pcOrigT = NULL; m_pcT = NULL; m_uiSize = 0; m_uiUsableSize = 0; }
+    Void deleteData()
+    {
+        if(m_pcOrigT)
+        {
+            delete[] m_pcOrigT;
+        }
+
+        m_pcOrigT = NULL;
+        m_pcT = NULL;
+        m_uiSize = 0;
+        m_uiUsableSize = 0;
+    }
+    Void reset()
+    {
+        m_pcOrigT = NULL;
+        m_pcT = NULL;
+        m_uiSize = 0;
+        m_uiUsableSize = 0;
+    }
 
     T* data() const { return m_pcT; }
     T* origData() const { return m_pcOrigT; }
@@ -265,8 +317,10 @@ public:
     UInt byteSize() const { return sizeof(T) * m_uiSize; }
     UInt usableByteSize() const { return sizeof(T) * m_uiUsableSize; }
 
-    Void setMemAccessor(MemAccessor< T >& rcMemAccessor)
+    //将对应bin变量的值，设置给输入变量
+    Void setMemAccessor(MemAccessor<T>& rcMemAccessor)
     {
+        //令rcMemAccessor指向m_cBinData
         rcMemAccessor.set(m_pcT, m_uiSize, m_pcOrigT, m_uiUsableSize);
     }
 

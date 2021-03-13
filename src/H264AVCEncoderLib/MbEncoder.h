@@ -17,6 +17,7 @@ namespace JSVM {
 
 class Transform;
 class MbFGSCoefMap;
+//MBEncoder.h中
 class IntraPredictionSearch;
 class CodingParameter;
 
@@ -45,7 +46,7 @@ public:
     ErrVal  initSlice           (const SliceHeader&      rcSH);
 
     Void    setIPCMRate         (UInt ui )  { m_uiIPCMRate = ui; }
-    UInt    getIPCMRate         ()   const   { return m_uiIPCMRate; }
+    UInt    getIPCMRate         () const    { return m_uiIPCMRate; }
 
     //===== encoding =====
     ErrVal  encodeMacroblockSVC (MbDataAccess&           rcMbDataAccess,
@@ -467,12 +468,20 @@ protected:
     //率失真
     XDistortion*            m_pcXDistortion;
     Bool                    m_bInitDone;
+    ///存放5种不同的数据
+    //0: m_pcIntMbBestData
+    //1: m_pcIntMbTempData
+    //2: m_pcIntMbBest8x8Data
+    //3: m_pcIntMbTemp8x8Data
+    //4: m_pcIntMbBestIntraChroma
     IntMbTempData           m_acIntMbTempData[5];
+
     IntMbTempData*          m_pcIntMbBestData;
     IntMbTempData*          m_pcIntMbTempData;
     IntMbTempData*          m_pcIntMbBest8x8Data;
     IntMbTempData*          m_pcIntMbTemp8x8Data;
     IntMbTempData*          m_pcIntMbBestIntraChroma;
+
     YuvMbBuffer*            m_pcIntOrgMbPelData;
 #if PROPOSED_DEBLOCKING_APRIL2010
     YuvMbBuffer*            m_pcRefLayerResidual;

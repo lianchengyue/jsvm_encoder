@@ -92,6 +92,7 @@ private:
 
     //===== members =====
     BinData                m_cBinData;
+    //单独的一帧.h264,结束后会push进rcExtBinDataAccessorList
     ExtBinDataAccessor     m_cExtBinDataAccessor;
     FrameSpec              m_cFrameSpecification;
     SequenceStructure*     m_pcSequenceStructure;
